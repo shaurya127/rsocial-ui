@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "734731438631",
+    "firebase_url": "https://rsocial-uat.firebaseio.com",
+    "project_id": "rsocial-uat",
+    "storage_bucket": "rsocial-uat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:734731438631:android:e349e553fee205803fdc02",
+        "android_client_info": {
+          "package_name": "com.example.rsocial2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "734731438631-jpqfckaj7qclf0c08c3v217khl22svjq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.rsocial2",
+            "certificate_hash": "3ff211acae36af189e41516b11c38fbd75dca7ce"
+          }
+        },
+        {
+          "client_id": "734731438631-rk3tncgck2f9q9c1mvkmdaeulfa3qgvt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.rsocial2",
+            "certificate_hash": "0f2ab2bc22699e4ddae69ec5d51a0c4cb48d0330"
+          }
+        },
+        {
+          "client_id": "734731438631-5j41q37gv3jj10h5ssorjhs7ebdhcjdl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqj2ohJ_jy_9FYJWuscicm3VtBpizR4OI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "734731438631-5j41q37gv3jj10h5ssorjhs7ebdhcjdl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

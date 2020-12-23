@@ -1,0 +1,75 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:rsocial2/user.dart';
+
+import 'Screens/bottom_nav_bar.dart';
+import 'Screens/create_account_page.dart';
+import 'package:http/http.dart' as http;
+
+import 'Screens/login_page.dart';
+
+User currentUser;
+
+class AuthScreen extends StatefulWidget {
+  FirebaseAnalytics analytics;
+  FirebaseAnalyticsObserver observer;
+
+  AuthScreen({this.observer, this.analytics});
+
+  @override
+  _AuthScreenState createState() => _AuthScreenState();
+}
+
+class _AuthScreenState extends State<AuthScreen> {
+  final _auth = FirebaseAuth.instance;
+  bool isAuthenticated = null;
+
+  void isUserAuthenticated() async {
+    isAuthenticated = await _auth.currentUser() == null ? false : true;
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    isUserAuthenticated();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return isAuthenticated == null
+        ? Scaffold(
+            body: ColorizeAnimatedTextKit(
+                onTap: () {
+                  print("Tap Event");
+                },
+                text: [
+                  "Loading",
+                ],
+                textStyle: TextStyle(fontSize: 50.0, fontFamily: "Horizon"),
+                colors: [
+                  Colors.purple,
+                  Colors.blue,
+                  Colors.yellow,
+                  Colors.red,
+                ],
+                textAlign: TextAlign.start,
+                alignment: AlignmentDirectional.topStart // or Alignment.topLeft
+                ),
+          )
+        : (isAuthenticated
+            ? BottomNavBar(
+                currentUser: currentUser,
+                isNewUser: false,
+                sign_in_mode: "",
+              )
+            : CreateAccount());
+  }
+}
