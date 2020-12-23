@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter/material.dart';
@@ -120,21 +121,53 @@ loginWithFacebook(User _currentUser, BuildContext context) async {
 
 // Logic followed when logged in using google
 loginWithGoogle(User _currentUser, BuildContext context) async {
-  final GoogleSignInAccount googleUser = await googleSignIn.signIn();
+  FirebaseUser user;
+  FirebaseUser currentUser;
+  String user_id;
+  try {
+    final GoogleSignInAccount googleUser = await googleSignIn.signIn();
 
-  final GoogleSignInAuthentication googleKey = await googleUser.authentication;
+    final GoogleSignInAuthentication googleKey =
+        await googleUser.authentication;
 
   AuthCredential credential = GoogleAuthProvider.getCredential(
       idToken: googleKey.idToken, accessToken: googleKey.accessToken);
 
-  final FirebaseUser user =
-      await FirebaseAuth.instance.signInWithCredential(credential);
+    user = await FirebaseAuth.instance.signInWithCredential(credential);
 
-  assert(user.getIdToken() != null);
-  final FirebaseUser currentUser = await FirebaseAuth.instance.currentUser();
-  assert(currentUser != null);
-  print(user.uid);
-  String user_id = user.uid;
+    assert(user.getIdToken() != null);
+    currentUser = await FirebaseAuth.instance.currentUser();
+    assert(currentUser != null);
+    print(user.uid);
+    user_id = user.uid;
+  } on PlatformException catch (e) {
+    if (e.code == 'network_error') {
+      var alertBox = AlertDialogBox(
+        title: "Error",
+        content:
+            "We are unable to contact our servers. Please check your internet connection.",
+        actions: <Widget>[
+          FlatButton(
+            child: Text(
+              "Back",
+              style: TextStyle(
+                color: colorButton,
+                fontFamily: "Lato",
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(
+                context,
+              );
+            },
+          ),
+        ],
+      );
+
+      showDialog(context: (context), builder: (context) => alertBox);
+    }
+  }
 
   if (user.uid == currentUser.uid) {
     // Checking whether user already exists in firebase
