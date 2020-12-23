@@ -11,6 +11,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/auth.dart';
+import 'package:rsocial2/config.dart';
 
 import '../constants.dart';
 import '../user.dart';
@@ -94,8 +95,7 @@ class _Search_PageState extends State<Search_Page>
     // }
 
     var id = doc['id'];
-    final url =
-        "https://9dhzla746i.execute-api.ap-south-1.amazonaws.com/user/${id}";
+    final url = userEndPoint + "$id";
     //var user = await FirebaseAuth.instance.currentUser();
     //print("this user id is ${user.uid}");
     token = await user.getIdToken();
@@ -200,8 +200,7 @@ class _Search_PageState extends State<Search_Page>
 
     DocumentSnapshot doc = await users.document(user.uid).get();
     var id = doc['id'];
-    final url =
-        "https://9dhzla746i.execute-api.ap-south-1.amazonaws.com/user/${id}/all";
+    final url = userEndPoint + "$id/all";
     //var user = await FirebaseAuth.instance.currentUser();
     //print("this user id is ${user.uid}");
     var token = await user.getIdToken();
@@ -484,8 +483,7 @@ class Request_Tile extends StatefulWidget {
 
 class _Request_TileState extends State<Request_Tile> {
   removeConnection(String friendId) async {
-    var url =
-        "https://9dhzla746i.execute-api.ap-south-1.amazonaws.com/user/removeconnection";
+    var url = userEndPoint + "removeconnection";
     var user = await FirebaseAuth.instance.currentUser();
     DocumentSnapshot doc = await users.document(user.uid).get();
     var uid = doc['id'];
@@ -516,8 +514,7 @@ class _Request_TileState extends State<Request_Tile> {
   }
 
   addConnection(String friendId) async {
-    var url =
-        "https://9dhzla746i.execute-api.ap-south-1.amazonaws.com/user/addconnection";
+    var url = userEndPoint + "addconnection";
     var user = await FirebaseAuth.instance.currentUser();
     DocumentSnapshot doc = await users.document(user.uid).get();
     var uid = doc['id'];
@@ -548,8 +545,8 @@ class _Request_TileState extends State<Request_Tile> {
   }
 
   acceptConnection(String friendId) async {
-    var url =
-        "https://9dhzla746i.execute-api.ap-south-1.amazonaws.com/user/acceptconnection";
+    var url = userEndPoint + "acceptconnection";
+
     var user = await FirebaseAuth.instance.currentUser();
     DocumentSnapshot doc = await users.document(user.uid).get();
     var uid = doc['id'];

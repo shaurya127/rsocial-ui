@@ -10,6 +10,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/RoundedButton.dart';
+import 'package:rsocial2/config.dart';
 import 'package:rsocial2/constants.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rsocial2/Screens/investment.dart';
@@ -95,9 +96,8 @@ class _WageState extends State<Wage> {
       isLoading = true;
     });
 
-    if (list.isNotEmpty || storyText!=null) {
-      var url =
-          "https://t43kpz2m5d.execute-api.ap-south-1.amazonaws.com/story/createwage";
+    if (list.isNotEmpty || storyText != null) {
+      var url = storyEndPoint + "createwage";
       var user = await FirebaseAuth.instance.currentUser();
       DocumentSnapshot doc = await users.document(user.uid).get();
       if (doc == null) {

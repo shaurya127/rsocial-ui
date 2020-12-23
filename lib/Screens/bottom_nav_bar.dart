@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
+import '../config.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -54,8 +54,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   User curUser;
   bool isFailed = false;
   createNgetUser() async {
-    var url =
-        'https://9dhzla746i.execute-api.ap-south-1.amazonaws.com/user/create';
+    var url = userEndPoint + 'create';
     log(jsonEncode(widget.currentUser.toJson()), name: "Bla bla");
     print(jsonEncode(widget.currentUser.toJson()));
     debugPrint(jsonEncode(widget.currentUser.toJson()));
@@ -92,8 +91,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
       //print(widget.sign_in_mode);
       await users.document(user.uid).setData({"id": resBody['message']['id']});
 
-      final url =
-          "https://9dhzla746i.execute-api.ap-south-1.amazonaws.com/user/${id}";
+      final url = userEndPoint + "$id";
 
       final responseGet = await http.get(url, headers: {
         "Authorization": "Bearer $token",
@@ -157,8 +155,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     }
 
     var id = doc['id'];
-    final url =
-        "https://9dhzla746i.execute-api.ap-south-1.amazonaws.com/user/${id}";
+    final url = userEndPoint + "{$id}";
     //var user = await FirebaseAuth.instance.currentUser();
     //print("this user id is ${user.uid}");
     token = await user.getIdToken();
@@ -183,51 +180,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
           isLoading = false;
           isFailed = true;
         });
-        // var alertBox = AlertDialogBox(
-        //   title: "Error",
-        //   content: "We are unable to retrieve your details",
-        //   actions: <Widget>[
-        //     FlatButton(
-        //       child: Text(
-        //         "Try again",
-        //         style: TextStyle(
-        //           color: colorButton,
-        //           fontFamily: "Lato",
-        //           fontWeight: FontWeight.bold,
-        //         ),
-        //       ),
-        //       onPressed: () {
-        //         Navigator.pop(context);
-        //         setState(() {
-        //           isLoading = true;
-        //         });
-        //         return getUser();
-        //       },
-        //     ),
-        //     FlatButton(
-        //       child: Text(
-        //         "Log out",
-        //         style: TextStyle(
-        //           color: colorButton,
-        //           fontFamily: "Lato",
-        //           fontWeight: FontWeight.bold,
-        //         ),
-        //       ),
-        //       onPressed: () {
-        //         logout(context);
-        //       },
-        //     ),
-        //   ],
-        // );
-        //
-        // showDialog(
-        //     context: (context),
-        //     builder: (context) => alertBox,
-        //     barrierDismissible: false);
       }
 
       curUser = User.fromJson(msg);
-      //print("haha");
+
       print(curUser);
       setState(() {
         isLoading = false;

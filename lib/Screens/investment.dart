@@ -13,6 +13,7 @@ import 'package:rsocial2/Screens/wage.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/RoundedButton.dart';
 import 'package:rsocial2/Widgets/alert_box.dart';
+import 'package:rsocial2/config.dart';
 import 'package:rsocial2/user.dart';
 
 import 'package:url_launcher/url_launcher.dart';
@@ -129,8 +130,7 @@ class _InvestmentState extends State<Investment> {
     // Getting id of current user from firebase
     var id = doc['id'];
 
-    final url =
-        "https://9dhzla746i.execute-api.ap-south-1.amazonaws.com/user/${id}/all";
+    final url = userEndPoint + "$id/all";
 
     var token = await user.getIdToken();
 
@@ -289,8 +289,7 @@ class _InvestmentState extends State<Investment> {
   createPost(String storyText, String investedWith, String investmentAmount,
       List<String> list) async {
     if (storyText != null || fileList.isNotEmpty) {
-      var url =
-          "https://t43kpz2m5d.execute-api.ap-south-1.amazonaws.com/story/createinvestment";
+      var url = storyEndPoint + "createinvestment";
       var user = await FirebaseAuth.instance.currentUser();
       DocumentSnapshot doc = await users.document(user.uid).get();
       var uid = doc['id'];
