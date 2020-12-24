@@ -1,18 +1,48 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
+import 'package:rsocial2/Screens/login_page.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/Screens/reaction_info.dart';
+import 'package:rsocial2/Screens/search_page.dart';
 import '../constants.dart';
 import '../post.dart';
 import '../read_more.dart';
 import '../user.dart';
+import 'package:http/http.dart' as http;
+
+
+class Reaction {
+  Reaction({
+    this.id,
+    this.storyId,
+    this.reactionType,
+  });
+
+  String id;
+  String storyId;
+  String reactionType;
+
+  factory Reaction.fromJson(Map<String, dynamic> json) => Reaction(
+    id: json["id"],
+    storyId: json["StoryId"],
+    reactionType: json["ReactionType"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "StoryId": storyId,
+    "ReactionType": reactionType,
+  };
+}
 
 class Post_Tile extends StatefulWidget {
   Post userPost;
@@ -25,6 +55,49 @@ class Post_Tile extends StatefulWidget {
 class _Post_TileState extends State<Post_Tile> {
   List<String> fileList = [];
   bool isLoading =true;
+  List<User> liked = [];
+  List<User> loved = [];
+  List<User> whatever = [];
+  List<User> hated = [];
+  List<Request_Tile> love = [];
+  List<Request_Tile> likes = [];
+  String rxn;
+  int lovedCounter=0;
+  int likedCounter=0;
+  int whateverCounter=0;
+  int hatedCounter=0;
+
+
+  getReactions()
+  {
+    for(int i=0;i<widget.userPost.reactedBy.length;i++)
+      {
+        User user = widget.userPost.reactedBy[i];
+
+        if(user.reactionType=='liked')
+          {
+            liked.add(user);
+            likedCounter++;
+          }
+        else if(user.reactionType=='loved')
+          {
+            loved.add(user);
+            lovedCounter++;
+          }
+        else if(user.reactionType=='whatever')
+          {
+            whatever.add(user);
+            whateverCounter++;
+          }
+        else if(user.reactionType=='hated') {
+          hated.add(user);
+          hatedCounter++;
+        }
+
+        if(user.id==curUser.id)
+          this.rxn=user.reactionType;
+      }
+  }
 
   convertStringToFile()
   {
@@ -42,6 +115,7 @@ class _Post_TileState extends State<Post_Tile> {
   @override
   void initState() {
     super.initState();
+    getReactions();
     convertStringToFile();
   }
 
@@ -56,6 +130,73 @@ class _Post_TileState extends State<Post_Tile> {
         ),
       ),
     );
+  }
+
+  react(String reactn) async {
+    var url =
+        'https://t43kpz2m5d.execute-api.ap-south-1.amazonaws.com/story/react';
+    var user = await FirebaseAuth.instance.currentUser();
+    DocumentSnapshot doc = await users.document(user.uid).get();
+    var uid = doc['id'];
+    //print(uid);
+    Reaction reaction = Reaction(
+      id: uid,
+      storyId: widget.userPost.id,
+      reactionType: reactn
+    );
+    var token = await user.getIdToken();
+    //print(jsonEncode(reaction.toJson()));
+    //print(token);
+    var response = await http.put(
+      url,
+      encoding: Encoding.getByName("utf-8"),
+      body: jsonEncode(reaction.toJson()),
+      headers: {
+        "Authorization": "Bearer: $token",
+        "Content-Type": "application/json",
+      },
+    );
+    print(response.statusCode);
+    if(response.statusCode==200) {
+      print(response.body);
+      setState(() {
+        String prevrxn =rxn;
+        rxn=reactn;
+
+        for(int i=0;i<widget.userPost.reactedBy.length;i++)
+        {
+          User user = widget.userPost.reactedBy[i];
+          if(user.id==curUser.id)
+            user.reactionType=reactn;
+        }
+        if(prevrxn!=rxn && rxn!="noreact")
+          {
+            if(prevrxn=="loved")
+              lovedCounter--;
+            else if(prevrxn=='liked')
+              likedCounter--;
+            else if(prevrxn=='whatever')
+              whateverCounter--;
+            else if(prevrxn=='hated')
+              hatedCounter--;
+          }
+      });
+    }
+  }
+
+  buildReactionTile()
+  {
+    for(int i=0;i<loved.length;i++)
+      {
+        Request_Tile tile = Request_Tile(request: false,text: "",user: loved[i],photourl: loved[i].photoUrl,curUser: curUser,);
+        love.add(tile);
+      }
+
+    for(int i=0;i<liked.length;i++)
+    {
+      Request_Tile tile = Request_Tile(request: false,text: "",user: liked[i],photourl: liked[i].photoUrl,curUser: curUser,);
+      likes.add(tile);
+    }
   }
 
   @override
@@ -74,7 +215,7 @@ class _Post_TileState extends State<Post_Tile> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Expanded(
-                  child: widget.userPost.storyType=="W" ? ListTile(
+                  child: widget.userPost.storyType=="Wage" ? ListTile(
                     dense: true,
                     contentPadding: EdgeInsets.only(left: 0,right: -35,bottom: 0),
                     leading: GestureDetector(
@@ -112,7 +253,7 @@ class _Post_TileState extends State<Post_Tile> {
                     ),),
                     subtitle:
                     Text( widget.userPost.investedWithUser==null ? "Investing alone" :
-                    "Investing with ${widget.userPost.investedWithUser.fname} ${widget.userPost.investedWithUser.lname}",
+                    "Investing with ${widget.userPost.investedWithUser[0].fname} ${widget.userPost.investedWithUser[0].lname}",
                       style: TextStyle(
                         fontFamily: "Lato",
                         fontSize:12,
@@ -125,7 +266,7 @@ class _Post_TileState extends State<Post_Tile> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    widget.userPost.storyType=="W" ? SizedBox() :
+                    widget.userPost.storyType=="Wage" ? SizedBox() :
                     Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -156,7 +297,7 @@ class _Post_TileState extends State<Post_Tile> {
                       ],
                     ),
                     SizedBox(width: 14,),
-                    widget.userPost.storyType=="W" ? SizedBox() :
+                    widget.userPost.storyType=="Wage" ? SizedBox() :
                         SizedBox(),
                     // Column(
                     //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -194,11 +335,30 @@ class _Post_TileState extends State<Post_Tile> {
                     //   ],
                     // ),
                     SizedBox(width: 14,),
-                    // Icon(Icons.favorite, color: Colors.pink),
-                    // //SizedBox(width: 14,),
+
+                    if(lovedCounter==0 && likedCounter==0 && whateverCounter==0 && hatedCounter==0)
+                      SizedBox()
+                    else if(lovedCounter>=likedCounter && lovedCounter>=whateverCounter && lovedCounter>=hatedCounter)
+                      SvgPicture.asset("images/loved.svg",
+                        color: colorPrimaryBlue,
+                      )
+                    else if(likedCounter>lovedCounter && likedCounter>=whateverCounter && likedCounter>=hatedCounter)
+                        SvgPicture.asset("images/liked.svg",
+                          color: colorPrimaryBlue,
+                        )
+                    else if(whateverCounter>lovedCounter && whateverCounter>likedCounter && whateverCounter>=hatedCounter)
+                          SvgPicture.asset("images/whatever.svg",
+                            color: colorPrimaryBlue,
+                          )
+                    else if(hatedCounter>likedCounter && hatedCounter>lovedCounter && hatedCounter>whateverCounter)
+                      SvgPicture.asset("images/hated.svg",
+                            color: colorPrimaryBlue,
+                          ),
+                    //SizedBox(width: 14,),
                     GestureDetector(
                         onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Reaction_Info()));},
+                          buildReactionTile();
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>Reaction_Info(like: likes,love: love,)));},
                         child: Icon(
                           Icons.more_vert,
                           color: Color(0xff707070),
@@ -294,68 +454,105 @@ class _Post_TileState extends State<Post_Tile> {
                 Container(
                   child: Row(
                     children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          SvgPicture.asset("images/fav.svg",color: postIcons,),
-                          Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Text("20",style: TextStyle(
-                              fontFamily: "Lato",
-                              fontSize:10,
-                              color: postDesc,
-                            ),),
-                          )
-                        ],
+
+                      GestureDetector(
+                        onTap:()=> { rxn=='loved' ? {
+                          react("noreact"),
+                          lovedCounter--
+                        }: {react("loved"),
+                          lovedCounter++
+                        }},
+                        child: Column(
+                          children: <Widget>[
+                            SvgPicture.asset("images/loved.svg",
+                              color: rxn=="loved" ? colorPrimaryBlue : postIcons,),
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Text(lovedCounter.toString(),
+                                style: TextStyle(
+                                fontFamily: "Lato",
+                                fontSize:10,
+                                color: postDesc,
+                              ),),
+                            )
+                          ],
+                        ),
                       ),
+
                       SizedBox(width: 20,),
-                      Column(
-                        children: <Widget>[
-                          SvgPicture.asset("images/thumb_up.svg",color: postIcons,),
-                          //Icon(Icons.thumb_up,size: 30,color:postIcons),
-                          Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Text("20",
-                              style: TextStyle(
-                              fontFamily: "Lato",
-                              fontSize:10,
-                              color: postDesc,
-                            ),),
-                          )
-                        ],
+                      GestureDetector(
+                        onTap:()=>{ rxn=='liked' ? {
+                          react("noreact"),
+                          likedCounter--
+                        }: {
+                          react("liked"),
+                          likedCounter++
+                        }
+                        },
+                        child: Column(
+                          children: <Widget>[
+                            SvgPicture.asset("images/liked.svg",
+                              color: rxn=="liked" ? colorPrimaryBlue :postIcons,),
+                            //Icon(Icons.thumb_up,size: 30,color:postIcons),
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Text(likedCounter.toString(),
+                                style: TextStyle(
+                                fontFamily: "Lato",
+                                fontSize:10,
+                                color: postDesc,
+                              ),),
+                            )
+                          ],
+                        ),
                       ),
+
+
                       SizedBox(width: 20),
-                      Column(
-                        children: <Widget>[
-                          SvgPicture.asset("images/thumb_down.svg",color: postIcons,),
-                          Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Text("20",style: TextStyle(
-                              fontFamily: "Lato",
-                              fontSize:10,
-                              color: postDesc,
-                            ),),
-                          )
-                        ],
+                      GestureDetector(
+                        onTap:()=>{ rxn=='whatever' ? {react("noreact"), whateverCounter-- }: {react("whatever"), whateverCounter++}},
+                        child: Column(
+                          children: <Widget>[
+                            SvgPicture.asset("images/whatever.svg",
+                              color: rxn=="whatever" ? colorPrimaryBlue : postIcons,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Text(whateverCounter.toString(),style: TextStyle(
+                                fontFamily: "Lato",
+                                fontSize:10,
+                                color: postDesc,
+                              ),),
+                            )
+                          ],
+                        ),
                       ),
                       SizedBox(width: 20,),
-                      Column(
-                        children: <Widget>[
-                          SvgPicture.asset("images/angry.svg",color: postIcons,),
-                          Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: Text("20",style: TextStyle(
-                              fontFamily: "Lato",
-                              fontSize:10,
-                              color: postDesc,
-                            ),),
-                          )
-                        ],
+                      GestureDetector(
+                        onTap:()=>{ rxn=='hated' ? {react("noreact"), hatedCounter-- }: {react("hated"), hatedCounter++}},
+                        child: Column(
+                          children: <Widget>[
+                            SvgPicture.asset("images/hated.svg",
+                              color: rxn=="hated" ? colorPrimaryBlue : postIcons,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Text(hatedCounter.toString(),style: TextStyle(
+                                fontFamily: "Lato",
+                                fontSize:10,
+                                color: postDesc,
+                              ),),
+                            )
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
                 SizedBox(width: 20,),
                 //Container(),
+
+
                 Column(
                   children: <Widget>[
                     SvgPicture.asset("images/share.svg",color: postIcons,),

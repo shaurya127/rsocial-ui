@@ -16,6 +16,7 @@ class User {
       this.dob,
       this.mobile,
       this.connection,
+        this.reactionType,
       this.pendingConnection});
 
   final String fname;
@@ -31,6 +32,7 @@ class User {
   List<User> connection;
   List<User> pendingConnection;
   String photoUrl;
+  String reactionType;
   //List<String> list= new List();
 
   factory User.fromJson(final json) {
@@ -66,6 +68,7 @@ class User {
       bio: json['Bio'],
       gender: json['gender'],
       dob: json['dob'],
+      reactionType: json["reaction_type"],
       connection: json["Connection"] == null
           ? []
           : frnds,

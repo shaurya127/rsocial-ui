@@ -1,10 +1,15 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:rsocial2/Screens/search_page.dart';
 
 import '../constants.dart';
 
 class Reaction_Info extends StatefulWidget {
+  List<Request_Tile> love;
+  List<Request_Tile> like;
+
+  Reaction_Info({this.like,this.love});
   @override
   _Reaction_InfoState createState() => _Reaction_InfoState();
 }
@@ -37,7 +42,7 @@ class _Reaction_InfoState extends State<Reaction_Info> with TickerProviderStateM
         ),),
         iconTheme: IconThemeData(color: Colors.white),
         bottom:PreferredSize(
-          preferredSize: Size.fromHeight(50),
+          preferredSize: Size.fromHeight(57),
           child: Align(
             alignment: Alignment.centerLeft,
             child: Container(
@@ -96,20 +101,36 @@ class _Reaction_InfoState extends State<Reaction_Info> with TickerProviderStateM
       ),
       body: TabBarView(
         children: <Widget>[
-          Container(
+          widget.love.isNotEmpty ? Container(
             color: Colors.white,
             child: ListView(
-              children: <Widget>[
-                Reaction_Tile(),
-                Reaction_Tile(),
-                Reaction_Tile(),
-                Reaction_Tile(),
-              ],
+              children: widget.love
+            ),
+          ) : Center(
+            child: Text(
+              "No love yet!",
+              style: TextStyle(
+                fontFamily: "Lato",
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
             ),
           ),
-          Container(
+          widget.like.isNotEmpty ? Container(
             color: Colors.white,
-          ),
+            child: ListView(
+              children: widget.like,
+            ),
+          ) : Center(
+            child: Text(
+              "No likes yet!",
+              style: TextStyle(
+                fontFamily: "Lato",
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          )
         ],
         controller: _tabController,
       ),
@@ -117,56 +138,4 @@ class _Reaction_InfoState extends State<Reaction_Info> with TickerProviderStateM
   }
 }
 
-class Reaction_Tile extends StatefulWidget {
-  @override
-  _Reaction_TileState createState() => _Reaction_TileState();
-}
-
-class _Reaction_TileState extends State<Reaction_Tile> {
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: GestureDetector(
-        onTap: (){},
-        child: ListTile(
-          //contentPadding: EdgeInsets.all(4),
-            dense: true,
-            //contentPadding: EdgeInsets.all(-10),
-            trailing: Icon(Icons.check,color: Colors.green,),
-            leading: CircleAvatar(
-              backgroundImage: AssetImage("images/cat.jpg"),
-            ),
-            title: Row(
-              children: <Widget>[
-                Text("Taylor Swift",
-                  style:TextStyle(
-                    fontFamily: "Lato",
-                    //fontWeight: FontWeight.bold,
-                    fontSize:16,color: nameCol,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Container(
-                    width: 1,
-                    height: 15,
-                    color: Colors.grey,
-                  ),
-                ),
-                Text("345",
-                  style:TextStyle(
-                    fontFamily: "Lato",
-                    //fontWeight: FontWeight.bold,
-                    fontSize:12,color: postDesc,
-                  ),
-                ),
-              ],
-            )
-        ),
-      ),
-    );
-  }
-}
 
