@@ -10,10 +10,13 @@ import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/config.dart';
 
 import '../post.dart';
+import '../user.dart';
 import 'login_page.dart';
 import 'package:http/http.dart' as http;
 
 class Landing_Page extends StatefulWidget {
+  User curUser;
+  Landing_Page({this.curUser});
   @override
   _Landing_PageState createState() => _Landing_PageState();
 }
@@ -55,18 +58,17 @@ class _Landing_PageState extends State<Landing_Page> {
       var msg = body1['message'];
       //print(msg.length);
       //print("msg id ${msg}");
-      for (int i=0;i<msg.length;i++) {
+      for (int i = 0; i < msg.length; i++) {
         //print("msg $i is ${msg[i]}");
         Post post;
-        if(msg[i]['StoryType']=="Investment")
+        if (msg[i]['StoryType'] == "Investment")
           post = Post.fromJsonI(msg[i]);
         else
           post = Post.fromJsonW(msg[i]);
-        if(post!=null)
-          {
-            print(post.investedWithUser);
-            posts.add(post);
-          }
+        if (post != null) {
+          print(post.investedWithUser);
+          posts.add(post);
+        }
       }
       print(posts.length);
       setState(() {
@@ -112,7 +114,8 @@ class _Landing_PageState extends State<Landing_Page> {
       List<Post_Tile> postTiles = [];
       //print(posts.length);
       for (int i = 0; i < posts.length; i++) {
-        Post_Tile tile = Post_Tile(userPost: posts[i], photoUrl: photourl);
+        Post_Tile tile = Post_Tile(
+            curUser: widget.curUser, userPost: posts[i], photoUrl: photourl);
         postTiles.add(tile);
       }
       setState(() {

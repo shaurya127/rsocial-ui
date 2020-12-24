@@ -319,7 +319,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
   Widget build(BuildContext context) {
     // Screens to be present, will be switched with the help of bottom nav bar
     final List _screens = [
-      Landing_Page(),
+      Landing_Page(
+        curUser: curUser,
+      ),
       Search_Page(curUser: curUser, photourl: photourl),
       Wage(
         currentUser: curUser,

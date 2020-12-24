@@ -21,7 +21,7 @@ class Post {
   User user;
   String storyType;
   String storyText;
-  String investedWith;
+  List<String> investedWith;
   List<User> investedWithUser;
   String investedAmount;
   List<String> fileUpload;
@@ -37,10 +37,8 @@ class Post {
     //print("person is ${investedWithUser.lollarAmount}");
     //print(User.fromJson(uid));
     List<User> investedWith = [];
-    if(json['InvestedWith'].isNotEmpty)
-    {
-      for(int i=0;i<json['InvestedWith'].length;i++)
-      {
+    if (json['InvestedWith'].isNotEmpty) {
+      for (int i = 0; i < json['InvestedWith'].length; i++) {
         //print("reacted by $i is ${json["ReactedBy"][i]}");
         User user = User.fromJson(json['InvestedWith'][i]);
         investedWith.add(user);
@@ -48,10 +46,8 @@ class Post {
     }
 
     List<User> rxn = [];
-    if(json["ReactedBy"].isNotEmpty)
-    {
-      for(int i=0;i<json["ReactedBy"].length;i++)
-      {
+    if (json["ReactedBy"].isNotEmpty) {
+      for (int i = 0; i < json["ReactedBy"].length; i++) {
         print("reacted by $i is ${json["ReactedBy"][i]}");
         User user = User.fromJson(json["ReactedBy"][i]);
         rxn.add(user);
@@ -81,10 +77,8 @@ class Post {
     //print("person is ${investedWithUser.lollarAmount}");
     //print(User.fromJson(uid));
     List<User> rxn = [];
-    if(json["ReactedBy"].isNotEmpty)
-    {
-      for(int i=0;i<json["ReactedBy"].length;i++)
-      {
+    if (json["ReactedBy"].isNotEmpty) {
+      for (int i = 0; i < json["ReactedBy"].length; i++) {
         print("reacted by $i is ${json["ReactedBy"][i]}");
         User user = User.fromJson(json["ReactedBy"][i]);
         rxn.add(user);
@@ -107,17 +101,17 @@ class Post {
   Map<String, dynamic> toJsonInvest() => {
         "id": id,
         "StoryText": storyText,
-        "InvestedWith": investedWith == null ? "" : this.investedWith,
+        "InvestedWith": investedWith == null ? [] : this.investedWith,
         "InvestedAmount": investedAmount,
         "FileUpload": fileUpload != null
             ? List<String>.from(fileUpload.map((x) => x))
             : [],
       };
   Map<String, dynamic> toJsonWage() => {
-    "id": id,
-    "StoryText": storyText,
-    "FileUpload": fileUpload != null
-        ? List<String>.from(fileUpload.map((x) => x))
-        : [],
-  };
+        "id": id,
+        "StoryText": storyText,
+        "FileUpload": fileUpload != null
+            ? List<String>.from(fileUpload.map((x) => x))
+            : [],
+      };
 }

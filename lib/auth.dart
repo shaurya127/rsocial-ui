@@ -54,7 +54,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return isAuthenticated == null
-        ? Scaffold(body: CircularProgressIndicator()
+        ? Scaffold(body: Center(child: CircularProgressIndicator())
             // ColorizeAnimatedTextKit(
             //     onTap: () {
             //       print("Tap Event");
