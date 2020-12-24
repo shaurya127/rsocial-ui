@@ -31,7 +31,16 @@ class _AuthScreenState extends State<AuthScreen> {
   bool isAuthenticated = null;
 
   void isUserAuthenticated() async {
-    isAuthenticated = await _auth.currentUser() == null ? false : true;
+    FirebaseUser user = await _auth.currentUser();
+    print("Hello");
+    if (user == null) {
+      isAuthenticated = false;
+    } else {
+      DocumentSnapshot doc = await users.document(user.uid).get();
+      isAuthenticated = doc.exists ? true : false;
+    }
+
+    //isAuthenticated = await _auth.currentUser() == null ? false : true;
     setState(() {});
   }
 
@@ -45,25 +54,25 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return isAuthenticated == null
-        ? Scaffold(
-            body: ColorizeAnimatedTextKit(
-                onTap: () {
-                  print("Tap Event");
-                },
-                text: [
-                  "Loading",
-                ],
-                textStyle: TextStyle(fontSize: 50.0, fontFamily: "Horizon"),
-                colors: [
-                  Colors.purple,
-                  Colors.blue,
-                  Colors.yellow,
-                  Colors.red,
-                ],
-                textAlign: TextAlign.start,
-                alignment: AlignmentDirectional.topStart // or Alignment.topLeft
-                ),
-          )
+        ? Scaffold(body: CircularProgressIndicator()
+            // ColorizeAnimatedTextKit(
+            //     onTap: () {
+            //       print("Tap Event");
+            //     },
+            //     text: [
+            //       "Loading",
+            //     ],
+            //     textStyle: TextStyle(fontSize: 50.0, fontFamily: "Horizon"),
+            //     colors: [
+            //       Colors.purple,
+            //       Colors.blue,
+            //       Colors.yellow,
+            //       Colors.red,
+            //     ],
+            //     textAlign: TextAlign.start,
+            //     alignment: AlignmentDirectional.topStart // or Alignment.topLeft
+            //     ),
+            )
         : (isAuthenticated
             ? BottomNavBar(
                 currentUser: currentUser,
