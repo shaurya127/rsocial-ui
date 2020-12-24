@@ -14,6 +14,7 @@ class Post {
     this.investedWith,
     this.investedAmount,
     this.fileUpload,
+    this.reactedBy,
   });
 
   String id;
@@ -21,9 +22,10 @@ class Post {
   String storyType;
   String storyText;
   String investedWith;
-  User investedWithUser;
+  List<User> investedWithUser;
   String investedAmount;
   List<String> fileUpload;
+  List<User> reactedBy;
 
   factory Post.fromJsonI(final json) {
     //print("userid is: ${json["UserId"]}");
@@ -34,14 +36,36 @@ class Post {
     //print("haha");
     //print("person is ${investedWithUser.lollarAmount}");
     //print(User.fromJson(uid));
+    List<User> investedWith = [];
+    if(json['InvestedWith'].isNotEmpty)
+    {
+      for(int i=0;i<json['InvestedWith'].length;i++)
+      {
+        //print("reacted by $i is ${json["ReactedBy"][i]}");
+        User user = User.fromJson(json['InvestedWith'][i]);
+        investedWith.add(user);
+      }
+    }
+
+    List<User> rxn = [];
+    if(json["ReactedBy"].isNotEmpty)
+    {
+      for(int i=0;i<json["ReactedBy"].length;i++)
+      {
+        print("reacted by $i is ${json["ReactedBy"][i]}");
+        User user = User.fromJson(json["ReactedBy"][i]);
+        rxn.add(user);
+      }
+    }
 
     return Post(
         storyType: json["StoryType"],
         id: json["id"],
         user: User.fromJson(uid),
         storyText: json["StoryText"],
-        investedWithUser: User.fromJson(frnd),
+        investedWithUser: investedWith,
         investedAmount: json["InvestedAmount"],
+        reactedBy: rxn,
         fileUpload: json["FileUpload"] == null
             ? []
             : List<String>.from(json["FileUpload"].map((x) => x)));
@@ -56,12 +80,23 @@ class Post {
     //print("haha");
     //print("person is ${investedWithUser.lollarAmount}");
     //print(User.fromJson(uid));
+    List<User> rxn = [];
+    if(json["ReactedBy"].isNotEmpty)
+    {
+      for(int i=0;i<json["ReactedBy"].length;i++)
+      {
+        print("reacted by $i is ${json["ReactedBy"][i]}");
+        User user = User.fromJson(json["ReactedBy"][i]);
+        rxn.add(user);
+      }
+    }
 
     return Post(
         storyType: json["StoryType"],
         id: json["id"],
         user: User.fromJson(uid),
         storyText: json["StoryText"],
+        reactedBy: rxn,
         //investedWithUser: User.fromJson(json['InvestedWith']),
         //investedAmount: json["InvestedAmount"],
         fileUpload: json["FileUpload"] == null

@@ -55,17 +55,18 @@ class _Landing_PageState extends State<Landing_Page> {
       var msg = body1['message'];
       //print(msg.length);
       //print("msg id ${msg}");
-      for (int i = 0; i < msg.length; i++) {
-        //print("msg $i is ${msg[i]["InvestedWith"]}");
+      for (int i=0;i<msg.length;i++) {
+        //print("msg $i is ${msg[i]}");
         Post post;
-        if (msg[i]['StoryType'] == 'W')
-          post = Post.fromJsonW(msg[i]);
-        else
+        if(msg[i]['StoryType']=="Investment")
           post = Post.fromJsonI(msg[i]);
-        if (post != null) {
-          print(post.investedWithUser);
-          posts.add(post);
-        }
+        else
+          post = Post.fromJsonW(msg[i]);
+        if(post!=null)
+          {
+            print(post.investedWithUser);
+            posts.add(post);
+          }
       }
       print(posts.length);
       setState(() {

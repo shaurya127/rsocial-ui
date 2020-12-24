@@ -16,6 +16,7 @@ class User {
       this.dob,
       this.mobile,
       this.connection,
+        this.reactionType,
       this.pendingConnection,
       this.sentPendingConnection,
       this.receivedPendingConnection});
@@ -35,6 +36,7 @@ class User {
   List<User> sentPendingConnection;
   List<User> receivedPendingConnection;
   String photoUrl;
+  String reactionType;
   //List<String> list= new List();
 
   factory User.fromJson(final json) {
@@ -80,13 +82,15 @@ class User {
         socialStanding: json['SocialStanding'],
         bio: json['Bio'],
         gender: json['gender'],
+        reactionType: json["reaction_type"],
         dob: json['dob'],
         connection: json["Connection"] == null ? [] : frnds,
         pendingConnection: json["PendingConnection"] == null ? [] : pending,
         sentPendingConnection:
             json["sentPendingConnection"] == null ? [] : outgoing,
         receivedPendingConnection:
-            json["ReceivedPendingConnection"] == null ? [] : incoming);
+            json["ReceivedPendingConnection"] == null ? [] : incoming
+    );
   }
 
   Map<String, dynamic> toJson() => {
