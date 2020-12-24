@@ -35,7 +35,7 @@ class _CreateAccountState extends State<CreateAccount> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Text(
-                "Time to value relationships, Access your social bonds.",
+                "Time to value relationships, Assess your social bonds.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: "Lato",
