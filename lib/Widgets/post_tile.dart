@@ -13,6 +13,7 @@ import 'package:rsocial2/Screens/login_page.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/Screens/reaction_info.dart';
 import 'package:rsocial2/Screens/search_page.dart';
+import 'package:rsocial2/Widgets/request_tile.dart';
 import '../constants.dart';
 import '../post.dart';
 import '../read_more.dart';

@@ -17,7 +17,9 @@ class User {
       this.mobile,
       this.connection,
         this.reactionType,
-      this.pendingConnection});
+      this.pendingConnection,
+      this.sentPendingConnection,
+      this.receivedPendingConnection});
 
   final String fname;
   final String lname;
@@ -31,50 +33,63 @@ class User {
   String mobile;
   List<User> connection;
   List<User> pendingConnection;
+  List<User> sentPendingConnection;
+  List<User> receivedPendingConnection;
   String photoUrl;
   String reactionType;
   //List<String> list= new List();
 
   factory User.fromJson(final json) {
-
-    List<User> pending = [];
-    if(json["PendingConnection"]!=null)
-      {
-        for(int i=0;i<json["PendingConnection"].length;i++)
-          {
-            User user = User.fromJson(json["PendingConnection"][i]);
-            pending.add(user);
-          }
+    print(json["SentPendingConnection"]);
+    List<User> outgoing = [];
+    if (json["SentPendingConnection"] != null) {
+      for (int i = 0; i < json["SentPendingConnection"].length; i++) {
+        User user = User.fromJson(json["SentPendingConnection"][i]);
+        outgoing.add(user);
       }
+    }
+    List<User> pending = [];
+    if (json["PendingConnection"] != null) {
+      for (int i = 0; i < json["PendingConnection"].length; i++) {
+        User user = User.fromJson(json["PendingConnection"][i]);
+        pending.add(user);
+      }
+    }
 
     List<User> frnds = [];
-    if(json["Connection"]!=null)
-    {
-      for(int i=0;i<json["Connection"].length;i++)
-      {
+    if (json["Connection"] != null) {
+      for (int i = 0; i < json["Connection"].length; i++) {
         User user = User.fromJson(json["Connection"][i]);
         frnds.add(user);
       }
     }
 
+    List<User> incoming = [];
+    if (json["ReceivedPendingConnection"] != null) {
+      for (int i = 0; i < json["ReceivedPendingConnection"].length; i++) {
+        User user = User.fromJson(json["ReceivedPendingConnection"][i]);
+        incoming.add(user);
+      }
+    }
+
     return User(
-      id: json['id'],
-      photoUrl: json['ProfilePic'],
-      fname: json['FName'],
-      lname: json['LName'],
-      email: json['Email'],
-      lollarAmount: json['LollarAmount'],
-      socialStanding: json['SocialStanding'],
-      bio: json['Bio'],
-      gender: json['gender'],
-      dob: json['dob'],
-      reactionType: json["reaction_type"],
-      connection: json["Connection"] == null
-          ? []
-          : frnds,
-      pendingConnection: json["PendingConnection"] == null
-          ? []
-          : pending,
+        id: json['id'],
+        photoUrl: json['ProfilePic'],
+        fname: json['FName'],
+        lname: json['LName'],
+        email: json['Email'],
+        lollarAmount: json['LollarAmount'],
+        socialStanding: json['SocialStanding'],
+        bio: json['Bio'],
+        gender: json['gender'],
+        reactionType: json["reaction_type"],
+        dob: json['dob'],
+        connection: json["Connection"] == null ? [] : frnds,
+        pendingConnection: json["PendingConnection"] == null ? [] : pending,
+        sentPendingConnection:
+            json["sentPendingConnection"] == null ? [] : outgoing,
+        receivedPendingConnection:
+            json["ReceivedPendingConnection"] == null ? [] : incoming
     );
   }
 
