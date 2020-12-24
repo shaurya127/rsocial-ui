@@ -58,6 +58,7 @@ class _InvestmentState extends State<Investment> {
   List<File> fileList = new List();
   List<String> selectedImgList = new List();
   List<User> selectedList = new List();
+  List<String> idSelectedList = new List();
   String investedWith = "3406418ba95248e7b0d65a467e61b68d";
   List<User> list = new List();
   List<User> connections = [];
@@ -295,10 +296,15 @@ class _InvestmentState extends State<Investment> {
       DocumentSnapshot doc = await users.document(user.uid).get();
       var uid = doc['id'];
       print(uid);
+
+      for (int i = 0; i < selectedList.length; i++) {
+        idSelectedList.add(selectedList[i].id);
+      }
+
       Post post = Post(
           id: uid,
           storyText: storyText,
-          investedWith: selectedList[0].id,
+          investedWith: idSelectedList,
           investedAmount: investmentAmount,
           fileUpload: list);
       var token = await user.getIdToken();
