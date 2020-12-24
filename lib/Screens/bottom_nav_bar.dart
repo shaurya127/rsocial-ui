@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/rendering.dart';
+
 import '../config.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
@@ -155,7 +157,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
     }
 
     var id = doc['id'];
-    final url = userEndPoint + "{$id}";
+    final url = userEndPoint + "$id";
+    print(url);
     //var user = await FirebaseAuth.instance.currentUser();
     //print("this user id is ${user.uid}");
     token = await user.getIdToken();
@@ -191,7 +194,33 @@ class _BottomNavBarState extends State<BottomNavBar> {
       return curUser;
     } else {
       print(response.statusCode);
-      throw Exception();
+      setState(() {
+        isLoading = false;
+        isFailed = true;
+      });
+      var alertBox = AlertDialogBox(
+        title: "Error status: ${response.statusCode}",
+        content: "Server Error",
+        actions: <Widget>[
+          FlatButton(
+            child: Text(
+              "Back",
+              style: TextStyle(
+                color: colorButton,
+                fontFamily: "Lato",
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(
+                context,
+              );
+            },
+          ),
+        ],
+      );
+
+      showDialog(context: (context), builder: (context) => alertBox);
     }
   }
 
@@ -234,7 +263,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                     actions: <Widget>[
                       FlatButton(
                         child: Text(
-                          "Back",
+                          "Try again",
                           style: TextStyle(
                             color: colorButton,
                             fontFamily: "Lato",
@@ -242,9 +271,25 @@ class _BottomNavBarState extends State<BottomNavBar> {
                           ),
                         ),
                         onPressed: () {
-                          Navigator.pop(
-                            context,
-                          );
+                          Navigator.pop(context);
+                          setState(() {
+                            isLoading = true;
+                            isFailed = false;
+                          });
+                          return getUser();
+                        },
+                      ),
+                      FlatButton(
+                        child: Text(
+                          "Log out",
+                          style: TextStyle(
+                            color: colorButton,
+                            fontFamily: "Lato",
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onPressed: () {
+                          logout(context);
                         },
                       ),
                     ],
@@ -288,41 +333,44 @@ class _BottomNavBarState extends State<BottomNavBar> {
     return isFailed
         ? Scaffold(
             backgroundColor: Colors.white,
-            body: Column(
-              children: <Widget>[
-                Text("Unable to find user"),
-                FlatButton(
-                  child: Text(
-                    "Try again",
-                    style: TextStyle(
-                      color: colorButton,
-                      fontFamily: "Lato",
-                      fontWeight: FontWeight.bold,
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text("Unable to find user"),
+                  FlatButton(
+                    child: Text(
+                      "Try again",
+                      style: TextStyle(
+                        color: colorButton,
+                        fontFamily: "Lato",
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
+                    onPressed: () {
+                      setState(() {
+                        isLoading = true;
+                        isFailed = false;
+                      });
+                      return getUser();
+                    },
                   ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    setState(() {
-                      isLoading = true;
-                      isFailed = false;
-                    });
-                    return getUser();
-                  },
-                ),
-                FlatButton(
-                  child: Text(
-                    "Log out",
-                    style: TextStyle(
-                      color: colorButton,
-                      fontFamily: "Lato",
-                      fontWeight: FontWeight.bold,
+                  FlatButton(
+                    child: Text(
+                      "Log out",
+                      style: TextStyle(
+                        color: colorButton,
+                        fontFamily: "Lato",
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
+                    onPressed: () {
+                      logout(context);
+                    },
                   ),
-                  onPressed: () {
-                    logout(context);
-                  },
-                ),
-              ],
+                ],
+              ),
             ),
           )
         : isLoading || curUser == null

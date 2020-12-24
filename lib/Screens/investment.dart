@@ -60,7 +60,7 @@ class _InvestmentState extends State<Investment> {
   List<User> selectedList = new List();
   String investedWith = "3406418ba95248e7b0d65a467e61b68d";
   List<User> list = new List();
-
+  List<User> connections = [];
 //   Future<void> initUserAgentState() async {
 //     String userAgent, webViewUserAgent;
 //     // Platform messages may fail, so we use a try/catch PlatformException.
@@ -124,21 +124,21 @@ class _InvestmentState extends State<Investment> {
 
   void getFriends() async {
     var user = await FirebaseAuth.instance.currentUser();
-
-    // Getting doc from firebase
+    //
+    // // Getting doc from firebase
     DocumentSnapshot doc = await users.document(user.uid).get();
-    // Getting id of current user from firebase
+    // // Getting id of current user from firebase
     var id = doc['id'];
-
-    final url = userEndPoint + "$id/all";
-
+    //
+    final url = userEndPoint + "$id";
+    //
     var token = await user.getIdToken();
-
+    //
     final response = await http.get(url, headers: {
       "Authorization": "Bearer $token",
       "Content-Type": "application/json",
     });
-
+    User curUser;
     print(response.statusCode);
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body);
@@ -147,13 +147,14 @@ class _InvestmentState extends State<Investment> {
       var msg = body1['message'];
       print("These are my connections");
       print(msg);
-
-      for (int i = 0; i < msg.length; i++) {
-        // print(msg[i]['PendingConnection']);
-        User user = User.fromJson(msg[i]);
-        this.list.add(user);
-      }
+      curUser = User.fromJson(msg);
     }
+    this.list = curUser.connection;
+    // if (connections.isNotEmpty) {
+    //   for (int i = 0; i < connections.length; i++) {
+    //     User user = User.fromJson(connections[i]);
+    //     this.list.add(user);
+    //   }
   }
 
   @override
