@@ -288,8 +288,7 @@ class _InvestmentState extends State<Investment> {
     );
   }
 
-  createPost(String storyText, String investedWith, String investmentAmount,
-      List<String> list) async {
+  createPost(String investmentAmount, List<String> list) async {
     if (storyText != null || fileList.isNotEmpty) {
       var url = storyEndPoint + "createinvestment";
       var user = await FirebaseAuth.instance.currentUser();
@@ -306,6 +305,7 @@ class _InvestmentState extends State<Investment> {
           storyText: storyText,
           investedWith: idSelectedList,
           investedAmount: investmentAmount,
+          duration: isOne ? 1 : 7,
           fileUpload: list);
       var token = await user.getIdToken();
       print(jsonEncode(post.toJsonInvest()));
@@ -330,6 +330,8 @@ class _InvestmentState extends State<Investment> {
           fileList.clear();
           selectedImgList.clear();
           idSelectedList.clear();
+
+          selectedList.clear();
         });
         Fluttertoast.showToast(
             msg: "Uploaded investment story!",
@@ -777,8 +779,7 @@ class _InvestmentState extends State<Investment> {
             textColor: Colors.white,
             text: "Start Earning",
             onPressed: () async {
-              await createPost(
-                  storyText, investedWith, amount.toString(), selectedImgList);
+              await createPost(amount.toString(), selectedImgList);
             },
           ),
         )

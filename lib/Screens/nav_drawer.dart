@@ -42,13 +42,16 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
             child: ListView(
               children: <Widget>[
                 Container(
-                  height: 50,
+                  height: 60,
                   width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                    image: AssetImage("images/logo2.png"),
-                    //fit: BoxFit
-                  )),
+                  child: SvgPicture.asset(
+                    "images/rsocial-text.svg",),
+                  // decoration: BoxDecoration(
+                  //     image: DecorationImage(
+                  //   image: AssetImage("images/logo2.png"),
+                  //   //fit: BoxFit
+                  // )
+                  // ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(4.0),

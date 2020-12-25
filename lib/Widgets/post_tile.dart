@@ -20,15 +20,7 @@ import '../read_more.dart';
 import '../user.dart';
 import 'package:http/http.dart' as http;
 
-Map<String, StructureLikeCount> m = new Map();
-Map<String, int> counter = new Map();
-
-class StructureLikeCount {
-  int count;
-  String reaction;
-
-  StructureLikeCount({this.count, this.reaction});
-}
+Map<String, Map<String, int>> m = new Map();
 
 class Reaction {
   Reaction({
@@ -66,38 +58,33 @@ class Post_Tile extends StatefulWidget {
 class _Post_TileState extends State<Post_Tile> {
   List<String> fileList = [];
   bool isLoading = true;
-  List<User> liked = [];
   List<User> loved = [];
-  List<User> whatever = [];
-  List<User> hated = [];
+  List<User> liked = [];
   List<Request_Tile> love = [];
   List<Request_Tile> likes = [];
-  String rxn;
-  int lovedCounter = 0;
-  int likedCounter = 0;
-  int whateverCounter = 0;
-  int hatedCounter = 0;
+  String rxn = "noreact";
+  Map<String, int> counter = {
+    'loved': 0,
+    'liked': 0,
+    'whatever': 0,
+    'hated': 0,
+    'noreact': 0
+  };
 
   getReactions() {
     print(rxn);
+    //bool inLoop=true;
     for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
       User user = widget.userPost.reactedBy[i];
-
-      if (user.reactionType == 'liked') {
-        liked.add(user);
-        likedCounter++;
-      } else if (user.reactionType == 'loved') {
+      String rt = user.reactionType;
+      if (rt == 'loved')
         loved.add(user);
-        lovedCounter++;
-      } else if (user.reactionType == 'whatever') {
-        whatever.add(user);
-        whateverCounter++;
-      } else if (user.reactionType == 'hated') {
-        hated.add(user);
-        hatedCounter++;
-      }
+      else if (rt == 'liked') liked.add(user);
+      counter[rt]++;
 
-      if (user.id == widget.curUser.id) this.rxn = user.reactionType;
+      if (user.id == widget.curUser.id) {
+        this.rxn = user.reactionType;
+      }
     }
   }
 
@@ -160,45 +147,42 @@ class _Post_TileState extends State<Post_Tile> {
       setState(() {
         String prevrxn = rxn;
         rxn = reactn;
+        print("this is my reaction $rxn");
         bool inLoop = true;
         for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
           User user = widget.userPost.reactedBy[i];
           print("rara");
           if (user.id == widget.curUser.id) {
+            //print("in user post");
+            if (m.containsKey(widget.userPost.id)) m.remove(widget.userPost.id);
             user.reactionType = reactn;
             inLoop = false;
-            print("hsdklsdfjklsdfjklsfdjklsfdjkldsfjkldfjkldfjklsdfjkl");
           }
         }
+
+        //when user reacts on the post for the first time
         if (inLoop == true) {
-          m[widget.userPost.id].reaction = "noreact";
-          print("hello hello");
-          print(widget.userPost.id);
-
-          if (m[widget.userPost.id] != null &&
-              rxn == m[widget.userPost.id].reaction) {
-            if (rxn == "loved")
-              lovedCounter--;
-            else if (rxn == 'liked')
-              likedCounter--;
-            else if (rxn == 'whatever')
-              whateverCounter--;
-            else if (rxn == 'hated') hatedCounter--;
-
-            rxn = "noreact";
-            m.remove(widget.userPost.id);
-          } else if (rxn == "loved")
-            m[widget.userPost.id] =
-                new StructureLikeCount(count: 1, reaction: rxn);
-          else if (rxn == "liked")
-            m[widget.userPost.id] =
-                new StructureLikeCount(count: 1, reaction: rxn);
-          else if (rxn == "whatever")
-            m[widget.userPost.id] =
-                new StructureLikeCount(count: 1, reaction: rxn);
-          else if (rxn == "hated")
-            m[widget.userPost.id] =
-                new StructureLikeCount(count: 1, reaction: rxn);
+          //print("charu22");
+          // widget.userPost.user.firstRxn=reactn;
+          if (rxn == "noreact") {
+            m[widget.userPost.id] = {reactn: counter[reactn]};
+            return;
+          }
+          if (prevrxn != "noreact" && prevrxn != rxn) counter[prevrxn]--;
+          // else
+          //   {
+          //     counter[prevrxn]--;
+          //     counter[rxn]++;
+          //   }
+          m[widget.userPost.id] = {reactn: counter[reactn]};
+          // if (rxn == "loved")
+          //   m[widget.userPost.id][0] = ++lovedCounter;
+          // else if (rxn == "liked")
+          //   m[widget.userPost.id][1] = ++likedCounter;
+          // else if (rxn == "whatever")
+          //   m[widget.userPost.id][2] = ++whateverCounter;
+          // else if (rxn == "hated")
+          //   m[widget.userPost.id][3] = ++hatedCounter;
 
           // m[widget.userPost.id][reactn] = reactn == "loved"
           //     ? ++lovedCounter
@@ -207,25 +191,24 @@ class _Post_TileState extends State<Post_Tile> {
           //         : (reactn == "whatever"
           //             ? ++whateverCounter
           //             : (reactn == "hated" ? ++hatedCounter : rxn)));
-          rxn = reactn;
-          print("hello");
-          print(rxn);
-        }
-        if (prevrxn != rxn && rxn != "noreact") {
-          if (prevrxn == "loved")
-            lovedCounter--;
-          else if (prevrxn == 'liked')
-            likedCounter--;
-          else if (prevrxn == 'whatever')
-            whateverCounter--;
-          else if (prevrxn == 'hated') hatedCounter--;
+          // rxn = reactn;
+          // print("hello");
+          // print(rxn);
+        } else {
+          // if a user toggles to another reaction we need to
+          // decrease the counter of the previous reaction type
+          // if(rxn=='noreact')
+          //   rxn="noreact";
+          if (prevrxn != rxn && rxn != "noreact") {
+            counter[prevrxn]--;
+          }
         }
       });
     }
   }
 
   buildReactionTile() {
-    for (int i = 0; i < loved.length; i++) {
+    for (int i = 0; i < counter['loved']; i++) {
       Request_Tile tile = Request_Tile(
         request: false,
         text: "",
@@ -236,7 +219,7 @@ class _Post_TileState extends State<Post_Tile> {
       love.add(tile);
     }
 
-    for (int i = 0; i < liked.length; i++) {
+    for (int i = 0; i < counter['liked']; i++) {
       Request_Tile tile = Request_Tile(
         request: false,
         text: "",
@@ -251,15 +234,21 @@ class _Post_TileState extends State<Post_Tile> {
   @override
   Widget build(BuildContext context) {
     if (m.containsKey(widget.userPost.id)) {
+      Map<String, int> map = m[widget.userPost.id];
+      for (var key in map.keys) rxn = key;
+      print("my reaction is now $rxn");
+      counter[rxn] = map[rxn];
       //Map<String, int> mx = m[widget.userPost.id];
       // for (var key in mx.keys) rxn = key;
-      if (m[widget.userPost.id].reaction == "loved")
-        lovedCounter++;
-      else if (m[widget.userPost.id].reaction == "liked")
-        likedCounter++;
-      else if (m[widget.userPost.id].reaction == "whatever")
-        whateverCounter++;
-      else if (m[widget.userPost.id].reaction == "hated") hatedCounter++;
+
+      // if (rxn == "loved")
+      //   lovedCounter = m[widget.userPost.id][0];
+      // else if (rxn == "liked")
+      //   likedCounter = m[widget.userPost.id][1];
+      // else if (rxn == "whatever")
+      //   whateverCounter = m[widget.userPost.id][2];
+      // else if (rxn == "hated") hatedCounter = m[widget.userPost.id][3];
+
     }
 
     return Padding(
@@ -324,15 +313,19 @@ class _Post_TileState extends State<Post_Tile> {
                               color: nameCol,
                             ),
                           ),
-                          subtitle: Text(
-                            widget.userPost.investedWithUser == null
-                                ? "Investing alone"
-                                : "Investing with ${widget.userPost.investedWithUser[0].fname} ${widget.userPost.investedWithUser[0].lname}",
-                            style: TextStyle(
-                              fontFamily: "Lato",
-                              fontSize: 12,
-                              color: subtitile,
-                            ),
+                          subtitle: Row(
+                            children: <Widget>[
+                              Text(
+                                widget.userPost.investedWithUser == []
+                                    ? "Investing alone"
+                                    : "Investing with ${widget.userPost.investedWithUser[0].fname} ${widget.userPost.investedWithUser[0].lname}",
+                                style: TextStyle(
+                                  fontFamily: "Lato",
+                                  fontSize: 12,
+                                  color: subtitile,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                 ),
@@ -424,35 +417,35 @@ class _Post_TileState extends State<Post_Tile> {
                       width: 14,
                     ),
 
-                    if (lovedCounter == 0 &&
-                        likedCounter == 0 &&
-                        whateverCounter == 0 &&
-                        hatedCounter == 0)
+                    if (counter['loved'] == 0 &&
+                        counter['liked'] == 0 &&
+                        counter['whatever'] == 0 &&
+                        counter['hated'] == 0)
                       SizedBox()
-                    else if (lovedCounter >= likedCounter &&
-                        lovedCounter >= whateverCounter &&
-                        lovedCounter >= hatedCounter)
+                    else if (counter['loved'] >= counter['liked'] &&
+                        counter['loved'] >= counter['whatever'] &&
+                        counter['loved'] >= counter['hated'])
                       SvgPicture.asset(
                         "images/loved.svg",
                         color: colorPrimaryBlue,
                       )
-                    else if (likedCounter > lovedCounter &&
-                        likedCounter >= whateverCounter &&
-                        likedCounter >= hatedCounter)
+                    else if (counter['liked'] > counter['loved'] &&
+                        counter['liked'] >= counter['whatever'] &&
+                        counter['liked'] >= counter['hated'])
                       SvgPicture.asset(
                         "images/liked.svg",
                         color: colorPrimaryBlue,
                       )
-                    else if (whateverCounter > lovedCounter &&
-                        whateverCounter > likedCounter &&
-                        whateverCounter >= hatedCounter)
+                    else if (counter['whatever'] > counter['loved'] &&
+                        counter['whatever'] > counter['liked'] &&
+                        counter['whatever'] >= counter['hated'])
                       SvgPicture.asset(
                         "images/whatever.svg",
                         color: colorPrimaryBlue,
                       )
-                    else if (hatedCounter > likedCounter &&
-                        hatedCounter > lovedCounter &&
-                        hatedCounter > whateverCounter)
+                    else if (counter['hated'] > counter['liked'] &&
+                        counter['hated'] > counter['loved'] &&
+                        counter['hated'] > counter['whatever'])
                       SvgPicture.asset(
                         "images/hated.svg",
                         color: colorPrimaryBlue,
@@ -483,7 +476,8 @@ class _Post_TileState extends State<Post_Tile> {
                     height: 0,
                   )
                 : Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    padding: const EdgeInsets.only(
+                        top: 12, bottom: 3, left: 3, right: 3),
                     child: Read_More(
                       "${widget.userPost.storyText}",
                       trimLines: 2,
@@ -492,7 +486,7 @@ class _Post_TileState extends State<Post_Tile> {
                       trimCollapsedText: "...Show More",
                       trimExpandedText: " Show Less",
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 16,
                         fontFamily: "Lato",
                         color: postDesc,
                       ),
@@ -512,7 +506,7 @@ class _Post_TileState extends State<Post_Tile> {
             Padding(
                 padding: widget.userPost.storyText == null
                     ? EdgeInsets.only(top: 0, bottom: 15)
-                    : EdgeInsets.symmetric(vertical: 15),
+                    : EdgeInsets.only(bottom: 15, top: 6),
                 child: Container(
                     height: widget.userPost.fileUpload.length != 0 ? 250 : 0,
                     decoration:
@@ -571,20 +565,25 @@ class _Post_TileState extends State<Post_Tile> {
                       GestureDetector(
                         onTap: () => {
                           rxn == 'loved'
-                              ? {react("noreact"), lovedCounter--}
-                              : {react("loved"), lovedCounter++}
+                              ? {react("noreact"), counter['loved']--}
+                              : {react("loved"), counter['loved']++}
                         },
                         child: Column(
                           children: <Widget>[
-                            SvgPicture.asset(
-                              "images/loved.svg",
-                              color:
-                                  rxn == "loved" ? colorPrimaryBlue : postIcons,
+                            Container(
+                              height: 23,
+                              width: 23,
+                              child: SvgPicture.asset(
+                                "images/loved.svg",
+                                color: rxn == "loved"
+                                    ? colorPrimaryBlue
+                                    : postIcons,
+                              ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(4.0),
                               child: Text(
-                                lovedCounter.toString(),
+                                counter['loved'].toString(),
                                 style: TextStyle(
                                   fontFamily: "Lato",
                                   fontSize: 10,
@@ -601,21 +600,26 @@ class _Post_TileState extends State<Post_Tile> {
                       GestureDetector(
                         onTap: () => {
                           rxn == 'liked'
-                              ? {react("noreact"), likedCounter--}
-                              : {react("liked"), likedCounter++}
+                              ? {react("noreact"), counter['liked']--}
+                              : {react("liked"), counter['liked']++}
                         },
                         child: Column(
                           children: <Widget>[
-                            SvgPicture.asset(
-                              "images/liked.svg",
-                              color:
-                                  rxn == "liked" ? colorPrimaryBlue : postIcons,
+                            Container(
+                              height: 23,
+                              width: 23,
+                              child: SvgPicture.asset(
+                                "images/liked.svg",
+                                color: rxn == "liked"
+                                    ? colorPrimaryBlue
+                                    : postIcons,
+                              ),
                             ),
                             //Icon(Icons.thumb_up,size: 30,color:postIcons),
                             Padding(
                               padding: const EdgeInsets.all(4.0),
                               child: Text(
-                                likedCounter.toString(),
+                                counter['liked'].toString(),
                                 style: TextStyle(
                                   fontFamily: "Lato",
                                   fontSize: 10,
@@ -630,21 +634,25 @@ class _Post_TileState extends State<Post_Tile> {
                       GestureDetector(
                         onTap: () => {
                           rxn == 'whatever'
-                              ? {react("noreact"), whateverCounter--}
-                              : {react("whatever"), whateverCounter++}
+                              ? {react("noreact"), counter['whatever']--}
+                              : {react("whatever"), counter['whatever']++}
                         },
                         child: Column(
                           children: <Widget>[
-                            SvgPicture.asset(
-                              "images/whatever.svg",
-                              color: rxn == "whatever"
-                                  ? colorPrimaryBlue
-                                  : postIcons,
+                            Container(
+                              height: 23,
+                              width: 23,
+                              child: SvgPicture.asset(
+                                "images/whatever.svg",
+                                color: rxn == "whatever"
+                                    ? colorPrimaryBlue
+                                    : postIcons,
+                              ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(4.0),
                               child: Text(
-                                whateverCounter.toString(),
+                                counter['whatever'].toString(),
                                 style: TextStyle(
                                   fontFamily: "Lato",
                                   fontSize: 10,
@@ -661,20 +669,25 @@ class _Post_TileState extends State<Post_Tile> {
                       GestureDetector(
                         onTap: () => {
                           rxn == 'hated'
-                              ? {react("noreact"), hatedCounter--}
-                              : {react("hated"), hatedCounter++}
+                              ? {react("noreact"), counter['hated']--}
+                              : {react("hated"), counter['hated']++}
                         },
                         child: Column(
                           children: <Widget>[
-                            SvgPicture.asset(
-                              "images/hated.svg",
-                              color:
-                                  rxn == "hated" ? colorPrimaryBlue : postIcons,
+                            Container(
+                              height: 23,
+                              width: 23,
+                              child: SvgPicture.asset(
+                                "images/hated.svg",
+                                color: rxn == "hated"
+                                    ? colorPrimaryBlue
+                                    : postIcons,
+                              ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(4.0),
                               child: Text(
-                                hatedCounter.toString(),
+                                counter['hated'].toString(),
                                 style: TextStyle(
                                   fontFamily: "Lato",
                                   fontSize: 10,
@@ -695,9 +708,13 @@ class _Post_TileState extends State<Post_Tile> {
 
                 Column(
                   children: <Widget>[
-                    SvgPicture.asset(
-                      "images/share.svg",
-                      color: postIcons,
+                    Container(
+                      height: 23,
+                      width: 23,
+                      child: SvgPicture.asset(
+                        "images/share.svg",
+                        color: postIcons,
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(4.0),
