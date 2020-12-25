@@ -20,8 +20,15 @@ import '../read_more.dart';
 import '../user.dart';
 import 'package:http/http.dart' as http;
 
-Map<String, List<int>> m = new Map();
+Map<String, StructureLikeCount> m = new Map();
 Map<String, int> counter = new Map();
+
+class StructureLikeCount {
+  int count;
+  String reaction;
+
+  StructureLikeCount({this.count, this.reaction});
+}
 
 class Reaction {
   Reaction({
@@ -164,16 +171,34 @@ class _Post_TileState extends State<Post_Tile> {
           }
         }
         if (inLoop == true) {
+          m[widget.userPost.id].reaction = "noreact";
           print("hello hello");
           print(widget.userPost.id);
 
-          if (rxn == "loved")
-            m[widget.userPost.id][0] = ++lovedCounter;
+          if (m[widget.userPost.id] != null &&
+              rxn == m[widget.userPost.id].reaction) {
+            if (rxn == "loved")
+              lovedCounter--;
+            else if (rxn == 'liked')
+              likedCounter--;
+            else if (rxn == 'whatever')
+              whateverCounter--;
+            else if (rxn == 'hated') hatedCounter--;
+
+            rxn = "noreact";
+            m.remove(widget.userPost.id);
+          } else if (rxn == "loved")
+            m[widget.userPost.id] =
+                new StructureLikeCount(count: 1, reaction: rxn);
           else if (rxn == "liked")
-            m[widget.userPost.id][1] = ++likedCounter;
+            m[widget.userPost.id] =
+                new StructureLikeCount(count: 1, reaction: rxn);
           else if (rxn == "whatever")
-            m[widget.userPost.id][2] = ++whateverCounter;
-          else if (rxn == "hated") m[widget.userPost.id][3] = ++hatedCounter;
+            m[widget.userPost.id] =
+                new StructureLikeCount(count: 1, reaction: rxn);
+          else if (rxn == "hated")
+            m[widget.userPost.id] =
+                new StructureLikeCount(count: 1, reaction: rxn);
 
           // m[widget.userPost.id][reactn] = reactn == "loved"
           //     ? ++lovedCounter
@@ -228,13 +253,13 @@ class _Post_TileState extends State<Post_Tile> {
     if (m.containsKey(widget.userPost.id)) {
       //Map<String, int> mx = m[widget.userPost.id];
       // for (var key in mx.keys) rxn = key;
-      if (rxn == "loved")
-        lovedCounter = m[widget.userPost.id][0];
-      else if (rxn == "liked")
-        likedCounter = m[widget.userPost.id][1];
-      else if (rxn == "whatever")
-        whateverCounter = m[widget.userPost.id][2];
-      else if (rxn == "hated") hatedCounter = m[widget.userPost.id][3];
+      if (m[widget.userPost.id].reaction == "loved")
+        lovedCounter++;
+      else if (m[widget.userPost.id].reaction == "liked")
+        likedCounter++;
+      else if (m[widget.userPost.id].reaction == "whatever")
+        whateverCounter++;
+      else if (m[widget.userPost.id].reaction == "hated") hatedCounter++;
     }
 
     return Padding(

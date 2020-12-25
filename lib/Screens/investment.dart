@@ -329,6 +329,7 @@ class _InvestmentState extends State<Investment> {
           amount = 1000;
           fileList.clear();
           selectedImgList.clear();
+          idSelectedList.clear();
         });
         Fluttertoast.showToast(
             msg: "Uploaded investment story!",
