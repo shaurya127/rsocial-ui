@@ -15,6 +15,7 @@ class Post {
     this.investedAmount,
     this.fileUpload,
     this.reactedBy,
+    this.duration
   });
 
   String id;
@@ -26,6 +27,7 @@ class Post {
   String investedAmount;
   List<String> fileUpload;
   List<User> reactedBy;
+  int duration;
 
   factory Post.fromJsonI(final json) {
     //print("userid is: ${json["UserId"]}");
@@ -103,6 +105,7 @@ class Post {
         "StoryText": storyText,
         "InvestedWith": investedWith == null ? [] : this.investedWith,
         "InvestedAmount": investedAmount,
+        "Duration" : duration.toString(),
         "FileUpload": fileUpload != null
             ? List<String>.from(fileUpload.map((x) => x))
             : [],

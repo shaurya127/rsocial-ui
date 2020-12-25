@@ -358,6 +358,7 @@ class _Search_PageState extends State<Search_Page>
         Request_Tile tile = Request_Tile(
           user: requestList[i],
           request: true,
+          accepted: false,
           photourl: requestList[i].photoUrl,
           text: "Accept",
           curUser: widget.curUser,
