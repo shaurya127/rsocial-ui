@@ -641,17 +641,19 @@ class _InvestPostTileState extends State<InvestPostTile> {
                     children: <Widget>[
                       GestureDetector(
                         onTap: () => {
-                          // widget.userPost.user.id == widget.curUser.id
-                          //     ?
-                          // Fluttertoast.showToast(
-                          //         msg: "You cannot react on your own post!",
-                          //         toastLength: Toast.LENGTH_SHORT,
-                          //         gravity: ToastGravity.BOTTOM,
-                          //         fontSize: 15)
-                          //   :
-                          (rxn == 'loved'
-                              ? {react("noreact"), counter['loved']--}
-                              : {react("loved"), counter['loved']++})
+                          widget.userPost.user.id != widget.curUser.id
+                              ?
+                              //     ?
+                              // Fluttertoast.showToast(
+                              //         msg: "You cannot react on your own post!",
+                              //         toastLength: Toast.LENGTH_SHORT,
+                              //         gravity: ToastGravity.BOTTOM,
+                              //         fontSize: 15)
+                              //   :
+                              (rxn == 'loved'
+                                  ? {react("noreact"), counter['loved']--}
+                                  : {react("loved"), counter['loved']++})
+                              : print("not allowed")
                         },
                         child: Column(
                           children: <Widget>[
@@ -684,16 +686,18 @@ class _InvestPostTileState extends State<InvestPostTile> {
                       ),
                       GestureDetector(
                         onTap: () => {
-                          // widget.userPost.user.id == widget.curUser.id
-                          //     ? Fluttertoast.showToast(
-                          //         msg: "You cannot react on your own post!",
-                          //         toastLength: Toast.LENGTH_SHORT,
-                          //         gravity: ToastGravity.BOTTOM,
-                          //         fontSize: 15)
-                          //     :
-                          (rxn == 'liked'
-                              ? {react("noreact"), counter['liked']--}
-                              : {react("liked"), counter['liked']++})
+                          widget.userPost.user.id != widget.curUser.id
+                              ?
+                              //     ? Fluttertoast.showToast(
+                              //         msg: "You cannot react on your own post!",
+                              //         toastLength: Toast.LENGTH_SHORT,
+                              //         gravity: ToastGravity.BOTTOM,
+                              //         fontSize: 15)
+                              //     :
+                              (rxn == 'liked'
+                                  ? {react("noreact"), counter['liked']--}
+                                  : {react("liked"), counter['liked']++})
+                              : print("not allowed")
                         },
                         child: Column(
                           children: <Widget>[
@@ -725,16 +729,18 @@ class _InvestPostTileState extends State<InvestPostTile> {
                       SizedBox(width: 20),
                       GestureDetector(
                         onTap: () => {
-                          // widget.userPost.user.id == widget.curUser.id
-                          //     ? Fluttertoast.showToast(
-                          //         msg: "You cannot react on your own post!",
-                          //         toastLength: Toast.LENGTH_SHORT,
-                          //         gravity: ToastGravity.BOTTOM,
-                          //         fontSize: 15)
-                          //    :
-                          (rxn == 'whatever'
-                              ? {react("noreact"), counter['whatever']--}
-                              : {react("whatever"), counter['whatever']++})
+                          widget.userPost.user.id != widget.curUser.id
+                              ?
+                              //     ? Fluttertoast.showToast(
+                              //         msg: "You cannot react on your own post!",
+                              //         toastLength: Toast.LENGTH_SHORT,
+                              //         gravity: ToastGravity.BOTTOM,
+                              //         fontSize: 15)
+                              //    :
+                              (rxn == 'whatever'
+                                  ? {react("noreact"), counter['whatever']--}
+                                  : {react("whatever"), counter['whatever']++})
+                              : print("not allowed")
                         },
                         child: Column(
                           children: <Widget>[
@@ -767,16 +773,18 @@ class _InvestPostTileState extends State<InvestPostTile> {
                       ),
                       GestureDetector(
                         onTap: () => {
-                          // widget.userPost.user.id == widget.curUser.id
-                          //     ? Fluttertoast.showToast(
-                          //         msg: "You cannot react on your own post!",
-                          //         toastLength: Toast.LENGTH_SHORT,
-                          //         gravity: ToastGravity.BOTTOM,
-                          //         fontSize: 15)
-                          //     :
-                          (rxn == 'hated'
-                              ? {react("noreact"), counter['hated']--}
-                              : {react("hated"), counter['hated']++})
+                          widget.userPost.user.id != widget.curUser.id
+                              ?
+                              //     ? Fluttertoast.showToast(
+                              //         msg: "You cannot react on your own post!",
+                              //         toastLength: Toast.LENGTH_SHORT,
+                              //         gravity: ToastGravity.BOTTOM,
+                              //         fontSize: 15)
+                              //     :
+                              (rxn == 'hated'
+                                  ? {react("noreact"), counter['hated']--}
+                                  : {react("hated"), counter['hated']++})
+                              : print("not allowed")
                         },
                         child: Column(
                           children: <Widget>[
