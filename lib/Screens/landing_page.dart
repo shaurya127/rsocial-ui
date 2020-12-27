@@ -41,7 +41,6 @@ class _Landing_PageState extends State<Landing_Page> {
     var id = doc['id'];
     final url = storyEndPoint + "$id/all";
     var token = await user.getIdToken();
-    //print(token);
     final response = await http.get(url, headers: {
       "Authorization": "Bearer $token",
       "Content-Type": "application/json",
@@ -66,11 +65,11 @@ class _Landing_PageState extends State<Landing_Page> {
         else
           post = Post.fromJsonW(msg[i]);
         if (post != null) {
-          print(post.investedWithUser);
+          //print(post.investedWithUser);
           posts.add(post);
         }
       }
-      print(posts.length);
+      //print(posts.length);
       setState(() {
         isLoading = false;
       });

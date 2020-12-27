@@ -35,28 +35,28 @@ class Reaction {
   String reactionType;
 
   factory Reaction.fromJson(Map<String, dynamic> json) => Reaction(
-        id: json["id"],
-        storyId: json["StoryId"],
-        reactionType: json["ReactionType"],
-      );
+    id: json["id"],
+    storyId: json["StoryId"],
+    reactionType: json["ReactionType"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "StoryId": storyId,
-        "ReactionType": reactionType,
-      };
+    "id": id,
+    "StoryId": storyId,
+    "ReactionType": reactionType,
+  };
 }
 
-class Post_Tile extends StatefulWidget {
+class InvestPostTile extends StatefulWidget {
   Post userPost;
   var photoUrl;
   User curUser;
-  Post_Tile({@required this.curUser, this.userPost, this.photoUrl});
+  InvestPostTile({@required this.curUser, this.userPost, this.photoUrl});
   @override
-  _Post_TileState createState() => _Post_TileState();
+  _InvestPostTileState createState() => _InvestPostTileState();
 }
 
-class _Post_TileState extends State<Post_Tile> {
+class _InvestPostTileState extends State<InvestPostTile> {
   List<String> fileList = [];
   bool isLoading = true;
   List<User> loved = [];
@@ -79,9 +79,9 @@ class _Post_TileState extends State<Post_Tile> {
       counter[rt]++;
 
       if (user.id == widget.curUser.id)
-        {
-          this.rxn = user.reactionType;
-        }
+      {
+        this.rxn = user.reactionType;
+      }
     }
   }
 
@@ -124,7 +124,7 @@ class _Post_TileState extends State<Post_Tile> {
     var uid = doc['id'];
     //print(uid);
     Reaction reaction =
-        Reaction(id: uid, storyId: widget.userPost.id, reactionType: reactn);
+    Reaction(id: uid, storyId: widget.userPost.id, reactionType: reactn);
     var token = await user.getIdToken();
     //print(jsonEncode(reaction.toJson()));
     //print(token);
@@ -163,10 +163,10 @@ class _Post_TileState extends State<Post_Tile> {
           //print("charu22");
           // widget.userPost.user.firstRxn=reactn;
           if(rxn=="noreact")
-            {
-              m[widget.userPost.id]={reactn:counter[reactn]};
-              return;
-            }
+          {
+            m[widget.userPost.id]={reactn:counter[reactn]};
+            return;
+          }
           if(prevrxn!="noreact" && prevrxn!=rxn)
             counter[prevrxn]--;
           // else
@@ -196,15 +196,15 @@ class _Post_TileState extends State<Post_Tile> {
           // print(rxn);
         }
         else
-          {
-            // if a user toggles to another reaction we need to
-            // decrease the counter of the previous reaction type
-            // if(rxn=='noreact')
-            //   rxn="noreact";
-            if (prevrxn != rxn && rxn != "noreact") {
-              counter[prevrxn]--;
-            }
+        {
+          // if a user toggles to another reaction we need to
+          // decrease the counter of the previous reaction type
+          // if(rxn=='noreact')
+          //   rxn="noreact";
+          if (prevrxn != rxn && rxn != "noreact") {
+            counter[prevrxn]--;
           }
+        }
       });
     }
   }
@@ -213,28 +213,9 @@ class _Post_TileState extends State<Post_Tile> {
     likes=[];
     love=[];
     for (int i = 0; i < counter['loved']; i++) {
-      bool sentpending=false;
-      bool recievedpending=false;
-      bool aconnection=false;
-      for(int j=0;j<widget.curUser.sentPendingConnection.length;j++)
-        {
-          if(loved[i].id==widget.curUser.sentPendingConnection[j].id)
-            sentpending=true;
-        }
-      for(int j=0;j<widget.curUser.receivedPendingConnection.length;j++)
-      {
-        if(loved[i].id==widget.curUser.receivedPendingConnection[j].id)
-          recievedpending=true;
-      }
-      for(int j=0;j<widget.curUser.connection.length;j++)
-      {
-        if(loved[i].id==widget.curUser.connection[j].id)
-          aconnection=true;
-      }
       Request_Tile tile = Request_Tile(
-        request: recievedpending?true:false,
-        text: recievedpending?"Accept":(sentpending?"Pending":""),
-        accepted: aconnection?true:false,
+        request: false,
+        text: "",
         user: loved[i],
         photourl: loved[i].photoUrl,
         curUser: widget.curUser,
@@ -243,28 +224,9 @@ class _Post_TileState extends State<Post_Tile> {
     }
 
     for (int i = 0; i < counter['liked']; i++) {
-      bool sentpending=false;
-      bool recievedpending=false;
-      bool aconnection=false;
-      for(int j=0;j<widget.curUser.sentPendingConnection.length;j++)
-      {
-        if(liked[i].id==widget.curUser.sentPendingConnection[j].id)
-          sentpending=true;
-      }
-      for(int j=0;j<widget.curUser.receivedPendingConnection.length;j++)
-      {
-        if(liked[i].id==widget.curUser.receivedPendingConnection[j].id)
-          recievedpending=true;
-      }
-      for(int j=0;j<widget.curUser.connection.length;j++)
-      {
-        if(liked[i].id==widget.curUser.connection[j].id)
-          aconnection=true;
-      }
       Request_Tile tile = Request_Tile(
-        request: recievedpending?true:false,
-        text: recievedpending?"Accept":(sentpending?"Pending":""),
-        accepted: aconnection?true:false,
+        request: false,
+        text: "",
         user: liked[i],
         photourl: liked[i].photoUrl,
         curUser: widget.curUser,
@@ -305,115 +267,85 @@ class _Post_TileState extends State<Post_Tile> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Expanded(
-                  child: widget.userPost.storyType == "Wage"
-                      ? ListTile(
-                          dense: true,
-                          contentPadding:
-                              EdgeInsets.only(left: 0, right: -35, bottom: 0),
-                          leading: GestureDetector(
-                            onTap: () => showProfile(
-                                context,
-                                widget.userPost.user,
-                                widget.userPost.user.photoUrl),
-                            child: CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage(widget.userPost.user.photoUrl),
-                            ),
-                          ),
-                          title: Text(
-                            "${widget.userPost.user.fname} ${widget.userPost.user.lname}",
-                            style: TextStyle(
-                              //fontWeight: FontWeight.bold,
-                              fontFamily: "Lato",
-                              fontSize: 14,
-                              color: nameCol,
-                            ),
-                          ),
-                        )
-                      : ListTile(
-                          dense: true,
-                          contentPadding:
-                              EdgeInsets.only(left: 0, right: -35, bottom: 0),
-                          leading: GestureDetector(
-                            onTap: () => showProfile(
-                                context,
-                                widget.userPost.user,
-                                widget.userPost.user.photoUrl),
-                            child: CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage(widget.userPost.user.photoUrl),
-                            ),
-                          ),
-                          title: Text(
-                            "${widget.userPost.user.fname} ${widget.userPost.user.lname}",
-                            style: TextStyle(
-                              //fontWeight: FontWeight.bold,
-                              fontFamily: "Lato",
-                              fontSize: 14,
-                              color: nameCol,
-                            ),
-                          ),
-                          subtitle: Text(
-                            widget.userPost.investedWithUser == []
-                                ? "Investing alone"
-                                : "Investing with ${widget.userPost.investedWithUser[0].fname} ${widget.userPost.investedWithUser[0].lname}",
-                            style: TextStyle(
-                              fontFamily: "Lato",
-                              fontSize: 12,
-                              color: subtitile,
-                            ),
-                          ),
-                        ),
+                  child: ListTile(
+                    dense: true,
+                    contentPadding:
+                    EdgeInsets.only(left: 0, right: -35, bottom: 0),
+                    leading: GestureDetector(
+                      onTap: () => showProfile(
+                          context,
+                          widget.userPost.user,
+                          widget.userPost.user.photoUrl),
+                      child: CircleAvatar(
+                        backgroundImage:
+                        NetworkImage(widget.userPost.user.photoUrl),
+                      ),
+                    ),
+                    title: Text(
+                      "${widget.userPost.user.fname} ${widget.userPost.user.lname}",
+                      style: TextStyle(
+                        //fontWeight: FontWeight.bold,
+                        fontFamily: "Lato",
+                        fontSize: 14,
+                        color: nameCol,
+                      ),
+                    ),
+                    subtitle: Text(
+                      widget.userPost.investedWithUser == []
+                          ? "Investing alone"
+                          : "Investing with ${widget.userPost.investedWithUser[0].fname} ${widget.userPost.investedWithUser[0].lname}",
+                      style: TextStyle(
+                        fontFamily: "Lato",
+                        fontSize: 12,
+                        color: subtitile,
+                      ),
+                    ),
+                  ),
                 ),
                 //SizedBox(width: 1,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    widget.userPost.storyType == "Wage"
-                        ? SizedBox()
-                        : Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  SvgPicture.asset(
-                                    "images/coins.svg",
-                                    color: colorCoins,
-                                  ),
-                                  Container(
-                                    child: Text(
-                                      "Invested",
-                                      style: TextStyle(
-                                          fontFamily: "Lato",
-                                          fontSize: 12,
-                                          color: subtitile),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 6,
-                              ),
-                              Container(
-                                child: Text(
-                                  "${widget.userPost.investedAmount}",
-                                  style: TextStyle(
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            SvgPicture.asset(
+                              "images/coins.svg",
+                              color: colorCoins,
+                            ),
+                            Container(
+                              child: Text(
+                                "Invested",
+                                style: TextStyle(
                                     fontFamily: "Lato",
                                     fontSize: 12,
-                                    color: Color(0xff4DBAE6),
-                                  ),
-                                ),
-                                //transform: Matrix4.translationValues(-35, 0.0, 0.0),
+                                    color: subtitile),
                               ),
-                            ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 6,
+                        ),
+                        Container(
+                          child: Text(
+                            "${widget.userPost.investedAmount}",
+                            style: TextStyle(
+                              fontFamily: "Lato",
+                              fontSize: 12,
+                              color: Color(0xff4DBAE6),
+                            ),
                           ),
+                          //transform: Matrix4.translationValues(-35, 0.0, 0.0),
+                        ),
+                      ],
+                    ),
                     SizedBox(
                       width: 14,
                     ),
-                    widget.userPost.storyType == "Wage"
-                        ? SizedBox()
-                        : SizedBox(),
                     // Column(
                     //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     //   crossAxisAlignment: CrossAxisAlignment.center,
@@ -468,24 +400,24 @@ class _Post_TileState extends State<Post_Tile> {
                     else if (counter['liked'] > counter['loved'] &&
                           counter['liked'] >= counter['whatever'] &&
                           counter['liked'] >= counter['hated'])
-                      SvgPicture.asset(
-                        "images/liked.svg",
-                        color: colorPrimaryBlue,
-                      )
-                    else if (counter['whatever'] > counter['loved'] &&
+                        SvgPicture.asset(
+                          "images/liked.svg",
+                          color: colorPrimaryBlue,
+                        )
+                      else if (counter['whatever'] > counter['loved'] &&
                             counter['whatever'] > counter['liked'] &&
                             counter['whatever'] >= counter['hated'])
-                      SvgPicture.asset(
-                        "images/whatever.svg",
-                        color: colorPrimaryBlue,
-                      )
-                    else if (counter['hated'] > counter['liked'] &&
+                          SvgPicture.asset(
+                            "images/whatever.svg",
+                            color: colorPrimaryBlue,
+                          )
+                        else if (counter['hated'] > counter['liked'] &&
                               counter['hated'] > counter['loved'] &&
                               counter['hated'] > counter['whatever'])
-                      SvgPicture.asset(
-                        "images/hated.svg",
-                        color: colorPrimaryBlue,
-                      ),
+                            SvgPicture.asset(
+                              "images/hated.svg",
+                              color: colorPrimaryBlue,
+                            ),
                     //SizedBox(width: 14,),
                     GestureDetector(
                         onTap: () {
@@ -494,9 +426,9 @@ class _Post_TileState extends State<Post_Tile> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => Reaction_Info(
-                                        like: likes,
-                                        love: love,
-                                      )));
+                                    like: likes,
+                                    love: love,
+                                  )));
                         },
                         child: Icon(
                           Icons.more_vert,
@@ -509,24 +441,24 @@ class _Post_TileState extends State<Post_Tile> {
             ),
             widget.userPost.storyText == null
                 ? Container(
-                    height: 0,
-                  )
+              height: 0,
+            )
                 : Padding(
-                    padding: const EdgeInsets.only(top: 12,bottom: 3,left: 3,right: 3),
-                    child: Read_More(
-                      "${widget.userPost.storyText}",
-                      trimLines: 2,
-                      colorClickableText: Colors.blueGrey,
-                      trimMode: TrimMode.Line,
-                      trimCollapsedText: "...Show More",
-                      trimExpandedText: " Show Less",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: "Lato",
-                        color: postDesc,
-                      ),
-                    )
-                    /*Text(
+                padding: const EdgeInsets.only(top: 12,bottom: 3,left: 3,right: 3),
+                child: Read_More(
+                  "${widget.userPost.storyText}",
+                  trimLines: 2,
+                  colorClickableText: Colors.blueGrey,
+                  trimMode: TrimMode.Line,
+                  trimCollapsedText: "...Show More",
+                  trimExpandedText: " Show Less",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: "Lato",
+                    color: postDesc,
+                  ),
+                )
+              /*Text(
                 "today was a great day with my cats! ",
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
@@ -537,7 +469,7 @@ class _Post_TileState extends State<Post_Tile> {
                 ),
                 //textAlign: TextAlign.left,
               ),*/
-                    ),
+            ),
             Padding(
                 padding: widget.userPost.storyText == null
                     ? EdgeInsets.only(top: 0, bottom: 15)
@@ -545,52 +477,52 @@ class _Post_TileState extends State<Post_Tile> {
                 child: Container(
                     height: widget.userPost.fileUpload.length != 0 ? 250 : 0,
                     decoration:
-                        BoxDecoration(borderRadius: BorderRadius.circular(8)),
+                    BoxDecoration(borderRadius: BorderRadius.circular(8)),
                     child: isLoading == false
                         ? Swiper(
-                            loop: false,
-                            pagination: SwiperPagination(),
-                            scrollDirection: Axis.horizontal,
-                            itemCount: widget.userPost.fileUpload.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Stack(
-                                children: <Widget>[
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Colors.grey.withOpacity(0.2),
-                                        image: DecorationImage(
-                                            image: NetworkImage(
-                                              fileList[index],
-                                            ),
-                                            fit: BoxFit.cover)),
-                                    height: 250,
-                                  ),
-                                  // Container(
-                                  //   decoration: BoxDecoration(
-                                  //       borderRadius: BorderRadius.only(
-                                  //           bottomRight:
-                                  //           Radius.circular(8)),
-                                  //       color: Colors.red
-                                  //           .withOpacity(0.2)),
-                                  //   child: IconButton(
-                                  //     icon: Icon(
-                                  //       Icons.clear,
-                                  //     ),
-                                  //     onPressed: () {
-                                  //       setState(() {
-                                  //         fileList.removeAt(index);
-                                  //         list.removeAt(index);
-                                  //       });
-                                  //     },
-                                  //   ),
-                                  // )
-                                ],
-                              );
-                            })
+                        loop: false,
+                        pagination: SwiperPagination(),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: widget.userPost.fileUpload.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Stack(
+                            children: <Widget>[
+                              Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Colors.grey.withOpacity(0.2),
+                                    image: DecorationImage(
+                                        image: NetworkImage(
+                                          fileList[index],
+                                        ),
+                                        fit: BoxFit.cover)),
+                                height: 250,
+                              ),
+                              // Container(
+                              //   decoration: BoxDecoration(
+                              //       borderRadius: BorderRadius.only(
+                              //           bottomRight:
+                              //           Radius.circular(8)),
+                              //       color: Colors.red
+                              //           .withOpacity(0.2)),
+                              //   child: IconButton(
+                              //     icon: Icon(
+                              //       Icons.clear,
+                              //     ),
+                              //     onPressed: () {
+                              //       setState(() {
+                              //         fileList.removeAt(index);
+                              //         list.removeAt(index);
+                              //       });
+                              //     },
+                              //   ),
+                              // )
+                            ],
+                          );
+                        })
                         : Center(
-                            child: CircularProgressIndicator(),
-                          ))),
+                      child: CircularProgressIndicator(),
+                    ))),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -617,7 +549,7 @@ class _Post_TileState extends State<Post_Tile> {
                               child: SvgPicture.asset(
                                 "images/loved.svg",
                                 color:
-                                    rxn == "loved" ? colorPrimaryBlue : postIcons,
+                                rxn == "loved" ? colorPrimaryBlue : postIcons,
                               ),
                             ),
                             Padding(
@@ -657,7 +589,7 @@ class _Post_TileState extends State<Post_Tile> {
                               child: SvgPicture.asset(
                                 "images/liked.svg",
                                 color:
-                                    rxn == "liked" ? colorPrimaryBlue : postIcons,
+                                rxn == "liked" ? colorPrimaryBlue : postIcons,
                               ),
                             ),
                             //Icon(Icons.thumb_up,size: 30,color:postIcons),
@@ -737,7 +669,7 @@ class _Post_TileState extends State<Post_Tile> {
                               child: SvgPicture.asset(
                                 "images/hated.svg",
                                 color:
-                                    rxn == "hated" ? colorPrimaryBlue : postIcons,
+                                rxn == "hated" ? colorPrimaryBlue : postIcons,
                               ),
                             ),
                             Padding(
