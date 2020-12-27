@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+//import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/login_page.dart';
@@ -183,7 +183,8 @@ class _InvestmentState extends State<Investment> {
         onTap: () {
           setState(() {
             isSelected = false;
-            if (!selectedList.contains(suggestionList[index]))
+            if (!selectedList.contains(suggestionList[index]) &&
+                selectedList.length <= 5)
               selectedList.add(suggestionList[index]);
           });
           // Navigator.push(
@@ -333,11 +334,11 @@ class _InvestmentState extends State<Investment> {
 
           selectedList.clear();
         });
-        Fluttertoast.showToast(
-            msg: "Uploaded investment story!",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            fontSize: 15);
+        // Fluttertoast.showToast(
+        //     msg: "Uploaded investment story!",
+        //     toastLength: Toast.LENGTH_SHORT,
+        //     gravity: ToastGravity.BOTTOM,
+        //     fontSize: 15);
       } else {
         print(response.statusCode);
       }

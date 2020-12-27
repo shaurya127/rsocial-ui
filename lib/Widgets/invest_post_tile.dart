@@ -49,23 +49,23 @@ class Reaction {
       };
 }
 
-class Post_Tile extends StatefulWidget {
+class InvestPostTile extends StatefulWidget {
   Post userPost;
   var photoUrl;
-  var curUser;
-  Post_Tile({@required this.curUser, this.userPost, this.photoUrl});
+  User curUser;
+  InvestPostTile({@required this.curUser, this.userPost, this.photoUrl});
   @override
-  _Post_TileState createState() => _Post_TileState();
+  _InvestPostTileState createState() => _InvestPostTileState();
 }
 
-class _Post_TileState extends State<Post_Tile> {
+class _InvestPostTileState extends State<InvestPostTile> {
   List<String> fileList = [];
   bool isLoading = true;
   List<User> loved = [];
   List<User> liked = [];
+  List<User> investedWithUser = [];
   List<Request_Tile> love = [];
   List<Request_Tile> likes = [];
-  List<User> investedWithUser = [];
   String rxn = "noreact";
   Map<String, int> counter = {
     'loved': 0,
@@ -220,26 +220,9 @@ class _Post_TileState extends State<Post_Tile> {
     likes = [];
     love = [];
     for (int i = 0; i < counter['loved']; i++) {
-      bool sentpending = false;
-      bool recievedpending = false;
-      bool aconnection = false;
-      for (int j = 0; j < widget.curUser.sentPendingConnection.length; j++) {
-        if (loved[i].id == widget.curUser.sentPendingConnection[j].id)
-          sentpending = true;
-      }
-      for (int j = 0;
-          j < widget.curUser.receivedPendingConnection.length;
-          j++) {
-        if (loved[i].id == widget.curUser.receivedPendingConnection[j].id)
-          recievedpending = true;
-      }
-      for (int j = 0; j < widget.curUser.connection.length; j++) {
-        if (loved[i].id == widget.curUser.connection[j].id) aconnection = true;
-      }
       Request_Tile tile = Request_Tile(
-        request: recievedpending ? true : false,
-        text: recievedpending ? "Accept" : (sentpending ? "Pending" : ""),
-        accepted: aconnection ? true : false,
+        request: false,
+        text: "",
         user: loved[i],
         photourl: loved[i].photoUrl,
         curUser: widget.curUser,
@@ -248,26 +231,9 @@ class _Post_TileState extends State<Post_Tile> {
     }
 
     for (int i = 0; i < counter['liked']; i++) {
-      bool sentpending = false;
-      bool recievedpending = false;
-      bool aconnection = false;
-      for (int j = 0; j < widget.curUser.sentPendingConnection.length; j++) {
-        if (liked[i].id == widget.curUser.sentPendingConnection[j].id)
-          sentpending = true;
-      }
-      for (int j = 0;
-          j < widget.curUser.receivedPendingConnection.length;
-          j++) {
-        if (liked[i].id == widget.curUser.receivedPendingConnection[j].id)
-          recievedpending = true;
-      }
-      for (int j = 0; j < widget.curUser.connection.length; j++) {
-        if (liked[i].id == widget.curUser.connection[j].id) aconnection = true;
-      }
       Request_Tile tile = Request_Tile(
-        request: recievedpending ? true : false,
-        text: recievedpending ? "Accept" : (sentpending ? "Pending" : ""),
-        accepted: aconnection ? true : false,
+        request: false,
+        text: "",
         user: liked[i],
         photourl: liked[i].photoUrl,
         curUser: widget.curUser,
@@ -285,7 +251,6 @@ class _Post_TileState extends State<Post_Tile> {
       counter[rxn] = map[rxn];
       //Map<String, int> mx = m[widget.userPost.id];
       // for (var key in mx.keys) rxn = key;
-
       // if (rxn == "loved")
       //   lovedCounter = m[widget.userPost.id][0];
       // else if (rxn == "liked")
@@ -293,7 +258,6 @@ class _Post_TileState extends State<Post_Tile> {
       // else if (rxn == "whatever")
       //   whateverCounter = m[widget.userPost.id][2];
       // else if (rxn == "hated") hatedCounter = m[widget.userPost.id][3];
-
     }
 
     return Padding(
@@ -310,207 +274,169 @@ class _Post_TileState extends State<Post_Tile> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Expanded(
-                  child: widget.userPost.storyType == "Wage"
-                      ? ListTile(
-                          dense: true,
-                          contentPadding:
-                              EdgeInsets.only(left: 0, right: -35, bottom: 0),
-                          leading: GestureDetector(
-                            onTap: () => showProfile(
-                                context,
-                                widget.userPost.user,
-                                widget.userPost.user.photoUrl),
-                            child: CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage(widget.userPost.user.photoUrl),
-                            ),
-                          ),
-                          title: Text(
-                            "${widget.userPost.user.fname} ${widget.userPost.user.lname}",
-                            style: TextStyle(
-                              //fontWeight: FontWeight.bold,
-                              fontFamily: "Lato",
-                              fontSize: 14,
-                              color: nameCol,
-                            ),
-                          ),
-                        )
-                      : ListTile(
-                          dense: true,
-                          contentPadding:
-                              EdgeInsets.only(left: 0, right: -35, bottom: 0),
-                          leading: GestureDetector(
-                            onTap: () => showProfile(
-                                context,
-                                widget.userPost.user,
-                                widget.userPost.user.photoUrl),
-                            child: CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage(widget.userPost.user.photoUrl),
-                            ),
-                          ),
-                          title: Text(
-                            "${widget.userPost.user.fname} ${widget.userPost.user.lname}",
-                            style: TextStyle(
-                              //fontWeight: FontWeight.bold,
-                              fontFamily: "Lato",
-                              fontSize: 14,
-                              color: nameCol,
-                            ),
-                          ),
-                          subtitle: Row(
-                            children: <Widget>[
-                              widget.userPost.investedWithUser != []
-                                  ? Row(
-                                      children: <Widget>[
-                                        Text(
-                                          "Investing with ",
-                                          style: TextStyle(
-                                            fontFamily: "Lato",
-                                            fontSize: 12,
-                                            color: subtitile,
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                PageTransition(
-                                                  // settings: RouteSettings(
-                                                  //     name: "Login_Page"),
-                                                  type: PageTransitionType.fade,
-                                                  child: Profile(
-                                                    currentUser: widget.curUser,
-                                                    photoUrl:
-                                                        investedWithUser[0]
-                                                            .photoUrl,
-                                                    user: investedWithUser[0],
-                                                  ),
-                                                ));
-                                          },
-                                          child: Text(
-                                            (widget.userPost.investedWithUser[0]
-                                                                .fname +
-                                                            " " +
-                                                            widget
-                                                                .userPost
-                                                                .investedWithUser[
-                                                                    0]
-                                                                .lname)
-                                                        .length <
-                                                    11
-                                                ? "${widget.userPost.investedWithUser[0].fname} ${widget.userPost.investedWithUser[0].lname}"
-                                                : (widget
-                                                                .userPost
-                                                                .investedWithUser[
-                                                                    0]
-                                                                .fname +
-                                                            " " +
-                                                            widget
-                                                                .userPost
-                                                                .investedWithUser[
-                                                                    0]
-                                                                .lname)
-                                                        .substring(0, 7) +
-                                                    ".",
-                                            style: TextStyle(
-                                              fontFamily: "Lato",
-                                              fontSize: 12,
-                                              color: subtitile,
+                  child: ListTile(
+                    dense: true,
+                    contentPadding:
+                        EdgeInsets.only(left: 0, right: -35, bottom: 0),
+                    leading: GestureDetector(
+                      onTap: () => showProfile(context, widget.userPost.user,
+                          widget.userPost.user.photoUrl),
+                      child: CircleAvatar(
+                        backgroundImage:
+                            NetworkImage(widget.userPost.user.photoUrl),
+                      ),
+                    ),
+                    title: Text(
+                      "${widget.userPost.user.fname} ${widget.userPost.user.lname}",
+                      style: TextStyle(
+                        //fontWeight: FontWeight.bold,
+                        fontFamily: "Lato",
+                        fontSize: 14,
+                        color: nameCol,
+                      ),
+                    ),
+                    subtitle: Row(
+                      children: <Widget>[
+                        widget.userPost.investedWithUser != []
+                            ? Row(
+                                children: <Widget>[
+                                  Text(
+                                    "Investing with ",
+                                    style: TextStyle(
+                                      fontFamily: "Lato",
+                                      fontSize: 12,
+                                      color: subtitile,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          PageTransition(
+                                            // settings: RouteSettings(
+                                            //     name: "Login_Page"),
+                                            type: PageTransitionType.fade,
+                                            child: Profile(
+                                              currentUser: widget.curUser,
+                                              photoUrl:
+                                                  investedWithUser[0].photoUrl,
+                                              user: investedWithUser[0],
                                             ),
-                                          ),
-                                        )
-                                      ],
-                                    )
-                                  : Text(
-                                      "Investing alone",
+                                          ));
+                                    },
+                                    child: Text(
+                                      (widget.userPost.investedWithUser[0]
+                                                          .fname +
+                                                      " " +
+                                                      widget
+                                                          .userPost
+                                                          .investedWithUser[0]
+                                                          .lname)
+                                                  .length <
+                                              11
+                                          ? "${widget.userPost.investedWithUser[0].fname} ${widget.userPost.investedWithUser[0].lname}"
+                                          : (widget.userPost.investedWithUser[0]
+                                                          .fname +
+                                                      " " +
+                                                      widget
+                                                          .userPost
+                                                          .investedWithUser[0]
+                                                          .lname)
+                                                  .substring(0, 7) +
+                                              ".",
                                       style: TextStyle(
                                         fontFamily: "Lato",
                                         fontSize: 12,
                                         color: subtitile,
                                       ),
                                     ),
-                              SizedBox(
-                                width: 2,
+                                  )
+                                ],
+                              )
+                            : Text(
+                                "Investing alone",
+                                style: TextStyle(
+                                  fontFamily: "Lato",
+                                  fontSize: 12,
+                                  color: subtitile,
+                                ),
                               ),
-                              widget.userPost.investedWithUser.length >= 2
-                                  ? GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            PageTransition(
-                                                // settings: RouteSettings(
-                                                //     name: "Login_Page"),
-                                                type: PageTransitionType.fade,
-                                                child: InvestedWithPage(
-                                                  investedWithUser:
-                                                      this.investedWithUser,
-                                                  curUser: widget.curUser,
-                                                )));
-                                      },
-                                      child: Text(
-                                        "+ ${widget.userPost.investedWithUser.length - 1}",
-                                        style: TextStyle(
-                                          fontFamily: "Lato",
-                                          fontSize: 12,
-                                          color: colorButton,
-                                        ),
-                                      ),
-                                    )
-                                  : SizedBox.shrink()
-                            ],
-                          ),
+                        SizedBox(
+                          width: 2,
                         ),
+                        widget.userPost.investedWithUser.length >= 2
+                            ? GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          // settings: RouteSettings(
+                                          //     name: "Login_Page"),
+                                          type: PageTransitionType.fade,
+                                          child: InvestedWithPage(
+                                            investedWithUser:
+                                                this.investedWithUser,
+                                            curUser: widget.curUser,
+                                          )));
+                                },
+                                child: Text(
+                                  "+ ${widget.userPost.investedWithUser.length - 1}",
+                                  style: TextStyle(
+                                    fontFamily: "Lato",
+                                    fontSize: 12,
+                                    color: colorButton,
+                                  ),
+                                ),
+                              )
+                            : SizedBox.shrink()
+                      ],
+                    ),
+                  ),
                 ),
                 //SizedBox(width: 1,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    widget.userPost.storyType == "Wage"
-                        ? SizedBox()
-                        : Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  SvgPicture.asset(
-                                    "images/coins.svg",
-                                    color: colorCoins,
-                                  ),
-                                  Container(
-                                    child: Text(
-                                      "Invested",
-                                      style: TextStyle(
-                                          fontFamily: "Lato",
-                                          fontSize: 12,
-                                          color: subtitile),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 6,
-                              ),
-                              Container(
-                                child: Text(
-                                  "${widget.userPost.investedAmount}",
-                                  style: TextStyle(
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            SvgPicture.asset(
+                              "images/coins.svg",
+                              color: colorCoins,
+                            ),
+                            Container(
+                              child: Text(
+                                "Invested",
+                                style: TextStyle(
                                     fontFamily: "Lato",
                                     fontSize: 12,
-                                    color: Color(0xff4DBAE6),
-                                  ),
-                                ),
-                                //transform: Matrix4.translationValues(-35, 0.0, 0.0),
+                                    color: subtitile),
                               ),
-                            ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 6,
+                        ),
+                        Container(
+                          child: Text(
+                            "${widget.userPost.investedAmount}",
+                            style: TextStyle(
+                              fontFamily: "Lato",
+                              fontSize: 12,
+                              color: Color(0xff4DBAE6),
+                            ),
                           ),
+                          //transform: Matrix4.translationValues(-35, 0.0, 0.0),
+                        ),
+                      ],
+                    ),
                     SizedBox(
                       width: 14,
                     ),
-                    widget.userPost.storyType == "Wage"
-                        ? SizedBox()
-                        : SizedBox(),
                     // Column(
                     //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     //   crossAxisAlignment: CrossAxisAlignment.center,
@@ -589,22 +515,11 @@ class _Post_TileState extends State<Post_Tile> {
                           buildReactionTile();
                           Navigator.push(
                               context,
-                              PageTransition(
-                                  // settings: RouteSettings(
-                                  //     name: "Login_Page"),
-                                  type: PageTransitionType.fade,
-                                  child: Reaction_Info(
-                                    like: likes,
-                                    love: love,
-                                  )));
-
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) => Reaction_Info(
-                          //               like: likes,
-                          //               love: love,
-                          //             )));
+                              MaterialPageRoute(
+                                  builder: (context) => Reaction_Info(
+                                        like: likes,
+                                        love: love,
+                                      )));
                         },
                         child: Icon(
                           Icons.more_vert,
@@ -709,12 +624,13 @@ class _Post_TileState extends State<Post_Tile> {
                       GestureDetector(
                         onTap: () => {
                           // widget.userPost.user.id == widget.curUser.id
-                          //     ? Fluttertoast.showToast(
+                          //     ?
+                          // Fluttertoast.showToast(
                           //         msg: "You cannot react on your own post!",
                           //         toastLength: Toast.LENGTH_SHORT,
                           //         gravity: ToastGravity.BOTTOM,
                           //         fontSize: 15)
-                          //     :
+                          //   :
                           (rxn == 'loved'
                               ? {react("noreact"), counter['loved']--}
                               : {react("loved"), counter['loved']++})
@@ -797,7 +713,7 @@ class _Post_TileState extends State<Post_Tile> {
                           //         toastLength: Toast.LENGTH_SHORT,
                           //         gravity: ToastGravity.BOTTOM,
                           //         fontSize: 15)
-                          //     :
+                          //    :
                           (rxn == 'whatever'
                               ? {react("noreact"), counter['whatever']--}
                               : {react("whatever"), counter['whatever']++})
