@@ -30,14 +30,10 @@ class Post {
   int duration;
 
   factory Post.fromJsonI(final json) {
-    //print("userid is: ${json["UserId"]}");
     var uid = json["UserId"];
     var frnd = json['InvestedWith'];
-    print("frnd is $frnd with type ${json['StoryType']}");
-    //User investedWithUser = User.fromJson(uid);
-    //print("haha");
-    //print("person is ${investedWithUser.lollarAmount}");
-    //print(User.fromJson(uid));
+    //print("frnd is $frnd with type ${json['StoryType']}");
+
     List<User> investedWith = [];
     if (json['InvestedWith'].isNotEmpty) {
       for (int i = 0; i < json['InvestedWith'].length; i++) {
@@ -70,18 +66,11 @@ class Post {
   }
 
   factory Post.fromJsonW(final json) {
-    //print("userid is: ${json["UserId"]}");
     var uid = json["UserId"];
-    //var frnd = json['InvestedWith'];
-    //print("frnd is $frnd");
-    //User investedWithUser = User.fromJson(uid);
-    //print("haha");
-    //print("person is ${investedWithUser.lollarAmount}");
-    //print(User.fromJson(uid));
     List<User> rxn = [];
     if (json["ReactedBy"].isNotEmpty) {
       for (int i = 0; i < json["ReactedBy"].length; i++) {
-        print("reacted by $i is ${json["ReactedBy"][i]}");
+        //print("reacted by $i is ${json["ReactedBy"][i]}");
         User user = User.fromJson(json["ReactedBy"][i]);
         rxn.add(user);
       }

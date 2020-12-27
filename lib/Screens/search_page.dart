@@ -105,7 +105,7 @@ class _Search_PageState extends State<Search_Page>
       //print("body is $body");
       // print(body1);
       var msg = body1['message'];
-      print(msg["SentPendingConnection"]);
+      //print(msg["SentPendingConnection"]);
 
       List<String> outgoing = [];
       if (msg["SentPendingConnection"] != null) {
@@ -206,7 +206,7 @@ class _Search_PageState extends State<Search_Page>
   }
 
   Future<List<User>> getAllConnections() async {
-    print("==========Inside get all connection ===================");
+    //print("==========Inside get all connection ===================");
     var user = await FirebaseAuth.instance.currentUser();
     //
     // DocumentSnapshot doc = await users.document(user.uid).get();
@@ -222,7 +222,7 @@ class _Search_PageState extends State<Search_Page>
       "Content-Type": "application/json",
     });
 
-    print(response.statusCode);
+    //print(response.statusCode);
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body);
       var body = jsonUser['body'];
@@ -253,16 +253,16 @@ class _Search_PageState extends State<Search_Page>
 
   buildSearchTab() {
     //sentPendingConnections = curUser.sentPendingConnection;
-    print("These are my sent connections");
+    //print("These are my sent connections");
     //print(curUser.sentPendingConnection);
-    print(sentPendingConnections.length);
+    //print(sentPendingConnections.length);
     // if (suggestionList.isNotEmpty) {
     List<Request_Tile> searchResults = [];
     Request_Tile tile;
     for (int i = 0; i < suggestionList.length; i++) {
       if (sentPendingConnections.contains(suggestionList[i].id) ||
           idConnections.contains(suggestionList[i].id)) {
-        print("Hello");
+        //print("Hello");
         tile = Request_Tile(
           user: suggestionList[i],
           accepted: true,
@@ -327,6 +327,9 @@ class _Search_PageState extends State<Search_Page>
     List<Request_Tile> friendResults = [];
     if (connections.isNotEmpty) {
       for (int i = 0; i < connections.length; i++) {
+        print("printing connection length");
+        print(connections[i].connection.length);
+        print(connections[i].fname);
         Request_Tile tile = Request_Tile(
           user: connections[i],
           text: "Remove",

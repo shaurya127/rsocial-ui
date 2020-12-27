@@ -235,15 +235,11 @@ class _Request_TileState extends State<Request_Tile> {
                                 style: TextStyle(
                                   fontFamily: "Lato",
                                   fontSize: 14,
-                                  color: Orientation == 'search'
-                                      ? Colors.white
-                                      : Theme.of(context).primaryColor,
+                                  color: Colors.white
                                 ),
                               ),
                               decoration: BoxDecoration(
-                                  color: Orientation == 'search'
-                                      ? Theme.of(context).primaryColor
-                                      : Colors.white,
+                                  color:Theme.of(context).primaryColor,
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
                                       width: 1,
