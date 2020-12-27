@@ -720,7 +720,7 @@ class _Post_TileState extends State<Post_Tile> {
                               (rxn == 'loved'
                                   ? {react("noreact"), counter['loved']--}
                                   : {react("loved"), counter['loved']++})
-                              : print("not allowed"): print("not allowed")
+                              : print("not allowed")
                         },
                         child: Column(
                           children: <Widget>[
