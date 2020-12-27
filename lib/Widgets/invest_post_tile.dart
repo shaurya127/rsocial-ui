@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:core';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,10 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/invested_with.dart';
+
 import 'package:rsocial2/Screens/login_page.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/Screens/reaction_info.dart';
@@ -63,6 +66,7 @@ class _InvestPostTileState extends State<InvestPostTile> {
   bool isLoading = true;
   List<User> loved = [];
   List<User> liked = [];
+
   List<User> investedWithUser = [];
   List<Request_Tile> love = [];
   List<Request_Tile> likes = [];
@@ -81,6 +85,7 @@ class _InvestPostTileState extends State<InvestPostTile> {
     for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
       User user = widget.userPost.reactedBy[i];
       String rt = user.reactionType;
+
       if (rt == 'loved')
         loved.add(user);
       else if (rt == 'liked') liked.add(user);
@@ -108,6 +113,7 @@ class _InvestPostTileState extends State<InvestPostTile> {
     super.initState();
     getReactions();
     convertStringToFile();
+
     getInvestedWithUser();
   }
 
@@ -137,6 +143,7 @@ class _InvestPostTileState extends State<InvestPostTile> {
     //print(uid);
     Reaction reaction =
         Reaction(id: uid, storyId: widget.userPost.id, reactionType: reactn);
+
     var token = await user.getIdToken();
     //print(jsonEncode(reaction.toJson()));
     //print(token);
@@ -163,7 +170,9 @@ class _InvestPostTileState extends State<InvestPostTile> {
           print("rara");
           if (user.id == widget.curUser.id) {
             //print("in user post");
+
             if (m.containsKey(widget.userPost.id)) m.remove(widget.userPost.id);
+
             user.reactionType = reactn;
             inLoop = false;
           }
@@ -173,17 +182,21 @@ class _InvestPostTileState extends State<InvestPostTile> {
         if (inLoop == true) {
           //print("charu22");
           // widget.userPost.user.firstRxn=reactn;
+
           if (rxn == "noreact") {
             m[widget.userPost.id] = {reactn: counter[reactn]};
             return;
           }
           if (prevrxn != "noreact" && prevrxn != rxn) counter[prevrxn]--;
+
           // else
           //   {
           //     counter[prevrxn]--;
           //     counter[rxn]++;
           //   }
+
           m[widget.userPost.id] = {reactn: counter[reactn]};
+
           // if (rxn == "loved")
           //   m[widget.userPost.id][0] = ++lovedCounter;
           // else if (rxn == "liked")
@@ -203,6 +216,7 @@ class _InvestPostTileState extends State<InvestPostTile> {
           // rxn = reactn;
           // print("hello");
           // print(rxn);
+
         } else {
           // if a user toggles to another reaction we need to
           // decrease the counter of the previous reaction type
@@ -219,6 +233,7 @@ class _InvestPostTileState extends State<InvestPostTile> {
   buildReactionTile() {
     likes = [];
     love = [];
+
     for (int i = 0; i < counter['loved']; i++) {
       Request_Tile tile = Request_Tile(
         request: false,
@@ -249,6 +264,7 @@ class _InvestPostTileState extends State<InvestPostTile> {
       for (var key in map.keys) rxn = key;
       print("my reaction is now $rxn");
       counter[rxn] = map[rxn];
+
       //Map<String, int> mx = m[widget.userPost.id];
       // for (var key in mx.keys) rxn = key;
       // if (rxn == "loved")
@@ -509,6 +525,7 @@ class _InvestPostTileState extends State<InvestPostTile> {
                         "images/hated.svg",
                         color: colorPrimaryBlue,
                       ),
+
                     //SizedBox(width: 14,),
                     GestureDetector(
                         onTap: () {
@@ -551,6 +568,7 @@ class _InvestPostTileState extends State<InvestPostTile> {
                       ),
                     )
                     /*Text(
+
                 "today was a great day with my cats! ",
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,

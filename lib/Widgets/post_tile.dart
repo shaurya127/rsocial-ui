@@ -10,6 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
+
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/invested_with.dart';
 import 'package:rsocial2/Screens/login_page.dart';
@@ -52,7 +53,7 @@ class Reaction {
 class Post_Tile extends StatefulWidget {
   Post userPost;
   var photoUrl;
-  var curUser;
+  User curUser;
   Post_Tile({@required this.curUser, this.userPost, this.photoUrl});
   @override
   _Post_TileState createState() => _Post_TileState();
