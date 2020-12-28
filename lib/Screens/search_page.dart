@@ -19,30 +19,11 @@ import 'login_page.dart';
 import 'package:rsocial2/connection.dart';
 import 'package:http/http.dart' as http;
 
-// class Connection {
-//   Connection({
-//     this.id,
-//     this.friendId,
-//   });
-//
-//   String id;
-//   String friendId;
-//
-//   factory Connection.fromJson(Map<String, dynamic> json) => Connection(
-//         id: json["id"],
-//         friendId: json["friendId"],
-//       );
-//
-//   Map<String, dynamic> toJson() => {
-//         "id": this.id,
-//         "friendId": this.friendId,
-//       };
-// }
 
 class Search_Page extends StatefulWidget {
-  String photourl;
-  User curUser;
-  Search_Page({this.curUser, this.photourl});
+  List<User> allusers;
+
+  Search_Page({this.allusers});
 
   @override
   _Search_PageState createState() => _Search_PageState();
@@ -59,16 +40,17 @@ class _Search_PageState extends State<Search_Page>
   List<User> suggestionList = [];
   bool isLoading = false;
   String searchQuery = "";
-  User curUser;
+  String photourl="";
+  //User curUser;
   @override
   void initState() {
     super.initState();
     FirebaseAnalytics().setCurrentScreen(screenName: "Search_page");
-    setState(() {
-      isLoading = true;
-    });
-    getAllConnections();
-    getUser();
+    // setState(() {
+    //   isLoading = true;
+    // });
+    //getAllConnections();
+    //getUser();
     //getConnections();
   }
 
@@ -78,7 +60,10 @@ class _Search_PageState extends State<Search_Page>
     });
   }
 
-  Future<User> getUser() async {
+  Future<void> getUser() async {
+    setState(() {
+      isLoading=true;
+    });
     var user = await FirebaseAuth.instance.currentUser();
     var token = await user.getIdToken();
     print(token);
@@ -125,14 +110,14 @@ class _Search_PageState extends State<Search_Page>
 
       sentPendingConnections = outgoing;
       idConnections = frnds;
-      curUser = User.fromJson(msg);
-
       //this.sentPendingConnections = curUser.sentPendingConnection;
 
       setState(() {
+        curUser = User.fromJson(msg);
+
         isLoading = false;
       });
-      return curUser;
+      //return curUser;
     } else {
       print(response.statusCode);
       throw Exception();
@@ -205,13 +190,13 @@ class _Search_PageState extends State<Search_Page>
         : SizedBox.shrink();
   }
 
-  Future<List<User>> getAllConnections() async {
+  Future<void> getAllConnections() async {
     //print("==========Inside get all connection ===================");
     var user = await FirebaseAuth.instance.currentUser();
     //
     // DocumentSnapshot doc = await users.document(user.uid).get();
     // var id = doc['id'];
-    var id = widget.curUser.id;
+    var id = curUser.id;
     final url = userEndPoint + "$id/all";
 
     var token = await user.getIdToken();
@@ -242,6 +227,7 @@ class _Search_PageState extends State<Search_Page>
         allUsers.add(user);
       }
       setState(() {
+        widget.allusers=allUsers;
         isLoading = false;
       });
       return allUsers;
@@ -267,8 +253,8 @@ class _Search_PageState extends State<Search_Page>
           user: suggestionList[i],
           accepted: true,
           request: false,
-          photourl: widget.photourl,
-          curUser: widget.curUser,
+          photourl: photourl,
+          //curUser: curUser,
         );
       } else {
         tile = Request_Tile(
@@ -276,8 +262,8 @@ class _Search_PageState extends State<Search_Page>
           text: "Add",
           request: false,
           accepted: false,
-          photourl: widget.photourl,
-          curUser: widget.curUser,
+          photourl: photourl,
+          //curUser: curUser,
         );
       }
       searchResults.add(tile);
@@ -335,8 +321,8 @@ class _Search_PageState extends State<Search_Page>
           text: "Remove",
           accepted: false,
           request: false,
-          photourl: widget.photourl,
-          curUser: widget.curUser,
+          photourl: photourl,
+          //curUser: curUser,
         );
         friendResults.add(tile);
       }
@@ -345,11 +331,11 @@ class _Search_PageState extends State<Search_Page>
       );
     } else
       return Scaffold(
-        body: Center(
-          child: Container(
-            child: Text("You have no friends till now"),
-          ),
-        ),
+        body: ListView(
+          children: <Widget>[
+            Text("You have no friends till now",textAlign: TextAlign.center,),
+          ],
+        )
       );
   }
 
@@ -364,18 +350,15 @@ class _Search_PageState extends State<Search_Page>
           accepted: false,
           photourl: requestList[i].photoUrl,
           text: "Accept",
-          curUser: widget.curUser,
+          //curUser: curUser,
         );
         tiles.add(tile);
       }
       return ListView(children: tiles);
     } else
       return Scaffold(
-        body: Center(
-          child: Container(
-            child: Text("You have no pending requests"),
-          ),
-        ),
+        body: ListView(children:<Widget>[
+          Text("You have no pending requests",textAlign: TextAlign.center,)]),
       );
   }
 
@@ -385,19 +368,28 @@ class _Search_PageState extends State<Search_Page>
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : buildRequestTab();
+          : RefreshIndicator(
+        onRefresh:getUser ,
+        child: buildRequestTab(),
+      );
     else if (Orientation == "suggest")
       return isLoading
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : buildSuggestedTab();
+          : RefreshIndicator(
+        onRefresh: getUser,
+        child: buildSuggestedTab(),
+      );
     else if (Orientation == "search")
       return isLoading
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : buildSearchTab();
+          : RefreshIndicator(
+        onRefresh: (){getUser;getAllConnections();},
+        child: buildSearchTab(),
+      );
   }
 
   @override

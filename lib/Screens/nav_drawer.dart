@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,7 +28,7 @@ class Nav_Drawer extends StatefulWidget {
 class _Nav_DrawerState extends State<Nav_Drawer> {
   @override
   Widget build(BuildContext context) {
-    print(widget.currentUser);
+    //print(widget.currentUser);
     return SafeArea(
       child: Drawer(
         child: Container(
@@ -71,7 +72,7 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                             borderRadius: BorderRadius.circular(30),
                             image: DecorationImage(
                                 fit: BoxFit.cover,
-                                image: NetworkImage(widget.photoUrl))),
+                                image: NetworkImage(curUser.photoUrl))),
                       ),
                     ),
                     title: Text(
@@ -100,8 +101,8 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                     ),
                   ),
                   trailing: Text(
-                    widget.currentUser != null
-                        ? widget.currentUser.lollarAmount.toString()
+                    curUser != null
+                        ? curUser.lollarAmount.toString()
                         : "",
                     style: TextStyle(color: Colors.grey, fontSize: 16),
                   ),
@@ -116,7 +117,7 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                         color: nameCol.withOpacity(0.4),
                       ),
                     ),
-                    trailing: Text("${widget.currentUser.connection.length}",
+                    trailing: Text("${curUser.connection.length}",
                         style: TextStyle(color: Colors.grey, fontSize: 16))),
                 Nav_Drawer_Tile(
                     title: "Profile",

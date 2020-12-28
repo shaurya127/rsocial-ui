@@ -240,7 +240,7 @@ class _InvestPostTileState extends State<InvestPostTile> {
         text: "",
         user: loved[i],
         photourl: loved[i].photoUrl,
-        curUser: widget.curUser,
+        //curUser: widget.curUser,
       );
       love.add(tile);
     }
@@ -251,7 +251,7 @@ class _InvestPostTileState extends State<InvestPostTile> {
         text: "",
         user: liked[i],
         photourl: liked[i].photoUrl,
-        curUser: widget.curUser,
+        //curUser: widget.curUser,
       );
       likes.add(tile);
     }
