@@ -243,7 +243,7 @@ class _Post_TileState extends State<Post_Tile> {
         accepted: aconnection ? true : false,
         user: loved[i],
         photourl: loved[i].photoUrl,
-        curUser: widget.curUser,
+        //curUser: widget.curUser,
       );
       love.add(tile);
     }
@@ -271,7 +271,7 @@ class _Post_TileState extends State<Post_Tile> {
         accepted: aconnection ? true : false,
         user: liked[i],
         photourl: liked[i].photoUrl,
-        curUser: widget.curUser,
+        //curUser: widget.curUser,
       );
       likes.add(tile);
     }

@@ -16,24 +16,30 @@ import 'package:http/http.dart' as http;
 
 class Landing_Page extends StatefulWidget {
   User curUser;
-  Landing_Page({this.curUser});
+  List<Post> posts;
+  bool isLoading;
+  Landing_Page({this.curUser,this.posts,this.isLoading});
   @override
   _Landing_PageState createState() => _Landing_PageState();
 }
 
 class _Landing_PageState extends State<Landing_Page> {
   var photourl;
-  List<Post> posts = [];
-  bool isLoading = true;
+  //List<Post> posts = [];
+  List<Post_Tile> postTiles = [];
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
     FirebaseAnalytics().setCurrentScreen(screenName: "Landing_Page");
-    getUserPosts();
+    //getUserPosts();
   }
 
-  getUserPosts() async {
+  Future<void> getUserPosts() async {
+    setState(() {
+      widget.isLoading=true;
+    });
     var user = await FirebaseAuth.instance.currentUser();
     photourl = user.photoUrl;
     DocumentSnapshot doc = await users.document(user.uid).get();
@@ -57,6 +63,7 @@ class _Landing_PageState extends State<Landing_Page> {
       var msg = body1['message'];
       //print(msg.length);
       //print("msg id ${msg}");
+      List<Post> posts = [];
       for (int i = 0; i < msg.length; i++) {
         //print("msg $i is ${msg[i]}");
         Post post;
@@ -71,7 +78,8 @@ class _Landing_PageState extends State<Landing_Page> {
       }
       //print(posts.length);
       setState(() {
-        isLoading = false;
+        widget.posts=posts;
+        widget.isLoading = false;
       });
     } else {
       print(response.statusCode);
@@ -80,12 +88,13 @@ class _Landing_PageState extends State<Landing_Page> {
   }
 
   buildPosts() {
+    print("build started");
     setState(() {
-      isLoading = true;
+      widget.isLoading = true;
     });
-    if (posts.isEmpty) {
+    if (widget.posts.isEmpty) {
       setState(() {
-        isLoading = false;
+        widget.isLoading = false;
       });
       return Scaffold(
           body: Center(
@@ -112,13 +121,14 @@ class _Landing_PageState extends State<Landing_Page> {
     } else {
       List<Post_Tile> postTiles = [];
       //print(posts.length);
-      for (int i = 0; i < posts.length; i++) {
+      for (int i = 0; i < widget.posts.length; i++) {
         Post_Tile tile = Post_Tile(
-            curUser: widget.curUser, userPost: posts[i], photoUrl: photourl);
+            curUser: widget.curUser, userPost: widget.posts[i], photoUrl: photourl);
         postTiles.add(tile);
       }
       setState(() {
-        isLoading = false;
+        this.postTiles=postTiles;
+        widget.isLoading = false;
       });
       return ListView(
         children: postTiles.reversed.toList(),
@@ -130,10 +140,14 @@ class _Landing_PageState extends State<Landing_Page> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.grey.withOpacity(0.2),
-        body: isLoading
+        body: widget.isLoading
             ? Center(
                 child: CircularProgressIndicator(),
               )
-            : buildPosts());
+            : RefreshIndicator(
+          onRefresh: getUserPosts,
+          child: buildPosts()
+        )
+    );
   }
 }

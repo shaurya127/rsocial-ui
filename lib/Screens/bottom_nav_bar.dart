@@ -26,6 +26,7 @@ import 'package:rsocial2/constants.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
+import '../post.dart';
 import 'create_account_page.dart';
 import 'login_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -53,13 +54,17 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final _authInstance = FirebaseAuth.instance;
   bool isLoading = true;
   String photourl;
-  User curUser;
+  //User curUser;
   bool isFailed = false;
+  List<Post> posts = [];
+  List<User> allUsers = [];
+
+
   createNgetUser() async {
     var url = userEndPoint + 'create';
-    log(jsonEncode(widget.currentUser.toJson()), name: "Bla bla");
-    print(jsonEncode(widget.currentUser.toJson()));
-    debugPrint(jsonEncode(widget.currentUser.toJson()));
+    // log(jsonEncode(widget.currentUser.toJson()), name: "Bla bla");
+    // print(jsonEncode(widget.currentUser.toJson()));
+    // debugPrint(jsonEncode(widget.currentUser.toJson()));
     var user = await FirebaseAuth.instance.currentUser();
     photourl = user.photoUrl;
     var token = await user.getIdToken();
@@ -111,9 +116,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
         curUser = User.fromJson(msg);
         //print("haha");
         print(curUser);
-        setState(() {
-          isLoading = false;
-        });
+        // setState(() {
+        //   isLoading = false;
+        // });
         return curUser;
       } else {
         print(response.statusCode);
@@ -187,10 +192,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
       curUser = User.fromJson(msg);
 
-      print(curUser);
-      setState(() {
-        isLoading = false;
-      });
+      //print(curUser);
+      // setState(() {
+      //   isLoading = false;
+      // });
       return curUser;
     } else {
       print(response.statusCode);
@@ -224,6 +229,103 @@ class _BottomNavBarState extends State<BottomNavBar> {
     }
   }
 
+  Future<void> getUserPosts() async {
+    setState(() {
+      isLoading=true;
+    });
+    var user = await FirebaseAuth.instance.currentUser();
+    photourl = user.photoUrl;
+    DocumentSnapshot doc = await users.document(user.uid).get();
+    if (doc == null) print("error from get user post");
+    var id = doc['id'];
+    final url = storyEndPoint + "$id/all";
+    var token = await user.getIdToken();
+    final response = await http.get(url, headers: {
+      "Authorization": "Bearer $token",
+      "Content-Type": "application/json",
+    });
+    //print("body is ${response.body}");
+    //print(response.statusCode);
+
+    if (response.statusCode == 200) {
+      final jsonUser = jsonDecode(response.body);
+      var body = jsonUser['body'];
+      var body1 = jsonDecode(body);
+      //print("body is $body");
+      //print(body1);
+      var msg = body1['message'];
+      //print(msg.length);
+      //print("msg id ${msg}");
+      List<Post> posts = [];
+      for (int i = 0; i < msg.length; i++) {
+        //print("msg $i is ${msg[i]}");
+        Post post;
+        if (msg[i]['StoryType'] == "Investment")
+          post = Post.fromJsonI(msg[i]);
+        else
+          post = Post.fromJsonW(msg[i]);
+        if (post != null) {
+          //print(post.investedWithUser);
+          posts.add(post);
+        }
+      }
+      //print(posts.length);
+      setState(() {
+        this.posts=posts;
+        isLoading = false;
+      });
+    } else {
+      print(response.statusCode);
+      throw Exception();
+    }
+  }
+
+  Future<void> getAllConnections() async {
+    //print("==========Inside get all connection ===================");
+    var user = await FirebaseAuth.instance.currentUser();
+    //
+    // DocumentSnapshot doc = await users.document(user.uid).get();
+    // var id = doc['id'];
+    var id = curUser.id;
+    final url = userEndPoint + "$id/all";
+
+    var token = await user.getIdToken();
+    //print(token);
+
+    final response = await http.get(url, headers: {
+      "Authorization": "Bearer $token",
+      "Content-Type": "application/json",
+    });
+
+    //print(response.statusCode);
+    if (response.statusCode == 200) {
+      final jsonUser = jsonDecode(response.body);
+      var body = jsonUser['body'];
+      var body1 = jsonDecode(body);
+      var msg = body1['message'];
+
+      //print("length is ${msg.length}")
+      for (int i = 0; i < msg.length; i++) {
+        // print(msg[i]['PendingConnection']);
+
+        if (msg[i]['id'] == id) {
+          continue;
+        }
+
+        User user = User.fromJson(msg[i]);
+
+        allUsers.add(user);
+      }
+      setState(() {
+        isLoading = false;
+      });
+      return allUsers;
+    } else {
+      print(response.statusCode);
+      throw Exception();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -237,6 +339,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     } else
       // createUser();
       getUser();
+    getUserPosts();
   }
 
   buildFirstScreen() {
@@ -320,9 +423,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
     // Screens to be present, will be switched with the help of bottom nav bar
     final List _screens = [
       Landing_Page(
-        curUser: curUser,
+        curUser: curUser,posts:posts,isLoading:isLoading
       ),
-      Search_Page(curUser: curUser, photourl: photourl),
+      Search_Page(allusers:allUsers),
       Wage(
         currentUser: curUser,
       ),
