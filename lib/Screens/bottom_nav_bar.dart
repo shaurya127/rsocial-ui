@@ -58,7 +58,17 @@ class _BottomNavBarState extends State<BottomNavBar> {
   bool isFailed = false;
   List<Post> posts = [];
   List<User> allUsers = [];
+  bool isPosted = false;
+  int _currentIndex = 0;
+  bool isLoadingPost = false;
+  void isPostedCallback() {
+    setState(() {
+      _currentIndex = 0;
 
+      // isLoading = true;
+    });
+    getUserPosts();
+  }
 
   createNgetUser() async {
     var url = userEndPoint + 'create';
@@ -231,7 +241,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   Future<void> getUserPosts() async {
     setState(() {
-      isLoading=true;
+      isLoadingPost = true;
+      isLoading = false;
     });
     var user = await FirebaseAuth.instance.currentUser();
     photourl = user.photoUrl;
@@ -271,8 +282,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
       }
       //print(posts.length);
       setState(() {
-        this.posts=posts;
+        this.posts = posts;
         isLoading = false;
+        isLoadingPost = false;
       });
     } else {
       print(response.statusCode);
@@ -417,17 +429,16 @@ class _BottomNavBarState extends State<BottomNavBar> {
     "Notifications",
     "R cash"
   ];
-  int _currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     // Screens to be present, will be switched with the help of bottom nav bar
     final List _screens = [
-      Landing_Page(
-        curUser: curUser,posts:posts,isLoading:isLoading
-      ),
-      Search_Page(allusers:allUsers),
+      Landing_Page(curUser: curUser, posts: posts, isLoading: isLoadingPost),
+      Search_Page(allusers: allUsers),
       Wage(
         currentUser: curUser,
+        isPostedCallback: isPostedCallback,
       ),
       buildFirstScreen(),
       Scaffold(),
