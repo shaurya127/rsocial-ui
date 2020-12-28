@@ -29,8 +29,9 @@ import 'login_page.dart';
 
 class Wage extends StatefulWidget {
   User currentUser;
+  Function isPostedCallback;
 
-  Wage({this.currentUser});
+  Wage({this.currentUser, this.isPostedCallback});
 
   @override
   _WageState createState() => _WageState();
@@ -189,6 +190,7 @@ class _WageState extends State<Wage> {
           isloading = false;
           selectedList.clear();
         });
+        widget.isPostedCallback();
         // Fluttertoast.showToast(
         //     msg: "Uploaded investment story!",
         //     toastLength: Toast.LENGTH_SHORT,
@@ -262,10 +264,13 @@ class _WageState extends State<Wage> {
         //     toastLength: Toast.LENGTH_SHORT,
         //     gravity: ToastGravity.BOTTOM,
         //     fontSize: 15);
+
+        widget.isPostedCallback();
       } else {
         setState(() {
           isloading = false;
         });
+
         print(response.statusCode);
       }
     } else
