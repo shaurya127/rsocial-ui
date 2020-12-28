@@ -6,7 +6,7 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+//import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/RoundedButton.dart';
@@ -85,11 +85,11 @@ class _WageState extends State<Wage> {
 
   createPost(String storyText, List<String> list) async {
     if (storyText == null && list.isEmpty) {
-      Fluttertoast.showToast(
-          msg: "Please enter text or upload pic",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          fontSize: 15);
+      // Fluttertoast.showToast(
+      //     msg: "Please enter text or upload pic",
+      //     toastLength: Toast.LENGTH_SHORT,
+      //     gravity: ToastGravity.BOTTOM,
+      //     fontSize: 15);
       return;
     }
     setState(() {
@@ -132,11 +132,11 @@ class _WageState extends State<Wage> {
         setState(() {
           fileList.clear();
         });
-        Fluttertoast.showToast(
-            msg: "Uploaded wage story!",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            fontSize: 15);
+        // Fluttertoast.showToast(
+        //     msg: "Uploaded wage story!",
+        //     toastLength: Toast.LENGTH_SHORT,
+        //     gravity: ToastGravity.BOTTOM,
+        //     fontSize: 15);
       } else {
         setState(() {
           isLoading = false;

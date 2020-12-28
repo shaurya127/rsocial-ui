@@ -8,8 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+//import 'package:fluttertoast/fluttertoast.dart';
+import 'package:page_transition/page_transition.dart';
+
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
+import 'package:rsocial2/Screens/invested_with.dart';
 import 'package:rsocial2/Screens/login_page.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/Screens/reaction_info.dart';
@@ -21,7 +24,7 @@ import '../read_more.dart';
 import '../user.dart';
 import 'package:http/http.dart' as http;
 
-Map<String, Map<String,int>> m = new Map();
+Map<String, Map<String, int>> m = new Map();
 
 class Reaction {
   Reaction({
@@ -63,8 +66,15 @@ class _Post_TileState extends State<Post_Tile> {
   List<User> liked = [];
   List<Request_Tile> love = [];
   List<Request_Tile> likes = [];
-  String rxn="noreact";
-  Map<String, int> counter = {'loved':0,'liked':0,'whatever':0,'hated':0,'noreact':0};
+  List<User> investedWithUser = [];
+  String rxn = "noreact";
+  Map<String, int> counter = {
+    'loved': 0,
+    'liked': 0,
+    'whatever': 0,
+    'hated': 0,
+    'noreact': 0
+  };
 
   getReactions() {
     print(rxn);
@@ -72,16 +82,14 @@ class _Post_TileState extends State<Post_Tile> {
     for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
       User user = widget.userPost.reactedBy[i];
       String rt = user.reactionType;
-      if(rt=='loved')
+      if (rt == 'loved')
         loved.add(user);
-      else if(rt=='liked')
-        liked.add(user);
+      else if (rt == 'liked') liked.add(user);
       counter[rt]++;
 
-      if (user.id == widget.curUser.id)
-        {
-          this.rxn = user.reactionType;
-        }
+      if (user.id == widget.curUser.id) {
+        this.rxn = user.reactionType;
+      }
     }
   }
 
@@ -101,6 +109,11 @@ class _Post_TileState extends State<Post_Tile> {
     super.initState();
     getReactions();
     convertStringToFile();
+    getInvestedWithUser();
+  }
+
+  getInvestedWithUser() {
+    this.investedWithUser = widget.userPost.investedWithUser;
   }
 
   showProfile(BuildContext context, User user, String photourl) {
@@ -151,8 +164,7 @@ class _Post_TileState extends State<Post_Tile> {
           print("rara");
           if (user.id == widget.curUser.id) {
             //print("in user post");
-            if(m.containsKey(widget.userPost.id))
-              m.remove(widget.userPost.id);
+            if (m.containsKey(widget.userPost.id)) m.remove(widget.userPost.id);
             user.reactionType = reactn;
             inLoop = false;
           }
@@ -162,19 +174,17 @@ class _Post_TileState extends State<Post_Tile> {
         if (inLoop == true) {
           //print("charu22");
           // widget.userPost.user.firstRxn=reactn;
-          if(rxn=="noreact")
-            {
-              m[widget.userPost.id]={reactn:counter[reactn]};
-              return;
-            }
-          if(prevrxn!="noreact" && prevrxn!=rxn)
-            counter[prevrxn]--;
+          if (rxn == "noreact") {
+            m[widget.userPost.id] = {reactn: counter[reactn]};
+            return;
+          }
+          if (prevrxn != "noreact" && prevrxn != rxn) counter[prevrxn]--;
           // else
           //   {
           //     counter[prevrxn]--;
           //     counter[rxn]++;
           //   }
-          m[widget.userPost.id]={reactn:counter[reactn]};
+          m[widget.userPost.id] = {reactn: counter[reactn]};
           // if (rxn == "loved")
           //   m[widget.userPost.id][0] = ++lovedCounter;
           // else if (rxn == "liked")
@@ -194,47 +204,43 @@ class _Post_TileState extends State<Post_Tile> {
           // rxn = reactn;
           // print("hello");
           // print(rxn);
-        }
-        else
-          {
-            // if a user toggles to another reaction we need to
-            // decrease the counter of the previous reaction type
-            // if(rxn=='noreact')
-            //   rxn="noreact";
-            if (prevrxn != rxn && rxn != "noreact") {
-              counter[prevrxn]--;
-            }
+        } else {
+          // if a user toggles to another reaction we need to
+          // decrease the counter of the previous reaction type
+          // if(rxn=='noreact')
+          //   rxn="noreact";
+          if (prevrxn != rxn && rxn != "noreact") {
+            counter[prevrxn]--;
           }
+        }
       });
     }
   }
 
   buildReactionTile() {
-    likes=[];
-    love=[];
+    likes = [];
+    love = [];
     for (int i = 0; i < counter['loved']; i++) {
-      bool sentpending=false;
-      bool recievedpending=false;
-      bool aconnection=false;
-      for(int j=0;j<widget.curUser.sentPendingConnection.length;j++)
-        {
-          if(loved[i].id==widget.curUser.sentPendingConnection[j].id)
-            sentpending=true;
-        }
-      for(int j=0;j<widget.curUser.receivedPendingConnection.length;j++)
-      {
-        if(loved[i].id==widget.curUser.receivedPendingConnection[j].id)
-          recievedpending=true;
+      bool sentpending = false;
+      bool recievedpending = false;
+      bool aconnection = false;
+      for (int j = 0; j < widget.curUser.sentPendingConnection.length; j++) {
+        if (loved[i].id == widget.curUser.sentPendingConnection[j].id)
+          sentpending = true;
       }
-      for(int j=0;j<widget.curUser.connection.length;j++)
-      {
-        if(loved[i].id==widget.curUser.connection[j].id)
-          aconnection=true;
+      for (int j = 0;
+          j < widget.curUser.receivedPendingConnection.length;
+          j++) {
+        if (loved[i].id == widget.curUser.receivedPendingConnection[j].id)
+          recievedpending = true;
+      }
+      for (int j = 0; j < widget.curUser.connection.length; j++) {
+        if (loved[i].id == widget.curUser.connection[j].id) aconnection = true;
       }
       Request_Tile tile = Request_Tile(
-        request: recievedpending?true:false,
-        text: recievedpending?"Accept":(sentpending?"Pending":""),
-        accepted: aconnection?true:false,
+        request: recievedpending ? true : false,
+        text: recievedpending ? "Accept" : (sentpending ? "Pending" : ""),
+        accepted: aconnection ? true : false,
         user: loved[i],
         photourl: loved[i].photoUrl,
         //curUser: widget.curUser,
@@ -243,28 +249,26 @@ class _Post_TileState extends State<Post_Tile> {
     }
 
     for (int i = 0; i < counter['liked']; i++) {
-      bool sentpending=false;
-      bool recievedpending=false;
-      bool aconnection=false;
-      for(int j=0;j<widget.curUser.sentPendingConnection.length;j++)
-      {
-        if(liked[i].id==widget.curUser.sentPendingConnection[j].id)
-          sentpending=true;
+      bool sentpending = false;
+      bool recievedpending = false;
+      bool aconnection = false;
+      for (int j = 0; j < widget.curUser.sentPendingConnection.length; j++) {
+        if (liked[i].id == widget.curUser.sentPendingConnection[j].id)
+          sentpending = true;
       }
-      for(int j=0;j<widget.curUser.receivedPendingConnection.length;j++)
-      {
-        if(liked[i].id==widget.curUser.receivedPendingConnection[j].id)
-          recievedpending=true;
+      for (int j = 0;
+          j < widget.curUser.receivedPendingConnection.length;
+          j++) {
+        if (liked[i].id == widget.curUser.receivedPendingConnection[j].id)
+          recievedpending = true;
       }
-      for(int j=0;j<widget.curUser.connection.length;j++)
-      {
-        if(liked[i].id==widget.curUser.connection[j].id)
-          aconnection=true;
+      for (int j = 0; j < widget.curUser.connection.length; j++) {
+        if (liked[i].id == widget.curUser.connection[j].id) aconnection = true;
       }
       Request_Tile tile = Request_Tile(
-        request: recievedpending?true:false,
-        text: recievedpending?"Accept":(sentpending?"Pending":""),
-        accepted: aconnection?true:false,
+        request: recievedpending ? true : false,
+        text: recievedpending ? "Accept" : (sentpending ? "Pending" : ""),
+        accepted: aconnection ? true : false,
         user: liked[i],
         photourl: liked[i].photoUrl,
         //curUser: widget.curUser,
@@ -276,12 +280,13 @@ class _Post_TileState extends State<Post_Tile> {
   @override
   Widget build(BuildContext context) {
     if (m.containsKey(widget.userPost.id)) {
-      Map<String,int> map = m[widget.userPost.id];
+      Map<String, int> map = m[widget.userPost.id];
       for (var key in map.keys) rxn = key;
       print("my reaction is now $rxn");
-      counter[rxn]=map[rxn];
+      counter[rxn] = map[rxn];
       //Map<String, int> mx = m[widget.userPost.id];
       // for (var key in mx.keys) rxn = key;
+
       // if (rxn == "loved")
       //   lovedCounter = m[widget.userPost.id][0];
       // else if (rxn == "liked")
@@ -289,6 +294,7 @@ class _Post_TileState extends State<Post_Tile> {
       // else if (rxn == "whatever")
       //   whateverCounter = m[widget.userPost.id][2];
       // else if (rxn == "hated") hatedCounter = m[widget.userPost.id][3];
+
     }
 
     return Padding(
@@ -353,15 +359,107 @@ class _Post_TileState extends State<Post_Tile> {
                               color: nameCol,
                             ),
                           ),
-                          subtitle: Text(
-                            widget.userPost.investedWithUser == []
-                                ? "Investing alone"
-                                : "Investing with ${widget.userPost.investedWithUser[0].fname} ${widget.userPost.investedWithUser[0].lname}",
-                            style: TextStyle(
-                              fontFamily: "Lato",
-                              fontSize: 12,
-                              color: subtitile,
-                            ),
+                          subtitle: Row(
+                            children: <Widget>[
+                              widget.userPost.investedWithUser != []
+                                  ? Row(
+                                      children: <Widget>[
+                                        Text(
+                                          "Investing with ",
+                                          style: TextStyle(
+                                            fontFamily: "Lato",
+                                            fontSize: 12,
+                                            color: subtitile,
+                                          ),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                PageTransition(
+                                                  // settings: RouteSettings(
+                                                  //     name: "Login_Page"),
+                                                  type: PageTransitionType.fade,
+                                                  child: Profile(
+                                                    currentUser: widget.curUser,
+                                                    photoUrl:
+                                                        investedWithUser[0]
+                                                            .photoUrl,
+                                                    user: investedWithUser[0],
+                                                  ),
+                                                ));
+                                          },
+                                          child: Text(
+                                            (widget.userPost.investedWithUser[0]
+                                                                .fname +
+                                                            " " +
+                                                            widget
+                                                                .userPost
+                                                                .investedWithUser[
+                                                                    0]
+                                                                .lname)
+                                                        .length <
+                                                    11
+                                                ? "${widget.userPost.investedWithUser[0].fname} ${widget.userPost.investedWithUser[0].lname}"
+                                                : (widget
+                                                                .userPost
+                                                                .investedWithUser[
+                                                                    0]
+                                                                .fname +
+                                                            " " +
+                                                            widget
+                                                                .userPost
+                                                                .investedWithUser[
+                                                                    0]
+                                                                .lname)
+                                                        .substring(0, 7) +
+                                                    ".",
+                                            style: TextStyle(
+                                              fontFamily: "Lato",
+                                              fontSize: 12,
+                                              color: subtitile,
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    )
+                                  : Text(
+                                      "Investing alone",
+                                      style: TextStyle(
+                                        fontFamily: "Lato",
+                                        fontSize: 12,
+                                        color: subtitile,
+                                      ),
+                                    ),
+                              SizedBox(
+                                width: 2,
+                              ),
+                              widget.userPost.investedWithUser.length >= 2
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            PageTransition(
+                                                // settings: RouteSettings(
+                                                //     name: "Login_Page"),
+                                                type: PageTransitionType.fade,
+                                                child: InvestedWithPage(
+                                                  investedWithUser:
+                                                      this.investedWithUser,
+                                                  curUser: widget.curUser,
+                                                )));
+                                      },
+                                      child: Text(
+                                        "+ ${widget.userPost.investedWithUser.length - 1}",
+                                        style: TextStyle(
+                                          fontFamily: "Lato",
+                                          fontSize: 12,
+                                          color: colorButton,
+                                        ),
+                                      ),
+                                    )
+                                  : SizedBox.shrink()
+                            ],
                           ),
                         ),
                 ),
@@ -466,22 +564,22 @@ class _Post_TileState extends State<Post_Tile> {
                         color: colorPrimaryBlue,
                       )
                     else if (counter['liked'] > counter['loved'] &&
-                          counter['liked'] >= counter['whatever'] &&
-                          counter['liked'] >= counter['hated'])
+                        counter['liked'] >= counter['whatever'] &&
+                        counter['liked'] >= counter['hated'])
                       SvgPicture.asset(
                         "images/liked.svg",
                         color: colorPrimaryBlue,
                       )
                     else if (counter['whatever'] > counter['loved'] &&
-                            counter['whatever'] > counter['liked'] &&
-                            counter['whatever'] >= counter['hated'])
+                        counter['whatever'] > counter['liked'] &&
+                        counter['whatever'] >= counter['hated'])
                       SvgPicture.asset(
                         "images/whatever.svg",
                         color: colorPrimaryBlue,
                       )
                     else if (counter['hated'] > counter['liked'] &&
-                              counter['hated'] > counter['loved'] &&
-                              counter['hated'] > counter['whatever'])
+                        counter['hated'] > counter['loved'] &&
+                        counter['hated'] > counter['whatever'])
                       SvgPicture.asset(
                         "images/hated.svg",
                         color: colorPrimaryBlue,
@@ -492,11 +590,22 @@ class _Post_TileState extends State<Post_Tile> {
                           buildReactionTile();
                           Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                  builder: (context) => Reaction_Info(
-                                        like: likes,
-                                        love: love,
-                                      )));
+                              PageTransition(
+                                  // settings: RouteSettings(
+                                  //     name: "Login_Page"),
+                                  type: PageTransitionType.fade,
+                                  child: Reaction_Info(
+                                    like: likes,
+                                    love: love,
+                                  )));
+
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => Reaction_Info(
+                          //               like: likes,
+                          //               love: love,
+                          //             )));
                         },
                         child: Icon(
                           Icons.more_vert,
@@ -512,7 +621,8 @@ class _Post_TileState extends State<Post_Tile> {
                     height: 0,
                   )
                 : Padding(
-                    padding: const EdgeInsets.only(top: 12,bottom: 3,left: 3,right: 3),
+                    padding: const EdgeInsets.only(
+                        top: 12, bottom: 3, left: 3, right: 3),
                     child: Read_More(
                       "${widget.userPost.storyText}",
                       trimLines: 2,
@@ -541,7 +651,7 @@ class _Post_TileState extends State<Post_Tile> {
             Padding(
                 padding: widget.userPost.storyText == null
                     ? EdgeInsets.only(top: 0, bottom: 15)
-                    : EdgeInsets.only(bottom: 15,top: 6),
+                    : EdgeInsets.only(bottom: 15, top: 6),
                 child: Container(
                     height: widget.userPost.fileUpload.length != 0 ? 250 : 0,
                     decoration:
@@ -599,15 +709,18 @@ class _Post_TileState extends State<Post_Tile> {
                     children: <Widget>[
                       GestureDetector(
                         onTap: () => {
-                          widget.userPost.user.id==widget.curUser.id
-                              ? Fluttertoast.showToast(
-                              msg: "You cannot react on your own post!",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              fontSize: 15)
-                              :(rxn == 'loved'
-                              ? {react("noreact"), counter['loved']--}
-                              : {react("loved"), counter['loved']++})
+                          widget.userPost.user.id != widget.curUser.id
+                              ?
+                              //     ? Fluttertoast.showToast(
+                              //         msg: "You cannot react on your own post!",
+                              //         toastLength: Toast.LENGTH_SHORT,
+                              //         gravity: ToastGravity.BOTTOM,
+                              //         fontSize: 15)
+                              //     :
+                              (rxn == 'loved'
+                                  ? {react("noreact"), counter['loved']--}
+                                  : {react("loved"), counter['loved']++})
+                              : print("not allowed")
                         },
                         child: Column(
                           children: <Widget>[
@@ -616,8 +729,9 @@ class _Post_TileState extends State<Post_Tile> {
                               width: 23,
                               child: SvgPicture.asset(
                                 "images/loved.svg",
-                                color:
-                                    rxn == "loved" ? colorPrimaryBlue : postIcons,
+                                color: rxn == "loved"
+                                    ? colorPrimaryBlue
+                                    : postIcons,
                               ),
                             ),
                             Padding(
@@ -639,15 +753,18 @@ class _Post_TileState extends State<Post_Tile> {
                       ),
                       GestureDetector(
                         onTap: () => {
-                          widget.userPost.user.id==widget.curUser.id
-                              ? Fluttertoast.showToast(
-                              msg: "You cannot react on your own post!",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              fontSize: 15)
-                              :(rxn == 'liked'
-                              ? {react("noreact"), counter['liked']--}
-                              : {react("liked"), counter['liked']++})
+                          widget.userPost.user.id != widget.curUser.id
+                              ?
+                              //     ? Fluttertoast.showToast(
+                              //         msg: "You cannot react on your own post!",
+                              //         toastLength: Toast.LENGTH_SHORT,
+                              //         gravity: ToastGravity.BOTTOM,
+                              //         fontSize: 15)
+                              //     :
+                              (rxn == 'liked'
+                                  ? {react("noreact"), counter['liked']--}
+                                  : {react("liked"), counter['liked']++})
+                              : print("not allowed")
                         },
                         child: Column(
                           children: <Widget>[
@@ -656,8 +773,9 @@ class _Post_TileState extends State<Post_Tile> {
                               width: 23,
                               child: SvgPicture.asset(
                                 "images/liked.svg",
-                                color:
-                                    rxn == "liked" ? colorPrimaryBlue : postIcons,
+                                color: rxn == "liked"
+                                    ? colorPrimaryBlue
+                                    : postIcons,
                               ),
                             ),
                             //Icon(Icons.thumb_up,size: 30,color:postIcons),
@@ -678,15 +796,18 @@ class _Post_TileState extends State<Post_Tile> {
                       SizedBox(width: 20),
                       GestureDetector(
                         onTap: () => {
-                          widget.userPost.user.id==widget.curUser.id
-                              ? Fluttertoast.showToast(
-                              msg: "You cannot react on your own post!",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              fontSize: 15)
-                              :(rxn == 'whatever'
-                              ? {react("noreact"), counter['whatever']--}
-                              : {react("whatever"), counter['whatever']++})
+                          widget.userPost.user.id != widget.curUser.id
+                              ?
+                              //     ? Fluttertoast.showToast(
+                              //         msg: "You cannot react on your own post!",
+                              //         toastLength: Toast.LENGTH_SHORT,
+                              //         gravity: ToastGravity.BOTTOM,
+                              //         fontSize: 15)
+                              //     :
+                              (rxn == 'whatever'
+                                  ? {react("noreact"), counter['whatever']--}
+                                  : {react("whatever"), counter['whatever']++})
+                              : print("not allowed")
                         },
                         child: Column(
                           children: <Widget>[
@@ -719,15 +840,18 @@ class _Post_TileState extends State<Post_Tile> {
                       ),
                       GestureDetector(
                         onTap: () => {
-                          widget.userPost.user.id==widget.curUser.id
-                              ? Fluttertoast.showToast(
-                              msg: "You cannot react on your own post!",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                              fontSize: 15)
-                              :(rxn == 'hated'
-                              ? {react("noreact"), counter['hated']--}
-                              : {react("hated"), counter['hated']++})
+                          widget.userPost.user.id != widget.curUser.id
+                              ?
+                              //     ? Fluttertoast.showToast(
+                              //         msg: "You cannot react on your own post!",
+                              //         toastLength: Toast.LENGTH_SHORT,
+                              //         gravity: ToastGravity.BOTTOM,
+                              //         fontSize: 15)
+                              //     :
+                              (rxn == 'hated'
+                                  ? {react("noreact"), counter['hated']--}
+                                  : {react("hated"), counter['hated']++})
+                              : print("not allowed")
                         },
                         child: Column(
                           children: <Widget>[
@@ -736,8 +860,9 @@ class _Post_TileState extends State<Post_Tile> {
                               width: 23,
                               child: SvgPicture.asset(
                                 "images/hated.svg",
-                                color:
-                                    rxn == "hated" ? colorPrimaryBlue : postIcons,
+                                color: rxn == "hated"
+                                    ? colorPrimaryBlue
+                                    : postIcons,
                               ),
                             ),
                             Padding(
