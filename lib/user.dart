@@ -16,7 +16,7 @@ class User {
       this.dob,
       this.mobile,
       this.connection,
-        this.reactionType,
+      this.reactionType,
       this.pendingConnection,
       this.sentPendingConnection,
       this.receivedPendingConnection});
@@ -40,7 +40,7 @@ class User {
   //List<String> list= new List();
 
   factory User.fromJson(final json) {
-    print(json["SentPendingConnection"]);
+    //print(json["SentPendingConnection"]);
     List<User> outgoing = [];
     if (json["SentPendingConnection"] != null) {
       for (int i = 0; i < json["SentPendingConnection"].length; i++) {
@@ -89,8 +89,7 @@ class User {
         sentPendingConnection:
             json["sentPendingConnection"] == null ? [] : outgoing,
         receivedPendingConnection:
-            json["ReceivedPendingConnection"] == null ? [] : incoming
-    );
+            json["ReceivedPendingConnection"] == null ? [] : incoming);
   }
 
   Map<String, dynamic> toJson() => {
