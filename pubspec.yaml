@@ -43,6 +43,7 @@ dependencies:
   intl_phone_field: ^1.3.0
   http: ^0.12.2
   firebase_analytics: ^5.0.11
+  modal_progress_hud: ^0.1.3
 #  fluttertoast:
 
 dev_dependencies:
