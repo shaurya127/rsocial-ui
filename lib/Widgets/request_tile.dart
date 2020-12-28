@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:rsocial2/Screens/bottom_nav_bar.dart';
+
 import '../connection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -19,20 +21,20 @@ class Request_Tile extends StatefulWidget {
   String photourl;
   String text;
   User user;
-  User curUser;
+  //User curUser;
   Request_Tile(
       {this.request,
       this.text,
       this.user,
       this.photourl,
-      this.curUser,
+      //this.curUser,
       this.accepted});
   @override
   _Request_TileState createState() => _Request_TileState();
 }
 
 class _Request_TileState extends State<Request_Tile> {
-  User curUser;
+  //User curUser;
   removeConnection(String friendId) async {
     var url = userEndPoint + "removeconnection";
     var user = await FirebaseAuth.instance.currentUser();
@@ -58,7 +60,14 @@ class _Request_TileState extends State<Request_Tile> {
     print(response.statusCode);
     if (response.statusCode == 200) {
       print(response.body);
+      final jsonUser = jsonDecode(response.body);
+      var body = jsonUser['body'];
+      var body1 = jsonDecode(body);
+      //print("body is $body");
+      // print(body1);
+      var msg = body1['message'];
       setState(() {
+        curUser=User.fromJson(msg);
         widget.accepted = true;
       });
     }
@@ -89,7 +98,14 @@ class _Request_TileState extends State<Request_Tile> {
     print(response.statusCode);
     if (response.statusCode == 200) {
       print(response.body);
+      final jsonUser = jsonDecode(response.body);
+      var body = jsonUser['body'];
+      var body1 = jsonDecode(body);
+      //print("body is $body");
+      // print(body1);
+      var msg = body1['message'];
       setState(() {
+        curUser=User.fromJson(msg);
         widget.accepted = true;
       });
     }
@@ -164,7 +180,7 @@ class _Request_TileState extends State<Request_Tile> {
                   //contentPadding: EdgeInsets.all(-10)
                   leading: GestureDetector(
                     onTap: () => showProfile(context, widget.user,
-                        widget.user.photoUrl, widget.curUser),
+                        widget.user.photoUrl, curUser),
                     child: CircleAvatar(
                       backgroundImage: NetworkImage(
                         widget.user.photoUrl,
