@@ -87,7 +87,7 @@ class User {
         connection: json["Connection"] == null ? [] : frnds,
         pendingConnection: json["PendingConnection"] == null ? [] : pending,
         sentPendingConnection:
-            json["sentPendingConnection"] == null ? [] : outgoing,
+            json["SentPendingConnection"] == null ? [] : outgoing,
         receivedPendingConnection:
             json["ReceivedPendingConnection"] == null ? [] : incoming);
   }

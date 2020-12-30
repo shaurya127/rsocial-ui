@@ -16,14 +16,14 @@ import '../constants.dart';
 import '../user.dart';
 
 class Request_Tile extends StatefulWidget {
-  bool request = false;
+  //bool request = false;
   bool accepted = false;
   String photourl;
   String text;
   User user;
   //User curUser;
   Request_Tile(
-      {this.request,
+      {
       this.text,
       this.user,
       this.photourl,
@@ -35,7 +35,7 @@ class Request_Tile extends StatefulWidget {
 
 class _Request_TileState extends State<Request_Tile> {
   //User curUser;
-  removeConnection(String friendId) async {
+ removeConnection(String friendId) async {
     var url = userEndPoint + "removeconnection";
     var user = await FirebaseAuth.instance.currentUser();
     DocumentSnapshot doc = await users.document(user.uid).get();
@@ -68,7 +68,8 @@ class _Request_TileState extends State<Request_Tile> {
       var msg = body1['message'];
       setState(() {
         curUser=User.fromJson(msg);
-        widget.accepted = true;
+        widget.text="";
+        //widget.accepted = false;
       });
     }
   }
@@ -106,7 +107,7 @@ class _Request_TileState extends State<Request_Tile> {
       var msg = body1['message'];
       setState(() {
         curUser=User.fromJson(msg);
-        widget.accepted = true;
+        widget.text="pending";
       });
     }
   }
@@ -146,7 +147,8 @@ class _Request_TileState extends State<Request_Tile> {
       //print(msg);
       setState(() {
         curUser = User.fromJson(msg);
-        widget.accepted = true;
+        widget.text="";
+        //widget.accepted = true;
       });
     }
   }
@@ -159,6 +161,153 @@ class _Request_TileState extends State<Request_Tile> {
           currentUser: curUser,
           photoUrl: photourl,
           user: user,
+        ),
+      ),
+    );
+  }
+
+  buildRequest()
+  {
+    // return (widget.accepted == false)
+    //     ?
+    return Row(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: GestureDetector(
+                onTap: () {},
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                      vertical: 8, horizontal: 8),
+                  child: Text(
+                    "Reject",
+                    style: TextStyle(
+                        fontFamily: "Lato",
+                        fontSize: 14,
+                        color: Colors.white
+                    ),
+                  ),
+                  decoration: BoxDecoration(
+                      color:Theme.of(context).primaryColor,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                          width: 1,
+                          color: Theme.of(context).primaryColor)),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: GestureDetector(
+                onTap: (){acceptConnection(widget.user.id);},
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                      vertical: 8, horizontal: 8),
+                  child: Text(
+                    widget.text,
+                    style: TextStyle(
+                        fontFamily: "Lato",
+                        fontSize: 14,
+                        color: Colors.white),
+                  ),
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                          width: 1,
+                          color: Theme.of(context).primaryColor)),
+                ),
+              ),
+            )
+          ],
+        );
+    // :
+    // Icon(
+    //   Icons.check,
+    //   size: 24,
+    //   color: colorPrimaryBlue,
+    // );
+  }
+
+  buildPending()
+  {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      child: GestureDetector(
+        onTap: (){},
+        child: Container(
+          padding: EdgeInsets.symmetric(
+              vertical: 8, horizontal: 8),
+          child: Text(
+            "Pending",
+            style: TextStyle(
+                fontFamily: "Lato",
+                fontSize: 14,
+                color: Colors.grey),
+          ),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                  width: 1,
+                  color: Colors.grey)),
+        ),
+      ),
+    );
+  }
+
+  buildAdd()
+  {
+    // return widget.accepted==false
+    //     ?
+    return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          child: GestureDetector(
+            onTap: (){addConnection(widget.user.id);},
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                  vertical: 8, horizontal: 8),
+              child: Text(
+                "Add",
+                style: TextStyle(
+                    fontFamily: "Lato",
+                    fontSize: 14,
+                    color: Colors.white),
+              ),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                      width: 1,
+                      color: Theme.of(context).primaryColor)),
+            ),
+          ),
+    );
+        //:buildPending();
+  }
+
+  buildRemove()
+  {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      child: GestureDetector(
+        onTap: (){removeConnection(widget.user.id);},
+        child: Container(
+          padding: EdgeInsets.symmetric(
+              vertical: 8, horizontal: 8),
+          child: Text(
+            "Remove",
+            style: TextStyle(
+                fontFamily: "Lato",
+                fontSize: 14,
+                color: Colors.white),
+          ),
+          decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                  width: 1,
+                  color: Theme.of(context).primaryColor)),
         ),
       ),
     );
@@ -236,73 +385,22 @@ class _Request_TileState extends State<Request_Tile> {
                   ),
                 ),
               ),
-              Row(
-                children: <Widget>[
-                  (widget.request && widget.accepted == false)
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: GestureDetector(
-                            onTap: () {},
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 8),
-                              child: Text(
-                                "Reject",
-                                style: TextStyle(
-                                  fontFamily: "Lato",
-                                  fontSize: 14,
-                                  color: Colors.white
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                  color:Theme.of(context).primaryColor,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      width: 1,
-                                      color: Theme.of(context).primaryColor)),
-                            ),
-                          ),
-                        )
-                      : Container(),
-                  widget.accepted == false
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: GestureDetector(
-                            onTap: () {
-                              if (widget.text == 'Accept')
-                                acceptConnection(widget.user.id);
-                              else if (widget.text == 'Add')
-                                addConnection(widget.user.id);
-                              else if (widget.text == 'Remove')
-                                removeConnection(widget.user.id);
-                              //addConnection(widget.user.id);
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 8),
-                              child: Text(
-                                widget.text,
-                                style: TextStyle(
-                                    fontFamily: "Lato",
-                                    fontSize: 14,
-                                    color: Colors.white),
-                              ),
-                              decoration: BoxDecoration(
-                                  color: Theme.of(context).primaryColor,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      width: 1,
-                                      color: Theme.of(context).primaryColor)),
-                            ),
-                          ),
-                        )
-                      : Icon(
-                          Icons.check,
-                          size: 24,
-                          color: colorPrimaryBlue,
-                        )
-                ],
-              )
+              if(widget.text=="request")
+                buildRequest()
+              else if(widget.text=="pending")
+                buildPending()
+              else if(widget.user.id==curUser.id)
+                SizedBox()
+              else if(widget.text=="remove")
+                buildRemove()
+              else if(widget.text=="add")
+                buildAdd()
+              else
+                      Icon(
+                        Icons.check,
+                        size: 24,
+                        color: colorPrimaryBlue,
+                      )
             ],
           ),
           Padding(

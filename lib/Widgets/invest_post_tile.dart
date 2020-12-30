@@ -66,10 +66,13 @@ class _InvestPostTileState extends State<InvestPostTile> {
   bool isLoading = true;
   List<User> loved = [];
   List<User> liked = [];
-
-  List<User> investedWithUser = [];
+  List<User> hated = [];
+  List<User> whatever = [];
   List<Request_Tile> love = [];
+  List<Request_Tile> hates = [];
   List<Request_Tile> likes = [];
+  List<Request_Tile> whatevers = [];
+  List<User> investedWithUser = [];
   String rxn = "noreact";
   Map<String, int> counter = {
     'loved': 0,
@@ -233,11 +236,29 @@ class _InvestPostTileState extends State<InvestPostTile> {
   buildReactionTile() {
     likes = [];
     love = [];
-
+    hates=[];
+    whatevers=[];
     for (int i = 0; i < counter['loved']; i++) {
+      bool sentpending = false;
+      bool recievedpending = false;
+      bool aconnection = false;
+      for (int j = 0; j < widget.curUser.sentPendingConnection.length; j++) {
+        if (loved[i].id == widget.curUser.sentPendingConnection[j].id)
+          sentpending = true;
+      }
+      for (int j = 0;
+      j < widget.curUser.receivedPendingConnection.length;
+      j++) {
+        if (loved[i].id == widget.curUser.receivedPendingConnection[j].id)
+          recievedpending = true;
+      }
+      for (int j = 0; j < widget.curUser.connection.length; j++) {
+        if (loved[i].id == widget.curUser.connection[j].id) aconnection = true;
+      }
       Request_Tile tile = Request_Tile(
-        request: false,
-        text: "",
+        //request: recievedpending ? true : false,
+        text: recievedpending ? "request" : (sentpending ? "pending" : ""),
+        accepted: aconnection ? true : false,
         user: loved[i],
         photourl: loved[i].photoUrl,
         //curUser: widget.curUser,
@@ -246,14 +267,87 @@ class _InvestPostTileState extends State<InvestPostTile> {
     }
 
     for (int i = 0; i < counter['liked']; i++) {
+      bool sentpending = false;
+      bool recievedpending = false;
+      bool aconnection = false;
+      for (int j = 0; j < widget.curUser.sentPendingConnection.length; j++) {
+        if (liked[i].id == widget.curUser.sentPendingConnection[j].id)
+          sentpending = true;
+      }
+      for (int j = 0;
+      j < widget.curUser.receivedPendingConnection.length;
+      j++) {
+        if (liked[i].id == widget.curUser.receivedPendingConnection[j].id)
+          recievedpending = true;
+      }
+      for (int j = 0; j < widget.curUser.connection.length; j++) {
+        if (liked[i].id == widget.curUser.connection[j].id) aconnection = true;
+      }
       Request_Tile tile = Request_Tile(
-        request: false,
-        text: "",
+        //request: recievedpending ? true : false,
+        text: recievedpending ? "accept" : (sentpending ? "pending" : ""),
+        accepted: aconnection ? true : false,
         user: liked[i],
         photourl: liked[i].photoUrl,
         //curUser: widget.curUser,
       );
       likes.add(tile);
+    }
+
+    for (int i = 0; i < counter['hated']; i++) {
+      bool sentpending = false;
+      bool recievedpending = false;
+      bool aconnection = false;
+      for (int j = 0; j < widget.curUser.sentPendingConnection.length; j++) {
+        if (hated[i].id == widget.curUser.sentPendingConnection[j].id)
+          sentpending = true;
+      }
+      for (int j = 0;
+      j < widget.curUser.receivedPendingConnection.length;
+      j++) {
+        if (hated[i].id == widget.curUser.receivedPendingConnection[j].id)
+          recievedpending = true;
+      }
+      for (int j = 0; j < widget.curUser.connection.length; j++) {
+        if (hated[i].id == widget.curUser.connection[j].id) aconnection = true;
+      }
+      Request_Tile tile = Request_Tile(
+        //request: recievedpending ? true : false,
+        text: recievedpending ? "accept" : (sentpending ? "pending" : ""),
+        accepted: aconnection ? true : false,
+        user: hated[i],
+        photourl: hated[i].photoUrl,
+        //curUser: widget.curUser,
+      );
+      hates.add(tile);
+    }
+
+    for (int i = 0; i < counter['whatever']; i++) {
+      bool sentpending = false;
+      bool recievedpending = false;
+      bool aconnection = false;
+      for (int j = 0; j < widget.curUser.sentPendingConnection.length; j++) {
+        if (whatever[i].id == widget.curUser.sentPendingConnection[j].id)
+          sentpending = true;
+      }
+      for (int j = 0;
+      j < widget.curUser.receivedPendingConnection.length;
+      j++) {
+        if (whatever[i].id == widget.curUser.receivedPendingConnection[j].id)
+          recievedpending = true;
+      }
+      for (int j = 0; j < widget.curUser.connection.length; j++) {
+        if (whatever[i].id == widget.curUser.connection[j].id) aconnection = true;
+      }
+      Request_Tile tile = Request_Tile(
+        //request: recievedpending ? true : false,
+        text: recievedpending ? "accept" : (sentpending ? "pending" : ""),
+        accepted: aconnection ? true : false,
+        user: whatever[i],
+        photourl: whatever[i].photoUrl,
+        //curUser: widget.curUser,
+      );
+      whatevers.add(tile);
     }
   }
 

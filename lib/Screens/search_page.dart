@@ -172,9 +172,9 @@ class _Search_PageState extends State<Search_Page>
   Widget buildSuggestions(BuildContext context, String query) {
     // show when someone searches for something
 
-    suggestionList = query == null || query.isEmpty || allUsers.isEmpty
+    suggestionList = query == null || query.isEmpty || widget.allusers.isEmpty
         ? []
-        : allUsers
+        : widget.allusers
             .where((p) => (p.fname + " " + p.lname)
                 .contains(RegExp(query, caseSensitive: false)))
             .toList();
@@ -191,6 +191,9 @@ class _Search_PageState extends State<Search_Page>
   }
 
   Future<void> getAllConnections() async {
+    setState(() {
+      isLoading=true;
+    });
     //print("==========Inside get all connection ===================");
     var user = await FirebaseAuth.instance.currentUser();
     //
@@ -219,6 +222,7 @@ class _Search_PageState extends State<Search_Page>
         // print(msg[i]['PendingConnection']);
 
         if (msg[i]['id'] == id) {
+          curUser=User.fromJson(msg[i]);
           continue;
         }
 
@@ -230,7 +234,7 @@ class _Search_PageState extends State<Search_Page>
         widget.allusers=allUsers;
         isLoading = false;
       });
-      return allUsers;
+      //return allUsers;
     } else {
       print(response.statusCode);
       throw Exception();
@@ -252,15 +256,16 @@ class _Search_PageState extends State<Search_Page>
         tile = Request_Tile(
           user: suggestionList[i],
           accepted: true,
-          request: false,
+          text: "pending",
+          //request: false,
           photourl: photourl,
           //curUser: curUser,
         );
       } else {
         tile = Request_Tile(
           user: suggestionList[i],
-          text: "Add",
-          request: false,
+          text: "",
+          //request: false,
           accepted: false,
           photourl: photourl,
           //curUser: curUser,
@@ -318,9 +323,9 @@ class _Search_PageState extends State<Search_Page>
         print(connections[i].fname);
         Request_Tile tile = Request_Tile(
           user: connections[i],
-          text: "Remove",
-          accepted: false,
-          request: false,
+          text: "",
+          accepted: true,
+          //request: false,
           photourl: photourl,
           //curUser: curUser,
         );
@@ -346,10 +351,10 @@ class _Search_PageState extends State<Search_Page>
       for (int i = 0; i < requestList.length; i++) {
         Request_Tile tile = Request_Tile(
           user: requestList[i],
-          request: true,
+          //request: true,
           accepted: false,
           photourl: requestList[i].photoUrl,
-          text: "Accept",
+          text: "accept",
           //curUser: curUser,
         );
         tiles.add(tile);
@@ -387,7 +392,7 @@ class _Search_PageState extends State<Search_Page>
               child: CircularProgressIndicator(),
             )
           : RefreshIndicator(
-        onRefresh: (){getUser;getAllConnections();},
+        onRefresh: getAllConnections,
         child: buildSearchTab(),
       );
   }
@@ -491,290 +496,3 @@ class _Search_PageState extends State<Search_Page>
     );
   }
 }
-
-// class Request_Tile extends StatefulWidget {
-//   bool request = false;
-//   bool accepted = false;
-//   String photourl;
-//   String text;
-//   User user;
-//   User curUser;
-//   Request_Tile(
-//       {this.request, this.text, this.user, this.photourl, this.curUser});
-//   @override
-//   _Request_TileState createState() => _Request_TileState();
-// }
-//
-// class _Request_TileState extends State<Request_Tile> {
-//   removeConnection(String friendId) async {
-//     var url = userEndPoint + "removeconnection";
-//     var user = await FirebaseAuth.instance.currentUser();
-//     DocumentSnapshot doc = await users.document(user.uid).get();
-//     var uid = doc['id'];
-//     //print(uid);
-//     Connection connection = Connection(
-//       id: uid,
-//       friendId: friendId,
-//     );
-//     var token = await user.getIdToken();
-//     print(jsonEncode(connection.toJson()));
-//     //print(token);
-//     var response = await http.put(
-//       url,
-//       encoding: Encoding.getByName("utf-8"),
-//       body: jsonEncode(connection.toJson()),
-//       headers: {
-//         "Authorization": "Bearer: $token",
-//         "Content-Type": "application/json",
-//       },
-//     );
-//     print(response.statusCode);
-//     if (response.statusCode == 200) {
-//       print(response.body);
-//       setState(() {
-//         widget.accepted = true;
-//       });
-//     }
-//   }
-//
-//   addConnection(String friendId) async {
-//     var url = userEndPoint + "addconnection";
-//     var user = await FirebaseAuth.instance.currentUser();
-//     DocumentSnapshot doc = await users.document(user.uid).get();
-//     var uid = doc['id'];
-//     //print(uid);
-//     Connection connection = Connection(
-//       id: uid,
-//       friendId: friendId,
-//     );
-//     var token = await user.getIdToken();
-//     print(jsonEncode(connection.toJson()));
-//     //print(token);
-//     var response = await http.put(
-//       url,
-//       encoding: Encoding.getByName("utf-8"),
-//       body: jsonEncode(connection.toJson()),
-//       headers: {
-//         "Authorization": "Bearer: $token",
-//         "Content-Type": "application/json",
-//       },
-//     );
-//     print(response.statusCode);
-//     if (response.statusCode == 200) {
-//       print(response.body);
-//       setState(() {
-//         widget.accepted = true;
-//       });
-//     }
-//   }
-//
-//   acceptConnection(String friendId) async {
-//     var url = userEndPoint + "acceptconnection";
-//
-//     var user = await FirebaseAuth.instance.currentUser();
-//     DocumentSnapshot doc = await users.document(user.uid).get();
-//     var uid = doc['id'];
-//     print(uid);
-//     Connection connection = Connection(
-//       id: uid,
-//       friendId: friendId,
-//     );
-//     var token = await user.getIdToken();
-//     print(jsonEncode(connection.toJson()));
-//     //print(token);
-//     var response = await http.put(
-//       url,
-//       encoding: Encoding.getByName("utf-8"),
-//       body: jsonEncode(connection.toJson()),
-//       headers: {
-//         "Authorization": "Bearer: $token",
-//         "Content-Type": "application/json",
-//       },
-//     );
-//     print(response.statusCode);
-//     if (response.statusCode == 200) {
-//       final jsonUser = jsonDecode(response.body);
-//       var body = jsonUser['body'];
-//       var body1 = jsonDecode(body);
-//       //print("body is $body");
-//       // print(body1);
-//       var msg = body1['message'];
-//       //print("id is: ${msg['id']}");
-//       //print(msg);
-//       setState(() {
-//         curUser = User.fromJson(msg);
-//         widget.accepted = true;
-//       });
-//     }
-//   }
-//
-//   showProfile(BuildContext context, User user, String photourl, User curUser) {
-//     Navigator.push(
-//       context,
-//       MaterialPageRoute(
-//         builder: (context) => Profile(
-//           currentUser: curUser,
-//           photoUrl: photourl,
-//           user: user,
-//         ),
-//       ),
-//     );
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-//       child: Column(
-//         children: <Widget>[
-//           Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             children: <Widget>[
-//               Expanded(
-//                 child: ListTile(
-//                   //contentPadding: EdgeInsets.all(4),
-//                   dense: true,
-//                   //contentPadding: EdgeInsets.all(-10)
-//                   leading: GestureDetector(
-//                     onTap: () => showProfile(context, widget.user,
-//                         widget.user.photoUrl, widget.curUser),
-//                     child: CircleAvatar(
-//                       backgroundImage: NetworkImage(
-//                         widget.user.photoUrl,
-//                       ),
-//                     ),
-//                   ),
-//                   title: Text(
-//                     "${widget.user.fname} ${widget.user.lname}",
-//                     style: TextStyle(
-//                       fontFamily: "Lato",
-//                       //fontWeight: FontWeight.bold,
-//                       fontSize: 16,
-//                       color: nameCol,
-//                     ),
-//                   ),
-//                   subtitle: Row(
-//                     children: <Widget>[
-//                       Container(
-//                         height: 15,
-//                         width: 15,
-//                         padding: EdgeInsets.only(right: 2),
-//                         child: SvgPicture.asset(
-//                           "images/group2834.svg",
-//                           color: nameCol.withOpacity(0.4),
-//                         ),
-//                       ),
-//                       Text(
-//                         "${widget.user.lollarAmount}",
-//                         style: TextStyle(color: Colors.grey),
-//                       ),
-//                       Padding(
-//                         padding: const EdgeInsets.symmetric(horizontal: 8),
-//                         child: Container(
-//                           width: 1,
-//                           height: 10,
-//                           color: Colors.grey,
-//                         ),
-//                       ),
-//                       Container(
-//                         height: 15,
-//                         width: 15,
-//                         padding: EdgeInsets.only(right: 2),
-//                         child: SvgPicture.asset(
-//                           "images/high-five.svg",
-//                           color: nameCol.withOpacity(0.4),
-//                         ),
-//                       ),
-//                       Text(
-//                         "${widget.user.connection.length}",
-//                         style: TextStyle(color: Colors.grey),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//               Row(
-//                 children: <Widget>[
-//                   (widget.request && widget.accepted == false)
-//                       ? Padding(
-//                           padding: const EdgeInsets.symmetric(horizontal: 5),
-//                           child: GestureDetector(
-//                             onTap: () {},
-//                             child: Container(
-//                               padding: EdgeInsets.symmetric(
-//                                   vertical: 8, horizontal: 8),
-//                               child: Text(
-//                                 "Reject",
-//                                 style: TextStyle(
-//                                   fontFamily: "Lato",
-//                                   fontSize: 14,
-//                                   color: Orientation == 'search'
-//                                       ? Colors.white
-//                                       : Theme.of(context).primaryColor,
-//                                 ),
-//                               ),
-//                               decoration: BoxDecoration(
-//                                   color: Orientation == 'search'
-//                                       ? Theme.of(context).primaryColor
-//                                       : Colors.white,
-//                                   borderRadius: BorderRadius.circular(10),
-//                                   border: Border.all(
-//                                       width: 1,
-//                                       color: Theme.of(context).primaryColor)),
-//                             ),
-//                           ),
-//                         )
-//                       : Container(),
-//                   widget.accepted == false
-//                       ? Padding(
-//                           padding: const EdgeInsets.symmetric(horizontal: 5),
-//                           child: GestureDetector(
-//                             onTap: () {
-//                               if (widget.text == 'Accept')
-//                                 acceptConnection(widget.user.id);
-//                               else if (widget.text == 'Add')
-//                                 addConnection(widget.user.id);
-//                               else if (widget.text == 'Remove')
-//                                 removeConnection(widget.user.id);
-//                               //addConnection(widget.user.id);
-//                             },
-//                             child: Container(
-//                               padding: EdgeInsets.symmetric(
-//                                   vertical: 8, horizontal: 8),
-//                               child: Text(
-//                                 widget.text,
-//                                 style: TextStyle(
-//                                     fontFamily: "Lato",
-//                                     fontSize: 14,
-//                                     color: Colors.white),
-//                               ),
-//                               decoration: BoxDecoration(
-//                                   color: Theme.of(context).primaryColor,
-//                                   borderRadius: BorderRadius.circular(10),
-//                                   border: Border.all(
-//                                       width: 1,
-//                                       color: Theme.of(context).primaryColor)),
-//                             ),
-//                           ),
-//                         )
-//                       : Icon(
-//                           Icons.check,
-//                           size: 24,
-//                           color: colorPrimaryBlue,
-//                         )
-//                 ],
-//               )
-//             ],
-//           ),
-//           Padding(
-//             padding: const EdgeInsets.symmetric(vertical: 5),
-//             child: Divider(
-//               height: 1,
-//               color: Colors.grey,
-//             ),
-//           )
-//         ],
-//       ),
-//     );
-//   }
-// }

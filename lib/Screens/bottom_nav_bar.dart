@@ -293,6 +293,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
   }
 
   Future<void> getAllConnections() async {
+    setState(() {
+      isLoading=true;
+    });
     //print("==========Inside get all connection ===================");
     var user = await FirebaseAuth.instance.currentUser();
     //
@@ -352,6 +355,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
       // createUser();
       getUser();
     getUserPosts();
+    getAllConnections();
   }
 
   buildFirstScreen() {
