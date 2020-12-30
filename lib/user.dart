@@ -19,7 +19,8 @@ class User {
       this.reactionType,
       this.pendingConnection,
       this.sentPendingConnection,
-      this.receivedPendingConnection});
+      this.receivedPendingConnection,
+      this.userMap});
 
   final String fname;
   final String lname;
@@ -35,17 +36,20 @@ class User {
   List<User> pendingConnection;
   List<User> sentPendingConnection;
   List<User> receivedPendingConnection;
+  Map<String,String> userMap=new Map();
   String photoUrl;
   String reactionType;
   //List<String> list= new List();
 
   factory User.fromJson(final json) {
     //print(json["SentPendingConnection"]);
+    Map<String,String> map=new Map();
     List<User> outgoing = [];
     if (json["SentPendingConnection"] != null) {
       for (int i = 0; i < json["SentPendingConnection"].length; i++) {
         User user = User.fromJson(json["SentPendingConnection"][i]);
         outgoing.add(user);
+        map.putIfAbsent(user.id, () => "pending");
       }
     }
     List<User> pending = [];
@@ -61,6 +65,7 @@ class User {
       for (int i = 0; i < json["Connection"].length; i++) {
         User user = User.fromJson(json["Connection"][i]);
         frnds.add(user);
+        map[user.id]="remove";
       }
     }
 
@@ -69,6 +74,7 @@ class User {
       for (int i = 0; i < json["ReceivedPendingConnection"].length; i++) {
         User user = User.fromJson(json["ReceivedPendingConnection"][i]);
         incoming.add(user);
+        map[user.id]="accept";
       }
     }
 
@@ -89,7 +95,9 @@ class User {
         sentPendingConnection:
             json["SentPendingConnection"] == null ? [] : outgoing,
         receivedPendingConnection:
-            json["ReceivedPendingConnection"] == null ? [] : incoming);
+            json["ReceivedPendingConnection"] == null ? [] : incoming,
+      userMap: map,
+    );
   }
 
   Map<String, dynamic> toJson() => {

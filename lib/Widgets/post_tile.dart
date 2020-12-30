@@ -228,28 +228,11 @@ class _Post_TileState extends State<Post_Tile> {
     hates=[];
     whatevers=[];
     for (int i = 0; i < counter['loved']; i++) {
-      String txt="add";
-      //bool aconnection=true;
-      for (int j = 0; j < curUser.sentPendingConnection.length; j++) {
-        if (loved[i].id == curUser.sentPendingConnection[j].id)
-          {
-            print("lljkhjfgfds");
-            print(curUser.sentPendingConnection[j]);
-            txt="pending";
-          }
-      }
-      for (int j = 0;
-          j < curUser.receivedPendingConnection.length;
-          j++) {
-        if (loved[i].id == curUser.receivedPendingConnection[j].id)
-          txt="request";
-      }
-      for (int j = 0; j < curUser.connection.length; j++) {
-        if (loved[i].id == curUser.connection[j].id) txt="remove";
-      }
       Request_Tile tile = Request_Tile(
         //request: recievedpending ? true : false,
-        text: txt,
+        text: curUser.userMap.containsKey(loved[i].id)
+        ?curUser.userMap[loved[i].id]
+        :"add",
         //accepted: aconnection,
         user: loved[i],
         photourl: loved[i].photoUrl,
@@ -259,26 +242,11 @@ class _Post_TileState extends State<Post_Tile> {
     }
 
     for (int i = 0; i < counter['liked']; i++) {
-      String txt="add";
-      for (int j = 0; j < curUser.sentPendingConnection.length; j++) {
-        if (liked[i].id == curUser.sentPendingConnection[j].id){
-          txt="pending";
-          print(curUser.sentPendingConnection[j]);
-        }
-
-      }
-      for (int j = 0;
-          j < curUser.receivedPendingConnection.length;
-          j++) {
-        if (liked[i].id == curUser.receivedPendingConnection[j].id)
-          txt="request";
-      }
-      for (int j = 0; j < curUser.connection.length; j++) {
-        if (liked[i].id == curUser.connection[j].id) txt="remove";
-      }
       Request_Tile tile = Request_Tile(
         //request: recievedpending ? true : false,
-        text: txt,
+        text: curUser.userMap.containsKey(liked[i].id)
+            ?curUser.userMap[liked[i].id]
+            :"add",
         //accepted: aconnection ,
         user: liked[i],
         photourl: liked[i].photoUrl,
@@ -288,23 +256,11 @@ class _Post_TileState extends State<Post_Tile> {
     }
 
     for (int i = 0; i < counter['hated']; i++) {
-      String txt="add";
-      for (int j = 0; j < curUser.sentPendingConnection.length; j++) {
-        if (hated[i].id == curUser.sentPendingConnection[j].id)
-          txt="pending";
-      }
-      for (int j = 0;
-      j < curUser.receivedPendingConnection.length;
-      j++) {
-        if (hated[i].id == curUser.receivedPendingConnection[j].id)
-          txt="request";
-      }
-      for (int j = 0; j < curUser.connection.length; j++) {
-        if (hated[i].id == curUser.connection[j].id) txt="remove";
-      }
       Request_Tile tile = Request_Tile(
         //request: recievedpending ? true : false,
-        text: txt,
+        text: curUser.userMap.containsKey(hated[i].id)
+            ?curUser.userMap[hated[i].id]
+            :"add",
         //accepted: aconnection ,
         user: hated[i],
         photourl: hated[i].photoUrl,
@@ -314,23 +270,11 @@ class _Post_TileState extends State<Post_Tile> {
     }
 
     for (int i = 0; i < counter['whatever']; i++) {
-      String txt="add";
-      for (int j = 0; j < curUser.sentPendingConnection.length; j++) {
-        if (whatever[i].id == curUser.sentPendingConnection[j].id)
-          txt="pending";
-      }
-      for (int j = 0;
-      j < curUser.receivedPendingConnection.length;
-      j++) {
-        if (whatever[i].id == curUser.receivedPendingConnection[j].id)
-          txt="request";
-      }
-      for (int j = 0; j < curUser.connection.length; j++) {
-        if (whatever[i].id == curUser.connection[j].id) txt="remove";
-      }
       Request_Tile tile = Request_Tile(
         //request: recievedpending ? true : false,
-        text: txt,
+        text: curUser.userMap.containsKey(whatever[i].id)
+            ?curUser.userMap[whatever[i].id]
+            :"add",
         //accepted: aconnection ? true : false,
         user: whatever[i],
         photourl: whatever[i].photoUrl,
