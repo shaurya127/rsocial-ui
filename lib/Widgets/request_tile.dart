@@ -204,7 +204,7 @@ class _Request_TileState extends State<Request_Tile> {
                   padding: EdgeInsets.symmetric(
                       vertical: 8, horizontal: 8),
                   child: Text(
-                    widget.text,
+                    "Accept",
                     style: TextStyle(
                         fontFamily: "Lato",
                         fontSize: 14,
