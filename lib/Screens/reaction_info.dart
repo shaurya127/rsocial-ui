@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rsocial2/Screens/search_page.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
 
@@ -8,8 +9,10 @@ import '../constants.dart';
 class Reaction_Info extends StatefulWidget {
   List<Request_Tile> love;
   List<Request_Tile> like;
+  List<Request_Tile> hate;
+  List<Request_Tile> whatever;
 
-  Reaction_Info({this.like, this.love});
+  Reaction_Info({this.like, this.love,this.whatever,this.hate});
   @override
   _Reaction_InfoState createState() => _Reaction_InfoState();
 }
@@ -23,7 +26,7 @@ class _Reaction_InfoState extends State<Reaction_Info>
   @override
   void initState() {
     super.initState();
-    _tabController = new TabController(vsync: this, length: 2);
+    _tabController = new TabController(vsync: this, length: 4);
   }
 
   @override
@@ -71,11 +74,8 @@ class _Reaction_InfoState extends State<Reaction_Info>
                         padding: const EdgeInsets.only(right: 20),
                         child: Row(
                           children: <Widget>[
-                            Icon(
-                              Icons.favorite,
-                              color: Colors.pink,
-                              size: 30,
-                            ),
+                            SvgPicture.asset("images/loved.svg",
+                              color: colorPrimaryBlue,),
                             SizedBox(
                               width: 5,
                             ),
@@ -97,7 +97,7 @@ class _Reaction_InfoState extends State<Reaction_Info>
                         children: <Widget>[
                           Icon(
                             Icons.thumb_up,
-                            color: Colors.lightBlue,
+                            color: colorPrimaryBlue,
                             size: 30,
                           ),
                           SizedBox(
@@ -106,6 +106,51 @@ class _Reaction_InfoState extends State<Reaction_Info>
                           Text(
                             widget.like.isNotEmpty
                                 ? widget.like.length.toString()
+                                : "0",
+                            style: TextStyle(
+                              fontFamily: "Lato",
+                              fontSize: 15,
+                              color: Color(0xff4DBAE6),
+                            ),
+                          ),
+                          SizedBox(width: 20),
+                        ],
+                      ),
+
+                      Row(
+                        children: <Widget>[
+                          Icon(
+                            Icons.thumb_down,
+                            color: colorPrimaryBlue,
+                            size: 30,
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            widget.whatever.isNotEmpty
+                                ? widget.whatever.length.toString()
+                                : "0",
+                            style: TextStyle(
+                              fontFamily: "Lato",
+                              fontSize: 15,
+                              color: Color(0xff4DBAE6),
+                            ),
+                          ),
+                          SizedBox(width: 20),
+                        ],
+                      ),
+
+                      Row(
+                        children: <Widget>[
+                          SvgPicture.asset("images/hated.svg",
+                            color: colorPrimaryBlue,),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            widget.hate.isNotEmpty
+                                ? widget.hate.length.toString()
                                 : "0",
                             style: TextStyle(
                               fontFamily: "Lato",
@@ -155,7 +200,38 @@ class _Reaction_InfoState extends State<Reaction_Info>
                       fontSize: 14,
                     ),
                   ),
-                )
+                ),
+          widget.whatever.isNotEmpty
+              ? Container(
+            color: Colors.white,
+            child: ListView(children: widget.whatever),
+          )
+              : Center(
+            child: Text(
+              "No one here!",
+              style: TextStyle(
+                fontFamily: "Lato",
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ),
+
+          widget.hate.isNotEmpty
+              ? Container(
+            color: Colors.white,
+            child: ListView(children: widget.hate),
+          )
+              : Center(
+            child: Text(
+              "No one here!",
+              style: TextStyle(
+                fontFamily: "Lato",
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ),
         ],
         controller: _tabController,
       ),

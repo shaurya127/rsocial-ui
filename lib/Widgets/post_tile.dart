@@ -64,8 +64,12 @@ class _Post_TileState extends State<Post_Tile> {
   bool isLoading = true;
   List<User> loved = [];
   List<User> liked = [];
+  List<User> hated = [];
+  List<User> whatever = [];
   List<Request_Tile> love = [];
+  List<Request_Tile> hates = [];
   List<Request_Tile> likes = [];
+  List<Request_Tile> whatevers = [];
   List<User> investedWithUser = [];
   String rxn = "noreact";
   Map<String, int> counter = {
@@ -85,6 +89,9 @@ class _Post_TileState extends State<Post_Tile> {
       if (rt == 'loved')
         loved.add(user);
       else if (rt == 'liked') liked.add(user);
+      else if(rt=='hated') hated.add(user);
+      else whatever.add(user);
+
       counter[rt]++;
 
       if (user.id == widget.curUser.id) {
@@ -133,11 +140,9 @@ class _Post_TileState extends State<Post_Tile> {
     var url =
         'https://t43kpz2m5d.execute-api.ap-south-1.amazonaws.com/story/react';
     var user = await FirebaseAuth.instance.currentUser();
-    DocumentSnapshot doc = await users.document(user.uid).get();
-    var uid = doc['id'];
     //print(uid);
     Reaction reaction =
-        Reaction(id: uid, storyId: widget.userPost.id, reactionType: reactn);
+        Reaction(id: curUser.id, storyId: widget.userPost.id, reactionType: reactn);
     var token = await user.getIdToken();
     //print(jsonEncode(reaction.toJson()));
     //print(token);
@@ -220,27 +225,32 @@ class _Post_TileState extends State<Post_Tile> {
   buildReactionTile() {
     likes = [];
     love = [];
+    hates=[];
+    whatevers=[];
     for (int i = 0; i < counter['loved']; i++) {
-      bool sentpending = false;
-      bool recievedpending = false;
-      bool aconnection = false;
-      for (int j = 0; j < widget.curUser.sentPendingConnection.length; j++) {
-        if (loved[i].id == widget.curUser.sentPendingConnection[j].id)
-          sentpending = true;
+      String txt="add";
+      //bool aconnection=true;
+      for (int j = 0; j < curUser.sentPendingConnection.length; j++) {
+        if (loved[i].id == curUser.sentPendingConnection[j].id)
+          {
+            print("lljkhjfgfds");
+            print(curUser.sentPendingConnection[j]);
+            txt="pending";
+          }
       }
       for (int j = 0;
-          j < widget.curUser.receivedPendingConnection.length;
+          j < curUser.receivedPendingConnection.length;
           j++) {
-        if (loved[i].id == widget.curUser.receivedPendingConnection[j].id)
-          recievedpending = true;
+        if (loved[i].id == curUser.receivedPendingConnection[j].id)
+          txt="request";
       }
-      for (int j = 0; j < widget.curUser.connection.length; j++) {
-        if (loved[i].id == widget.curUser.connection[j].id) aconnection = true;
+      for (int j = 0; j < curUser.connection.length; j++) {
+        if (loved[i].id == curUser.connection[j].id) txt="remove";
       }
       Request_Tile tile = Request_Tile(
-        request: recievedpending ? true : false,
-        text: recievedpending ? "Accept" : (sentpending ? "Pending" : ""),
-        accepted: aconnection ? true : false,
+        //request: recievedpending ? true : false,
+        text: txt,
+        //accepted: aconnection,
         user: loved[i],
         photourl: loved[i].photoUrl,
         //curUser: widget.curUser,
@@ -249,31 +259,84 @@ class _Post_TileState extends State<Post_Tile> {
     }
 
     for (int i = 0; i < counter['liked']; i++) {
-      bool sentpending = false;
-      bool recievedpending = false;
-      bool aconnection = false;
-      for (int j = 0; j < widget.curUser.sentPendingConnection.length; j++) {
-        if (liked[i].id == widget.curUser.sentPendingConnection[j].id)
-          sentpending = true;
+      String txt="add";
+      for (int j = 0; j < curUser.sentPendingConnection.length; j++) {
+        if (liked[i].id == curUser.sentPendingConnection[j].id){
+          txt="pending";
+          print(curUser.sentPendingConnection[j]);
+        }
+
       }
       for (int j = 0;
-          j < widget.curUser.receivedPendingConnection.length;
+          j < curUser.receivedPendingConnection.length;
           j++) {
-        if (liked[i].id == widget.curUser.receivedPendingConnection[j].id)
-          recievedpending = true;
+        if (liked[i].id == curUser.receivedPendingConnection[j].id)
+          txt="request";
       }
-      for (int j = 0; j < widget.curUser.connection.length; j++) {
-        if (liked[i].id == widget.curUser.connection[j].id) aconnection = true;
+      for (int j = 0; j < curUser.connection.length; j++) {
+        if (liked[i].id == curUser.connection[j].id) txt="remove";
       }
       Request_Tile tile = Request_Tile(
-        request: recievedpending ? true : false,
-        text: recievedpending ? "Accept" : (sentpending ? "Pending" : ""),
-        accepted: aconnection ? true : false,
+        //request: recievedpending ? true : false,
+        text: txt,
+        //accepted: aconnection ,
         user: liked[i],
         photourl: liked[i].photoUrl,
         //curUser: widget.curUser,
       );
       likes.add(tile);
+    }
+
+    for (int i = 0; i < counter['hated']; i++) {
+      String txt="add";
+      for (int j = 0; j < curUser.sentPendingConnection.length; j++) {
+        if (hated[i].id == curUser.sentPendingConnection[j].id)
+          txt="pending";
+      }
+      for (int j = 0;
+      j < curUser.receivedPendingConnection.length;
+      j++) {
+        if (hated[i].id == curUser.receivedPendingConnection[j].id)
+          txt="request";
+      }
+      for (int j = 0; j < curUser.connection.length; j++) {
+        if (hated[i].id == curUser.connection[j].id) txt="remove";
+      }
+      Request_Tile tile = Request_Tile(
+        //request: recievedpending ? true : false,
+        text: txt,
+        //accepted: aconnection ,
+        user: hated[i],
+        photourl: hated[i].photoUrl,
+        //curUser: widget.curUser,
+      );
+      hates.add(tile);
+    }
+
+    for (int i = 0; i < counter['whatever']; i++) {
+      String txt="add";
+      for (int j = 0; j < curUser.sentPendingConnection.length; j++) {
+        if (whatever[i].id == curUser.sentPendingConnection[j].id)
+          txt="pending";
+      }
+      for (int j = 0;
+      j < curUser.receivedPendingConnection.length;
+      j++) {
+        if (whatever[i].id == curUser.receivedPendingConnection[j].id)
+          txt="request";
+      }
+      for (int j = 0; j < curUser.connection.length; j++) {
+        if (whatever[i].id == curUser.connection[j].id) txt="remove";
+      }
+      Request_Tile tile = Request_Tile(
+        //request: recievedpending ? true : false,
+        text: txt,
+        //accepted: aconnection ? true : false,
+        user: whatever[i],
+        photourl: whatever[i].photoUrl,
+        //curUser: widget.curUser,
+      );
+      whatevers.add(tile);
     }
   }
 
@@ -559,59 +622,109 @@ class _Post_TileState extends State<Post_Tile> {
                     else if (counter['loved'] >= counter['liked'] &&
                         counter['loved'] >= counter['whatever'] &&
                         counter['loved'] >= counter['hated'])
-                      SvgPicture.asset(
-                        "images/loved.svg",
-                        color: colorPrimaryBlue,
-                      )
-                    else if (counter['liked'] > counter['loved'] &&
-                        counter['liked'] >= counter['whatever'] &&
-                        counter['liked'] >= counter['hated'])
-                      SvgPicture.asset(
-                        "images/liked.svg",
-                        color: colorPrimaryBlue,
-                      )
-                    else if (counter['whatever'] > counter['loved'] &&
-                        counter['whatever'] > counter['liked'] &&
-                        counter['whatever'] >= counter['hated'])
-                      SvgPicture.asset(
-                        "images/whatever.svg",
-                        color: colorPrimaryBlue,
-                      )
-                    else if (counter['hated'] > counter['liked'] &&
-                        counter['hated'] > counter['loved'] &&
-                        counter['hated'] > counter['whatever'])
-                      SvgPicture.asset(
-                        "images/hated.svg",
-                        color: colorPrimaryBlue,
-                      ),
-                    //SizedBox(width: 14,),
-                    GestureDetector(
+                      GestureDetector(
                         onTap: () {
                           buildReactionTile();
                           Navigator.push(
                               context,
                               PageTransition(
-                                  // settings: RouteSettings(
-                                  //     name: "Login_Page"),
+                                // settings: RouteSettings(
+                                //     name: "Login_Page"),
                                   type: PageTransitionType.fade,
                                   child: Reaction_Info(
                                     like: likes,
                                     love: love,
-                                  )));
-
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) => Reaction_Info(
-                          //               like: likes,
-                          //               love: love,
-                          //             )));
+                                    hate: hates,
+                                    whatever: whatevers,
+                                  ))
+                          );
                         },
-                        child: Icon(
-                          Icons.more_vert,
-                          color: Color(0xff707070),
-                          size: 30,
-                        )),
+                        child: SvgPicture.asset(
+                          "images/loved.svg",
+                          color: colorPrimaryBlue,
+                        ),
+                      )
+                    else if (counter['liked'] > counter['loved'] &&
+                        counter['liked'] >= counter['whatever'] &&
+                        counter['liked'] >= counter['hated'])
+                      GestureDetector(
+                        onTap: () {
+                          buildReactionTile();
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                // settings: RouteSettings(
+                                //     name: "Login_Page"),
+                                  type: PageTransitionType.fade,
+                                  child: Reaction_Info(
+                                    like: likes,
+                                    love: love,
+                                    hate: hates,
+                                    whatever: whatevers,
+                                  ))
+                          );
+                        },
+                        child: SvgPicture.asset(
+                          "images/liked.svg",
+                          color: colorPrimaryBlue,
+                        ),
+                      )
+                    else if (counter['whatever'] > counter['loved'] &&
+                        counter['whatever'] > counter['liked'] &&
+                        counter['whatever'] >= counter['hated'])
+                      GestureDetector(
+                        onTap: () {
+                          buildReactionTile();
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                // settings: RouteSettings(
+                                //     name: "Login_Page"),
+                                  type: PageTransitionType.fade,
+                                  child: Reaction_Info(
+                                    like: likes,
+                                    love: love,
+                                    hate: hates,
+                                    whatever: whatevers,
+                                  ))
+                          );
+                        },
+                        child: SvgPicture.asset(
+                          "images/whatever.svg",
+                          color: colorPrimaryBlue,
+                        ),
+                      )
+                    else if (counter['hated'] > counter['liked'] &&
+                        counter['hated'] > counter['loved'] &&
+                        counter['hated'] > counter['whatever'])
+                      GestureDetector(
+                        onTap: () {
+                          buildReactionTile();
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                // settings: RouteSettings(
+                                //     name: "Login_Page"),
+                                  type: PageTransitionType.fade,
+                                  child: Reaction_Info(
+                                    like: likes,
+                                    love: love,
+                                    hate: hates,
+                                    whatever: whatevers,
+                                  ))
+                          );
+                        },
+                        child: SvgPicture.asset(
+                          "images/hated.svg",
+                          color: colorPrimaryBlue,
+                        ),
+                      ),
+                    //SizedBox(width: 14,),
+                    Icon(
+                      Icons.more_vert,
+                      color: Color(0xff707070),
+                      size: 30,
+                    ),
                   ],
                 ),
               ],
@@ -718,8 +831,15 @@ class _Post_TileState extends State<Post_Tile> {
                               //         fontSize: 15)
                               //     :
                               (rxn == 'loved'
-                                  ? {react("noreact"), counter['loved']--}
-                                  : {react("loved"), counter['loved']++})
+                                  ? {
+                                react("noreact"),
+                                if(loved.length+1==counter['loved'])
+                                  counter['loved']--
+                              }
+                                  : {
+                                react("loved"),
+                                if(loved.length==counter['loved'])
+                                  counter['loved']++})
                               : print("not allowed")
                         },
                         child: Column(
@@ -762,8 +882,13 @@ class _Post_TileState extends State<Post_Tile> {
                               //         fontSize: 15)
                               //     :
                               (rxn == 'liked'
-                                  ? {react("noreact"), counter['liked']--}
-                                  : {react("liked"), counter['liked']++})
+                                  ? {react("noreact"),
+                                if(liked.length+1==counter['liked'])
+                                  counter['liked']--}
+                                  : {
+                                react("liked"),
+                                if(liked.length==counter['liked'])
+                                  counter['liked']++})
                               : print("not allowed")
                         },
                         child: Column(
@@ -805,8 +930,12 @@ class _Post_TileState extends State<Post_Tile> {
                               //         fontSize: 15)
                               //     :
                               (rxn == 'whatever'
-                                  ? {react("noreact"), counter['whatever']--}
-                                  : {react("whatever"), counter['whatever']++})
+                                  ? {react("noreact"),
+                                if(whatever.length+1==counter['whatever'])
+                                  counter['whatever']--}
+                                  : {react("whatever"),
+                                if(whatever.length==counter['whatever'])
+                                  counter['whatever']++})
                               : print("not allowed")
                         },
                         child: Column(
@@ -849,8 +978,12 @@ class _Post_TileState extends State<Post_Tile> {
                               //         fontSize: 15)
                               //     :
                               (rxn == 'hated'
-                                  ? {react("noreact"), counter['hated']--}
-                                  : {react("hated"), counter['hated']++})
+                                  ? {react("noreact"),
+                                if(hated.length+1==counter['hated'])
+                                counter['hated']--}
+                                  : {react("hated"),
+                                if(hated.length==counter['hated'])
+                                counter['hated']++})
                               : print("not allowed")
                         },
                         child: Column(
