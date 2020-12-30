@@ -18,6 +18,7 @@ import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/Screens/reaction_info.dart';
 import 'package:rsocial2/Screens/search_page.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
+import 'package:rsocial2/config.dart';
 import '../constants.dart';
 import '../post.dart';
 import '../read_more.dart';
@@ -79,6 +80,7 @@ class _Post_TileState extends State<Post_Tile> {
     'hated': 0,
     'noreact': 0
   };
+  bool isDisabled = false;
 
   getReactions() {
     print(rxn);
@@ -88,9 +90,12 @@ class _Post_TileState extends State<Post_Tile> {
       String rt = user.reactionType;
       if (rt == 'loved')
         loved.add(user);
-      else if (rt == 'liked') liked.add(user);
-      else if(rt=='hated') hated.add(user);
-      else whatever.add(user);
+      else if (rt == 'liked')
+        liked.add(user);
+      else if (rt == 'hated')
+        hated.add(user);
+      else
+        whatever.add(user);
 
       counter[rt]++;
 
@@ -137,12 +142,14 @@ class _Post_TileState extends State<Post_Tile> {
   }
 
   react(String reactn) async {
-    var url =
-        'https://t43kpz2m5d.execute-api.ap-south-1.amazonaws.com/story/react';
+    setState(() {
+      isDisabled = true;
+    });
+    var url = storyEndPoint + 'react';
     var user = await FirebaseAuth.instance.currentUser();
     //print(uid);
-    Reaction reaction =
-        Reaction(id: curUser.id, storyId: widget.userPost.id, reactionType: reactn);
+    Reaction reaction = Reaction(
+        id: curUser.id, storyId: widget.userPost.id, reactionType: reactn);
     var token = await user.getIdToken();
     //print(jsonEncode(reaction.toJson()));
     //print(token);
@@ -220,14 +227,36 @@ class _Post_TileState extends State<Post_Tile> {
         }
       });
     }
+    setState(() {
+      isDisabled = false;
+    });
   }
 
   buildReactionTile() {
     likes = [];
     love = [];
-    hates=[];
-    whatevers=[];
+    hates = [];
+    whatevers = [];
     for (int i = 0; i < counter['loved']; i++) {
+<<<<<<< HEAD
+      String txt = "add";
+      //bool aconnection=true;
+      for (int j = 0; j < curUser.sentPendingConnection.length; j++) {
+        if (loved[i].id == curUser.sentPendingConnection[j].id) {
+          print("lljkhjfgfds");
+          print(curUser.sentPendingConnection[j]);
+          txt = "pending";
+        }
+      }
+      for (int j = 0; j < curUser.receivedPendingConnection.length; j++) {
+        if (loved[i].id == curUser.receivedPendingConnection[j].id)
+          txt = "request";
+      }
+      for (int j = 0; j < curUser.connection.length; j++) {
+        if (loved[i].id == curUser.connection[j].id) txt = "remove";
+      }
+=======
+>>>>>>> master
       Request_Tile tile = Request_Tile(
         //request: recievedpending ? true : false,
         text: curUser.userMap.containsKey(loved[i].id)
@@ -242,6 +271,23 @@ class _Post_TileState extends State<Post_Tile> {
     }
 
     for (int i = 0; i < counter['liked']; i++) {
+<<<<<<< HEAD
+      String txt = "add";
+      for (int j = 0; j < curUser.sentPendingConnection.length; j++) {
+        if (liked[i].id == curUser.sentPendingConnection[j].id) {
+          txt = "pending";
+          print(curUser.sentPendingConnection[j]);
+        }
+      }
+      for (int j = 0; j < curUser.receivedPendingConnection.length; j++) {
+        if (liked[i].id == curUser.receivedPendingConnection[j].id)
+          txt = "request";
+      }
+      for (int j = 0; j < curUser.connection.length; j++) {
+        if (liked[i].id == curUser.connection[j].id) txt = "remove";
+      }
+=======
+>>>>>>> master
       Request_Tile tile = Request_Tile(
         //request: recievedpending ? true : false,
         text: curUser.userMap.containsKey(liked[i].id)
@@ -256,6 +302,20 @@ class _Post_TileState extends State<Post_Tile> {
     }
 
     for (int i = 0; i < counter['hated']; i++) {
+<<<<<<< HEAD
+      String txt = "add";
+      for (int j = 0; j < curUser.sentPendingConnection.length; j++) {
+        if (hated[i].id == curUser.sentPendingConnection[j].id) txt = "pending";
+      }
+      for (int j = 0; j < curUser.receivedPendingConnection.length; j++) {
+        if (hated[i].id == curUser.receivedPendingConnection[j].id)
+          txt = "request";
+      }
+      for (int j = 0; j < curUser.connection.length; j++) {
+        if (hated[i].id == curUser.connection[j].id) txt = "remove";
+      }
+=======
+>>>>>>> master
       Request_Tile tile = Request_Tile(
         //request: recievedpending ? true : false,
         text: curUser.userMap.containsKey(hated[i].id)
@@ -270,6 +330,21 @@ class _Post_TileState extends State<Post_Tile> {
     }
 
     for (int i = 0; i < counter['whatever']; i++) {
+<<<<<<< HEAD
+      String txt = "add";
+      for (int j = 0; j < curUser.sentPendingConnection.length; j++) {
+        if (whatever[i].id == curUser.sentPendingConnection[j].id)
+          txt = "pending";
+      }
+      for (int j = 0; j < curUser.receivedPendingConnection.length; j++) {
+        if (whatever[i].id == curUser.receivedPendingConnection[j].id)
+          txt = "request";
+      }
+      for (int j = 0; j < curUser.connection.length; j++) {
+        if (whatever[i].id == curUser.connection[j].id) txt = "remove";
+      }
+=======
+>>>>>>> master
       Request_Tile tile = Request_Tile(
         //request: recievedpending ? true : false,
         text: curUser.userMap.containsKey(whatever[i].id)
@@ -572,16 +647,15 @@ class _Post_TileState extends State<Post_Tile> {
                           Navigator.push(
                               context,
                               PageTransition(
-                                // settings: RouteSettings(
-                                //     name: "Login_Page"),
+                                  // settings: RouteSettings(
+                                  //     name: "Login_Page"),
                                   type: PageTransitionType.fade,
                                   child: Reaction_Info(
                                     like: likes,
                                     love: love,
                                     hate: hates,
                                     whatever: whatevers,
-                                  ))
-                          );
+                                  )));
                         },
                         child: SvgPicture.asset(
                           "images/loved.svg",
@@ -597,16 +671,15 @@ class _Post_TileState extends State<Post_Tile> {
                           Navigator.push(
                               context,
                               PageTransition(
-                                // settings: RouteSettings(
-                                //     name: "Login_Page"),
+                                  // settings: RouteSettings(
+                                  //     name: "Login_Page"),
                                   type: PageTransitionType.fade,
                                   child: Reaction_Info(
                                     like: likes,
                                     love: love,
                                     hate: hates,
                                     whatever: whatevers,
-                                  ))
-                          );
+                                  )));
                         },
                         child: SvgPicture.asset(
                           "images/liked.svg",
@@ -622,16 +695,15 @@ class _Post_TileState extends State<Post_Tile> {
                           Navigator.push(
                               context,
                               PageTransition(
-                                // settings: RouteSettings(
-                                //     name: "Login_Page"),
+                                  // settings: RouteSettings(
+                                  //     name: "Login_Page"),
                                   type: PageTransitionType.fade,
                                   child: Reaction_Info(
                                     like: likes,
                                     love: love,
                                     hate: hates,
                                     whatever: whatevers,
-                                  ))
-                          );
+                                  )));
                         },
                         child: SvgPicture.asset(
                           "images/whatever.svg",
@@ -647,16 +719,15 @@ class _Post_TileState extends State<Post_Tile> {
                           Navigator.push(
                               context,
                               PageTransition(
-                                // settings: RouteSettings(
-                                //     name: "Login_Page"),
+                                  // settings: RouteSettings(
+                                  //     name: "Login_Page"),
                                   type: PageTransitionType.fade,
                                   child: Reaction_Info(
                                     like: likes,
                                     love: love,
                                     hate: hates,
                                     whatever: whatevers,
-                                  ))
-                          );
+                                  )));
                         },
                         child: SvgPicture.asset(
                           "images/hated.svg",
@@ -764,198 +835,289 @@ class _Post_TileState extends State<Post_Tile> {
                 Container(
                   child: Row(
                     children: <Widget>[
-                      GestureDetector(
-                        onTap: () => {
-                          widget.userPost.user.id != widget.curUser.id
-                              ?
-                              //     ? Fluttertoast.showToast(
-                              //         msg: "You cannot react on your own post!",
-                              //         toastLength: Toast.LENGTH_SHORT,
-                              //         gravity: ToastGravity.BOTTOM,
-                              //         fontSize: 15)
-                              //     :
-                              (rxn == 'loved'
-                                  ? {
-                                react("noreact"),
-                                if(loved.length+1==counter['loved'])
-                                  counter['loved']--
-                              }
-                                  : {
-                                react("loved"),
-                                if(loved.length==counter['loved'])
-                                  counter['loved']++})
-                              : print("not allowed")
-                        },
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              height: 23,
-                              width: 23,
-                              child: SvgPicture.asset(
-                                "images/loved.svg",
-                                color: rxn == "loved"
-                                    ? colorPrimaryBlue
-                                    : postIcons,
+                      isDisabled
+                          ? Column(
+                              children: <Widget>[
+                                Container(
+                                  height: 23,
+                                  width: 23,
+                                  child: SvgPicture.asset(
+                                    "images/loved.svg",
+                                    color: rxn == "loved"
+                                        ? colorPrimaryBlue
+                                        : postIcons,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: Text(
+                                    counter['loved'].toString(),
+                                    style: TextStyle(
+                                      fontFamily: "Lato",
+                                      fontSize: 10,
+                                      color: postDesc,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )
+                          : GestureDetector(
+                              onTap: () => {
+                                widget.userPost.user.id != widget.curUser.id
+                                    ?
+                                    //     ? Fluttertoast.showToast(
+                                    //         msg: "You cannot react on your own post!",
+                                    //         toastLength: Toast.LENGTH_SHORT,
+                                    //         gravity: ToastGravity.BOTTOM,
+                                    //         fontSize: 15)
+                                    //     :
+                                    (rxn == 'loved'
+                                        ? {react("noreact"), counter['loved']--}
+                                        : {react("loved"), counter['loved']++})
+                                    : print("not allowed")
+                              },
+                              child: Column(
+                                children: <Widget>[
+                                  Container(
+                                    height: 23,
+                                    width: 23,
+                                    child: SvgPicture.asset(
+                                      "images/loved.svg",
+                                      color: rxn == "loved"
+                                          ? colorPrimaryBlue
+                                          : postIcons,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Text(
+                                      counter['loved'].toString(),
+                                      style: TextStyle(
+                                        fontFamily: "Lato",
+                                        fontSize: 10,
+                                        color: postDesc,
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Text(
-                                counter['loved'].toString(),
-                                style: TextStyle(
-                                  fontFamily: "Lato",
-                                  fontSize: 10,
-                                  color: postDesc,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
                       SizedBox(
                         width: 20,
                       ),
-                      GestureDetector(
-                        onTap: () => {
-                          widget.userPost.user.id != widget.curUser.id
-                              ?
-                              //     ? Fluttertoast.showToast(
-                              //         msg: "You cannot react on your own post!",
-                              //         toastLength: Toast.LENGTH_SHORT,
-                              //         gravity: ToastGravity.BOTTOM,
-                              //         fontSize: 15)
-                              //     :
-                              (rxn == 'liked'
-                                  ? {react("noreact"),
-                                if(liked.length+1==counter['liked'])
-                                  counter['liked']--}
-                                  : {
-                                react("liked"),
-                                if(liked.length==counter['liked'])
-                                  counter['liked']++})
-                              : print("not allowed")
-                        },
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              height: 23,
-                              width: 23,
-                              child: SvgPicture.asset(
-                                "images/liked.svg",
-                                color: rxn == "liked"
-                                    ? colorPrimaryBlue
-                                    : postIcons,
+                      isDisabled
+                          ? Column(
+                              children: <Widget>[
+                                Container(
+                                  height: 23,
+                                  width: 23,
+                                  child: SvgPicture.asset(
+                                    "images/liked.svg",
+                                    color: rxn == "liked"
+                                        ? colorPrimaryBlue
+                                        : postIcons,
+                                  ),
+                                ),
+                                //Icon(Icons.thumb_up,size: 30,color:postIcons),
+                                Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: Text(
+                                    counter['liked'].toString(),
+                                    style: TextStyle(
+                                      fontFamily: "Lato",
+                                      fontSize: 10,
+                                      color: postDesc,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )
+                          : GestureDetector(
+                              onTap: () => {
+                                widget.userPost.user.id != widget.curUser.id
+                                    ?
+                                    //     ? Fluttertoast.showToast(
+                                    //         msg: "You cannot react on your own post!",
+                                    //         toastLength: Toast.LENGTH_SHORT,
+                                    //         gravity: ToastGravity.BOTTOM,
+                                    //         fontSize: 15)
+                                    //     :
+                                    (rxn == 'liked'
+                                        ? {react("noreact"), counter['liked']--}
+                                        : {react("liked"), counter['liked']++})
+                                    : print("not allowed")
+                              },
+                              child: Column(
+                                children: <Widget>[
+                                  Container(
+                                    height: 23,
+                                    width: 23,
+                                    child: SvgPicture.asset(
+                                      "images/liked.svg",
+                                      color: rxn == "liked"
+                                          ? colorPrimaryBlue
+                                          : postIcons,
+                                    ),
+                                  ),
+                                  //Icon(Icons.thumb_up,size: 30,color:postIcons),
+                                  Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Text(
+                                      counter['liked'].toString(),
+                                      style: TextStyle(
+                                        fontFamily: "Lato",
+                                        fontSize: 10,
+                                        color: postDesc,
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
                             ),
-                            //Icon(Icons.thumb_up,size: 30,color:postIcons),
-                            Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Text(
-                                counter['liked'].toString(),
-                                style: TextStyle(
-                                  fontFamily: "Lato",
-                                  fontSize: 10,
-                                  color: postDesc,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
                       SizedBox(width: 20),
-                      GestureDetector(
-                        onTap: () => {
-                          widget.userPost.user.id != widget.curUser.id
-                              ?
-                              //     ? Fluttertoast.showToast(
-                              //         msg: "You cannot react on your own post!",
-                              //         toastLength: Toast.LENGTH_SHORT,
-                              //         gravity: ToastGravity.BOTTOM,
-                              //         fontSize: 15)
-                              //     :
-                              (rxn == 'whatever'
-                                  ? {react("noreact"),
-                                if(whatever.length+1==counter['whatever'])
-                                  counter['whatever']--}
-                                  : {react("whatever"),
-                                if(whatever.length==counter['whatever'])
-                                  counter['whatever']++})
-                              : print("not allowed")
-                        },
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              height: 23,
-                              width: 23,
-                              child: SvgPicture.asset(
-                                "images/whatever.svg",
-                                color: rxn == "whatever"
-                                    ? colorPrimaryBlue
-                                    : postIcons,
+                      isDisabled
+                          ? Column(
+                              children: <Widget>[
+                                Container(
+                                  height: 23,
+                                  width: 23,
+                                  child: SvgPicture.asset(
+                                    "images/whatever.svg",
+                                    color: rxn == "whatever"
+                                        ? colorPrimaryBlue
+                                        : postIcons,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: Text(
+                                    counter['whatever'].toString(),
+                                    style: TextStyle(
+                                      fontFamily: "Lato",
+                                      fontSize: 10,
+                                      color: postDesc,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )
+                          : GestureDetector(
+                              onTap: () => {
+                                widget.userPost.user.id != widget.curUser.id
+                                    ?
+                                    //     ? Fluttertoast.showToast(
+                                    //         msg: "You cannot react on your own post!",
+                                    //         toastLength: Toast.LENGTH_SHORT,
+                                    //         gravity: ToastGravity.BOTTOM,
+                                    //         fontSize: 15)
+                                    //     :
+                                    (rxn == 'whatever'
+                                        ? {
+                                            react("noreact"),
+                                            counter['whatever']--
+                                          }
+                                        : {
+                                            react("whatever"),
+                                            counter['whatever']++
+                                          })
+                                    : print("not allowed")
+                              },
+                              child: Column(
+                                children: <Widget>[
+                                  Container(
+                                    height: 23,
+                                    width: 23,
+                                    child: SvgPicture.asset(
+                                      "images/whatever.svg",
+                                      color: rxn == "whatever"
+                                          ? colorPrimaryBlue
+                                          : postIcons,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Text(
+                                      counter['whatever'].toString(),
+                                      style: TextStyle(
+                                        fontFamily: "Lato",
+                                        fontSize: 10,
+                                        color: postDesc,
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Text(
-                                counter['whatever'].toString(),
-                                style: TextStyle(
-                                  fontFamily: "Lato",
-                                  fontSize: 10,
-                                  color: postDesc,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
                       SizedBox(
                         width: 20,
                       ),
-                      GestureDetector(
-                        onTap: () => {
-                          widget.userPost.user.id != widget.curUser.id
-                              ?
-                              //     ? Fluttertoast.showToast(
-                              //         msg: "You cannot react on your own post!",
-                              //         toastLength: Toast.LENGTH_SHORT,
-                              //         gravity: ToastGravity.BOTTOM,
-                              //         fontSize: 15)
-                              //     :
-                              (rxn == 'hated'
-                                  ? {react("noreact"),
-                                if(hated.length+1==counter['hated'])
-                                counter['hated']--}
-                                  : {react("hated"),
-                                if(hated.length==counter['hated'])
-                                counter['hated']++})
-                              : print("not allowed")
-                        },
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              height: 23,
-                              width: 23,
-                              child: SvgPicture.asset(
-                                "images/hated.svg",
-                                color: rxn == "hated"
-                                    ? colorPrimaryBlue
-                                    : postIcons,
+                      isDisabled
+                          ? Column(
+                              children: <Widget>[
+                                Container(
+                                  height: 23,
+                                  width: 23,
+                                  child: SvgPicture.asset(
+                                    "images/hated.svg",
+                                    color: rxn == "hated"
+                                        ? colorPrimaryBlue
+                                        : postIcons,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: Text(
+                                    counter['hated'].toString(),
+                                    style: TextStyle(
+                                      fontFamily: "Lato",
+                                      fontSize: 10,
+                                      color: postDesc,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )
+                          : GestureDetector(
+                              onTap: () => {
+                                widget.userPost.user.id != widget.curUser.id
+                                    ?
+                                    //     ? Fluttertoast.showToast(
+                                    //         msg: "You cannot react on your own post!",
+                                    //         toastLength: Toast.LENGTH_SHORT,
+                                    //         gravity: ToastGravity.BOTTOM,
+                                    //         fontSize: 15)
+                                    //     :
+                                    (rxn == 'hated'
+                                        ? {react("noreact"), counter['hated']--}
+                                        : {react("hated"), counter['hated']++})
+                                    : print("not allowed")
+                              },
+                              child: Column(
+                                children: <Widget>[
+                                  Container(
+                                    height: 23,
+                                    width: 23,
+                                    child: SvgPicture.asset(
+                                      "images/hated.svg",
+                                      color: rxn == "hated"
+                                          ? colorPrimaryBlue
+                                          : postIcons,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Text(
+                                      counter['hated'].toString(),
+                                      style: TextStyle(
+                                        fontFamily: "Lato",
+                                        fontSize: 10,
+                                        color: postDesc,
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Text(
-                                counter['hated'].toString(),
-                                style: TextStyle(
-                                  fontFamily: "Lato",
-                                  fontSize: 10,
-                                  color: postDesc,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),
