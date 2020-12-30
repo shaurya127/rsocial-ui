@@ -292,16 +292,16 @@ class _BottomNavBarState extends State<BottomNavBar> {
     }
   }
 
-  Future<void> getAllConnections() async {
+  getAllConnections() async {
     setState(() {
       isLoading=true;
     });
-    //print("==========Inside get all connection ===================");
+    print("==========Inside get all connection ===================");
     var user = await FirebaseAuth.instance.currentUser();
     //
-    // DocumentSnapshot doc = await users.document(user.uid).get();
-    // var id = doc['id'];
-    var id = curUser.id;
+    DocumentSnapshot doc = await users.document(user.uid).get();
+    var id = doc['id'];
+    //var id = curUser.id;
     final url = userEndPoint + "$id/all";
 
     var token = await user.getIdToken();
@@ -334,6 +334,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
       setState(() {
         isLoading = false;
       });
+      print("all the users");
+      print(allUsers.length);
       return allUsers;
     } else {
       print(response.statusCode);
@@ -354,8 +356,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
     } else
       // createUser();
       getUser();
-    getUserPosts();
     getAllConnections();
+    getUserPosts();
   }
 
   buildFirstScreen() {
