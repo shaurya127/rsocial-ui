@@ -141,7 +141,7 @@ class _ProfileState extends State<Profile>{
         isLoading = false;
       });
       print("build wage post ended");
-      return ListView(children: WageTiles,);
+      return ListView(children: WageTiles.reversed.toList(),);
     }
   }
 
@@ -188,7 +188,7 @@ class _ProfileState extends State<Profile>{
         isLoading = false;
       });
       print("build invest post ended");
-      return ListView(children:InvestTiles,);
+      return ListView(children:InvestTiles.reversed.toList(),);
     }
   }
 
