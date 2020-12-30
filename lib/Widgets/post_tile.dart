@@ -238,6 +238,7 @@ class _Post_TileState extends State<Post_Tile> {
     hates = [];
     whatevers = [];
     for (int i = 0; i < counter['loved']; i++) {
+<<<<<<< HEAD
       String txt = "add";
       //bool aconnection=true;
       for (int j = 0; j < curUser.sentPendingConnection.length; j++) {
@@ -254,9 +255,13 @@ class _Post_TileState extends State<Post_Tile> {
       for (int j = 0; j < curUser.connection.length; j++) {
         if (loved[i].id == curUser.connection[j].id) txt = "remove";
       }
+=======
+>>>>>>> master
       Request_Tile tile = Request_Tile(
         //request: recievedpending ? true : false,
-        text: txt,
+        text: curUser.userMap.containsKey(loved[i].id)
+        ?curUser.userMap[loved[i].id]
+        :"add",
         //accepted: aconnection,
         user: loved[i],
         photourl: loved[i].photoUrl,
@@ -266,6 +271,7 @@ class _Post_TileState extends State<Post_Tile> {
     }
 
     for (int i = 0; i < counter['liked']; i++) {
+<<<<<<< HEAD
       String txt = "add";
       for (int j = 0; j < curUser.sentPendingConnection.length; j++) {
         if (liked[i].id == curUser.sentPendingConnection[j].id) {
@@ -280,9 +286,13 @@ class _Post_TileState extends State<Post_Tile> {
       for (int j = 0; j < curUser.connection.length; j++) {
         if (liked[i].id == curUser.connection[j].id) txt = "remove";
       }
+=======
+>>>>>>> master
       Request_Tile tile = Request_Tile(
         //request: recievedpending ? true : false,
-        text: txt,
+        text: curUser.userMap.containsKey(liked[i].id)
+            ?curUser.userMap[liked[i].id]
+            :"add",
         //accepted: aconnection ,
         user: liked[i],
         photourl: liked[i].photoUrl,
@@ -292,6 +302,7 @@ class _Post_TileState extends State<Post_Tile> {
     }
 
     for (int i = 0; i < counter['hated']; i++) {
+<<<<<<< HEAD
       String txt = "add";
       for (int j = 0; j < curUser.sentPendingConnection.length; j++) {
         if (hated[i].id == curUser.sentPendingConnection[j].id) txt = "pending";
@@ -303,9 +314,13 @@ class _Post_TileState extends State<Post_Tile> {
       for (int j = 0; j < curUser.connection.length; j++) {
         if (hated[i].id == curUser.connection[j].id) txt = "remove";
       }
+=======
+>>>>>>> master
       Request_Tile tile = Request_Tile(
         //request: recievedpending ? true : false,
-        text: txt,
+        text: curUser.userMap.containsKey(hated[i].id)
+            ?curUser.userMap[hated[i].id]
+            :"add",
         //accepted: aconnection ,
         user: hated[i],
         photourl: hated[i].photoUrl,
@@ -315,6 +330,7 @@ class _Post_TileState extends State<Post_Tile> {
     }
 
     for (int i = 0; i < counter['whatever']; i++) {
+<<<<<<< HEAD
       String txt = "add";
       for (int j = 0; j < curUser.sentPendingConnection.length; j++) {
         if (whatever[i].id == curUser.sentPendingConnection[j].id)
@@ -327,9 +343,13 @@ class _Post_TileState extends State<Post_Tile> {
       for (int j = 0; j < curUser.connection.length; j++) {
         if (whatever[i].id == curUser.connection[j].id) txt = "remove";
       }
+=======
+>>>>>>> master
       Request_Tile tile = Request_Tile(
         //request: recievedpending ? true : false,
-        text: txt,
+        text: curUser.userMap.containsKey(whatever[i].id)
+            ?curUser.userMap[whatever[i].id]
+            :"add",
         //accepted: aconnection ? true : false,
         user: whatever[i],
         photourl: whatever[i].photoUrl,

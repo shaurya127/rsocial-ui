@@ -52,6 +52,8 @@ class _Search_PageState extends State<Search_Page>
     //getAllConnections();
     //getUser();
     //getConnections();
+    print("all users in search page");
+    print(widget.allusers.length);
   }
 
   setOrientation(String Orientation) {
@@ -92,24 +94,24 @@ class _Search_PageState extends State<Search_Page>
       var msg = body1['message'];
       //print(msg["SentPendingConnection"]);
 
-      List<String> outgoing = [];
-      if (msg["SentPendingConnection"] != null) {
-        for (int i = 0; i < msg["SentPendingConnection"].length; i++) {
-          User user = User.fromJson(msg["SentPendingConnection"][i]);
-          outgoing.add(user.id);
-        }
-      }
+      // List<String> outgoing = [];
+      // if (msg["SentPendingConnection"] != null) {
+      //   for (int i = 0; i < msg["SentPendingConnection"].length; i++) {
+      //     User user = User.fromJson(msg["SentPendingConnection"][i]);
+      //     outgoing.add(user.id);
+      //   }
+      // }
+      //
+      // List<String> frnds = [];
+      // if (msg["Connection"] != null) {
+      //   for (int i = 0; i < msg["Connection"].length; i++) {
+      //     User user = User.fromJson(msg["Connection"][i]);
+      //     frnds.add(user.id);
+      //   }
+      // }
 
-      List<String> frnds = [];
-      if (msg["Connection"] != null) {
-        for (int i = 0; i < msg["Connection"].length; i++) {
-          User user = User.fromJson(msg["Connection"][i]);
-          frnds.add(user.id);
-        }
-      }
-
-      sentPendingConnections = outgoing;
-      idConnections = frnds;
+      // sentPendingConnections = outgoing;
+      // idConnections = frnds;
       //this.sentPendingConnections = curUser.sentPendingConnection;
 
       setState(() {
@@ -250,27 +252,15 @@ class _Search_PageState extends State<Search_Page>
     List<Request_Tile> searchResults = [];
     Request_Tile tile;
     for (int i = 0; i < suggestionList.length; i++) {
-      if (sentPendingConnections.contains(suggestionList[i].id) ||
-          idConnections.contains(suggestionList[i].id)) {
-        //print("Hello");
-        tile = Request_Tile(
-          user: suggestionList[i],
-          accepted: true,
-          text: "pending",
-          //request: false,
-          photourl: photourl,
-          //curUser: curUser,
-        );
-      } else {
-        tile = Request_Tile(
-          user: suggestionList[i],
-          text: "",
-          //request: false,
-          accepted: false,
-          photourl: photourl,
-          //curUser: curUser,
-        );
-      }
+      tile = Request_Tile(
+        user: suggestionList[i],
+        accepted: true,
+        text: curUser.userMap.containsKey(suggestionList[i].id)
+            ?curUser.userMap[suggestionList[i].id]
+        :"add",
+        //request: false,
+        photourl: photourl,
+      );
       searchResults.add(tile);
     }
     return ListView.builder(
@@ -323,7 +313,7 @@ class _Search_PageState extends State<Search_Page>
         print(connections[i].fname);
         Request_Tile tile = Request_Tile(
           user: connections[i],
-          text: "",
+          text: "remove",
           accepted: true,
           //request: false,
           photourl: photourl,
