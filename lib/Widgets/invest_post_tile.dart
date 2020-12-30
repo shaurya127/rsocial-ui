@@ -236,8 +236,8 @@ class _InvestPostTileState extends State<InvestPostTile> {
   buildReactionTile() {
     likes = [];
     love = [];
-    hates=[];
-    whatevers=[];
+    hates = [];
+    whatevers = [];
     for (int i = 0; i < counter['loved']; i++) {
       bool sentpending = false;
       bool recievedpending = false;
@@ -247,8 +247,8 @@ class _InvestPostTileState extends State<InvestPostTile> {
           sentpending = true;
       }
       for (int j = 0;
-      j < widget.curUser.receivedPendingConnection.length;
-      j++) {
+          j < widget.curUser.receivedPendingConnection.length;
+          j++) {
         if (loved[i].id == widget.curUser.receivedPendingConnection[j].id)
           recievedpending = true;
       }
@@ -275,8 +275,8 @@ class _InvestPostTileState extends State<InvestPostTile> {
           sentpending = true;
       }
       for (int j = 0;
-      j < widget.curUser.receivedPendingConnection.length;
-      j++) {
+          j < widget.curUser.receivedPendingConnection.length;
+          j++) {
         if (liked[i].id == widget.curUser.receivedPendingConnection[j].id)
           recievedpending = true;
       }
@@ -303,8 +303,8 @@ class _InvestPostTileState extends State<InvestPostTile> {
           sentpending = true;
       }
       for (int j = 0;
-      j < widget.curUser.receivedPendingConnection.length;
-      j++) {
+          j < widget.curUser.receivedPendingConnection.length;
+          j++) {
         if (hated[i].id == widget.curUser.receivedPendingConnection[j].id)
           recievedpending = true;
       }
@@ -331,13 +331,14 @@ class _InvestPostTileState extends State<InvestPostTile> {
           sentpending = true;
       }
       for (int j = 0;
-      j < widget.curUser.receivedPendingConnection.length;
-      j++) {
+          j < widget.curUser.receivedPendingConnection.length;
+          j++) {
         if (whatever[i].id == widget.curUser.receivedPendingConnection[j].id)
           recievedpending = true;
       }
       for (int j = 0; j < widget.curUser.connection.length; j++) {
-        if (whatever[i].id == widget.curUser.connection[j].id) aconnection = true;
+        if (whatever[i].id == widget.curUser.connection[j].id)
+          aconnection = true;
       }
       Request_Tile tile = Request_Tile(
         //request: recievedpending ? true : false,
@@ -443,7 +444,7 @@ class _InvestPostTileState extends State<InvestPostTile> {
                                                           .investedWithUser[0]
                                                           .lname)
                                                   .length <
-                                              11
+                                              7
                                           ? "${widget.userPost.investedWithUser[0].fname} ${widget.userPost.investedWithUser[0].lname}"
                                           : (widget.userPost.investedWithUser[0]
                                                           .fname +
@@ -452,7 +453,7 @@ class _InvestPostTileState extends State<InvestPostTile> {
                                                           .userPost
                                                           .investedWithUser[0]
                                                           .lname)
-                                                  .substring(0, 7) +
+                                                  .substring(0, 5) +
                                               ".",
                                       style: TextStyle(
                                         fontFamily: "Lato",

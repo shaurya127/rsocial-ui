@@ -3,6 +3,7 @@ import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/user_tile.dart';
 import '../Widgets/request_tile.dart';
 import '../user.dart';
+import 'bottom_nav_bar.dart';
 
 class InvestedWithPage extends StatefulWidget {
   List<User> investedWithUser;
@@ -15,14 +16,20 @@ class InvestedWithPage extends StatefulWidget {
 }
 
 class _InvestedWithPageState extends State<InvestedWithPage> {
-  List<UserTile> tiles = new List();
+  List<Request_Tile> tiles = new List();
   buildList() {
     print(widget.investedWithUser.length);
     for (int i = 0; i < widget.investedWithUser.length; i++) {
-      UserTile tile = UserTile(
+      Request_Tile tile = Request_Tile(
         user: widget.investedWithUser[i],
-        curUser: widget.curUser,
+        accepted: true,
+        text: curUser.userMap.containsKey(widget.investedWithUser[i].id)
+            ? curUser.userMap[widget.investedWithUser[i].id]
+            : "add",
+        //request: false,
+        photourl: curUser.photoUrl,
       );
+
       tiles.add(tile);
     }
     return ListView(
