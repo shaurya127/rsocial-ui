@@ -10,7 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
-
+import '../my_flutter_app_icons.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/invested_with.dart';
 import 'package:rsocial2/Screens/login_page.dart';
@@ -808,6 +808,13 @@ class _Post_TileState extends State<Post_Tile> {
                                 Container(
                                   height: 23,
                                   width: 23,
+                                  // child: Icon(
+                                  //   MyFlutterApp.rsocial_logo_thumb_upside,
+                                  //   color: rxn == "loved"
+                                  //       ? colorPrimaryBlue
+                                  //       : postIcons,
+                                  //   size: 30,
+                                  // ),
                                   child: SvgPicture.asset(
                                     "images/loved.svg",
                                     color: rxn == "loved"
@@ -849,6 +856,13 @@ class _Post_TileState extends State<Post_Tile> {
                                   Container(
                                     height: 23,
                                     width: 23,
+                                    // child: Icon(
+                                    //   MyFlutterApp.rsocial_logo_thumb_upside,
+                                    //   color: rxn == "loved"
+                                    //       ? colorPrimaryBlue
+                                    //       : postIcons,
+                                    //   size: 35,
+                                    // ),
                                     child: SvgPicture.asset(
                                       "images/loved.svg",
                                       color: rxn == "loved"

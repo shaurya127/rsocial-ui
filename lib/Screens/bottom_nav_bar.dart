@@ -55,7 +55,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
   bool isLoading = true;
   String photourl;
   //User curUser;
-  bool isFailed = false;
+  bool isFailedUserPost = false;
+  bool isFailedGetAllUser = false;
+  bool isFailedGetUser = false;
   List<Post> posts = [];
   List<User> allUsers = [];
   bool isPosted = false;
@@ -171,12 +173,20 @@ class _BottomNavBarState extends State<BottomNavBar> {
     print(url);
     //var user = await FirebaseAuth.instance.currentUser();
     //print("this user id is ${user.uid}");
-    token = await user.getIdToken();
-    print(token);
-    final response = await http.get(url, headers: {
-      "Authorization": "Bearer $token",
-      "Content-Type": "application/json",
-    });
+    var response;
+    try {
+      token = await user.getIdToken();
+      print(token);
+
+      response = await http.get(url, headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      });
+    } catch (e) {
+      setState(() {
+        isFailedGetUser = true;
+      });
+    }
     //print(response.body);
     //print(response.statusCode);
     if (response.statusCode == 200) {
@@ -191,7 +201,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
       if (msg == 'User Not Found') {
         setState(() {
           isLoading = false;
-          isFailed = true;
+          isFailedGetUser = true;
         });
       }
 
@@ -206,7 +216,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
       print(response.statusCode);
       setState(() {
         isLoading = false;
-        isFailed = true;
+        isFailedGetUser = true;
       });
       var alertBox = AlertDialogBox(
         title: "Error status: ${response.statusCode}",
@@ -239,11 +249,21 @@ class _BottomNavBarState extends State<BottomNavBar> {
       isLoadingPost = true;
       isLoading = false;
     });
-    var user = await FirebaseAuth.instance.currentUser();
-    photourl = user.photoUrl;
-    DocumentSnapshot doc = await users.document(user.uid).get();
-    if (doc == null) print("error from get user post");
-    var id = doc['id'];
+    var user;
+    var id;
+    try {
+      user = await FirebaseAuth.instance.currentUser();
+      photourl = user.photoUrl;
+
+      DocumentSnapshot doc = await users.document(user.uid).get();
+      if (doc == null) print("error from get user post");
+      id = doc['id'];
+    } catch (e) {
+      setState(() {
+        isFailedUserPost = true;
+      });
+    }
+    //var id = curUser.id;
     final url = storyEndPoint + "$id/all";
     var token = await user.getIdToken();
     final response = await http.get(url, headers: {
@@ -287,16 +307,24 @@ class _BottomNavBarState extends State<BottomNavBar> {
     }
   }
 
-  getAllConnections() async {
+  getAllUsers() async {
     setState(() {
       isLoading = true;
     });
-    print("==========Inside get all connection ===================");
-    var user = await FirebaseAuth.instance.currentUser();
-    //
-    DocumentSnapshot doc = await users.document(user.uid).get();
-    var id = doc['id'];
-    //var id = curUser.id;
+    print("==========Inside get all users ===================");
+    var user;
+    var id;
+    try {
+      user = await FirebaseAuth.instance.currentUser();
+      //
+      DocumentSnapshot doc = await users.document(user.uid).get();
+      id = doc['id'];
+      //var id = curUser.id;
+    } catch (e) {
+      setState(() {
+        isFailedGetAllUser = true;
+      });
+    }
     final url = userEndPoint + "$id/all";
 
     var token = await user.getIdToken();
@@ -347,81 +375,89 @@ class _BottomNavBarState extends State<BottomNavBar> {
       setState(() {
         isLoading = true;
       });
-      createNgetUser();
+      createNgetUserAwait();
     } else
       // createUser();
-      getUser();
-    getAllConnections();
+      getUserAwait();
+    getAllUsers();
     getUserPosts();
   }
 
-  buildFirstScreen() {
-    return Scaffold(
-      body: Center(
-          child: RaisedButton(
-              child: Text("log out"),
-              onPressed: () async {
-                FirebaseUser user = await _authInstance.currentUser();
-
-                if (user != null) {
-                  if (user.providerData[1].providerId == 'google.com') {
-                    await googleSignIn.disconnect();
-                  } else if (user.providerData[0].providerId ==
-                      'facebook.com') {
-                    await fblogin.logOut();
-                  }
-                  await _authInstance.signOut();
-                } else {
-                  var alertBox = AlertDialogBox(
-                    title: "Error",
-                    content:
-                        "We are unable to contact our servers. Please try again.",
-                    actions: <Widget>[
-                      FlatButton(
-                        child: Text(
-                          "Try again",
-                          style: TextStyle(
-                            color: colorButton,
-                            fontFamily: "Lato",
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          setState(() {
-                            isLoading = true;
-                            isFailed = false;
-                          });
-                          return getUser();
-                        },
-                      ),
-                      FlatButton(
-                        child: Text(
-                          "Log out",
-                          style: TextStyle(
-                            color: colorButton,
-                            fontFamily: "Lato",
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        onPressed: () {
-                          logout(context);
-                        },
-                      ),
-                    ],
-                  );
-
-                  showDialog(
-                      context: (context), builder: (context) => alertBox);
-                }
-
-                Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => CreateAccount()),
-                    (Route<dynamic> route) => false);
-              })),
-    );
+  createNgetUserAwait() async {
+    await createNgetUser();
   }
+
+  getUserAwait() async {
+    await getUser();
+  }
+
+  // buildFirstScreen() {
+  //   return Scaffold(
+  //     body: Center(
+  //         child: RaisedButton(
+  //             child: Text("log out"),
+  //             onPressed: () async {
+  //               FirebaseUser user = await _authInstance.currentUser();
+  //
+  //               if (user != null) {
+  //                 if (user.providerData[1].providerId == 'google.com') {
+  //                   await googleSignIn.disconnect();
+  //                 } else if (user.providerData[0].providerId ==
+  //                     'facebook.com') {
+  //                   await fblogin.logOut();
+  //                 }
+  //                 await _authInstance.signOut();
+  //               } else {
+  //                 var alertBox = AlertDialogBox(
+  //                   title: "Error",
+  //                   content:
+  //                       "We are unable to contact our servers. Please try again.",
+  //                   actions: <Widget>[
+  //                     FlatButton(
+  //                       child: Text(
+  //                         "Try again",
+  //                         style: TextStyle(
+  //                           color: colorButton,
+  //                           fontFamily: "Lato",
+  //                           fontWeight: FontWeight.bold,
+  //                         ),
+  //                       ),
+  //                       onPressed: () {
+  //                         Navigator.pop(context);
+  //                         setState(() {
+  //                           isLoading = true;
+  //                           isFailed = false;
+  //                         });
+  //                         return getUser();
+  //                       },
+  //                     ),
+  //                     FlatButton(
+  //                       child: Text(
+  //                         "Log out",
+  //                         style: TextStyle(
+  //                           color: colorButton,
+  //                           fontFamily: "Lato",
+  //                           fontWeight: FontWeight.bold,
+  //                         ),
+  //                       ),
+  //                       onPressed: () {
+  //                         logout(context);
+  //                       },
+  //                     ),
+  //                   ],
+  //                 );
+  //
+  //                 showDialog(
+  //                     context: (context), builder: (context) => alertBox);
+  //               }
+  //
+  //               Navigator.of(context).pushAndRemoveUntil(
+  //                   MaterialPageRoute(
+  //                       builder: (BuildContext context) => CreateAccount()),
+  //                   (Route<dynamic> route) => false);
+  //             })),
+  //   );
+  // }
 
   final List<String> _labels = [
     "Home",
@@ -441,13 +477,13 @@ class _BottomNavBarState extends State<BottomNavBar> {
         currentUser: curUser,
         isPostedCallback: isPostedCallback,
       ),
-      buildFirstScreen(),
+      Scaffold(),
       Scaffold(),
       //BioPage(analytics:widget.analytics,observer:widget.observer,currentUser: currentUser,),
       //ProfilePicPage(currentUser: widget.currentUser,analytics:widget.analytics,observer:widget.observer),
     ];
 
-    return isFailed
+    return isFailedGetUser || isFailedGetAllUser || isFailedUserPost
         ? Scaffold(
             backgroundColor: Colors.white,
             body: Center(
@@ -455,7 +491,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Text("Unable to find user"),
+                  Center(
+                    child: Text(
+                      "Error getting user details. \nPlease check your internet connection and try again.",
+                      style: TextStyle(fontFamily: "Lato"),
+                    ),
+                  ),
                   FlatButton(
                     child: Text(
                       "Try again",
@@ -468,9 +509,13 @@ class _BottomNavBarState extends State<BottomNavBar> {
                     onPressed: () {
                       setState(() {
                         isLoading = true;
-                        isFailed = false;
+                        isFailedGetUser = false;
+                        isFailedGetAllUser = false;
+                        isFailedUserPost = false;
                       });
-                      return getUser();
+                      getUserAwait();
+                      getUserPosts();
+                      getAllUsers();
                     },
                   ),
                   FlatButton(
