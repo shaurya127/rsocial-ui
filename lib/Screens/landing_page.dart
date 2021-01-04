@@ -8,9 +8,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/config.dart';
+import 'package:rsocial2/constants.dart';
 
 import '../post.dart';
 import '../user.dart';
+import 'bottom_nav_bar.dart';
 import 'login_page.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,7 +20,7 @@ class Landing_Page extends StatefulWidget {
   User curUser;
   List<Post> posts;
   bool isLoading;
-  Landing_Page({this.curUser,this.posts,this.isLoading});
+  Landing_Page({this.curUser, this.posts, this.isLoading});
   @override
   _Landing_PageState createState() => _Landing_PageState();
 }
@@ -38,13 +40,14 @@ class _Landing_PageState extends State<Landing_Page> {
 
   Future<void> getUserPosts() async {
     setState(() {
-      widget.isLoading=true;
+      widget.isLoading = true;
     });
     var user = await FirebaseAuth.instance.currentUser();
     photourl = user.photoUrl;
-    DocumentSnapshot doc = await users.document(user.uid).get();
-    if (doc == null) print("error from get user post");
-    var id = doc['id'];
+    //DocumentSnapshot doc = await users.document(user.uid).get();
+    //if (doc == null) print("error from get user post");
+    //var id = doc['id'];
+    var id = curUser.id;
     final url = storyEndPoint + "$id/all";
     var token = await user.getIdToken();
     final response = await http.get(url, headers: {
@@ -78,7 +81,7 @@ class _Landing_PageState extends State<Landing_Page> {
       }
       //print(posts.length);
       setState(() {
-        widget.posts=posts;
+        widget.posts = posts;
         widget.isLoading = false;
       });
     } else {
@@ -103,17 +106,17 @@ class _Landing_PageState extends State<Landing_Page> {
           //crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Text(
-              "Welcome to your timeline",
+              kLandingPageEmptyText,
               style: TextStyle(
                   fontFamily: "Lato",
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xff263238)),
+                  color: colorHintText),
             ),
             Text(
-              "It's empty now, but it won't be for long.",
+              kLandingPageEmptySubtext,
               style: TextStyle(
-                  fontFamily: "Lato", fontSize: 15, color: Color(0xff263238)),
+                  fontFamily: "Lato", fontSize: 15, color: colorHintText),
             ),
           ],
         ),
@@ -123,11 +126,13 @@ class _Landing_PageState extends State<Landing_Page> {
       //print(posts.length);
       for (int i = 0; i < widget.posts.length; i++) {
         Post_Tile tile = Post_Tile(
-            curUser: widget.curUser, userPost: widget.posts[i], photoUrl: photourl);
+            curUser: widget.curUser,
+            userPost: widget.posts[i],
+            photoUrl: photourl);
         postTiles.add(tile);
       }
       setState(() {
-        this.postTiles=postTiles;
+        this.postTiles = postTiles;
         widget.isLoading = false;
       });
       return ListView(
@@ -144,10 +149,6 @@ class _Landing_PageState extends State<Landing_Page> {
             ? Center(
                 child: CircularProgressIndicator(),
               )
-            : RefreshIndicator(
-          onRefresh: getUserPosts,
-          child: buildPosts()
-        )
-    );
+            : RefreshIndicator(onRefresh: getUserPosts, child: buildPosts()));
   }
 }

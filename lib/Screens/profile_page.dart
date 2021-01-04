@@ -23,14 +23,14 @@ class Profile extends StatefulWidget {
   User currentUser;
   User user;
   String photoUrl;
-  Profile({this.currentUser, this.photoUrl,this.user});
+  Profile({this.currentUser, this.photoUrl, this.user});
 }
 
-class _ProfileState extends State<Profile>{
+class _ProfileState extends State<Profile> {
   String postOrientation = "wage";
-  bool isLoading=true;
-  List<Post> postsW=[];
-  List<Post> postsI=[];
+  bool isLoading = true;
+  List<Post> postsW = [];
+  List<Post> postsI = [];
   List<InvestPostTile> InvestTiles = [];
   List<Post_Tile> WageTiles = [];
 
@@ -49,7 +49,7 @@ class _ProfileState extends State<Profile>{
 
   getUserPosts() async {
     setState(() {
-      isLoading=true;
+      isLoading = true;
     });
     print("get user post fired");
     var user = await FirebaseAuth.instance.currentUser();
@@ -78,7 +78,7 @@ class _ProfileState extends State<Profile>{
         else
           post = Post.fromJsonW(msg[i]);
         if (post != null) {
-          if(msg[i]['StoryType'] == "Investment")
+          if (msg[i]['StoryType'] == "Investment")
             postsI.add(post);
           else
             postsW.add(post);
@@ -100,7 +100,7 @@ class _ProfileState extends State<Profile>{
 
   buildWagePosts() {
     print("build wage post started");
-    WageTiles=[];
+    WageTiles = [];
     setState(() {
       isLoading = true;
     });
@@ -109,45 +109,51 @@ class _ProfileState extends State<Profile>{
         isLoading = false;
       });
       return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  "No $postOrientation story yet!",
-                  style: TextStyle(
-                      fontFamily: "Lato",
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xff263238)),
-                ),
-                widget.user.id==widget.currentUser.id ?Text(
-                  "Make a Wage story now",
-                  style: TextStyle(
-                      fontFamily: "Lato", fontSize: 15, color: Color(0xff263238)),
-                ): Container()
-              ],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              "No $postOrientation story yet!",
+              style: TextStyle(
+                  fontFamily: "Lato",
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: colorHintText),
             ),
-          );
+            widget.user.id == widget.currentUser.id
+                ? Text(
+                    kProfilePageWage,
+                    style: TextStyle(
+                        fontFamily: "Lato", fontSize: 15, color: colorHintText),
+                  )
+                : Container()
+          ],
+        ),
+      );
     } else {
       //print(posts.length);
       for (int i = 0; i < postsW.length; i++) {
         print("wage reaction");
         print(postsW[i].reactedBy.length);
         Post_Tile tile = Post_Tile(
-            curUser: widget.currentUser, userPost: postsW[i], photoUrl: widget.user.photoUrl);
+            curUser: widget.currentUser,
+            userPost: postsW[i],
+            photoUrl: widget.user.photoUrl);
         WageTiles.add(tile);
       }
       setState(() {
         isLoading = false;
       });
       print("build wage post ended");
-      return ListView(children: WageTiles.reversed.toList(),);
+      return ListView(
+        children: WageTiles.reversed.toList(),
+      );
     }
   }
 
   buildInvestPosts() {
     print("build invest post started");
-    InvestTiles=[];
+    InvestTiles = [];
     setState(() {
       isLoading = true;
     });
@@ -165,13 +171,15 @@ class _ProfileState extends State<Profile>{
                   fontFamily: "Lato",
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xff263238)),
+                  color: colorHintText),
             ),
-            widget.user.id==widget.currentUser.id ?Text(
-              "Make an Investment story now",
-              style: TextStyle(
-                  fontFamily: "Lato", fontSize: 15, color: Color(0xff263238)),
-            ): Container(),
+            widget.user.id == widget.currentUser.id
+                ? Text(
+                    kProfilePageInvestment,
+                    style: TextStyle(
+                        fontFamily: "Lato", fontSize: 15, color: colorHintText),
+                  )
+                : Container(),
           ],
         ),
       );
@@ -181,19 +189,22 @@ class _ProfileState extends State<Profile>{
         print("Invest reaction");
         print(postsI[i].reactedBy.length);
         InvestPostTile tile = InvestPostTile(
-            curUser: widget.currentUser, userPost: postsI[i], photoUrl: widget.user.photoUrl);
+            curUser: widget.currentUser,
+            userPost: postsI[i],
+            photoUrl: widget.user.photoUrl);
         InvestTiles.add(tile);
       }
       setState(() {
         isLoading = false;
       });
       print("build invest post ended");
-      return ListView(children:InvestTiles.reversed.toList(),);
+      return ListView(
+        children: InvestTiles.reversed.toList(),
+      );
     }
   }
 
-  buildPlatformPosts()
-  {
+  buildPlatformPosts() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -204,7 +215,7 @@ class _ProfileState extends State<Profile>{
                 fontFamily: "Lato",
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Color(0xff263238)),
+                color: colorHintText),
           ),
         ],
       ),
@@ -226,18 +237,21 @@ class _ProfileState extends State<Profile>{
                   radius: 50,
                   backgroundImage: NetworkImage(widget.user.photoUrl),
                 ),
-                widget.currentUser.id==widget.user.id ?
-                Icon(Icons.edit,color: colorPrimaryBlue,)
-                // Text(
-                //   "Edit",
-                //   style: TextStyle(
-                //     fontFamily: "Lato",
-                //     fontWeight: FontWeight.bold,
-                //     decoration: TextDecoration.underline,
-                //     fontSize: 15,
-                //     color: Colors.blue,
-                //   ),
-                // )
+                widget.currentUser.id == widget.user.id
+                    ? Icon(
+                        Icons.edit,
+                        color: colorPrimaryBlue,
+                      )
+                    // Text(
+                    //   "Edit",
+                    //   style: TextStyle(
+                    //     fontFamily: "Lato",
+                    //     fontWeight: FontWeight.bold,
+                    //     decoration: TextDecoration.underline,
+                    //     fontSize: 15,
+                    //     color: Colors.blue,
+                    //   ),
+                    // )
                     : Container(),
               ],
             ),
@@ -245,50 +259,49 @@ class _ProfileState extends State<Profile>{
               height: 10,
             ),
             Text(
-              "${widget.user.fname}" +
-                  " ${widget.user.lname}",
+              "${widget.user.fname}" + " ${widget.user.lname}",
               style: TextStyle(
                 fontFamily: "Lato",
                 fontWeight: FontWeight.bold,
                 fontSize: 20,
-                color: Color(0xff263238),
+                color: colorHintText,
               ),
             ),
             SizedBox(
               height: 3,
             ),
-            widget.currentUser.id==widget.user.id ? Text(
-              "${widget.user.email}",
-              style: TextStyle(
-                fontFamily: "Lato",
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: Color(0xff7F7F7F),
-              ),
-            ) : SizedBox.shrink(),
+            widget.currentUser.id == widget.user.id
+                ? Text(
+                    "${widget.user.email}",
+                    style: TextStyle(
+                      fontFamily: "Lato",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: colorGreyTint,
+                    ),
+                  )
+                : SizedBox.shrink(),
             SizedBox(
               height: 3,
             ),
             widget.user.mobile != null
                 ? Text(
-              widget.user.mobile != null
-                  ? widget.user.mobile
-                  : "mobile field is null",
-              style: TextStyle(
-                fontFamily: "Lato",
-                fontSize: 18,
-                color: Color(0xff7F7F7F),
-              ),
-            )
+                    widget.user.mobile != null
+                        ? widget.user.mobile
+                        : "mobile field is null",
+                    style: TextStyle(
+                      fontFamily: "Lato",
+                      fontSize: 18,
+                      color: colorGreyTint,
+                    ),
+                  )
                 : SizedBox.shrink(),
             Text(
-              widget.user.bio != null
-                  ? widget.user.bio
-                  : "here comes the bio",
+              widget.user.bio != null ? widget.user.bio : "here comes the bio",
               style: TextStyle(
                 fontFamily: "Lato",
                 fontSize: 16,
-                color: Color(0xff263238),
+                color: colorHintText,
               ),
             ),
           ],
@@ -302,13 +315,15 @@ class _ProfileState extends State<Profile>{
   Widget build(BuildContext context) {
     return Scaffold(
         // Here app bar to be updated
-        appBar: customAppBar(context,
-            widget.currentUser.id==widget.user.id? "My Profile" : "Profile",
-            widget.currentUser.lollarAmount.toString(), widget.currentUser.photoUrl,
+        appBar: customAppBar(
+            context,
+            widget.currentUser.id == widget.user.id ? "My Profile" : "Profile",
+            widget.currentUser.lollarAmount.toString(),
+            widget.currentUser.photoUrl,
             widget.currentUser.socialStanding.toString()),
         body: NestedScrollView(
-          headerSliverBuilder: (context,_){
-            return[
+          headerSliverBuilder: (context, _) {
+            return [
               SliverList(
                 delegate: SliverChildListDelegate(
                   buildHeader(context),
@@ -319,7 +334,8 @@ class _ProfileState extends State<Profile>{
           body: Column(
             children: <Widget>[
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 color: Colors.white,
                 height: 40,
                 child: Row(
@@ -334,7 +350,7 @@ class _ProfileState extends State<Profile>{
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
-                              "Wage story",
+                              kProfilePageWageTab,
                               style: TextStyle(
                                 fontFamily: "Lato",
                                 fontSize: 15,
@@ -359,14 +375,14 @@ class _ProfileState extends State<Profile>{
                     ),
                     Container(
                       child: GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           setPostOrientation("invest");
-                          },
+                        },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
-                              "Investment story",
+                              kProfilePageInvestmentTab,
                               style: TextStyle(
                                 fontFamily: "Lato",
                                 fontSize: 15,
@@ -398,7 +414,7 @@ class _ProfileState extends State<Profile>{
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
-                              "Platform Interaction",
+                              kProfilePagePlatformTab,
                               style: TextStyle(
                                 fontFamily: "Lato",
                                 fontSize: 15,
@@ -425,16 +441,15 @@ class _ProfileState extends State<Profile>{
                 ),
               ),
               Expanded(
-                child: isLoading
-                    ? Center(child: CircularProgressIndicator(),)
-                    : (postOrientation=='wage'
-                    ? buildWagePosts()
-                    : (postOrientation=='invest'
-                    ? buildInvestPosts()
-                :buildPlatformPosts()
-                )
-                )
-              ),
+                  child: isLoading
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : (postOrientation == 'wage'
+                          ? buildWagePosts()
+                          : (postOrientation == 'invest'
+                              ? buildInvestPosts()
+                              : buildPlatformPosts()))),
             ],
           ),
         )

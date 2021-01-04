@@ -86,7 +86,7 @@ class _ProfilePicPageState extends State<ProfilePicPage> {
               ),
               Center(
                 child: Text(
-                  "Pick a Profile Picture",
+                  kProfilePicText,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
@@ -97,7 +97,7 @@ class _ProfilePicPageState extends State<ProfilePicPage> {
                 height: 12,
               ),
               Text(
-                "Have a favourite selfie? Upload it now.",
+                kProfilePicSubtext,
                 style: TextStyle(
                     fontFamily: "Lato",
                     fontWeight: FontWeight.w400,
@@ -163,9 +163,9 @@ class _ProfilePicPageState extends State<ProfilePicPage> {
                 onPressed: () async {
                   if (file != null) {
                     print("Inside continue");
-                    print(this.encodedFile);
-                    log("Encoded file ${this.encodedFile} in photoURL",
-                        name: "bla bbbbbb");
+                    // print(this.encodedFile);
+                    // log("Encoded file ${this.encodedFile} in photoURL",
+                    //     name: "bla bbbbbb");
                     print("Encoded file in photoUrl");
                     widget.currentUser.photoUrl = this.encodedFile;
                   }

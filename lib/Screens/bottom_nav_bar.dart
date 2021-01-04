@@ -64,17 +64,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
   void isPostedCallback() {
     setState(() {
       _currentIndex = 0;
-
-      // isLoading = true;
     });
     getUserPosts();
   }
 
   createNgetUser() async {
     var url = userEndPoint + 'create';
-    // log(jsonEncode(widget.currentUser.toJson()), name: "Bla bla");
-    // print(jsonEncode(widget.currentUser.toJson()));
-    // debugPrint(jsonEncode(widget.currentUser.toJson()));
     var user = await FirebaseAuth.instance.currentUser();
     photourl = user.photoUrl;
     var token = await user.getIdToken();
@@ -294,7 +289,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   getAllConnections() async {
     setState(() {
-      isLoading=true;
+      isLoading = true;
     });
     print("==========Inside get all connection ===================");
     var user = await FirebaseAuth.instance.currentUser();
@@ -505,7 +500,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
             : Scaffold(
                 appBar: customAppBar(
                     context,
-                    "RSocial",
+                    kBottomNavPageBarTitle,
                     curUser != null ? curUser.lollarAmount.toString() : "",
                     curUser != null ? curUser.photoUrl : "",
                     curUser != null ? curUser.socialStanding.toString() : ""),

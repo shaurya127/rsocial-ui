@@ -55,7 +55,6 @@ class _WageState extends State<Wage> {
   List<String> selectedImgList = new List();
   List<User> selectedList = new List();
   List<String> idSelectedList = new List();
-  String investedWith = "3406418ba95248e7b0d65a467e61b68d";
   List<User> investmentlist = new List();
   List<User> connections = [];
   var investmentTextController = new TextEditingController();
@@ -149,9 +148,10 @@ class _WageState extends State<Wage> {
       });
       var url = storyEndPoint + "createinvestment";
       var user = await FirebaseAuth.instance.currentUser();
-      DocumentSnapshot doc = await users.document(user.uid).get();
-      var uid = doc['id'];
-      print(uid);
+      // DocumentSnapshot doc = await users.document(user.uid).get();
+      // var uid = doc['id'];
+      // print(uid);
+      var uid = curUser.id;
 
       for (int i = 0; i < selectedList.length; i++) {
         idSelectedList.add(selectedList[i].id);
@@ -228,13 +228,14 @@ class _WageState extends State<Wage> {
       });
       var url = storyEndPoint + "createwage";
       var user = await FirebaseAuth.instance.currentUser();
-      DocumentSnapshot doc = await users.document(user.uid).get();
-      if (doc == null) {
-        print("Doc is null in create Post in wage.dart");
-        throw Exception();
-      }
-      var uid = doc['id'];
-      print(uid);
+      // DocumentSnapshot doc = await users.document(user.uid).get();
+      // if (doc == null) {
+      //   print("Doc is null in create Post in wage.dart");
+      //   throw Exception();
+      // }
+      // var uid = doc['id'];
+      //print(uid);
+      var uid = curUser.id;
       print(storyText);
       print("Post starts");
       Post post = Post(id: uid, storyText: storyText, fileUpload: list);
@@ -334,32 +335,32 @@ class _WageState extends State<Wage> {
   }
 
   void getFriends() async {
-    var user = await FirebaseAuth.instance.currentUser();
-    //
-    // // Getting doc from firebase
-    DocumentSnapshot doc = await users.document(user.uid).get();
-    // // Getting id of current user from firebase
-    var id = doc['id'];
-    //
-    final url = userEndPoint + "$id";
-    //
-    var token = await user.getIdToken();
-    //
-    final response = await http.get(url, headers: {
-      "Authorization": "Bearer $token",
-      "Content-Type": "application/json",
-    });
-    User curUser;
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      var msg = body1['message'];
-      print("These are my connections");
-      print(msg);
-      curUser = User.fromJson(msg);
-    }
+    // var user = await FirebaseAuth.instance.currentUser();
+    // //
+    // // // Getting doc from firebase
+    // DocumentSnapshot doc = await users.document(user.uid).get();
+    // // // Getting id of current user from firebase
+    // var id = doc['id'];
+    // //
+    // final url = userEndPoint + "$id";
+    // //
+    // var token = await user.getIdToken();
+    // //
+    // final response = await http.get(url, headers: {
+    //   "Authorization": "Bearer $token",
+    //   "Content-Type": "application/json",
+    // });
+    // User curUser;
+    // print(response.statusCode);
+    // if (response.statusCode == 200) {
+    //   final jsonUser = jsonDecode(response.body);
+    //   var body = jsonUser['body'];
+    //   var body1 = jsonDecode(body);
+    //   var msg = body1['message'];
+    //   print("These are my connections");
+    //   print(msg);
+    //   curUser = User.fromJson(msg);
+    // }
     this.investmentlist = curUser.connection;
     // if (connections.isNotEmpty) {
     //   for (int i = 0; i < connections.length; i++) {
@@ -524,7 +525,7 @@ class _WageState extends State<Wage> {
                 label: amount.round().toString(),
                 min: 1000,
                 max: 9000,
-                activeColor: Color(0xff4dbae6),
+                activeColor: colorPrimaryBlue,
                 inactiveColor: colorGreyTint,
                 onChanged: (value) {
                   setState(() {
@@ -834,7 +835,7 @@ class _WageState extends State<Wage> {
                             child: SvgPicture.asset(
                               "images/group2773.svg",
                               color: orientation == "wage"
-                                  ? Color(0xff4dbae6)
+                                  ? colorPrimaryBlue
                                   : colorGreyTint.withOpacity(0.3),
                             ),
                           ),
@@ -861,7 +862,7 @@ class _WageState extends State<Wage> {
                             child: SvgPicture.asset(
                               "images/group2771.svg",
                               color: orientation == "invest"
-                                  ? Color(0xff4dbae6)
+                                  ? colorPrimaryBlue
                                   : colorGreyTint.withOpacity(0.3),
                             ),
                           ),
@@ -1064,7 +1065,7 @@ class _WageState extends State<Wage> {
                                 ),
                               ),
                               RoundedButton(
-                                color: Color(0xff4dbae6),
+                                color: colorPrimaryBlue,
                                 textColor: Colors.white,
                                 text: "Time to Brag",
                                 onPressed: () {

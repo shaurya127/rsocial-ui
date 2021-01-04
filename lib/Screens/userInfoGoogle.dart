@@ -25,7 +25,7 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
   final _formKey = GlobalKey<FormState>();
 
   // To check the gender while registering
-  bool isMale = true;
+  bool isMale = null;
 
   // To check whether the user has selected a date from the date picker
   bool isDateSelected = false;
@@ -221,7 +221,7 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                                       child: Container(
                                         height: 60,
                                         decoration: BoxDecoration(
-                                            color: isMale
+                                            color: isMale != null && isMale
                                                 ? colorButton
                                                 : Colors.white,
                                             borderRadius: BorderRadius.only(
@@ -234,7 +234,7 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                                           style: TextStyle(
                                               fontFamily: "Lato",
                                               fontWeight: FontWeight.bold,
-                                              color: isMale
+                                              color: isMale != null && isMale
                                                   ? Colors.white
                                                   : Colors.black),
                                         )),
@@ -252,7 +252,7 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                                       child: Container(
                                         height: 60,
                                         decoration: BoxDecoration(
-                                            color: !isMale
+                                            color: isMale != null && !isMale
                                                 ? colorButton
                                                 : Colors.white,
                                             borderRadius: BorderRadius.only(
@@ -265,7 +265,7 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                                           style: TextStyle(
                                               fontFamily: "Lato",
                                               fontWeight: FontWeight.bold,
-                                              color: !isMale
+                                              color: isMale != null && !isMale
                                                   ? Colors.white
                                                   : Colors.black),
                                         )),
@@ -288,7 +288,9 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                   color: colorButton,
                   onPressed: () {
                     print("hello");
-                    if (_formKey.currentState.validate() && isDateSelected) {
+                    if (_formKey.currentState.validate() &&
+                        isDateSelected &&
+                        isMale != null) {
                       widget.currentUser.dob = dateFormatting(selectedDate);
                       widget.currentUser.gender = isMale ? 'M' : 'F';
 

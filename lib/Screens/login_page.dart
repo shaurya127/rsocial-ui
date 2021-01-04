@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'package:page_transition/page_transition.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:rsocial2/Screens/choose_register.dart';
 import 'package:rsocial2/Screens/register_page.dart';
 import 'package:rsocial2/Widgets/provider_button.dart';
 
@@ -95,241 +96,259 @@ class _LoginPageState extends State<LoginPage> {
   // To store the phone number entered by user
   String phoneNumber;
 
+  Future<bool> onBackPressed() async {
+    FirebaseAuth _authInstance = FirebaseAuth.instance;
+    FirebaseUser user = await _authInstance.currentUser();
+    if (user != null) {
+      if (user.providerData[1].providerId == 'google.com') {
+        await googleSignIn.disconnect();
+      } else if (user.providerData[0].providerId == 'facebook.com') {
+        await fblogin.logOut();
+      }
+    }
+    await _authInstance.signOut();
+    Navigator.pop(context, true);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: remoteConfig != null
-          ? Container(
-              child: Text('wait'),
-            )
-          : isLoading
-              ? CircularProgressIndicator()
-              : ListView(
-                  children: <Widget>[
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        children: <Widget>[
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            child: Image.asset("images/logo2.png"),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 24.0),
-                            child: TextFormField(
-                              onChanged: (value) {
-                                phoneNumber = value;
-                                print(phoneNumber);
-                              },
-                              validator: (value) {
-                                if (value == null ||
-                                    value.isEmpty ||
-                                    value.length != 10 ||
-                                    !regex.hasMatch(value)) {
-                                  return "Please enter a valid phone number";
-                                }
-                                return null;
-                              },
-                              keyboardType: TextInputType.number,
-                              decoration: kInputField.copyWith(
-                                  hintText: "Mobile Number",
-                                  // labelText: "Email or Mobile Number",
-                                  labelStyle: TextStyle(
-                                      color: Color(0xff263238).withOpacity(0.5),
-                                      fontFamily: "Lato",
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w300)),
+    return WillPopScope(
+      onWillPop: onBackPressed,
+      child: Scaffold(
+        body: remoteConfig != null
+            ? Container(
+                child: Text('wait'),
+              )
+            : isLoading
+                ? CircularProgressIndicator()
+                : ListView(
+                    children: <Widget>[
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: 20,
                             ),
-                          ),
+                            Container(
+                              child: Image.asset("images/logo2.png"),
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 24.0),
+                              child: TextFormField(
+                                onChanged: (value) {
+                                  phoneNumber = value;
+                                  print(phoneNumber);
+                                },
+                                validator: (value) {
+                                  if (value == null ||
+                                      value.isEmpty ||
+                                      value.length != 10 ||
+                                      !regex.hasMatch(value)) {
+                                    return "Please enter a valid phone number";
+                                  }
+                                  return null;
+                                },
+                                keyboardType: TextInputType.number,
+                                decoration: kInputField.copyWith(
+                                    hintText: "Mobile Number",
+                                    // labelText: "Email or Mobile Number",
+                                    labelStyle: TextStyle(
+                                        color:
+                                            Color(0xff263238).withOpacity(0.5),
+                                        fontFamily: "Lato",
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w300)),
+                              ),
+                            ),
 
-                          SizedBox(
-                            height: 24,
-                          ),
-                          RoundedButton(
-                            text: "Sign in",
-                            //remoteConfig.getString('button_text'),
-                            textColor: Colors.white,
-                            color: colorButton,
-                            onPressed: () {
-                              if (_formKey.currentState.validate()) {
-                                // To check if the country code has already been added
-                                if (phoneNumber.length == 10)
-                                  phoneNumber = '+91$phoneNumber';
-
-                                var alertBox = AlertDialog(
-                                  title: Text("Verify Phone"),
-                                  titleTextStyle: TextStyle(
+                            SizedBox(
+                              height: 24,
+                            ),
+                            RoundedButton(
+                              text: "Sign in",
+                              //remoteConfig.getString('button_text'),
+                              textColor: Colors.white,
+                              color: colorButton,
+                              onPressed: () {
+                                // if (_formKey.currentState.validate()) {
+                                //   // To check if the country code has already been added
+                                //   if (phoneNumber.length == 10)
+                                //     phoneNumber = '+91$phoneNumber';
+                                //
+                                //   var alertBox = AlertDialog(
+                                //     title: Text("Verify Phone"),
+                                //     titleTextStyle: TextStyle(
+                                //         fontFamily: "Lato",
+                                //         fontWeight: FontWeight.bold,
+                                //         color: Colors.black,
+                                //         fontSize: 20),
+                                //     content: Text(phoneNumber.length == 10
+                                //         ? "We'll text your verification code to +91-$phoneNumber. Standard SMS fees may apply."
+                                //         : "We'll text your verification code to $phoneNumber. Standard SMS fees may apply."),
+                                //     actions: <Widget>[
+                                //       FlatButton(
+                                //         child: Text(
+                                //           "Edit",
+                                //           style: TextStyle(
+                                //             color: colorButton,
+                                //             fontFamily: "Lato",
+                                //             fontWeight: FontWeight.bold,
+                                //           ),
+                                //         ),
+                                //         onPressed: () {
+                                //           Navigator.pop(
+                                //             context,
+                                //           );
+                                //         },
+                                //       ),
+                                //       FlatButton(
+                                //         child: Text(
+                                //           "Proceed",
+                                //           style: TextStyle(
+                                //               color: colorButton,
+                                //               fontFamily: "Lato",
+                                //               fontWeight: FontWeight.bold),
+                                //         ),
+                                //         onPressed: () {
+                                //           Navigator.pop(
+                                //             context,
+                                //           );
+                                //
+                                //           print('Phone number is: ' +
+                                //               phoneNumber);
+                                //           Navigator.push(
+                                //               context,
+                                //               PageTransition(
+                                //                   settings: RouteSettings(
+                                //                       name: "Otp_Page"),
+                                //                   type: PageTransitionType
+                                //                       .rightToLeft,
+                                //                   child: OtpPage(
+                                //                     currentUser: currentUser,
+                                //                   )));
+                                //         },
+                                //       ),
+                                //     ],
+                                //   );
+                                //   showDialog(
+                                //       context: (context),
+                                //       builder: (context) {
+                                //         return alertBox;
+                                //       });
+                                // }
+                              },
+                              elevation: 0,
+                            ),
+                            // RoundedButton(
+                            //   text: "Sign In",
+                            //   textColor: Colors.white,
+                            //   color: colorButton,
+                            //   onPressed: () {},
+                            //   elevation: 0,
+                            // ),
+                            SizedBox(
+                              height: 24,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Divider(
+                                  height: 1,
+                                  thickness: 4,
+                                ),
+                                Text("Or"),
+                                Divider(
+                                  height: 1,
+                                  thickness: 1,
+                                )
+                              ],
+                            ),
+                            SizedBox(
+                              height: 24,
+                            ),
+                            ProviderButton(
+                              onPressed: () {
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                loginWithFacebook(_currentUser, context);
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              },
+                              title: kFacebookButtonText,
+                              iconLocation: "images/facebook.svg",
+                              color: facebookTextColor,
+                              buttonColor: facebookButtonColor,
+                            ),
+                            SizedBox(
+                              height: 24,
+                            ),
+                            ProviderButton(
+                              onPressed: () {
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                loginWithGoogle(_currentUser, context);
+                                setState(() {
+                                  isLoading = false;
+                                });
+                              },
+                              title: kGoogleButtonText,
+                              iconLocation: "images/google.svg",
+                              color: googleTextColor,
+                              buttonColor: googleButtonColor,
+                            ),
+                            SizedBox(
+                              height: 24,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 24.0),
+                              child: RichText(
+                                text: TextSpan(
+                                  text: kLoginPageNoAccount,
+                                  style: TextStyle(
+                                      color: colorHintText,
                                       fontFamily: "Lato",
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                      fontSize: 20),
-                                  content: Text(phoneNumber.length == 10
-                                      ? "We'll text your verification code to +91-$phoneNumber. Standard SMS fees may apply."
-                                      : "We'll text your verification code to $phoneNumber. Standard SMS fees may apply."),
-                                  actions: <Widget>[
-                                    FlatButton(
-                                      child: Text(
-                                        "Edit",
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16),
+                                  children: [
+                                    TextSpan(
+                                        text: kLoginPageSignUp,
                                         style: TextStyle(
-                                          color: colorButton,
-                                          fontFamily: "Lato",
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      onPressed: () {
-                                        Navigator.pop(
-                                          context,
-                                        );
-                                      },
-                                    ),
-                                    FlatButton(
-                                      child: Text(
-                                        "Proceed",
-                                        style: TextStyle(
-                                            color: colorButton,
-                                            fontFamily: "Lato",
+                                            color: Colors.blue,
                                             fontWeight: FontWeight.bold),
-                                      ),
-                                      onPressed: () {
-                                        Navigator.pop(
-                                          context,
-                                        );
-
-                                        print(
-                                            'Phone number is: ' + phoneNumber);
-                                        Navigator.push(
-                                            context,
-                                            PageTransition(
-                                                settings: RouteSettings(
-                                                    name: "Otp_Page"),
-                                                type: PageTransitionType
-                                                    .rightToLeft,
-                                                child: OtpPage(
-                                                  currentUser: currentUser,
-                                                )));
-                                      },
-                                    ),
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () {
+                                            Navigator.push(
+                                                context,
+                                                PageTransition(
+                                                    settings: RouteSettings(
+                                                        name: "Register_Page"),
+                                                    type: PageTransitionType
+                                                        .bottomToTop,
+                                                    child: ChooseRegister()));
+                                          }),
+                                    TextSpan(text: ".")
                                   ],
-                                );
-                                showDialog(
-                                    context: (context),
-                                    builder: (context) {
-                                      return alertBox;
-                                    });
-                              }
-                            },
-                            elevation: 0,
-                          ),
-                          // RoundedButton(
-                          //   text: "Sign In",
-                          //   textColor: Colors.white,
-                          //   color: colorButton,
-                          //   onPressed: () {},
-                          //   elevation: 0,
-                          // ),
-                          SizedBox(
-                            height: 24,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Divider(
-                                height: 1,
-                                thickness: 4,
-                              ),
-                              Text("Or"),
-                              Divider(
-                                height: 1,
-                                thickness: 1,
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: 24,
-                          ),
-                          ProviderButton(
-                            onPressed: () {
-                              setState(() {
-                                isLoading = true;
-                              });
-                              loginWithFacebook(_currentUser, context);
-                              setState(() {
-                                isLoading = false;
-                              });
-                            },
-                            title: "Sign in with Facebook",
-                            iconLocation: "images/facebook.svg",
-                            color: facebookTextColor,
-                            buttonColor: facebookButtonColor,
-                          ),
-                          SizedBox(
-                            height: 24,
-                          ),
-                          ProviderButton(
-                            onPressed: () {
-                              setState(() {
-                                isLoading = true;
-                              });
-                              loginWithGoogle(_currentUser, context);
-                              setState(() {
-                                isLoading = false;
-                              });
-                            },
-                            title: "Sign in with Google",
-                            iconLocation: "images/google.svg",
-                            color: googleTextColor,
-                            buttonColor: googleButtonColor,
-                          ),
-                          SizedBox(
-                            height: 24,
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 24.0),
-                            child: RichText(
-                              text: TextSpan(
-                                text: "Don't have an account ? ",
-                                style: TextStyle(
-                                    color: Color(0xff263238),
-                                    fontFamily: "Lato",
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 16),
-                                children: [
-                                  TextSpan(
-                                      text: "Sign Up",
-                                      style: TextStyle(
-                                          color: Colors.blue,
-                                          fontWeight: FontWeight.bold),
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () {
-                                          Navigator.push(
-                                              context,
-                                              PageTransition(
-                                                  settings: RouteSettings(
-                                                      name: "Register_Page"),
-                                                  type: PageTransitionType
-                                                      .bottomToTop,
-                                                  child: RegisterPage()));
-                                        }),
-                                  TextSpan(text: ".")
-                                ],
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(
-                            height: 24,
-                          )
-                        ],
+                            SizedBox(
+                              height: 24,
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+      ),
     );
   }
 }

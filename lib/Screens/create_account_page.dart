@@ -35,7 +35,7 @@ class _CreateAccountState extends State<CreateAccount> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Text(
-                "Time to value relationships, Assess your social bonds.",
+                kCreateAccountText,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: "Lato",
@@ -51,7 +51,7 @@ class _CreateAccountState extends State<CreateAccount> {
           RoundedButton(
             textColor: Colors.white,
             color: colorButton,
-            text: "Create Account",
+            text: kCreateAccountButton,
             onPressed: () {
               //Navigator.pop(context);
               Navigator.push(
@@ -72,7 +72,7 @@ class _CreateAccountState extends State<CreateAccount> {
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: RichText(
                     text: TextSpan(
-                      text: "Already have an account ? ",
+                      text: kCreateAccountAlready,
                       style: TextStyle(
                           color: Color(0xff263238),
                           fontFamily: "Lato",
@@ -80,13 +80,12 @@ class _CreateAccountState extends State<CreateAccount> {
                           fontSize: 16),
                       children: [
                         TextSpan(
-                            text: "Sign In",
+                            text: kCreateAccountSignIn,
                             style: TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                Navigator.pop(context);
                                 Navigator.push(
                                     context,
                                     PageTransition(

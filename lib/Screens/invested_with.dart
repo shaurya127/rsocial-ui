@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/user_tile.dart';
+import 'package:rsocial2/constants.dart';
 import '../Widgets/request_tile.dart';
 import '../user.dart';
 import 'bottom_nav_bar.dart';
@@ -42,7 +43,7 @@ class _InvestedWithPageState extends State<InvestedWithPage> {
     return Scaffold(
       appBar: customAppBar(
           context,
-          "Invested with",
+          kInvestingWith,
           widget.curUser.lollarAmount.toString(),
           widget.curUser.photoUrl,
           widget.curUser.socialStanding.toString()),

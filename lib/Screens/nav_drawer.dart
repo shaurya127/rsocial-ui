@@ -46,7 +46,8 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                   height: 60,
                   width: MediaQuery.of(context).size.width,
                   child: SvgPicture.asset(
-                    "images/rsocial-text.svg",),
+                    "images/rsocial-text.svg",
+                  ),
                   // decoration: BoxDecoration(
                   //     image: DecorationImage(
                   //   image: AssetImage("images/logo2.png"),
@@ -91,7 +92,7 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                   ),
                 ),
                 Nav_Drawer_Tile(
-                  title: "Amount",
+                  title: kNavDrawerAmount,
                   icon: Container(
                     height: 23,
                     width: 23,
@@ -101,14 +102,12 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                     ),
                   ),
                   trailing: Text(
-                    curUser != null
-                        ? curUser.lollarAmount.toString()
-                        : "",
+                    curUser != null ? curUser.lollarAmount.toString() : "",
                     style: TextStyle(color: Colors.grey, fontSize: 16),
                   ),
                 ),
                 Nav_Drawer_Tile(
-                    title: "Total Connections",
+                    title: kNavDrawerConnection,
                     icon: Container(
                       height: 23,
                       width: 23,
@@ -120,7 +119,7 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                     trailing: Text("${curUser.connection.length}",
                         style: TextStyle(color: Colors.grey, fontSize: 16))),
                 Nav_Drawer_Tile(
-                    title: "Profile",
+                    title: kNavDrawerProfile,
                     f: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -129,7 +128,7 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                               builder: (context) => Profile(
                                     currentUser: widget.currentUser,
                                     photoUrl: widget.photoUrl,
-                                user: widget.currentUser,
+                                    user: widget.currentUser,
                                   )));
                     },
                     icon: SvgPicture.asset(
@@ -148,7 +147,7 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                   ),
                 ),
                 Nav_Drawer_Tile(
-                  title: "Refer & earn",
+                  title: kNavDrawerRefer,
                   f: () {
                     Navigator.pop(context);
                     Navigator.push(
@@ -170,7 +169,7 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                   ),
                 ),
                 Nav_Drawer_Tile(
-                  title: "Settings & Privacy",
+                  title: kNavDrawerSettings,
                   icon: SvgPicture.asset(
                     "images/settings.svg",
                     color: nameCol.withOpacity(0.4),
@@ -181,7 +180,7 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                   ),
                 ),
                 Nav_Drawer_Tile(
-                  title: "Logout",
+                  title: kNavDrawerLogout,
                   icon: Icon(Icons.exit_to_app),
                   trailing: IconButton(
                     alignment: Alignment.centerRight,
