@@ -8,6 +8,7 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:page_transition/page_transition.dart';
+import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/login_page.dart';
 
 import 'package:rsocial2/Screens/wage.dart';
@@ -33,9 +34,6 @@ import 'package:search_widget/search_widget.dart';
 import '../post.dart';
 import 'package:http/http.dart' as http;
 
-// const kAndroidUserAgent =
-//     'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile Safari/537.36';
-
 class Investment extends StatefulWidget {
   User currentUser;
 
@@ -60,7 +58,6 @@ class _InvestmentState extends State<Investment> {
   List<String> selectedImgList = new List();
   List<User> selectedList = new List();
   List<String> idSelectedList = new List();
-  String investedWith = "3406418ba95248e7b0d65a467e61b68d";
   List<User> list = new List();
   List<User> connections = [];
   bool isloading = false;
@@ -126,32 +123,32 @@ class _InvestmentState extends State<Investment> {
   // }
 
   void getFriends() async {
-    var user = await FirebaseAuth.instance.currentUser();
+    // var user = await FirebaseAuth.instance.currentUser();
     //
     // // Getting doc from firebase
-    DocumentSnapshot doc = await users.document(user.uid).get();
+    //DocumentSnapshot doc = await users.document(user.uid).get();
     // // Getting id of current user from firebase
-    var id = doc['id'];
-    //
-    final url = userEndPoint + "$id";
-    //
-    var token = await user.getIdToken();
-    //
-    final response = await http.get(url, headers: {
-      "Authorization": "Bearer $token",
-      "Content-Type": "application/json",
-    });
-    User curUser;
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      var msg = body1['message'];
-      print("These are my connections");
-      print(msg);
-      curUser = User.fromJson(msg);
-    }
+    // var id = curUser.id;
+    // //
+    // final url = userEndPoint + "$id";
+    // //
+    // var token = await user.getIdToken();
+    // //
+    // final response = await http.get(url, headers: {
+    //   "Authorization": "Bearer $token",
+    //   "Content-Type": "application/json",
+    // });
+    // User curUser;
+    // print(response.statusCode);
+    // if (response.statusCode == 200) {
+    //   final jsonUser = jsonDecode(response.body);
+    //   var body = jsonUser['body'];
+    //   var body1 = jsonDecode(body);
+    //   var msg = body1['message'];
+    //   print("These are my connections");
+    //   print(msg);
+    //   curUser = User.fromJson(msg);
+    // }
     this.list = curUser.connection;
     // if (connections.isNotEmpty) {
     //   for (int i = 0; i < connections.length; i++) {

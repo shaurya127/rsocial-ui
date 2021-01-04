@@ -10,7 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
-
+import '../my_flutter_app_icons.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/invested_with.dart';
 import 'package:rsocial2/Screens/login_page.dart';
@@ -166,67 +166,76 @@ class _Post_TileState extends State<Post_Tile> {
     if (response.statusCode == 200) {
       print(response.body);
 
-      setState(() {
-        String prevrxn = rxn;
-        rxn = reactn;
-        print("this is my reaction $rxn");
-        bool inLoop = true;
-        for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
-          User user = widget.userPost.reactedBy[i];
-          print("rara");
-          if (user.id == widget.curUser.id) {
-            //print("in user post");
-            if (m.containsKey(widget.userPost.id)) m.remove(widget.userPost.id);
-            user.reactionType = reactn;
-            inLoop = false;
-          }
+      // setState(() {
+      String prevrxn = rxn;
+      rxn = reactn;
+      print("this is my reaction $rxn");
+      bool inLoop = true;
+      for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
+        User user = widget.userPost.reactedBy[i];
+        print("rara");
+        if (user.id == widget.curUser.id) {
+          //print("in user post");
+          if (m.containsKey(widget.userPost.id)) m.remove(widget.userPost.id);
+          user.reactionType = reactn;
+          inLoop = false;
         }
+      }
 
-        //when user reacts on the post for the first time
-        if (inLoop == true) {
-          //print("charu22");
-          // widget.userPost.user.firstRxn=reactn;
-          if (rxn == "noreact") {
-            m[widget.userPost.id] = {reactn: counter[reactn]};
-            return;
-          }
-          if (prevrxn != "noreact" && prevrxn != rxn) counter[prevrxn]--;
-          // else
-          //   {
-          //     counter[prevrxn]--;
-          //     counter[rxn]++;
-          //   }
-          m[widget.userPost.id] = {reactn: counter[reactn]};
-          // if (rxn == "loved")
-          //   m[widget.userPost.id][0] = ++lovedCounter;
-          // else if (rxn == "liked")
-          //   m[widget.userPost.id][1] = ++likedCounter;
-          // else if (rxn == "whatever")
-          //   m[widget.userPost.id][2] = ++whateverCounter;
-          // else if (rxn == "hated")
-          //   m[widget.userPost.id][3] = ++hatedCounter;
+      //when user reacts on the post for the first time
+      if (inLoop == true) {
+        //print("charu22");
+        // widget.userPost.user.firstRxn=reactn;
+        m[widget.userPost.id] = {reactn: counter[reactn]};
+        print("This is my reaction");
+        if (rxn == "noreact") {
+          // m[widget.userPost.id] = {reactn: counter[reactn]};
+          counter[prevrxn]--;
+          print("previous reaction is $prevrxn: ${counter[prevrxn]}");
+        } else if (prevrxn != "noreact" && prevrxn != rxn) counter[prevrxn]--;
+        // else
+        //   {
+        //     counter[prevrxn]--;
+        //     counter[rxn]++;
+        //   }
 
-          // m[widget.userPost.id][reactn] = reactn == "loved"
-          //     ? ++lovedCounter
-          //     : (reactn == "liked"
-          //         ? ++likedCounter
-          //         : (reactn == "whatever"
-          //             ? ++whateverCounter
-          //             : (reactn == "hated" ? ++hatedCounter : rxn)));
-          // rxn = reactn;
-          // print("hello");
-          // print(rxn);
-        } else {
-          // if a user toggles to another reaction we need to
-          // decrease the counter of the previous reaction type
-          // if(rxn=='noreact')
-          //   rxn="noreact";
-          if (prevrxn != rxn && rxn != "noreact") {
-            counter[prevrxn]--;
-          }
+        // if (rxn == "loved")
+        //   m[widget.userPost.id][0] = ++lovedCounter;
+        // else if (rxn == "liked")
+        //   m[widget.userPost.id][1] = ++likedCounter;
+        // else if (rxn == "whatever")
+        //   m[widget.userPost.id][2] = ++whateverCounter;
+        // else if (rxn == "hated")
+        //   m[widget.userPost.id][3] = ++hatedCounter;
+
+        // m[widget.userPost.id][reactn] = reactn == "loved"
+        //     ? ++lovedCounter
+        //     : (reactn == "liked"
+        //         ? ++likedCounter
+        //         : (reactn == "whatever"
+        //             ? ++whateverCounter
+        //             : (reactn == "hated" ? ++hatedCounter : rxn)));
+        // rxn = reactn;
+        // print("hello");
+        // print(rxn);
+      } else {
+        // if a user toggles to another reaction we need to
+        // decrease the counter of the previous reaction type
+        // if(rxn=='noreact')
+        //   rxn="noreact";
+        print("This is my second reaction");
+        if (rxn == "noreact") {
+          // m[widget.userPost.id] = {reactn: counter[reactn]};
+          counter[prevrxn]--;
+          print("previous reaction is $prevrxn: ${counter[prevrxn]}");
+        } else if (prevrxn != rxn && rxn != "noreact") {
+          counter[prevrxn]--;
         }
-      });
+      }
+      // });
+      setState(() {});
     }
+    print("hello hello");
     setState(() {
       isDisabled = false;
     });
@@ -294,13 +303,35 @@ class _Post_TileState extends State<Post_Tile> {
     }
   }
 
+  reaction(String reaction) {
+    if (widget.userPost.user.id != widget.curUser.id) {
+      if (rxn == reaction) {
+        react('noreact');
+        // counter[reaction]--;
+        //  m[widget.userPost.user.id] = {reaction: --counter[reaction]};
+      } else {
+        react(reaction);
+        counter[reaction]++;
+      }
+    } else
+      print("not allowed");
+
+    print("state is set");
+    print(counter[reaction]);
+    setState(() {});
+    return;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (m.containsKey(widget.userPost.id)) {
       Map<String, int> map = m[widget.userPost.id];
+
       for (var key in map.keys) rxn = key;
       print("my reaction is now $rxn");
       counter[rxn] = map[rxn];
+
+      // print(counter['hated']);
       //Map<String, int> mx = m[widget.userPost.id];
       // for (var key in mx.keys) rxn = key;
 
@@ -313,6 +344,7 @@ class _Post_TileState extends State<Post_Tile> {
       // else if (rxn == "hated") hatedCounter = m[widget.userPost.id][3];
 
     }
+    print("This is build function");
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 1),
@@ -776,6 +808,13 @@ class _Post_TileState extends State<Post_Tile> {
                                 Container(
                                   height: 23,
                                   width: 23,
+                                  // child: Icon(
+                                  //   MyFlutterApp.rsocial_logo_thumb_upside,
+                                  //   color: rxn == "loved"
+                                  //       ? colorPrimaryBlue
+                                  //       : postIcons,
+                                  //   size: 30,
+                                  // ),
                                   child: SvgPicture.asset(
                                     "images/loved.svg",
                                     color: rxn == "loved"
@@ -798,24 +837,32 @@ class _Post_TileState extends State<Post_Tile> {
                             )
                           : GestureDetector(
                               onTap: () => {
-                                widget.userPost.user.id != widget.curUser.id
-                                    ?
-                                    //     ? Fluttertoast.showToast(
-                                    //         msg: "You cannot react on your own post!",
-                                    //         toastLength: Toast.LENGTH_SHORT,
-                                    //         gravity: ToastGravity.BOTTOM,
-                                    //         fontSize: 15)
-                                    //     :
-                                    (rxn == 'loved'
-                                        ? {react("noreact"), counter['loved']--}
-                                        : {react("loved"), counter['loved']++})
-                                    : print("not allowed")
+                                reaction('loved')
+                                //widget.userPost.user.id != widget.curUser.id
+                                //  ?
+                                //     ? Fluttertoast.showToast(
+                                //         msg: "You cannot react on your own post!",
+                                //         toastLength: Toast.LENGTH_SHORT,
+                                //         gravity: ToastGravity.BOTTOM,
+                                //         fontSize: 15)
+                                //     :
+                                // (rxn == 'loved'
+                                //     ? {react("noreact"), counter['loved']--}
+                                //     : {react("loved"), counter['loved']++})
+                                // : print("not allowed")
                               },
                               child: Column(
                                 children: <Widget>[
                                   Container(
                                     height: 23,
                                     width: 23,
+                                    // child: Icon(
+                                    //   MyFlutterApp.rsocial_logo_thumb_upside,
+                                    //   color: rxn == "loved"
+                                    //       ? colorPrimaryBlue
+                                    //       : postIcons,
+                                    //   size: 35,
+                                    // ),
                                     child: SvgPicture.asset(
                                       "images/loved.svg",
                                       color: rxn == "loved"
@@ -869,18 +916,19 @@ class _Post_TileState extends State<Post_Tile> {
                             )
                           : GestureDetector(
                               onTap: () => {
-                                widget.userPost.user.id != widget.curUser.id
-                                    ?
-                                    //     ? Fluttertoast.showToast(
-                                    //         msg: "You cannot react on your own post!",
-                                    //         toastLength: Toast.LENGTH_SHORT,
-                                    //         gravity: ToastGravity.BOTTOM,
-                                    //         fontSize: 15)
-                                    //     :
-                                    (rxn == 'liked'
-                                        ? {react("noreact"), counter['liked']--}
-                                        : {react("liked"), counter['liked']++})
-                                    : print("not allowed")
+                                reaction('liked')
+                                // widget.userPost.user.id != widget.curUser.id
+                                //     ?
+                                //     //     ? Fluttertoast.showToast(
+                                //     //         msg: "You cannot react on your own post!",
+                                //     //         toastLength: Toast.LENGTH_SHORT,
+                                //     //         gravity: ToastGravity.BOTTOM,
+                                //     //         fontSize: 15)
+                                //     //     :
+                                //     (rxn == 'liked'
+                                //         ? {react("noreact"), counter['liked']--}
+                                //         : {react("liked"), counter['liked']++})
+                                //     : print("not allowed")
                               },
                               child: Column(
                                 children: <Widget>[
@@ -938,24 +986,25 @@ class _Post_TileState extends State<Post_Tile> {
                             )
                           : GestureDetector(
                               onTap: () => {
-                                widget.userPost.user.id != widget.curUser.id
-                                    ?
-                                    //     ? Fluttertoast.showToast(
-                                    //         msg: "You cannot react on your own post!",
-                                    //         toastLength: Toast.LENGTH_SHORT,
-                                    //         gravity: ToastGravity.BOTTOM,
-                                    //         fontSize: 15)
-                                    //     :
-                                    (rxn == 'whatever'
-                                        ? {
-                                            react("noreact"),
-                                            counter['whatever']--
-                                          }
-                                        : {
-                                            react("whatever"),
-                                            counter['whatever']++
-                                          })
-                                    : print("not allowed")
+                                reaction('whatever')
+                                // widget.userPost.user.id != widget.curUser.id
+                                //     ?
+                                //     //     ? Fluttertoast.showToast(
+                                //     //         msg: "You cannot react on your own post!",
+                                //     //         toastLength: Toast.LENGTH_SHORT,
+                                //     //         gravity: ToastGravity.BOTTOM,
+                                //     //         fontSize: 15)
+                                //     //     :
+                                //     (rxn == 'whatever'
+                                //         ? {
+                                //             react("noreact"),
+                                //             counter['whatever']--
+                                //           }
+                                //         : {
+                                //             react("whatever"),
+                                //             counter['whatever']++
+                                //           })
+                                //     : print("not allowed")
                               },
                               child: Column(
                                 children: <Widget>[
@@ -1014,18 +1063,22 @@ class _Post_TileState extends State<Post_Tile> {
                             )
                           : GestureDetector(
                               onTap: () => {
-                                widget.userPost.user.id != widget.curUser.id
-                                    ?
-                                    //     ? Fluttertoast.showToast(
-                                    //         msg: "You cannot react on your own post!",
-                                    //         toastLength: Toast.LENGTH_SHORT,
-                                    //         gravity: ToastGravity.BOTTOM,
-                                    //         fontSize: 15)
-                                    //     :
-                                    (rxn == 'hated'
-                                        ? {react("noreact"), counter['hated']--}
-                                        : {react("hated"), counter['hated']++})
-                                    : print("not allowed")
+                                reaction('hated')
+                                // rxn == 'hated'
+                                //     ? reaction('noreact')
+                                //     : reaction('hated')
+                                // widget.userPost.user.id != widget.curUser.id
+                                //     ?
+                                //     //     ? Fluttertoast.showToast(
+                                //     //         msg: "You cannot react on your own post!",
+                                //     //         toastLength: Toast.LENGTH_SHORT,
+                                //     //         gravity: ToastGravity.BOTTOM,
+                                //     //         fontSize: 15)
+                                //     //     :
+                                //     (rxn == 'hated'
+                                //         ? {react("noreact"), counter['hated']--}
+                                //         : {react("hated"), counter['hated']++})
+                                //     : print("not allowed")
                               },
                               child: Column(
                                 children: <Widget>[

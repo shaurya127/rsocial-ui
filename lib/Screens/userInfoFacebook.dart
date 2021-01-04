@@ -45,7 +45,7 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
   selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: (context),
-        initialDate: DateTime.now(),
+        initialDate: selectedDate != null ? selectedDate : DateTime.now(),
         firstDate: DateTime(initialYear),
         lastDate: DateTime(finalYear));
     if (picked != null && picked != selectedDate) {

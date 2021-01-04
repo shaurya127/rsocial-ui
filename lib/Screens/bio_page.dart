@@ -69,7 +69,7 @@ class _BioPageState extends State<BioPage> {
               ),
               Center(
                 child: Text(
-                  "Describe yourself",
+                  kBioPageTitle,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
@@ -80,7 +80,7 @@ class _BioPageState extends State<BioPage> {
                 height: 12,
               ),
               Text(
-                "What makes you special ?",
+                kBioPageSubtitle,
                 style: TextStyle(
                     fontFamily: "Lato",
                     fontWeight: FontWeight.w400,
@@ -100,7 +100,7 @@ class _BioPageState extends State<BioPage> {
                     maxLength: 250,
                     style: TextStyle(fontSize: 19),
                     decoration: kInputField.copyWith(
-                        hintText: "Your Bio...",
+                        hintText: kBioPagePlaceholder,
                         hintStyle: TextStyle(
                             color: Color(0xff263238).withOpacity(0.5),
                             fontSize: 16,
@@ -111,9 +111,11 @@ class _BioPageState extends State<BioPage> {
                 height: 32,
               ),
               RoundedButton(
-                text: "Continue",
+                text: kBioPageButton,
                 elevation: 0,
                 onPressed: () async {
+                  //  if(!currentFocus.hasPrimaryFocus) currentFocus.unfocus();
+
                   if (bio != null) {
                     widget.currentUser.bio = bio;
                   }
@@ -148,7 +150,7 @@ class _BioPageState extends State<BioPage> {
                       (Route<dynamic> route) => false);
                 },
                 child: Text(
-                  "Skip for now",
+                  kBioPageInkWell,
                   style: TextStyle(
                       color: colorButton,
                       fontFamily: "Lato",

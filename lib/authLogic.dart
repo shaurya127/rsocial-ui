@@ -20,7 +20,11 @@ import 'Widgets/alert_box.dart';
 import 'constants.dart';
 import 'package:http/http.dart' as http;
 
-final googleSignIn = GoogleSignIn();
+final googleSignIn = GoogleSignIn(scopes: [
+  "https://www.googleapis.com/auth/userinfo.profile",
+  "https://www.googleapis.com/auth/user.birthday.read",
+  "https://www.googleapis.com/auth/user.gender.read"
+]);
 final fblogin = FacebookLogin();
 
 signUpWithRsocial(BuildContext context) {
@@ -119,6 +123,34 @@ loginWithFacebook(User _currentUser, BuildContext context) async {
   }
 }
 
+class Inf {
+  String gender = null;
+  String dob = null;
+}
+
+Future<Inf> getGenderBirthday() async {
+  Inf inf = Inf();
+  final headers = await googleSignIn.currentUser.authHeaders;
+  final r = await http.get(
+      "https://people.googleapis.com/v1/people/me?personFields=genders,birthdays&key=AIzaSyDqj2ohJ_jy_9FYJWuscicm3VtBpizR4OI",
+      headers: {"Authorization": headers["Authorization"]});
+  final response = jsonDecode(r.body);
+
+  print("This is response from google gender: ");
+  print(response);
+  if (response["genders"] != null) {
+    inf.gender = response["genders"][0]["formattedValue"] == "Male" ? "M" : "F";
+    print(response['genders'][0]["formattedValue"]);
+  }
+  if (response['birthdays'] != null)
+    inf.dob = response["birthdays"][0]["date"]["day"].toString() +
+        "/" +
+        response["birthdays"][0]["date"]["month"].toString() +
+        "/" +
+        response["birthdays"][0]["date"]["year"].toString();
+  return inf;
+}
+
 // Logic followed when logged in using google
 loginWithGoogle(User _currentUser, BuildContext context) async {
   FirebaseUser user;
@@ -130,8 +162,8 @@ loginWithGoogle(User _currentUser, BuildContext context) async {
     final GoogleSignInAuthentication googleKey =
         await googleUser.authentication;
 
-  AuthCredential credential = GoogleAuthProvider.getCredential(
-      idToken: googleKey.idToken, accessToken: googleKey.accessToken);
+    AuthCredential credential = GoogleAuthProvider.getCredential(
+        idToken: googleKey.idToken, accessToken: googleKey.accessToken);
 
     user = await FirebaseAuth.instance.signInWithCredential(credential);
 
@@ -175,6 +207,9 @@ loginWithGoogle(User _currentUser, BuildContext context) async {
 
     final GoogleSignInAccount guser = googleSignIn.currentUser;
 
+    Inf inf = await getGenderBirthday();
+    print(inf.gender);
+    print(inf.dob);
     // If user does not exists
     if (!doc.exists) {
       print(guser.photoUrl);
@@ -187,7 +222,9 @@ loginWithGoogle(User _currentUser, BuildContext context) async {
           email: guser.email,
           lollarAmount: 1000,
           socialStanding: 1,
-          photoUrl: guser.photoUrl);
+          photoUrl: guser.photoUrl,
+          gender: inf.gender,
+          dob: inf.dob);
       Navigator.pop(context);
       FirebaseAnalytics().setUserId(user_id);
 

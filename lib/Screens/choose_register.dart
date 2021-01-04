@@ -76,7 +76,7 @@ class _ChooseRegisterState extends State<ChooseRegister> {
                           isLoading = false;
                         });
                       },
-                      title: "Sign up with Facebook",
+                      title: kFacebookButtonText,
                       iconLocation: "images/facebook.svg",
                       color: facebookTextColor,
                       buttonColor: facebookButtonColor,
@@ -94,7 +94,7 @@ class _ChooseRegisterState extends State<ChooseRegister> {
                           isLoading = false;
                         });
                       },
-                      title: "Sign up with Google",
+                      title: kGoogleButtonText,
                       iconLocation: "images/google.svg",
                       color: googleTextColor,
                       buttonColor: googleButtonColor,
@@ -102,15 +102,15 @@ class _ChooseRegisterState extends State<ChooseRegister> {
                     SizedBox(
                       height: 24,
                     ),
-                    ProviderButton(
-                      onPressed: () {
-                        // signUpWithRsocial(context);
-                      },
-                      title: "Sign up with Rsocial",
-                      iconLocation: "images/google.svg",
-                      color: rsocialTextColor,
-                      buttonColor: rsocialTextColor.withOpacity(0.15),
-                    ),
+                    // ProviderButton(
+                    //   onPressed: () {
+                    //     // signUpWithRsocial(context);
+                    //   },
+                    //   title: kRsocialButtonText,
+                    //   iconLocation: "images/google.svg",
+                    //   color: rsocialTextColor,
+                    //   buttonColor: rsocialTextColor.withOpacity(0.15),
+                    // ),
                   ],
                 ),
               ),

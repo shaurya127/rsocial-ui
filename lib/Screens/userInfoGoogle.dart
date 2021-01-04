@@ -20,12 +20,12 @@ class UserInfoGoogle extends StatefulWidget {
 
 class _UserInfoGoogleState extends State<UserInfoGoogle> {
   // The initial date that will be shown by the date picker
-  DateTime selectedDate = DateTime.now();
+  DateTime selectedDate;
 
   final _formKey = GlobalKey<FormState>();
 
   // To check the gender while registering
-  bool isMale = true;
+  bool isMale = null;
 
   // To check whether the user has selected a date from the date picker
   bool isDateSelected = false;
@@ -40,7 +40,7 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
   selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: (context),
-        initialDate: DateTime.now(),
+        initialDate: selectedDate != null ? selectedDate : DateTime.now(),
         firstDate: DateTime(initialYear),
         lastDate: DateTime(finalYear));
     if (picked != null && picked != selectedDate) {
@@ -50,7 +50,27 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
     }
   }
 
-  // Formatting the date in dd/mm/yyyy format
+  @override
+  void initState() {
+    if (widget.currentUser.gender == null) {
+      isMale = null;
+    } else {
+      if (widget.currentUser.gender == 'M') {
+        isMale = true;
+      } else
+        isMale = false;
+    }
+    String dob = widget.currentUser.dob;
+    this.selectedDate = widget.currentUser.dob != null
+        ? DateTime.parse(dob.substring(6, 10) +
+            "-" +
+            dob.substring(3, 5) +
+            "-" +
+            dob.substring(0, 2))
+        : DateTime.now();
+    if (widget.currentUser.dob != null) isDateSelected = true;
+  } // Formatting the date in dd/mm/yyyy format
+
   String dateFormatting(DateTime selectedDate) {
     String date = selectedDate.toString().split(" ")[0];
     String res = date.substring(8, 10) +
@@ -221,7 +241,7 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                                       child: Container(
                                         height: 60,
                                         decoration: BoxDecoration(
-                                            color: isMale
+                                            color: isMale != null && isMale
                                                 ? colorButton
                                                 : Colors.white,
                                             borderRadius: BorderRadius.only(
@@ -234,7 +254,7 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                                           style: TextStyle(
                                               fontFamily: "Lato",
                                               fontWeight: FontWeight.bold,
-                                              color: isMale
+                                              color: isMale != null && isMale
                                                   ? Colors.white
                                                   : Colors.black),
                                         )),
@@ -252,7 +272,7 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                                       child: Container(
                                         height: 60,
                                         decoration: BoxDecoration(
-                                            color: !isMale
+                                            color: isMale != null && !isMale
                                                 ? colorButton
                                                 : Colors.white,
                                             borderRadius: BorderRadius.only(
@@ -265,7 +285,7 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                                           style: TextStyle(
                                               fontFamily: "Lato",
                                               fontWeight: FontWeight.bold,
-                                              color: !isMale
+                                              color: isMale != null && !isMale
                                                   ? Colors.white
                                                   : Colors.black),
                                         )),
@@ -288,7 +308,9 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                   color: colorButton,
                   onPressed: () {
                     print("hello");
-                    if (_formKey.currentState.validate() && isDateSelected) {
+                    if (_formKey.currentState.validate() &&
+                        isDateSelected &&
+                        isMale != null) {
                       widget.currentUser.dob = dateFormatting(selectedDate);
                       widget.currentUser.gender = isMale ? 'M' : 'F';
 
