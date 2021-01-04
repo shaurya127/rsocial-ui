@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -130,9 +131,16 @@ class Inf {
 
 Future<Inf> getGenderBirthday() async {
   Inf inf = Inf();
+
+  var key;
+  if (Platform.isIOS) {
+    key = "AIzaSyABeypdm2QEwvSSI8LpyP1lBJDRiUnURUk";
+  } else if (Platform.isAndroid) {
+    key = "AIzaSyDqj2ohJ_jy_9FYJWuscicm3VtBpizR4OI";
+  }
+
   final headers = await googleSignIn.currentUser.authHeaders;
-  final r = await http.get(
-      "https://people.googleapis.com/v1/people/me?personFields=genders,birthdays&key=AIzaSyDqj2ohJ_jy_9FYJWuscicm3VtBpizR4OI",
+  final r = await http.get(googlePeopleApi + key,
       headers: {"Authorization": headers["Authorization"]});
   final response = jsonDecode(r.body);
 
