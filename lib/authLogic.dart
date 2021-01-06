@@ -213,7 +213,7 @@ loginWithGoogle(User _currentUser, BuildContext context) async {
     // If user does not exists
     if (!doc.exists) {
       print(guser.photoUrl);
-
+      print(guser.displayName);
       User curUser = User(
           fname: guser.displayName.split(" ")[0],
           lname: guser.displayName.split(" ").length == 2
@@ -270,7 +270,7 @@ void logout(BuildContext context) async {
   FirebaseUser user = await _authInstance.currentUser();
 
   if (user != null) {
-    if (user.providerData[1].providerId == 'google.com') {
+    if (user.providerData[0].providerId == 'google.com') {
       await googleSignIn.disconnect();
     } else if (user.providerData[0].providerId == 'facebook.com') {
       await fblogin.logOut();
