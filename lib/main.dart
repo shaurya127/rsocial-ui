@@ -1,9 +1,11 @@
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
+import 'package:rsocial2/Screens/userInfoGoogle.dart';
 import 'package:rsocial2/auth.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:rsocial2/constants.dart';
+import 'package:rsocial2/user.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(

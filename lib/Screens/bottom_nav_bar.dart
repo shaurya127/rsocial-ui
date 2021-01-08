@@ -110,12 +110,14 @@ class _BottomNavBarState extends State<BottomNavBar>
       //print(widget.sign_in_mode);
       await users.document(user.uid).setData({"id": resBody['message']['id']});
 
-      final url = userEndPoint + "$id";
+      final url = userEndPoint + "get";
 
-      final responseGet = await http.get(url, headers: {
-        "Authorization": "Bearer $token",
-        "Content-Type": "application/json",
-      });
+      final responseGet = await http.post(url,
+          headers: {
+            "Authorization": "Bearer $token",
+            "Content-Type": "application/json",
+          },
+          body: jsonEncode({"id": id, "email": user.email}));
 
       if (responseGet.statusCode == 200) {
         final jsonUser = jsonDecode(responseGet.body);
@@ -161,7 +163,8 @@ class _BottomNavBarState extends State<BottomNavBar>
     var user = await FirebaseAuth.instance.currentUser();
     var token = await user.getIdToken();
     print(token);
-
+    print("This is my email");
+    print(user.email);
     DocumentSnapshot doc = await users.document(user.uid).get();
     print("This is the doc");
     print(doc.data);
@@ -174,7 +177,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     }
 
     var id = doc['id'];
-    final url = userEndPoint + "$id";
+    final url = userEndPoint + "get";
     print(url);
     //var user = await FirebaseAuth.instance.currentUser();
     //print("this user id is ${user.uid}");
@@ -182,16 +185,24 @@ class _BottomNavBarState extends State<BottomNavBar>
     try {
       token = await user.getIdToken();
       print(token);
-
-      response = await http.get(url, headers: {
-        "Authorization": "Bearer $token",
-        "Content-Type": "application/json",
-      });
+      print(id);
+      print(user.email);
+      print("blalb");
+      response = await http.post(url,
+          encoding: Encoding.getByName("utf-8"),
+          headers: {
+            "Authorization": "Bearer $token",
+            "Content-Type": "application/json",
+            //"Accept": "*/*"
+          },
+          body: jsonEncode({"id": id, "email": user.email}));
     } catch (e) {
+      print(e);
       setState(() {
         isFailedGetUser = true;
       });
     }
+    print("This is my response: $response");
     //print(response.body);
     //print(response.statusCode);
     if (response.statusCode == 200) {
@@ -254,12 +265,12 @@ class _BottomNavBarState extends State<BottomNavBar>
       isLoadingPost = true;
       isLoading = false;
     });
-    var user;
+    FirebaseUser user;
     var id;
     try {
       user = await FirebaseAuth.instance.currentUser();
       photourl = user.photoUrl;
-
+      print(user);
       DocumentSnapshot doc = await users.document(user.uid).get();
       if (doc == null) print("error from get user post");
       id = doc['id'];
@@ -269,7 +280,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       });
     }
     //var id = curUser.id;
-    final url = storyEndPoint + "$id/all";
+    final url = storyEndPoint + "${id}/all";
     var token = await user.getIdToken();
     final response = await http.get(url, headers: {
       "Authorization": "Bearer $token",
@@ -277,7 +288,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     });
     //print("body is ${response.body}");
     //print(response.statusCode);
-
+    print("User posts $response");
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body);
       var body = jsonUser['body'];
@@ -330,15 +341,17 @@ class _BottomNavBarState extends State<BottomNavBar>
         isFailedGetAllUser = true;
       });
     }
-    final url = userEndPoint + "$id/all";
+    final url = userEndPoint + "all";
 
     var token = await user.getIdToken();
     //print(token);
 
-    final response = await http.get(url, headers: {
-      "Authorization": "Bearer $token",
-      "Content-Type": "application/json",
-    });
+    final response = await http.post(url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        },
+        body: jsonEncode({"id": id, "email": user.email}));
 
     //print(response.statusCode);
     if (response.statusCode == 200) {

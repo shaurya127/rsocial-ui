@@ -56,10 +56,13 @@ class _ProfileState extends State<Profile> {
     final url = storyEndPoint + "${widget.user.id}";
     var token = await user.getIdToken();
     //print(token);
-    final response = await http.get(url, headers: {
-      "Authorization": "Bearer $token",
-      "Content-Type": "application/json",
-    });
+    final response = await http.get(
+      url,
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      },
+    );
 
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body);

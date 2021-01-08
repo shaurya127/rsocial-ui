@@ -78,6 +78,7 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
         date.substring(5, 7) +
         "/" +
         date.substring(0, 4);
+    print(res);
     return res;
   }
 
@@ -308,6 +309,7 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                   textColor: Colors.white,
                   color: colorButton,
                   onPressed: () {
+                    dateFormatting(selectedDate);
                     if (_formKey.currentState.validate() &&
                         isDateSelected &&
                         isMale != null) {
@@ -329,30 +331,30 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                 SizedBox(
                   height: 32,
                 ),
-                InkWell(
-                  onTap: () async {
-                    // FirebaseAnalytics().setUserProperty(
-                    //     name: 'Upload_pic_or_not', value: "skipped_pic");
-                    //widget.analytics.logEvent(name: "pic_Status_uploaded");
-                    return Navigator.push(
-                        context,
-                        PageTransition(
-                            settings: RouteSettings(name: "Profile_Pic_Page"),
-                            type: PageTransitionType.rightToLeft,
-                            child: ProfilePicPage(
-                                currentUser: widget.currentUser)));
-                  },
-                  child: Text(
-                    "Skip for now",
-                    style: TextStyle(
-                        color: colorButton,
-                        fontFamily: "Lato",
-                        fontWeight: FontWeight.w400),
-                  ),
-                ),
-                SizedBox(
-                  height: 32,
-                ),
+                // InkWell(
+                //   onTap: () async {
+                //     // FirebaseAnalytics().setUserProperty(
+                //     //     name: 'Upload_pic_or_not', value: "skipped_pic");
+                //     //widget.analytics.logEvent(name: "pic_Status_uploaded");
+                //     return Navigator.push(
+                //         context,
+                //         PageTransition(
+                //             settings: RouteSettings(name: "Profile_Pic_Page"),
+                //             type: PageTransitionType.rightToLeft,
+                //             child: ProfilePicPage(
+                //                 currentUser: widget.currentUser)));
+                //   },
+                //   child: Text(
+                //     "Skip for now",
+                //     style: TextStyle(
+                //         color: colorButton,
+                //         fontFamily: "Lato",
+                //         fontWeight: FontWeight.w400),
+                //   ),
+                // ),
+                // SizedBox(
+                //   height: 32,
+                // ),
               ],
             ),
           ),

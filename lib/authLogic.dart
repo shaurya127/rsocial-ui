@@ -22,6 +22,7 @@ import 'constants.dart';
 import 'package:http/http.dart' as http;
 
 final googleSignIn = GoogleSignIn(scopes: [
+  "https://www.googleapis.com/auth/userinfo.email",
   "https://www.googleapis.com/auth/userinfo.profile",
   "https://www.googleapis.com/auth/user.birthday.read",
   "https://www.googleapis.com/auth/user.gender.read"

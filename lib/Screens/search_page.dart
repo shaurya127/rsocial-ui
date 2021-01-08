@@ -19,7 +19,6 @@ import 'login_page.dart';
 import 'package:rsocial2/connection.dart';
 import 'package:http/http.dart' as http;
 
-
 class Search_Page extends StatefulWidget {
   List<User> allusers;
 
@@ -40,7 +39,7 @@ class _Search_PageState extends State<Search_Page>
   List<User> suggestionList = [];
   bool isLoading = false;
   String searchQuery = "";
-  String photourl="";
+  String photourl = "";
   //User curUser;
   @override
   void initState() {
@@ -64,7 +63,7 @@ class _Search_PageState extends State<Search_Page>
 
   Future<void> getUser() async {
     setState(() {
-      isLoading=true;
+      isLoading = true;
     });
     var user = await FirebaseAuth.instance.currentUser();
     var token = await user.getIdToken();
@@ -75,14 +74,16 @@ class _Search_PageState extends State<Search_Page>
     //print(doc.data);
 
     var id = doc['id'];
-    final url = userEndPoint + "$id";
+    final url = userEndPoint + "get";
 
     token = await user.getIdToken();
     //print(token);
-    final response = await http.get(url, headers: {
-      "Authorization": "Bearer $token",
-      "Content-Type": "application/json",
-    });
+    final response = await http.post(url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode({"id": id, "email": user.email}));
     //print(response.body);
     //print(response.statusCode);
     if (response.statusCode == 200) {
@@ -194,7 +195,7 @@ class _Search_PageState extends State<Search_Page>
 
   Future<void> getAllConnections() async {
     setState(() {
-      isLoading=true;
+      isLoading = true;
     });
     //print("==========Inside get all connection ===================");
     var user = await FirebaseAuth.instance.currentUser();
@@ -202,15 +203,17 @@ class _Search_PageState extends State<Search_Page>
     // DocumentSnapshot doc = await users.document(user.uid).get();
     // var id = doc['id'];
     var id = curUser.id;
-    final url = userEndPoint + "$id/all";
+    final url = userEndPoint + "all";
 
     var token = await user.getIdToken();
     //print(token);
 
-    final response = await http.get(url, headers: {
-      "Authorization": "Bearer $token",
-      "Content-Type": "application/json",
-    });
+    final response = await http.post(url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode({"id": id, "email": user.email}));
 
     //print(response.statusCode);
     if (response.statusCode == 200) {
@@ -224,7 +227,7 @@ class _Search_PageState extends State<Search_Page>
         // print(msg[i]['PendingConnection']);
 
         if (msg[i]['id'] == id) {
-          curUser=User.fromJson(msg[i]);
+          curUser = User.fromJson(msg[i]);
           continue;
         }
 
@@ -233,7 +236,7 @@ class _Search_PageState extends State<Search_Page>
         allUsers.add(user);
       }
       setState(() {
-        widget.allusers=allUsers;
+        widget.allusers = allUsers;
         isLoading = false;
       });
       //return allUsers;
@@ -256,8 +259,8 @@ class _Search_PageState extends State<Search_Page>
         user: suggestionList[i],
         accepted: true,
         text: curUser.userMap.containsKey(suggestionList[i].id)
-            ?curUser.userMap[suggestionList[i].id]
-        :"add",
+            ? curUser.userMap[suggestionList[i].id]
+            : "add",
         //request: false,
         photourl: photourl,
       );
@@ -326,12 +329,14 @@ class _Search_PageState extends State<Search_Page>
       );
     } else
       return Scaffold(
-        body: ListView(
-          children: <Widget>[
-            Text("You have no friends till now",textAlign: TextAlign.center,),
-          ],
-        )
-      );
+          body: ListView(
+        children: <Widget>[
+          Text(
+            "You have no friends till now",
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ));
   }
 
   buildRequestTab() {
@@ -352,8 +357,12 @@ class _Search_PageState extends State<Search_Page>
       return ListView(children: tiles);
     } else
       return Scaffold(
-        body: ListView(children:<Widget>[
-          Text("You have no pending requests",textAlign: TextAlign.center,)]),
+        body: ListView(children: <Widget>[
+          Text(
+            "You have no pending requests",
+            textAlign: TextAlign.center,
+          )
+        ]),
       );
   }
 
@@ -364,27 +373,27 @@ class _Search_PageState extends State<Search_Page>
               child: CircularProgressIndicator(),
             )
           : RefreshIndicator(
-        onRefresh:getUser ,
-        child: buildRequestTab(),
-      );
+              onRefresh: getUser,
+              child: buildRequestTab(),
+            );
     else if (Orientation == "suggest")
       return isLoading
           ? Center(
               child: CircularProgressIndicator(),
             )
           : RefreshIndicator(
-        onRefresh: getUser,
-        child: buildSuggestedTab(),
-      );
+              onRefresh: getUser,
+              child: buildSuggestedTab(),
+            );
     else if (Orientation == "search")
       return isLoading
           ? Center(
               child: CircularProgressIndicator(),
             )
           : RefreshIndicator(
-        onRefresh: getAllConnections,
-        child: buildSearchTab(),
-      );
+              onRefresh: getAllConnections,
+              child: buildSearchTab(),
+            );
   }
 
   @override
