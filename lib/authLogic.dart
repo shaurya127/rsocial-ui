@@ -155,6 +155,9 @@ Future<Inf> getGenderBirthday() async {
     int day = response["birthdays"][0]["date"]["day"];
     int month = response["birthdays"][0]["date"]["month"];
     int year = response["birthdays"][0]["date"]["year"];
+    if (day == null || month == null || year == null) {
+      return inf;
+    }
 
     String monthString = month < 10 ? "0" + month.toString() : month.toString();
     String dayString = day < 10 ? "0" + day.toString() : day.toString();
