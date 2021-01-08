@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_svg/svg.dart';
 
 import '../config.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -49,7 +50,10 @@ class BottomNavBar extends StatefulWidget {
   _BottomNavBarState createState() => _BottomNavBarState();
 }
 
-class _BottomNavBarState extends State<BottomNavBar> {
+class _BottomNavBarState extends State<BottomNavBar>
+    with SingleTickerProviderStateMixin {
+  // This is our animation controller
+
   final authInstance = FirebaseAuth.instance;
   final _authInstance = FirebaseAuth.instance;
   bool isLoading = true;
@@ -63,6 +67,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   bool isPosted = false;
   int _currentIndex = 0;
   bool isLoadingPost = false;
+  bool isForward = true;
   void isPostedCallback() {
     setState(() {
       _currentIndex = 0;
@@ -341,7 +346,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
       var body = jsonUser['body'];
       var body1 = jsonDecode(body);
       var msg = body1['message'];
-
+      print(msg);
       //print("length is ${msg.length}")
       for (int i = 0; i < msg.length; i++) {
         // print(msg[i]['PendingConnection']);
@@ -367,8 +372,15 @@ class _BottomNavBarState extends State<BottomNavBar> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
+
     //print(jsonEncode(widget.currentUser.toJson()));
     //print(widget.currentUser.photoUrl);
     if (widget.isNewUser) {
@@ -391,77 +403,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
     await getUser();
   }
 
-  // buildFirstScreen() {
-  //   return Scaffold(
-  //     body: Center(
-  //         child: RaisedButton(
-  //             child: Text("log out"),
-  //             onPressed: () async {
-  //               FirebaseUser user = await _authInstance.currentUser();
-  //
-  //               if (user != null) {
-  //                 if (user.providerData[1].providerId == 'google.com') {
-  //                   await googleSignIn.disconnect();
-  //                 } else if (user.providerData[0].providerId ==
-  //                     'facebook.com') {
-  //                   await fblogin.logOut();
-  //                 }
-  //                 await _authInstance.signOut();
-  //               } else {
-  //                 var alertBox = AlertDialogBox(
-  //                   title: "Error",
-  //                   content:
-  //                       "We are unable to contact our servers. Please try again.",
-  //                   actions: <Widget>[
-  //                     FlatButton(
-  //                       child: Text(
-  //                         "Try again",
-  //                         style: TextStyle(
-  //                           color: colorButton,
-  //                           fontFamily: "Lato",
-  //                           fontWeight: FontWeight.bold,
-  //                         ),
-  //                       ),
-  //                       onPressed: () {
-  //                         Navigator.pop(context);
-  //                         setState(() {
-  //                           isLoading = true;
-  //                           isFailed = false;
-  //                         });
-  //                         return getUser();
-  //                       },
-  //                     ),
-  //                     FlatButton(
-  //                       child: Text(
-  //                         "Log out",
-  //                         style: TextStyle(
-  //                           color: colorButton,
-  //                           fontFamily: "Lato",
-  //                           fontWeight: FontWeight.bold,
-  //                         ),
-  //                       ),
-  //                       onPressed: () {
-  //                         logout(context);
-  //                       },
-  //                     ),
-  //                   ],
-  //                 );
-  //
-  //                 showDialog(
-  //                     context: (context), builder: (context) => alertBox);
-  //               }
-  //
-  //               Navigator.of(context).pushAndRemoveUntil(
-  //                   MaterialPageRoute(
-  //                       builder: (BuildContext context) => CreateAccount()),
-  //                   (Route<dynamic> route) => false);
-  //             })),
-  //   );
-  // }
-
   final List<String> _labels = [
     "Home",
-    "Search",
+    "Socialise",
     "Post",
     "Notifications",
     "R cash"
@@ -491,6 +435,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
+                  SvgPicture.asset(
+                    "images/rsocial-logo.svg",
+                    height: 50,
+                  ),
                   Center(
                     child: Text(
                       "Error getting user details. \nPlease check your internet connection and try again.",

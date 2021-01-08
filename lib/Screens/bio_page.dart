@@ -7,6 +7,7 @@ import 'package:rsocial2/Widgets/RoundedButton.dart';
 
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/profile_pic.dart';
+import 'package:rsocial2/auth.dart';
 
 import '../constants.dart';
 import '../user.dart';
@@ -29,6 +30,7 @@ class _BioPageState extends State<BioPage> {
   void initState() {
     super.initState();
     FirebaseAnalytics().setCurrentScreen(screenName: "Bio_Page");
+    widget.currentUser.bio = "";
   }
 
   @override
@@ -102,7 +104,7 @@ class _BioPageState extends State<BioPage> {
                     decoration: kInputField.copyWith(
                         hintText: kBioPagePlaceholder,
                         hintStyle: TextStyle(
-                            color: Color(0xff263238).withOpacity(0.5),
+                            color: nameCol.withOpacity(0.5),
                             fontSize: 16,
                             fontFamily: "Lato",
                             fontWeight: FontWeight.w300))),

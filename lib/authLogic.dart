@@ -150,12 +150,16 @@ Future<Inf> getGenderBirthday() async {
     inf.gender = response["genders"][0]["formattedValue"] == "Male" ? "M" : "F";
     print(response['genders'][0]["formattedValue"]);
   }
-  if (response['birthdays'] != null)
-    inf.dob = response["birthdays"][0]["date"]["day"].toString() +
-        "/" +
-        response["birthdays"][0]["date"]["month"].toString() +
-        "/" +
-        response["birthdays"][0]["date"]["year"].toString();
+  if (response['birthdays'] != null) {
+    int day = response["birthdays"][0]["date"]["day"];
+    int month = response["birthdays"][0]["date"]["month"];
+    int year = response["birthdays"][0]["date"]["year"];
+
+    String monthString = month < 10 ? "0" + month.toString() : month.toString();
+    String dayString = day < 10 ? "0" + day.toString() : day.toString();
+    inf.dob = dayString + "/" + monthString + "/" + year.toString();
+  }
+
   return inf;
 }
 
@@ -167,19 +171,46 @@ loginWithGoogle(User _currentUser, BuildContext context) async {
   try {
     final GoogleSignInAccount googleUser = await googleSignIn.signIn();
 
-    final GoogleSignInAuthentication googleKey =
-        await googleUser.authentication;
+    if (googleUser != null) {
+      final GoogleSignInAuthentication googleKey =
+          await googleUser.authentication;
 
-    AuthCredential credential = GoogleAuthProvider.getCredential(
-        idToken: googleKey.idToken, accessToken: googleKey.accessToken);
+      AuthCredential credential = GoogleAuthProvider.getCredential(
+          idToken: googleKey.idToken, accessToken: googleKey.accessToken);
 
-    user = await FirebaseAuth.instance.signInWithCredential(credential);
+      var alertBox = AlertDialog(
+        //title: "",//Text("Just a second, logging you in."),
 
-    assert(user.getIdToken() != null);
-    currentUser = await FirebaseAuth.instance.currentUser();
-    assert(currentUser != null);
-    print(user.uid);
-    user_id = user.uid;
+        content: Container(
+            height: 30,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  "Loading...",
+                  style: TextStyle(color: colorUnselectedBottomNav),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Container(child: Center(child: CircularProgressIndicator())),
+              ],
+            )),
+      );
+
+      showDialog(
+          context: (context),
+          builder: (context) => alertBox,
+          barrierDismissible: false);
+
+      user = await FirebaseAuth.instance.signInWithCredential(credential);
+
+      assert(user.getIdToken() != null);
+      currentUser = await FirebaseAuth.instance.currentUser();
+      assert(currentUser != null);
+      print(user.uid);
+      user_id = user.uid;
+    }
   } on PlatformException catch (e) {
     if (e.code == 'network_error') {
       var alertBox = AlertDialogBox(
@@ -278,36 +309,42 @@ void logout(BuildContext context) async {
   FirebaseUser user = await _authInstance.currentUser();
 
   if (user != null) {
-    if (user.providerData[1].providerId == 'google.com') {
-      await googleSignIn.disconnect();
-    } else if (user.providerData[0].providerId == 'facebook.com') {
-      await fblogin.logOut();
+    if (Platform.isIOS) {
+      if (user.providerData[0].providerId == 'google.com') {
+        await googleSignIn.disconnect();
+      }
+    } else {
+      if (user.providerData[1].providerId == 'google.com') {
+        await googleSignIn.disconnect();
+      } else if (user.providerData[0].providerId == 'facebook.com') {
+        await fblogin.logOut();
+      }
     }
     await _authInstance.signOut();
   } else {
-    var alertBox = AlertDialogBox(
-      title: "Error",
-      content: "We are unable to contact our servers. Please try again.",
-      actions: <Widget>[
-        FlatButton(
-          child: Text(
-            "Back",
-            style: TextStyle(
-              color: colorButton,
-              fontFamily: "Lato",
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          onPressed: () {
-            Navigator.pop(
-              context,
-            );
-          },
-        ),
-      ],
-    );
-
-    showDialog(context: (context), builder: (context) => alertBox);
+    // var alertBox = AlertDialogBox(
+    //   title: "Error",
+    //   content: "We are unable to contact our servers. Please try again.",
+    //   actions: <Widget>[
+    //     FlatButton(
+    //       child: Text(
+    //         "Back",
+    //         style: TextStyle(
+    //           color: colorButton,
+    //           fontFamily: "Lato",
+    //           fontWeight: FontWeight.bold,
+    //         ),
+    //       ),
+    //       onPressed: () {
+    //         Navigator.pop(
+    //           context,
+    //         );
+    //       },
+    //     ),
+    //   ],
+    // );
+    //
+    // showDialog(context: (context), builder: (context) => alertBox);
   }
 
   Navigator.of(context).pushAndRemoveUntil(
