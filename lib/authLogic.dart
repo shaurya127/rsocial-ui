@@ -252,7 +252,7 @@ loginWithGoogle(User _currentUser, BuildContext context) async {
     // If user does not exists
     if (!doc.exists) {
       print(guser.photoUrl);
-
+      print(guser.displayName);
       User curUser = User(
           fname: guser.displayName.split(" ")[0],
           lname: guser.displayName.split(" ").length == 2
