@@ -40,6 +40,8 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
     selectedDate = widget.currentUser.dob != null
         ? stringToDateTime(widget.currentUser.dob)
         : DateTime.now();
+
+    if (widget.currentUser.dob != null) isDateSelected = true;
   } // This function is used to select date from date picker
 
   selectDate(BuildContext context) async {
@@ -75,17 +77,18 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
   }
 
   Future<bool> onBackPressed() async {
-    FirebaseAuth _authInstance = FirebaseAuth.instance;
-
-    FirebaseUser user = await _authInstance.currentUser();
-    if (user != null) {
-      if (user.providerData[1].providerId == 'google.com') {
-        await googleSignIn.disconnect();
-      } else if (user.providerData[0].providerId == 'facebook.com') {
-        await fblogin.logOut();
-      }
-    }
-    await _authInstance.signOut();
+    // FirebaseAuth _authInstance = FirebaseAuth.instance;
+    //
+    // FirebaseUser user = await _authInstance.currentUser();
+    // if (user != null) {
+    //   if (user.providerData[1].providerId == 'google.com') {
+    //     await googleSignIn.disconnect();
+    //   } else if (user.providerData[0].providerId == 'facebook.com') {
+    //     await fblogin.logOut();
+    //   }
+    // }
+    // await _authInstance.signOut();
+    logout(context);
     Navigator.pop(context, true);
 
     return Navigator.of(context).pushAndRemoveUntil(
@@ -312,6 +315,7 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
                               child: ProfilePicPage(
                                   currentUser: widget.currentUser)));
                     }
+                    print("bye");
                     return null;
                   },
                   elevation: 0,

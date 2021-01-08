@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -130,9 +131,16 @@ class Inf {
 
 Future<Inf> getGenderBirthday() async {
   Inf inf = Inf();
+
+  var key;
+  if (Platform.isIOS) {
+    key = "AIzaSyABeypdm2QEwvSSI8LpyP1lBJDRiUnURUk";
+  } else if (Platform.isAndroid) {
+    key = "AIzaSyDqj2ohJ_jy_9FYJWuscicm3VtBpizR4OI";
+  }
+
   final headers = await googleSignIn.currentUser.authHeaders;
-  final r = await http.get(
-      "https://people.googleapis.com/v1/people/me?personFields=genders,birthdays&key=AIzaSyDqj2ohJ_jy_9FYJWuscicm3VtBpizR4OI",
+  final r = await http.get(googlePeopleApi + key,
       headers: {"Authorization": headers["Authorization"]});
   final response = jsonDecode(r.body);
 
@@ -142,12 +150,16 @@ Future<Inf> getGenderBirthday() async {
     inf.gender = response["genders"][0]["formattedValue"] == "Male" ? "M" : "F";
     print(response['genders'][0]["formattedValue"]);
   }
-  if (response['birthdays'] != null)
-    inf.dob = response["birthdays"][0]["date"]["day"].toString() +
-        "/" +
-        response["birthdays"][0]["date"]["month"].toString() +
-        "/" +
-        response["birthdays"][0]["date"]["year"].toString();
+  if (response['birthdays'] != null) {
+    int day = response["birthdays"][0]["date"]["day"];
+    int month = response["birthdays"][0]["date"]["month"];
+    int year = response["birthdays"][0]["date"]["year"];
+
+    String monthString = month < 10 ? "0" + month.toString() : month.toString();
+    String dayString = day < 10 ? "0" + day.toString() : day.toString();
+    inf.dob = dayString + "/" + monthString + "/" + year.toString();
+  }
+
   return inf;
 }
 
@@ -159,19 +171,46 @@ loginWithGoogle(User _currentUser, BuildContext context) async {
   try {
     final GoogleSignInAccount googleUser = await googleSignIn.signIn();
 
-    final GoogleSignInAuthentication googleKey =
-        await googleUser.authentication;
+    if (googleUser != null) {
+      final GoogleSignInAuthentication googleKey =
+          await googleUser.authentication;
 
-    AuthCredential credential = GoogleAuthProvider.getCredential(
-        idToken: googleKey.idToken, accessToken: googleKey.accessToken);
+      AuthCredential credential = GoogleAuthProvider.getCredential(
+          idToken: googleKey.idToken, accessToken: googleKey.accessToken);
 
-    user = await FirebaseAuth.instance.signInWithCredential(credential);
+      var alertBox = AlertDialog(
+        //title: "",//Text("Just a second, logging you in."),
 
-    assert(user.getIdToken() != null);
-    currentUser = await FirebaseAuth.instance.currentUser();
-    assert(currentUser != null);
-    print(user.uid);
-    user_id = user.uid;
+        content: Container(
+            height: 30,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  "Loading...",
+                  style: TextStyle(color: colorUnselectedBottomNav),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Container(child: Center(child: CircularProgressIndicator())),
+              ],
+            )),
+      );
+
+      showDialog(
+          context: (context),
+          builder: (context) => alertBox,
+          barrierDismissible: false);
+
+      user = await FirebaseAuth.instance.signInWithCredential(credential);
+
+      assert(user.getIdToken() != null);
+      currentUser = await FirebaseAuth.instance.currentUser();
+      assert(currentUser != null);
+      print(user.uid);
+      user_id = user.uid;
+    }
   } on PlatformException catch (e) {
     if (e.code == 'network_error') {
       var alertBox = AlertDialogBox(
@@ -270,36 +309,42 @@ void logout(BuildContext context) async {
   FirebaseUser user = await _authInstance.currentUser();
 
   if (user != null) {
-    if (user.providerData[0].providerId == 'google.com') {
-      await googleSignIn.disconnect();
-    } else if (user.providerData[0].providerId == 'facebook.com') {
-      await fblogin.logOut();
+    if (Platform.isIOS) {
+      if (user.providerData[0].providerId == 'google.com') {
+        await googleSignIn.disconnect();
+      }
+    } else {
+      if (user.providerData[1].providerId == 'google.com') {
+        await googleSignIn.disconnect();
+      } else if (user.providerData[0].providerId == 'facebook.com') {
+        await fblogin.logOut();
+      }
     }
     await _authInstance.signOut();
   } else {
-    var alertBox = AlertDialogBox(
-      title: "Error",
-      content: "We are unable to contact our servers. Please try again.",
-      actions: <Widget>[
-        FlatButton(
-          child: Text(
-            "Back",
-            style: TextStyle(
-              color: colorButton,
-              fontFamily: "Lato",
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          onPressed: () {
-            Navigator.pop(
-              context,
-            );
-          },
-        ),
-      ],
-    );
-
-    showDialog(context: (context), builder: (context) => alertBox);
+    // var alertBox = AlertDialogBox(
+    //   title: "Error",
+    //   content: "We are unable to contact our servers. Please try again.",
+    //   actions: <Widget>[
+    //     FlatButton(
+    //       child: Text(
+    //         "Back",
+    //         style: TextStyle(
+    //           color: colorButton,
+    //           fontFamily: "Lato",
+    //           fontWeight: FontWeight.bold,
+    //         ),
+    //       ),
+    //       onPressed: () {
+    //         Navigator.pop(
+    //           context,
+    //         );
+    //       },
+    //     ),
+    //   ],
+    // );
+    //
+    // showDialog(context: (context), builder: (context) => alertBox);
   }
 
   Navigator.of(context).pushAndRemoveUntil(

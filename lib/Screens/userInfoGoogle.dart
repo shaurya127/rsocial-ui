@@ -82,16 +82,17 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
   }
 
   Future<bool> onBackPressed() async {
-    FirebaseAuth _authInstance = FirebaseAuth.instance;
-    FirebaseUser user = await _authInstance.currentUser();
-    if (user != null) {
-      if (user.providerData[1].providerId == 'google.com') {
-        await googleSignIn.disconnect();
-      } else if (user.providerData[0].providerId == 'facebook.com') {
-        await fblogin.logOut();
-      }
-    }
-    await _authInstance.signOut();
+    // FirebaseAuth _authInstance = FirebaseAuth.instance;
+    // FirebaseUser user = await _authInstance.currentUser();
+    // if (user != null) {
+    //   if (user.providerData[1].providerId == 'google.com') {
+    //     await googleSignIn.disconnect();
+    //   } else if (user.providerData[0].providerId == 'facebook.com') {
+    //     await fblogin.logOut();
+    //   }
+    // }
+    //await _authInstance.signOut();
+    logout(context);
     Navigator.pop(context, true);
     return Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
@@ -307,7 +308,6 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                   textColor: Colors.white,
                   color: colorButton,
                   onPressed: () {
-                    print("hello");
                     if (_formKey.currentState.validate() &&
                         isDateSelected &&
                         isMale != null) {

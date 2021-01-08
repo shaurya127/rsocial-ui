@@ -34,16 +34,17 @@ class _ChooseRegisterState extends State<ChooseRegister> {
   bool isLoading = false;
 
   Future<bool> onBackPressed() async {
-    FirebaseAuth _authInstance = FirebaseAuth.instance;
-    FirebaseUser user = await _authInstance.currentUser();
-    if (user != null) {
-      if (user.providerData[1].providerId == 'google.com') {
-        await googleSignIn.disconnect();
-      } else if (user.providerData[0].providerId == 'facebook.com') {
-        await fblogin.logOut();
-      }
-    }
-    await _authInstance.signOut();
+    // FirebaseAuth _authInstance = FirebaseAuth.instance;
+    // FirebaseUser user = await _authInstance.currentUser();
+    // if (user != null) {
+    //   if (user.providerData[1].providerId == 'google.com') {
+    //     await googleSignIn.disconnect();
+    //   } else if (user.providerData[0].providerId == 'facebook.com') {
+    //     await fblogin.logOut();
+    //   }
+    // }
+    // await _authInstance.signOut();
+    logout(context);
     Navigator.pop(context, true);
   }
 
@@ -60,8 +61,18 @@ class _ChooseRegisterState extends State<ChooseRegister> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
+                    // Container(
+                    //   height: 90,
+                    //   child: Image.asset(
+                    //     "images/rsocial-logo.jpg",
+                    //     fit: BoxFit.cover,
+                    //   ),
+                    // ),
                     Container(
-                      child: Image.asset("images/logo2.png"),
+                      child: SvgPicture.asset(
+                        "images/rsocial-logo.svg",
+                        height: 90,
+                      ),
                     ),
                     SizedBox(
                       height: 20,
@@ -77,7 +88,7 @@ class _ChooseRegisterState extends State<ChooseRegister> {
                         });
                       },
                       title: kFacebookButtonText,
-                      iconLocation: "images/facebook.svg",
+                      iconLocation: "images/facebook_new.svg",
                       color: facebookTextColor,
                       buttonColor: facebookButtonColor,
                     ),
@@ -95,7 +106,7 @@ class _ChooseRegisterState extends State<ChooseRegister> {
                         });
                       },
                       title: kGoogleButtonText,
-                      iconLocation: "images/google.svg",
+                      iconLocation: "images/google_new.svg",
                       color: googleTextColor,
                       buttonColor: googleButtonColor,
                     ),

@@ -44,7 +44,8 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
               height: 45,
               width: 45,
               decoration: BoxDecoration(
-                  image: DecorationImage(image: NetworkImage(photoUrl)),
+                  image: DecorationImage(
+                      image: NetworkImage(photoUrl), fit: BoxFit.cover),
                   shape: BoxShape.circle),
             ),
             Positioned(
@@ -79,16 +80,11 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
         ),
       ),
     ],
-    title: Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Text(
-        title,
-        style: TextStyle(
-            color: Colors.white,
-            fontFamily: "Lato",
-            fontSize: 20,
-            fontWeight: FontWeight.w700),
-      ),
+    titleSpacing: 0,
+    title: SvgPicture.asset(
+      "images/rsocial-text.svg",
+      height: 90,
+      width: 90,
     ),
   );
 }
