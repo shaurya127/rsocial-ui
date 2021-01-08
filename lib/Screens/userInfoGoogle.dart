@@ -61,13 +61,20 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
         isMale = false;
     }
     String dob = widget.currentUser.dob;
-    this.selectedDate = widget.currentUser.dob != null
-        ? DateTime.parse(dob.substring(6, 10) +
-            "-" +
-            dob.substring(3, 5) +
-            "-" +
-            dob.substring(0, 2))
-        : DateTime.now();
+
+    try {
+      this.selectedDate = widget.currentUser.dob != null
+          ? DateTime.parse(dob.substring(6, 10) +
+          "-" +
+          dob.substring(3, 5) +
+          "-" +
+          dob.substring(0, 2))
+          : DateTime.now();
+    }
+    catch (E){
+      this.selectedDate=DateTime.now();
+    }
+
     if (widget.currentUser.dob != null) isDateSelected = true;
   } // Formatting the date in dd/mm/yyyy format
 
