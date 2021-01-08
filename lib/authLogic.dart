@@ -148,7 +148,12 @@ Future<Inf> getGenderBirthday() async {
   print("This is response from google gender: ");
   print(response);
   if (response["genders"] != null) {
-    inf.gender = response["genders"][0]["formattedValue"] == "Male" ? "M" : "F";
+    if (response["genders"][0]["formattedValue"] == "Male") {
+      inf.gender = "M";
+    } else if (response["genders"][0]["formattedValue"] == "Female") {
+      inf.gender = "F";
+    }
+    //inf.gender = response["genders"][0]["formattedValue"] == "Male" ? "M" : "F";
     print(response['genders'][0]["formattedValue"]);
   }
   if (response['birthdays'] != null) {
