@@ -50,10 +50,13 @@ class _Landing_PageState extends State<Landing_Page> {
     var id = curUser.id;
     final url = storyEndPoint + "$id/all";
     var token = await user.getIdToken();
-    final response = await http.get(url, headers: {
-      "Authorization": "Bearer $token",
-      "Content-Type": "application/json",
-    });
+    final response = await http.get(
+      url,
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      },
+    );
     //print("body is ${response.body}");
     //print(response.statusCode);
 
