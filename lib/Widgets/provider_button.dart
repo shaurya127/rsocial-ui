@@ -37,10 +37,11 @@ class ProviderButton extends StatelessWidget {
                 SizedBox(width: 24),
                 SvgPicture.asset(
                   iconLocation,
-                  color: color,
+                  //color: color,
+                  height: 20,
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 48.0),
+                  padding: const EdgeInsets.only(left: 25.0),
                   child: Text(
                     title,
                     style: TextStyle(

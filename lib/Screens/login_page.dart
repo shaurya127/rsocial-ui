@@ -4,6 +4,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:page_transition/page_transition.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -97,16 +98,17 @@ class _LoginPageState extends State<LoginPage> {
   String phoneNumber;
 
   Future<bool> onBackPressed() async {
-    FirebaseAuth _authInstance = FirebaseAuth.instance;
-    FirebaseUser user = await _authInstance.currentUser();
-    if (user != null) {
-      if (user.providerData[1].providerId == 'google.com') {
-        await googleSignIn.disconnect();
-      } else if (user.providerData[0].providerId == 'facebook.com') {
-        await fblogin.logOut();
-      }
-    }
-    await _authInstance.signOut();
+    // FirebaseAuth _authInstance = FirebaseAuth.instance;
+    // FirebaseUser user = await _authInstance.currentUser();
+    // if (user != null) {
+    //   if (user.providerData[1].providerId == 'google.com') {
+    //     await googleSignIn.disconnect();
+    //   } else if (user.providerData[0].providerId == 'facebook.com') {
+    //     await fblogin.logOut();
+    //   }
+    // }
+    // await _authInstance.signOut();
+    logout(context);
     Navigator.pop(context, true);
   }
 
@@ -130,8 +132,9 @@ class _LoginPageState extends State<LoginPage> {
                             SizedBox(
                               height: 20,
                             ),
-                            Container(
-                              child: Image.asset("images/logo2.png"),
+                            SvgPicture.asset(
+                              "images/rsocial-text.svg",
+                              height: 90,
                             ),
                             SizedBox(
                               height: 20,
@@ -282,7 +285,7 @@ class _LoginPageState extends State<LoginPage> {
                                 });
                               },
                               title: kFacebookButtonText,
-                              iconLocation: "images/facebook.svg",
+                              iconLocation: "images/facebook_new.svg",
                               color: facebookTextColor,
                               buttonColor: facebookButtonColor,
                             ),
@@ -300,7 +303,7 @@ class _LoginPageState extends State<LoginPage> {
                                 });
                               },
                               title: kGoogleButtonText,
-                              iconLocation: "images/google.svg",
+                              iconLocation: "images/google_new.svg",
                               color: googleTextColor,
                               buttonColor: googleButtonColor,
                             ),

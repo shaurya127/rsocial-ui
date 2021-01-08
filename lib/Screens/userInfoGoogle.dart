@@ -1,30 +1,31 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:rsocial2/Screens/create_account_page.dart';
 import 'package:rsocial2/Screens/profile_pic.dart';
 import 'package:rsocial2/Widgets/RoundedButton.dart';
-import 'package:rsocial2/auth.dart';
 
+import '../auth.dart';
 import '../authLogic.dart';
 import '../constants.dart';
 import '../user.dart';
-import 'create_account_page.dart';
 
-class UserInfoFacebook extends StatefulWidget {
-  final User currentUser;
+class UserInfoGoogle extends StatefulWidget {
+  User currentUser;
+  UserInfoGoogle({this.currentUser});
   @override
-  _UserInfoFacebookState createState() => _UserInfoFacebookState();
-
-  UserInfoFacebook({this.currentUser});
+  _UserInfoGoogleState createState() => _UserInfoGoogleState();
 }
 
-class _UserInfoFacebookState extends State<UserInfoFacebook> {
+class _UserInfoGoogleState extends State<UserInfoGoogle> {
+  // The initial date that will be shown by the date picker
   DateTime selectedDate;
 
   final _formKey = GlobalKey<FormState>();
 
   // To check the gender while registering
-  bool isMale = true;
+  bool isMale = null;
 
   // To check whether the user has selected a date from the date picker
   bool isDateSelected = false;
@@ -35,15 +36,7 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
   // Final year for the date picker
   final int finalYear = 2025;
 
-  @override
-  void initState() {
-    selectedDate = widget.currentUser.dob != null
-        ? stringToDateTime(widget.currentUser.dob)
-        : DateTime.now();
-
-    if (widget.currentUser.dob != null) isDateSelected = true;
-  } // This function is used to select date from date picker
-
+  // This function is used to select date from date picker
   selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: (context),
@@ -57,15 +50,27 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
     }
   }
 
-  DateTime stringToDateTime(String dob) {
-    return DateTime.parse(dob.substring(6, 10) +
-        "-" +
-        dob.substring(3, 5) +
-        "-" +
-        dob.substring(0, 2));
-  }
+  @override
+  void initState() {
+    if (widget.currentUser.gender == null) {
+      isMale = null;
+    } else {
+      if (widget.currentUser.gender == 'M') {
+        isMale = true;
+      } else
+        isMale = false;
+    }
+    String dob = widget.currentUser.dob;
+    this.selectedDate = widget.currentUser.dob != null
+        ? DateTime.parse(dob.substring(6, 10) +
+            "-" +
+            dob.substring(3, 5) +
+            "-" +
+            dob.substring(0, 2))
+        : DateTime.now();
+    if (widget.currentUser.dob != null) isDateSelected = true;
+  } // Formatting the date in dd/mm/yyyy format
 
-  // Formatting the date in dd/mm/yyyy format
   String dateFormatting(DateTime selectedDate) {
     String date = selectedDate.toString().split(" ")[0];
     String res = date.substring(8, 10) +
@@ -78,7 +83,6 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
 
   Future<bool> onBackPressed() async {
     // FirebaseAuth _authInstance = FirebaseAuth.instance;
-    //
     // FirebaseUser user = await _authInstance.currentUser();
     // if (user != null) {
     //   if (user.providerData[1].providerId == 'google.com') {
@@ -87,10 +91,9 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
     //     await fblogin.logOut();
     //   }
     // }
-    // await _authInstance.signOut();
+    //await _authInstance.signOut();
     logout(context);
     Navigator.pop(context, true);
-
     return Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
             settings: RouteSettings(name: "Profile_pic_page"),
@@ -196,7 +199,10 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
                               child: Padding(
                                 padding:
                                     const EdgeInsets.only(left: 12, top: 17),
-                                child: Text(dateFormatting(selectedDate),
+                                child: Text(
+                                    isDateSelected
+                                        ? dateFormatting(selectedDate)
+                                        : "Date of Birth",
                                     style: isDateSelected
                                         ? TextStyle(
                                             fontFamily: "Lato",
@@ -236,7 +242,7 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
                                       child: Container(
                                         height: 60,
                                         decoration: BoxDecoration(
-                                            color: isMale
+                                            color: isMale != null && isMale
                                                 ? colorButton
                                                 : Colors.white,
                                             borderRadius: BorderRadius.only(
@@ -249,7 +255,7 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
                                           style: TextStyle(
                                               fontFamily: "Lato",
                                               fontWeight: FontWeight.bold,
-                                              color: isMale
+                                              color: isMale != null && isMale
                                                   ? Colors.white
                                                   : Colors.black),
                                         )),
@@ -267,7 +273,7 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
                                       child: Container(
                                         height: 60,
                                         decoration: BoxDecoration(
-                                            color: !isMale
+                                            color: isMale != null && !isMale
                                                 ? colorButton
                                                 : Colors.white,
                                             borderRadius: BorderRadius.only(
@@ -280,7 +286,7 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
                                           style: TextStyle(
                                               fontFamily: "Lato",
                                               fontWeight: FontWeight.bold,
-                                              color: !isMale
+                                              color: isMale != null && !isMale
                                                   ? Colors.white
                                                   : Colors.black),
                                         )),
@@ -302,8 +308,9 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
                   textColor: Colors.white,
                   color: colorButton,
                   onPressed: () {
-                    print("hello");
-                    if (_formKey.currentState.validate() && isDateSelected) {
+                    if (_formKey.currentState.validate() &&
+                        isDateSelected &&
+                        isMale != null) {
                       widget.currentUser.dob = dateFormatting(selectedDate);
                       widget.currentUser.gender = isMale ? 'M' : 'F';
 
@@ -315,7 +322,6 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
                               child: ProfilePicPage(
                                   currentUser: widget.currentUser)));
                     }
-                    print("bye");
                     return null;
                   },
                   elevation: 0,

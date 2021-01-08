@@ -60,7 +60,7 @@ class Post_Tile extends StatefulWidget {
   _Post_TileState createState() => _Post_TileState();
 }
 
-class _Post_TileState extends State<Post_Tile> {
+class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   List<String> fileList = [];
   bool isLoading = true;
   List<User> loved = [];
@@ -82,6 +82,16 @@ class _Post_TileState extends State<Post_Tile> {
   };
   bool isDisabled = false;
 
+  AnimationController hatedController;
+  AnimationController lovedController;
+  AnimationController likedController;
+  AnimationController whateverController;
+  Animation hatedAnimation;
+  Animation lovedAnimation;
+  Animation likedAnimation;
+  Animation whateverAnimation;
+
+  int reactionSizeIncrease = 3;
   getReactions() {
     print(rxn);
     //bool inLoop=true;
@@ -119,6 +129,32 @@ class _Post_TileState extends State<Post_Tile> {
   @override
   void initState() {
     super.initState();
+
+    lovedController =
+        AnimationController(duration: Duration(milliseconds: 400), vsync: this);
+    lovedAnimation = CurvedAnimation(
+        parent: lovedController,
+        curve: Curves.easeIn,
+        reverseCurve: Curves.easeIn);
+    likedController =
+        AnimationController(duration: Duration(milliseconds: 400), vsync: this);
+    likedAnimation = CurvedAnimation(
+        parent: likedController,
+        curve: Curves.easeIn,
+        reverseCurve: Curves.easeIn);
+    whateverController =
+        AnimationController(duration: Duration(milliseconds: 400), vsync: this);
+    whateverAnimation = CurvedAnimation(
+        parent: whateverController,
+        curve: Curves.easeIn,
+        reverseCurve: Curves.easeIn);
+    hatedController =
+        AnimationController(duration: Duration(milliseconds: 400), vsync: this);
+    hatedAnimation = CurvedAnimation(
+        parent: hatedController,
+        curve: Curves.easeIn,
+        reverseCurve: Curves.easeIn);
+
     getReactions();
     convertStringToFile();
     getInvestedWithUser();
@@ -139,6 +175,15 @@ class _Post_TileState extends State<Post_Tile> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    lovedController.dispose();
+    likedController.dispose();
+    whateverController.dispose();
+    hatedController.dispose();
+    super.dispose();
   }
 
   react(String reactn) async {
@@ -305,20 +350,76 @@ class _Post_TileState extends State<Post_Tile> {
 
   reaction(String reaction) {
     if (widget.userPost.user.id != widget.curUser.id) {
+      if (reaction == 'loved') {
+        lovedController.forward();
+        lovedController.addListener(() {
+          setState(() {});
+        });
+        lovedAnimation.addStatusListener((status) {
+          if (status == AnimationStatus.completed) {
+            lovedController.reverse();
+            lovedController.addListener(() {
+              setState(() {});
+            });
+          }
+        });
+      } else if (reaction == 'liked') {
+        likedController.forward();
+        likedController.addListener(() {
+          setState(() {});
+        });
+        likedAnimation.addStatusListener((status) {
+          if (status == AnimationStatus.completed) {
+            likedController.reverse();
+            likedController.addListener(() {
+              setState(() {});
+            });
+          }
+        });
+      } else if (reaction == 'whatever') {
+        whateverController.forward();
+        whateverController.addListener(() {
+          setState(() {});
+        });
+        whateverAnimation.addStatusListener((status) {
+          if (status == AnimationStatus.completed) {
+            whateverController.reverse();
+            whateverController.addListener(() {
+              setState(() {});
+            });
+          }
+        });
+      } else {
+        hatedController.forward();
+        hatedController.addListener(() {
+          setState(() {});
+        });
+        hatedAnimation.addStatusListener((status) {
+          if (status == AnimationStatus.completed) {
+            hatedController.reverse();
+            hatedController.addListener(() {
+              setState(() {});
+            });
+          }
+        });
+      }
+
       if (rxn == reaction) {
         react('noreact');
+
         // counter[reaction]--;
         //  m[widget.userPost.user.id] = {reaction: --counter[reaction]};
       } else {
         react(reaction);
+
         counter[reaction]++;
       }
     } else
       print("not allowed");
 
-    print("state is set");
-    print(counter[reaction]);
-    setState(() {});
+    // print("state is set");
+    // print(counter[reaction]);
+    // setState(() {});
     return;
   }
 
@@ -625,8 +726,9 @@ class _Post_TileState extends State<Post_Tile> {
                                   )));
                         },
                         child: SvgPicture.asset(
-                          "images/loved.svg",
-                          color: colorPrimaryBlue,
+                          "images/thumb_blue.svg",
+                          //color: colorPrimaryBlue,
+                          height: 23,
                         ),
                       )
                     else if (counter['liked'] > counter['loved'] &&
@@ -704,7 +806,7 @@ class _Post_TileState extends State<Post_Tile> {
                     //SizedBox(width: 14,),
                     Icon(
                       Icons.more_vert,
-                      color: Color(0xff707070),
+                      color: colorUnselectedBottomNav,
                       size: 30,
                     ),
                   ],
@@ -806,8 +908,12 @@ class _Post_TileState extends State<Post_Tile> {
                           ? Column(
                               children: <Widget>[
                                 Container(
-                                  height: 23,
-                                  width: 23,
+                                  height: 23 +
+                                      reactionSizeIncrease *
+                                          lovedAnimation.value,
+                                  width: 23 +
+                                      reactionSizeIncrease *
+                                          lovedAnimation.value,
                                   // child: Icon(
                                   //   MyFlutterApp.rsocial_logo_thumb_upside,
                                   //   color: rxn == "loved"
@@ -815,22 +921,30 @@ class _Post_TileState extends State<Post_Tile> {
                                   //       : postIcons,
                                   //   size: 30,
                                   // ),
-                                  child: SvgPicture.asset(
-                                    "images/loved.svg",
-                                    color: rxn == "loved"
-                                        ? colorPrimaryBlue
-                                        : postIcons,
-                                  ),
+                                  child: rxn == "loved"
+                                      ? SvgPicture.asset(
+                                          "images/thumb_blue.svg",
+                                          // color: rxn == "loved"
+                                          //     ? colorPrimaryBlue
+                                          //     : postIcons,
+                                          height: 40,
+                                        )
+                                      : SvgPicture.asset(
+                                          "images/rsocial_thumb_outline.svg",
+                                          height: 40,
+                                        ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: Text(
-                                    counter['loved'].toString(),
-                                    style: TextStyle(
-                                      fontFamily: "Lato",
-                                      fontSize: 10,
-                                      color: postDesc,
-                                    ),
+                                SizedBox(
+                                  height: 4 -
+                                      reactionSizeIncrease *
+                                          lovedAnimation.value,
+                                ),
+                                Text(
+                                  counter['loved'].toString(),
+                                  style: TextStyle(
+                                    fontFamily: "Lato",
+                                    fontSize: 10,
+                                    color: postDesc,
                                   ),
                                 )
                               ],
@@ -854,8 +968,13 @@ class _Post_TileState extends State<Post_Tile> {
                               child: Column(
                                 children: <Widget>[
                                   Container(
-                                    height: 23,
-                                    width: 23,
+                                    height: 23 +
+                                        reactionSizeIncrease *
+                                            lovedAnimation.value,
+                                    width: 23 +
+                                        reactionSizeIncrease *
+                                            lovedAnimation.value,
+
                                     // child: Icon(
                                     //   MyFlutterApp.rsocial_logo_thumb_upside,
                                     //   color: rxn == "loved"
@@ -863,36 +982,47 @@ class _Post_TileState extends State<Post_Tile> {
                                     //       : postIcons,
                                     //   size: 35,
                                     // ),
-                                    child: SvgPicture.asset(
-                                      "images/loved.svg",
-                                      color: rxn == "loved"
-                                          ? colorPrimaryBlue
-                                          : postIcons,
-                                    ),
+                                    child: rxn == "loved"
+                                        ? SvgPicture.asset(
+                                            "images/thumb_blue.svg",
+                                            // color: rxn == "loved"
+                                            //     ? colorPrimaryBlue
+                                            //     : postIcons,
+                                            height: 40,
+                                          )
+                                        : SvgPicture.asset(
+                                            "images/rsocial_thumb_outline.svg",
+                                          ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Text(
-                                      counter['loved'].toString(),
-                                      style: TextStyle(
-                                        fontFamily: "Lato",
-                                        fontSize: 10,
-                                        color: postDesc,
-                                      ),
+                                  SizedBox(
+                                    height: 4 - 3 * lovedAnimation.value,
+                                  ),
+                                  Text(
+                                    counter['loved'].toString(),
+                                    style: TextStyle(
+                                      fontFamily: "Lato",
+                                      fontSize: 10,
+                                      color: postDesc,
                                     ),
                                   )
                                 ],
                               ),
                             ),
                       SizedBox(
-                        width: 20,
+                        width: 20 -
+                            lovedAnimation.value * reactionSizeIncrease -
+                            likedAnimation.value * reactionSizeIncrease / 2,
                       ),
                       isDisabled
                           ? Column(
                               children: <Widget>[
                                 Container(
-                                  height: 23,
-                                  width: 23,
+                                  height: 23 +
+                                      reactionSizeIncrease *
+                                          likedAnimation.value,
+                                  width: 23 +
+                                      reactionSizeIncrease *
+                                          likedAnimation.value,
                                   child: SvgPicture.asset(
                                     "images/liked.svg",
                                     color: rxn == "liked"
@@ -901,15 +1031,17 @@ class _Post_TileState extends State<Post_Tile> {
                                   ),
                                 ),
                                 //Icon(Icons.thumb_up,size: 30,color:postIcons),
-                                Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: Text(
-                                    counter['liked'].toString(),
-                                    style: TextStyle(
-                                      fontFamily: "Lato",
-                                      fontSize: 10,
-                                      color: postDesc,
-                                    ),
+                                SizedBox(
+                                  height: 4 -
+                                      reactionSizeIncrease *
+                                          likedAnimation.value,
+                                ),
+                                Text(
+                                  counter['liked'].toString(),
+                                  style: TextStyle(
+                                    fontFamily: "Lato",
+                                    fontSize: 10,
+                                    color: postDesc,
                                   ),
                                 )
                               ],
@@ -933,8 +1065,12 @@ class _Post_TileState extends State<Post_Tile> {
                               child: Column(
                                 children: <Widget>[
                                   Container(
-                                    height: 23,
-                                    width: 23,
+                                    height: 23 +
+                                        reactionSizeIncrease *
+                                            likedAnimation.value,
+                                    width: 23 +
+                                        reactionSizeIncrease *
+                                            likedAnimation.value,
                                     child: SvgPicture.asset(
                                       "images/liked.svg",
                                       color: rxn == "liked"
@@ -943,27 +1079,37 @@ class _Post_TileState extends State<Post_Tile> {
                                     ),
                                   ),
                                   //Icon(Icons.thumb_up,size: 30,color:postIcons),
-                                  Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Text(
-                                      counter['liked'].toString(),
-                                      style: TextStyle(
-                                        fontFamily: "Lato",
-                                        fontSize: 10,
-                                        color: postDesc,
-                                      ),
+                                  SizedBox(
+                                    height: 4 -
+                                        reactionSizeIncrease *
+                                            likedAnimation.value,
+                                  ),
+                                  Text(
+                                    counter['liked'].toString(),
+                                    style: TextStyle(
+                                      fontFamily: "Lato",
+                                      fontSize: 10,
+                                      color: postDesc,
                                     ),
                                   )
                                 ],
                               ),
                             ),
-                      SizedBox(width: 20),
+                      SizedBox(
+                        width: 20 -
+                            likedAnimation.value * reactionSizeIncrease / 2 -
+                            whateverAnimation.value * reactionSizeIncrease / 2,
+                      ),
                       isDisabled
                           ? Column(
                               children: <Widget>[
                                 Container(
-                                  height: 23,
-                                  width: 23,
+                                  height: 23 +
+                                      reactionSizeIncrease *
+                                          whateverAnimation.value,
+                                  width: 23 +
+                                      reactionSizeIncrease *
+                                          whateverAnimation.value,
                                   child: SvgPicture.asset(
                                     "images/whatever.svg",
                                     color: rxn == "whatever"
@@ -971,15 +1117,17 @@ class _Post_TileState extends State<Post_Tile> {
                                         : postIcons,
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: Text(
-                                    counter['whatever'].toString(),
-                                    style: TextStyle(
-                                      fontFamily: "Lato",
-                                      fontSize: 10,
-                                      color: postDesc,
-                                    ),
+                                SizedBox(
+                                  height: 4 -
+                                      reactionSizeIncrease *
+                                          whateverAnimation.value,
+                                ),
+                                Text(
+                                  counter['whatever'].toString(),
+                                  style: TextStyle(
+                                    fontFamily: "Lato",
+                                    fontSize: 10,
+                                    color: postDesc,
                                   ),
                                 )
                               ],
@@ -1009,8 +1157,12 @@ class _Post_TileState extends State<Post_Tile> {
                               child: Column(
                                 children: <Widget>[
                                   Container(
-                                    height: 23,
-                                    width: 23,
+                                    height: 23 +
+                                        reactionSizeIncrease *
+                                            whateverAnimation.value,
+                                    width: 23 +
+                                        reactionSizeIncrease *
+                                            whateverAnimation.value,
                                     child: SvgPicture.asset(
                                       "images/whatever.svg",
                                       color: rxn == "whatever"
@@ -1018,29 +1170,37 @@ class _Post_TileState extends State<Post_Tile> {
                                           : postIcons,
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Text(
-                                      counter['whatever'].toString(),
-                                      style: TextStyle(
-                                        fontFamily: "Lato",
-                                        fontSize: 10,
-                                        color: postDesc,
-                                      ),
+                                  SizedBox(
+                                    height: 4 -
+                                        reactionSizeIncrease *
+                                            whateverAnimation.value,
+                                  ),
+                                  Text(
+                                    counter['whatever'].toString(),
+                                    style: TextStyle(
+                                      fontFamily: "Lato",
+                                      fontSize: 10,
+                                      color: postDesc,
                                     ),
                                   )
                                 ],
                               ),
                             ),
                       SizedBox(
-                        width: 20,
+                        width: 20 -
+                            hatedAnimation.value * reactionSizeIncrease -
+                            whateverAnimation.value * reactionSizeIncrease / 2,
                       ),
                       isDisabled
                           ? Column(
                               children: <Widget>[
                                 Container(
-                                  height: 23,
-                                  width: 23,
+                                  height: 23 +
+                                      reactionSizeIncrease *
+                                          hatedAnimation.value,
+                                  width: 23 +
+                                      reactionSizeIncrease *
+                                          hatedAnimation.value,
                                   child: SvgPicture.asset(
                                     "images/hated.svg",
                                     color: rxn == "hated"
@@ -1048,15 +1208,17 @@ class _Post_TileState extends State<Post_Tile> {
                                         : postIcons,
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: Text(
-                                    counter['hated'].toString(),
-                                    style: TextStyle(
-                                      fontFamily: "Lato",
-                                      fontSize: 10,
-                                      color: postDesc,
-                                    ),
+                                SizedBox(
+                                  height: 4 -
+                                      reactionSizeIncrease *
+                                          hatedAnimation.value,
+                                ),
+                                Text(
+                                  counter['hated'].toString(),
+                                  style: TextStyle(
+                                    fontFamily: "Lato",
+                                    fontSize: 10,
+                                    color: postDesc,
                                   ),
                                 )
                               ],
@@ -1083,24 +1245,31 @@ class _Post_TileState extends State<Post_Tile> {
                               child: Column(
                                 children: <Widget>[
                                   Container(
-                                    height: 23,
-                                    width: 23,
+                                    height: 23 +
+                                        reactionSizeIncrease *
+                                            hatedAnimation.value,
+                                    width: 23 +
+                                        reactionSizeIncrease *
+                                            hatedAnimation.value,
                                     child: SvgPicture.asset(
                                       "images/hated.svg",
                                       color: rxn == "hated"
                                           ? colorPrimaryBlue
                                           : postIcons,
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Text(
-                                      counter['hated'].toString(),
-                                      style: TextStyle(
-                                        fontFamily: "Lato",
-                                        fontSize: 10,
-                                        color: postDesc,
-                                      ),
+                                  SizedBox(
+                                    height: 4 -
+                                        reactionSizeIncrease *
+                                            hatedAnimation.value,
+                                  ),
+                                  Text(
+                                    counter['hated'].toString(),
+                                    style: TextStyle(
+                                      fontFamily: "Lato",
+                                      fontSize: 10,
+                                      color: postDesc,
                                     ),
                                   )
                                 ],
@@ -1110,7 +1279,7 @@ class _Post_TileState extends State<Post_Tile> {
                   ),
                 ),
                 SizedBox(
-                  width: 20,
+                  width: 20 - hatedController.value * reactionSizeIncrease,
                 ),
                 //Container(),
 

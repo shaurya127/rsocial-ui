@@ -4,6 +4,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 const regexForPhone = r'^[6-9][0-9]{9}$';
 
+const googlePeopleApi =
+    "https://people.googleapis.com/v1/people/me?personFields=genders,birthdays&key=";
+
 const colorStatusBar = Color(0xff45A9D2);
 const colorGreenTint = Color(0xff409FC6);
 const colorPrimaryBlue = Color(0xff4dbae6);
