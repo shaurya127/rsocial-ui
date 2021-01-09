@@ -5,6 +5,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
@@ -12,6 +13,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/RoundedButton.dart';
+import 'package:rsocial2/Widgets/alert_box.dart';
 import 'package:rsocial2/config.dart';
 import 'package:rsocial2/constants.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -26,6 +28,8 @@ import '../user.dart';
 import 'investment.dart';
 import 'package:http/http.dart' as http;
 import 'login_page.dart';
+//import 'package:fluttertoast/fluttertoast.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Wage extends StatefulWidget {
   User currentUser;
@@ -63,36 +67,168 @@ class _WageState extends State<Wage> {
   bool isOne = true;
 
   String search_query;
+  TextEditingController investingWithController = TextEditingController();
 
   handleTakePhoto() async {
-    File file = await ImagePicker.pickImage(
-      source: ImageSource.camera,
-      maxHeight: 675,
-      maxWidth: 960,
-    );
-    if (file != null) {
-      final bytes = file.readAsBytesSync();
-      String img64 = base64Encode(bytes);
-      setState(() {
-        orientation == "wage"
-            ? fileList.add(file)
-            : investmentfileList.add(file);
-        orientation == "wage" ? list.add(img64) : selectedImgList.add(img64);
-      });
+    // File file = await ImagePicker.pickImage(
+    //   source: ImageSource.camera,
+    //   maxHeight: 675,
+    //   maxWidth: 960,
+    // );
+    var status = await Permission.camera.status;
+
+    if (status.isGranted || status.isUndetermined) {
+      PickedFile pickedFile = await ImagePicker().getImage(
+        source: ImageSource.camera,
+        maxHeight: 675,
+        maxWidth: 960,
+      );
+
+      final File file = File(pickedFile.path);
+      if (file != null) {
+        print("File size");
+        print(file.lengthSync());
+
+        if (file.lengthSync() > 5000000) {
+          print("not allowed");
+          var alertBox = AlertDialogBox(
+            title: 'Error',
+            content: 'Images must be less than 5MB',
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Back'),
+              )
+            ],
+          );
+          showDialog(context: context, builder: (context) => alertBox);
+          return;
+        }
+
+        final bytes = file.readAsBytesSync();
+        String img64 = base64Encode(bytes);
+        setState(() {
+          orientation == "wage"
+              ? fileList.add(file)
+              : investmentfileList.add(file);
+          orientation == "wage" ? list.add(img64) : selectedImgList.add(img64);
+        });
+      }
+    } else {
+      var alertBox = AlertDialogBox(
+        title: "Camera Permission",
+        content: "This app needs camera access to take photos",
+        actions: <Widget>[
+          FlatButton(
+            child: Text("Settings"),
+            onPressed: () {
+              Navigator.pop(context);
+              openAppSettings();
+            },
+          ),
+          FlatButton(
+            child: Text("Deny"),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      );
+      showDialog(context: context, builder: (context) => alertBox);
     }
   }
 
   handleChooseFromGallery() async {
-    File file = await ImagePicker.pickImage(source: ImageSource.gallery);
-    if (file != null) {
-      final bytes = file.readAsBytesSync();
-      String img64 = base64Encode(bytes);
-      setState(() {
-        orientation == "wage"
-            ? fileList.add(file)
-            : investmentfileList.add(file);
-        orientation == "wage" ? list.add(img64) : selectedImgList.add(img64);
-      });
+    var status = await Permission.storage.status;
+
+    if (status.isGranted || status.isUndetermined) {
+      try {
+        PickedFile pickedFile = await ImagePicker().getImage(
+          source: ImageSource.gallery,
+          maxHeight: 675,
+          maxWidth: 960,
+        );
+
+        final File file = File(pickedFile.path);
+        if (file != null) {
+          print("File size");
+          print(file.lengthSync());
+          if (file.lengthSync() > 5000000) {
+            print("not allowed");
+            var alertBox = AlertDialogBox(
+              title: 'Error',
+              content: 'Images must be less than 5MB',
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Back'),
+                )
+              ],
+            );
+            showDialog(context: context, builder: (context) => alertBox);
+            return;
+          }
+          final bytes = file.readAsBytesSync();
+          String img64 = base64Encode(bytes);
+          setState(() {
+            orientation == "wage"
+                ? fileList.add(file)
+                : investmentfileList.add(file);
+            orientation == "wage"
+                ? list.add(img64)
+                : selectedImgList.add(img64);
+          });
+        }
+      } on PlatformException catch (e) {
+        if (e.code == 'photo_access_denied') {
+          print(e);
+
+          var alertBox = AlertDialogBox(
+            title: "Gallery Permission",
+            content: "This app needs gallery access to take photos",
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Settings"),
+                onPressed: () {
+                  Navigator.pop(context);
+                  openAppSettings();
+                },
+              ),
+              FlatButton(
+                child: Text("Deny"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+          showDialog(context: context, builder: (context) => alertBox);
+        }
+      }
+    } else {
+      var alertBox = AlertDialogBox(
+        title: "Gallery Permission",
+        content: "This app needs gallery access to take photos",
+        actions: <Widget>[
+          FlatButton(
+            child: Text("Settings"),
+            onPressed: () {
+              openAppSettings();
+            },
+          ),
+          FlatButton(
+            child: Text("Deny"),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      );
+      showDialog(context: context, builder: (context) => alertBox);
     }
     //  print(list);
   }
@@ -302,8 +438,12 @@ class _WageState extends State<Wage> {
           setState(() {
             isSelected = false;
             if (!selectedList.contains(suggestionList[index]) &&
-                selectedList.length <= 5)
+                selectedList.length <= 5) {
               selectedList.add(suggestionList[index]);
+              investingWithController.clear();
+            } else {
+              investingWithController.clear();
+            }
           });
           // Navigator.push(
           //   context,
@@ -457,10 +597,14 @@ class _WageState extends State<Wage> {
                 ),
               ),
               TextFormField(
+                controller: investingWithController,
                 onChanged: (value) {
                   setState(() {
                     search_query = value;
-                    isSelected = true;
+                    if (search_query.isEmpty)
+                      isSelected = false;
+                    else
+                      isSelected = true;
                   });
                 },
                 // onTap: () {
@@ -735,10 +879,11 @@ class _WageState extends State<Wage> {
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.only(
                                           bottomRight: Radius.circular(8)),
-                                      color: Colors.red.withOpacity(0.2)),
+                                      color: colorPrimaryBlue),
                                   child: IconButton(
                                     icon: Icon(
                                       Icons.clear,
+                                      color: Colors.white,
                                     ),
                                     onPressed: () {
                                       setState(() {
@@ -986,12 +1131,12 @@ class _WageState extends State<Wage> {
                                                                     bottomRight:
                                                                         Radius.circular(
                                                                             8)),
-                                                            color: Colors.red
-                                                                .withOpacity(
-                                                                    0.2)),
+                                                            color:
+                                                                colorPrimaryBlue),
                                                         child: IconButton(
                                                           icon: Icon(
                                                             Icons.clear,
+                                                            color: Colors.white,
                                                           ),
                                                           onPressed: () {
                                                             setState(() {
