@@ -12,6 +12,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/RoundedButton.dart';
+import 'package:rsocial2/Widgets/alert_box.dart';
 import 'package:rsocial2/config.dart';
 import 'package:rsocial2/constants.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -26,6 +27,7 @@ import '../user.dart';
 import 'investment.dart';
 import 'package:http/http.dart' as http;
 import 'login_page.dart';
+//import 'package:fluttertoast/fluttertoast.dart';
 
 class Wage extends StatefulWidget {
   User currentUser;
@@ -63,6 +65,7 @@ class _WageState extends State<Wage> {
   bool isOne = true;
 
   String search_query;
+  TextEditingController investingWithController = TextEditingController();
 
   handleTakePhoto() async {
     File file = await ImagePicker.pickImage(
@@ -71,6 +74,27 @@ class _WageState extends State<Wage> {
       maxWidth: 960,
     );
     if (file != null) {
+      print("File size");
+      print(file.lengthSync());
+
+      if (file.lengthSync() > 5000000) {
+        print("not allowed");
+        var alertBox = AlertDialogBox(
+          title: 'Error',
+          content: 'Images must be less than 5MB',
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Back'),
+            )
+          ],
+        );
+        showDialog(context: context, builder: (context) => alertBox);
+        return;
+      }
+
       final bytes = file.readAsBytesSync();
       String img64 = base64Encode(bytes);
       setState(() {
@@ -85,6 +109,25 @@ class _WageState extends State<Wage> {
   handleChooseFromGallery() async {
     File file = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (file != null) {
+      print("File size");
+      print(file.lengthSync());
+      if (file.lengthSync() > 5000000) {
+        print("not allowed");
+        var alertBox = AlertDialogBox(
+          title: 'Error',
+          content: 'Images must be less than 5MB',
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Back'),
+            )
+          ],
+        );
+        showDialog(context: context, builder: (context) => alertBox);
+        return;
+      }
       final bytes = file.readAsBytesSync();
       String img64 = base64Encode(bytes);
       setState(() {
@@ -302,8 +345,12 @@ class _WageState extends State<Wage> {
           setState(() {
             isSelected = false;
             if (!selectedList.contains(suggestionList[index]) &&
-                selectedList.length <= 5)
+                selectedList.length <= 5) {
               selectedList.add(suggestionList[index]);
+              investingWithController.clear();
+            } else {
+              investingWithController.clear();
+            }
           });
           // Navigator.push(
           //   context,
@@ -457,10 +504,14 @@ class _WageState extends State<Wage> {
                 ),
               ),
               TextFormField(
+                controller: investingWithController,
                 onChanged: (value) {
                   setState(() {
                     search_query = value;
-                    isSelected = true;
+                    if (search_query.isEmpty)
+                      isSelected = false;
+                    else
+                      isSelected = true;
                   });
                 },
                 // onTap: () {
@@ -735,10 +786,11 @@ class _WageState extends State<Wage> {
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.only(
                                           bottomRight: Radius.circular(8)),
-                                      color: Colors.red.withOpacity(0.2)),
+                                      color: colorPrimaryBlue),
                                   child: IconButton(
                                     icon: Icon(
                                       Icons.clear,
+                                      color: Colors.white,
                                     ),
                                     onPressed: () {
                                       setState(() {
@@ -986,12 +1038,12 @@ class _WageState extends State<Wage> {
                                                                     bottomRight:
                                                                         Radius.circular(
                                                                             8)),
-                                                            color: Colors.red
-                                                                .withOpacity(
-                                                                    0.2)),
+                                                            color:
+                                                                colorPrimaryBlue),
                                                         child: IconButton(
                                                           icon: Icon(
                                                             Icons.clear,
+                                                            color: Colors.white,
                                                           ),
                                                           onPressed: () {
                                                             setState(() {
