@@ -792,8 +792,8 @@ class _InvestPostTileState extends State<InvestPostTile>
                                   )));
                         },
                         child: SvgPicture.asset(
-                          "images/liked.svg",
-                          color: colorPrimaryBlue,
+                          "images/rsocial_thumbUp_blue.svg",
+                          height: 23,
                         ),
                       )
                     else if (counter['whatever'] > counter['loved'] &&
@@ -816,8 +816,8 @@ class _InvestPostTileState extends State<InvestPostTile>
                                   )));
                         },
                         child: SvgPicture.asset(
-                          "images/whatever.svg",
-                          color: colorPrimaryBlue,
+                          "images/rsocial_thumbDown_blue.svg",
+                          height: 23,
                         ),
                       )
                     else if (counter['hated'] > counter['liked'] &&
@@ -840,8 +840,8 @@ class _InvestPostTileState extends State<InvestPostTile>
                                   )));
                         },
                         child: SvgPicture.asset(
-                          "images/hated.svg",
-                          color: colorPrimaryBlue,
+                          "images/rsocial_punch_blue.svg",
+                          height: 23,
                         ),
                       ),
                     //SizedBox(width: 14,),
@@ -1065,12 +1065,12 @@ class _InvestPostTileState extends State<InvestPostTile>
                                   width: 23 +
                                       reactionSizeIncrease *
                                           likedAnimation.value,
-                                  child: SvgPicture.asset(
-                                    "images/liked.svg",
-                                    color: rxn == "liked"
-                                        ? colorPrimaryBlue
-                                        : postIcons,
-                                  ),
+                                  child: rxn == "liked"
+                                      ? SvgPicture.asset(
+                                          "images/rsocial_thumbUp_blue.svg",
+                                        )
+                                      : SvgPicture.asset(
+                                          "images/rsocial_thumbUp_outline.svg"),
                                 ),
                                 //Icon(Icons.thumb_up,size: 30,color:postIcons),
                                 SizedBox(
@@ -1113,12 +1113,12 @@ class _InvestPostTileState extends State<InvestPostTile>
                                     width: 23 +
                                         reactionSizeIncrease *
                                             likedAnimation.value,
-                                    child: SvgPicture.asset(
-                                      "images/liked.svg",
-                                      color: rxn == "liked"
-                                          ? colorPrimaryBlue
-                                          : postIcons,
-                                    ),
+                                    child: rxn == "liked"
+                                        ? SvgPicture.asset(
+                                            "images/rsocial_thumbUp_blue.svg",
+                                          )
+                                        : SvgPicture.asset(
+                                            "images/rsocial_thumbUp_outline.svg"),
                                   ),
                                   //Icon(Icons.thumb_up,size: 30,color:postIcons),
                                   SizedBox(
@@ -1146,19 +1146,17 @@ class _InvestPostTileState extends State<InvestPostTile>
                           ? Column(
                               children: <Widget>[
                                 Container(
-                                  height: 23 +
-                                      reactionSizeIncrease *
-                                          whateverAnimation.value,
-                                  width: 23 +
-                                      reactionSizeIncrease *
-                                          whateverAnimation.value,
-                                  child: SvgPicture.asset(
-                                    "images/whatever.svg",
-                                    color: rxn == "whatever"
-                                        ? colorPrimaryBlue
-                                        : postIcons,
-                                  ),
-                                ),
+                                    height: 23 +
+                                        reactionSizeIncrease *
+                                            whateverAnimation.value,
+                                    width: 23 +
+                                        reactionSizeIncrease *
+                                            whateverAnimation.value,
+                                    child: rxn == "whatever"
+                                        ? SvgPicture.asset(
+                                            "images/rsocial_thumbDown_blue.svg")
+                                        : SvgPicture.asset(
+                                            "images/rsocial_thumbDown_outline.svg")),
                                 SizedBox(
                                   height: 4 -
                                       reactionSizeIncrease *
@@ -1199,19 +1197,17 @@ class _InvestPostTileState extends State<InvestPostTile>
                               child: Column(
                                 children: <Widget>[
                                   Container(
-                                    height: 23 +
-                                        reactionSizeIncrease *
-                                            whateverAnimation.value,
-                                    width: 23 +
-                                        reactionSizeIncrease *
-                                            whateverAnimation.value,
-                                    child: SvgPicture.asset(
-                                      "images/whatever.svg",
-                                      color: rxn == "whatever"
-                                          ? colorPrimaryBlue
-                                          : postIcons,
-                                    ),
-                                  ),
+                                      height: 23 +
+                                          reactionSizeIncrease *
+                                              whateverAnimation.value,
+                                      width: 23 +
+                                          reactionSizeIncrease *
+                                              whateverAnimation.value,
+                                      child: rxn == "whatever"
+                                          ? SvgPicture.asset(
+                                              "images/rsocial_thumbDown_blue.svg")
+                                          : SvgPicture.asset(
+                                              "images/rsocial_thumbDown_outline.svg")),
                                   SizedBox(
                                     height: 4 -
                                         reactionSizeIncrease *
@@ -1243,12 +1239,13 @@ class _InvestPostTileState extends State<InvestPostTile>
                                   width: 23 +
                                       reactionSizeIncrease *
                                           hatedAnimation.value,
-                                  child: SvgPicture.asset(
-                                    "images/hated.svg",
-                                    color: rxn == "hated"
-                                        ? colorPrimaryBlue
-                                        : postIcons,
-                                  ),
+                                  child: rxn == "hated"
+                                      ? SvgPicture.asset(
+                                          "images/rsocial_punch_blue.svg",
+                                          fit: BoxFit.cover,
+                                        )
+                                      : SvgPicture.asset(
+                                          "images/rsocial_punch_outline.svg"),
                                 ),
                                 SizedBox(
                                   height: 4 -
@@ -1293,12 +1290,13 @@ class _InvestPostTileState extends State<InvestPostTile>
                                     width: 23 +
                                         reactionSizeIncrease *
                                             hatedAnimation.value,
-                                    child: SvgPicture.asset(
-                                      "images/hated.svg",
-                                      color: rxn == "hated"
-                                          ? colorPrimaryBlue
-                                          : postIcons,
-                                    ),
+                                    child: rxn == "hated"
+                                        ? SvgPicture.asset(
+                                            "images/rsocial_punch_blue.svg",
+                                            fit: BoxFit.cover,
+                                          )
+                                        : SvgPicture.asset(
+                                            "images/rsocial_punch_outline.svg"),
                                   ),
                                   SizedBox(
                                     height: 4 -

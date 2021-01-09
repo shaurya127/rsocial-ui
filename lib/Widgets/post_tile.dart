@@ -238,6 +238,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
           counter[prevrxn]--;
           print("previous reaction is $prevrxn: ${counter[prevrxn]}");
         } else if (prevrxn != "noreact" && prevrxn != rxn) counter[prevrxn]--;
+
+        curUser.userMap.putIfAbsent(curUser.id, () => reactn);
         // else
         //   {
         //     counter[prevrxn]--;
@@ -276,6 +278,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
         } else if (prevrxn != rxn && rxn != "noreact") {
           counter[prevrxn]--;
         }
+
+        curUser.userMap[curUser.id] = reactn;
       }
       // });
       setState(() {});
@@ -751,8 +755,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   )));
                         },
                         child: SvgPicture.asset(
-                          "images/liked.svg",
-                          color: colorPrimaryBlue,
+                          "images/rsocial_thumbUp_blue.svg",
+                          height: 23,
                         ),
                       )
                     else if (counter['whatever'] > counter['loved'] &&
@@ -775,8 +779,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   )));
                         },
                         child: SvgPicture.asset(
-                          "images/whatever.svg",
-                          color: colorPrimaryBlue,
+                          "images/rsocial_thumbDown_blue.svg",
+                          height: 23,
                         ),
                       )
                     else if (counter['hated'] > counter['liked'] &&
@@ -799,8 +803,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   )));
                         },
                         child: SvgPicture.asset(
-                          "images/hated.svg",
-                          color: colorPrimaryBlue,
+                          "images/rsocial_punch_blue.svg",
+                          height: 23,
                         ),
                       ),
                     //SizedBox(width: 14,),
@@ -1023,12 +1027,12 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   width: 23 +
                                       reactionSizeIncrease *
                                           likedAnimation.value,
-                                  child: SvgPicture.asset(
-                                    "images/liked.svg",
-                                    color: rxn == "liked"
-                                        ? colorPrimaryBlue
-                                        : postIcons,
-                                  ),
+                                  child: rxn == "liked"
+                                      ? SvgPicture.asset(
+                                          "images/rsocial_thumbUp_blue.svg",
+                                        )
+                                      : SvgPicture.asset(
+                                          "images/rsocial_thumbUp_outline.svg"),
                                 ),
                                 //Icon(Icons.thumb_up,size: 30,color:postIcons),
                                 SizedBox(
@@ -1071,12 +1075,12 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                     width: 23 +
                                         reactionSizeIncrease *
                                             likedAnimation.value,
-                                    child: SvgPicture.asset(
-                                      "images/liked.svg",
-                                      color: rxn == "liked"
-                                          ? colorPrimaryBlue
-                                          : postIcons,
-                                    ),
+                                    child: rxn == "liked"
+                                        ? SvgPicture.asset(
+                                            "images/rsocial_thumbUp_blue.svg",
+                                          )
+                                        : SvgPicture.asset(
+                                            "images/rsocial_thumbUp_outline.svg"),
                                   ),
                                   //Icon(Icons.thumb_up,size: 30,color:postIcons),
                                   SizedBox(
@@ -1104,19 +1108,17 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                           ? Column(
                               children: <Widget>[
                                 Container(
-                                  height: 23 +
-                                      reactionSizeIncrease *
-                                          whateverAnimation.value,
-                                  width: 23 +
-                                      reactionSizeIncrease *
-                                          whateverAnimation.value,
-                                  child: SvgPicture.asset(
-                                    "images/whatever.svg",
-                                    color: rxn == "whatever"
-                                        ? colorPrimaryBlue
-                                        : postIcons,
-                                  ),
-                                ),
+                                    height: 23 +
+                                        reactionSizeIncrease *
+                                            whateverAnimation.value,
+                                    width: 23 +
+                                        reactionSizeIncrease *
+                                            whateverAnimation.value,
+                                    child: rxn == "whatever"
+                                        ? SvgPicture.asset(
+                                            "images/rsocial_thumbDown_blue.svg")
+                                        : SvgPicture.asset(
+                                            "images/rsocial_thumbDown_outline.svg")),
                                 SizedBox(
                                   height: 4 -
                                       reactionSizeIncrease *
@@ -1157,19 +1159,17 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                               child: Column(
                                 children: <Widget>[
                                   Container(
-                                    height: 23 +
-                                        reactionSizeIncrease *
-                                            whateverAnimation.value,
-                                    width: 23 +
-                                        reactionSizeIncrease *
-                                            whateverAnimation.value,
-                                    child: SvgPicture.asset(
-                                      "images/whatever.svg",
-                                      color: rxn == "whatever"
-                                          ? colorPrimaryBlue
-                                          : postIcons,
-                                    ),
-                                  ),
+                                      height: 23 +
+                                          reactionSizeIncrease *
+                                              whateverAnimation.value,
+                                      width: 23 +
+                                          reactionSizeIncrease *
+                                              whateverAnimation.value,
+                                      child: rxn == "whatever"
+                                          ? SvgPicture.asset(
+                                              "images/rsocial_thumbDown_blue.svg")
+                                          : SvgPicture.asset(
+                                              "images/rsocial_thumbDown_outline.svg")),
                                   SizedBox(
                                     height: 4 -
                                         reactionSizeIncrease *
@@ -1201,12 +1201,13 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   width: 23 +
                                       reactionSizeIncrease *
                                           hatedAnimation.value,
-                                  child: SvgPicture.asset(
-                                    "images/hated.svg",
-                                    color: rxn == "hated"
-                                        ? colorPrimaryBlue
-                                        : postIcons,
-                                  ),
+                                  child: rxn == "hated"
+                                      ? SvgPicture.asset(
+                                          "images/rsocial_punch_blue.svg",
+                                          fit: BoxFit.cover,
+                                        )
+                                      : SvgPicture.asset(
+                                          "images/rsocial_punch_outline.svg"),
                                 ),
                                 SizedBox(
                                   height: 4 -
@@ -1251,13 +1252,13 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                     width: 23 +
                                         reactionSizeIncrease *
                                             hatedAnimation.value,
-                                    child: SvgPicture.asset(
-                                      "images/hated.svg",
-                                      color: rxn == "hated"
-                                          ? colorPrimaryBlue
-                                          : postIcons,
-                                      fit: BoxFit.cover,
-                                    ),
+                                    child: rxn == "hated"
+                                        ? SvgPicture.asset(
+                                            "images/rsocial_punch_blue.svg",
+                                            fit: BoxFit.cover,
+                                          )
+                                        : SvgPicture.asset(
+                                            "images/rsocial_punch_outline.svg"),
                                   ),
                                   SizedBox(
                                     height: 4 -
