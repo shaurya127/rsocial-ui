@@ -25,7 +25,11 @@ class Profile extends StatefulWidget {
   User user;
   String photoUrl;
 
-  Profile({this.currentUser, this.photoUrl, this.user});
+  Profile({
+    this.currentUser,
+    this.photoUrl,
+    this.user,
+  });
 }
 
 class _ProfileState extends State<Profile> {
@@ -330,6 +334,10 @@ class _ProfileState extends State<Profile> {
     ];
     return list;
   }
+
+  // onBackPressed() {
+  //   widget.investingWithPageCallback();
+  // }
 
   @override
   Widget build(BuildContext context) {

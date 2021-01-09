@@ -18,6 +18,7 @@ class InvestedWithPage extends StatefulWidget {
 
 class _InvestedWithPageState extends State<InvestedWithPage> {
   List<Request_Tile> tiles = new List();
+
   buildList() {
     print(widget.investedWithUser.length);
     for (int i = 0; i < widget.investedWithUser.length; i++) {
