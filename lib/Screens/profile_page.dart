@@ -10,6 +10,7 @@ import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:http/http.dart' as http;
 import 'package:rsocial2/Widgets/invest_post_tile.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
+import 'package:rsocial2/Widgets/request_button.dart';
 import 'package:rsocial2/auth.dart';
 import 'package:rsocial2/constants.dart';
 import 'package:rsocial2/user.dart';
@@ -225,6 +226,15 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  buildButton() {
+    return RequestButton(
+      text: widget.currentUser.userMap.containsKey(widget.user.id)
+          ? widget.currentUser.userMap[widget.user.id]
+          : "add",
+      user: widget.user,
+    );
+  }
+
   List<Widget> buildHeader(BuildContext context) {
     List<Widget> list = [
       Padding(
@@ -307,6 +317,10 @@ class _ProfileState extends State<Profile> {
                 color: colorHintText,
               ),
             ),
+            SizedBox(
+              height: widget.user.bio != null ? 3 : 0,
+            ),
+            buildButton()
           ],
         ),
       ),

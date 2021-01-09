@@ -133,7 +133,107 @@ class _BottomNavBarState extends State<BottomNavBar>
         // setState(() {
         //   isLoading = false;
         // });
-        return curUser;
+        // return curUser;
+        setState(() {
+          isLoadingPost = true;
+          isLoading = false;
+        });
+        try {
+          //  user = await FirebaseAuth.instance.currentUser();
+          photourl = user.photoUrl;
+          print(user);
+          // DocumentSnapshot doc = await users.document(user.uid).get();
+          // if (doc == null) print("error from get user post");
+          //id = doc['id'];
+        } catch (e) {
+          setState(() {
+            isFailedUserPost = true;
+          });
+        }
+
+        final url = storyEndPoint + "${id}/all";
+        var token = await user.getIdToken();
+        final response = await http.get(url, headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        });
+        //print("body is ${response.body}");
+        //print(response.statusCode);
+        print("User posts $response");
+        if (response.statusCode == 200) {
+          final jsonUser = jsonDecode(response.body);
+          var body = jsonUser['body'];
+          var body1 = jsonDecode(body);
+          //print("body is $body");
+          //print(body1);
+          var msg = body1['message'];
+          //print(msg.length);
+          //print("msg id ${msg}");
+          List<Post> posts = [];
+          for (int i = 0; i < msg.length; i++) {
+            //print("msg $i is ${msg[i]}");
+            Post post;
+            if (msg[i]['StoryType'] == "Investment")
+              post = Post.fromJsonI(msg[i]);
+            else
+              post = Post.fromJsonW(msg[i]);
+            if (post != null) {
+              //print(post.investedWithUser);
+              posts.add(post);
+            }
+          }
+          //print(posts.length);
+          setState(() {
+            this.posts = posts;
+            isLoading = false;
+            isLoadingPost = false;
+          });
+        } else {
+          print(response.statusCode);
+          throw Exception();
+        }
+
+        final urlAll = userEndPoint + "all";
+
+        //var token = await user.getIdToken();
+        //print(token);
+
+        final responseAll = await http.post(urlAll,
+            headers: {
+              "Authorization": "Bearer $token",
+              "Content-Type": "application/json"
+            },
+            body: jsonEncode({"id": id, "email": user.email}));
+
+        //print(response.statusCode);
+        if (responseAll.statusCode == 200) {
+          final jsonUser = jsonDecode(responseAll.body);
+          var body = jsonUser['body'];
+          var body1 = jsonDecode(body);
+          var msg = body1['message'];
+          print(msg);
+          //print("length is ${msg.length}")
+          for (int i = 0; i < msg.length; i++) {
+            // print(msg[i]['PendingConnection']);
+
+            if (msg[i]['id'] == id) {
+              continue;
+            }
+
+            User user = User.fromJson(msg[i]);
+
+            allUsers.add(user);
+          }
+          setState(() {
+            isLoading = false;
+          });
+          print("all the users");
+          print(allUsers.length);
+          return allUsers;
+        } else {
+          print(response.statusCode);
+          throw Exception();
+        }
       } else {
         print(response.statusCode);
         throw Exception();
@@ -401,11 +501,12 @@ class _BottomNavBarState extends State<BottomNavBar>
         isLoading = true;
       });
       createNgetUserAwait();
-    } else
+    } else {
       // createUser();
       getUserAwait();
-    getAllUsers();
-    getUserPosts();
+      getAllUsers();
+      getUserPosts();
+    }
   }
 
   createNgetUserAwait() async {

@@ -148,13 +148,21 @@ Future<Inf> getGenderBirthday() async {
   print("This is response from google gender: ");
   print(response);
   if (response["genders"] != null) {
-    inf.gender = response["genders"][0]["formattedValue"] == "Male" ? "M" : "F";
+    if (response["genders"][0]["formattedValue"] == "Male") {
+      inf.gender = "M";
+    } else if (response["genders"][0]["formattedValue"] == "Female") {
+      inf.gender = "F";
+    }
+    //inf.gender = response["genders"][0]["formattedValue"] == "Male" ? "M" : "F";
     print(response['genders'][0]["formattedValue"]);
   }
   if (response['birthdays'] != null) {
     int day = response["birthdays"][0]["date"]["day"];
     int month = response["birthdays"][0]["date"]["month"];
     int year = response["birthdays"][0]["date"]["year"];
+    if (day == null || month == null || year == null) {
+      return inf;
+    }
 
     String monthString = month < 10 ? "0" + month.toString() : month.toString();
     String dayString = day < 10 ? "0" + day.toString() : day.toString();

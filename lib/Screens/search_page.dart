@@ -349,7 +349,7 @@ class _Search_PageState extends State<Search_Page>
           //request: true,
           accepted: false,
           photourl: requestList[i].photoUrl,
-          text: "accept",
+          text: "request",
           //curUser: curUser,
         );
         tiles.add(tile);
