@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:rsocial2/Screens/all_connections.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
 
@@ -107,6 +108,13 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                   ),
                 ),
                 Nav_Drawer_Tile(
+                  f: (){
+                    Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AllConnections()));
+                  },
                     title: kNavDrawerConnection,
                     icon: Container(
                       height: 23,

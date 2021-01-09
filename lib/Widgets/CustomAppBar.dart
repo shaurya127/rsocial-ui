@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:rsocial2/Screens/bottom_nav_bar.dart';
+import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/auth.dart';
 import '../constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,6 +10,19 @@ import '../user.dart';
 
 AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
     String socialStanding) {
+  showProfile(BuildContext context, User user, String photourl) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Profile(
+          currentUser:curUser,
+          photoUrl: photourl,
+          user: user,
+        ),
+      ),
+    );
+  }
+
   return AppBar(
     backgroundColor: colorButton,
     iconTheme: IconThemeData(color: Colors.white),
@@ -40,13 +55,19 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
         padding: const EdgeInsets.only(right: 24, top: 4),
         child: Stack(
           children: <Widget>[
-            Container(
-              height: 45,
-              width: 45,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: NetworkImage(photoUrl), fit: BoxFit.cover),
-                  shape: BoxShape.circle),
+            GestureDetector(
+              child: Container(
+                height: 45,
+                width: 45,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: NetworkImage(photoUrl), fit: BoxFit.cover),
+                    shape: BoxShape.circle),
+              ),
+              onTap: () => showProfile(
+                  context,
+                  curUser,
+                  curUser.photoUrl),
             ),
             Positioned(
               left: 0,
