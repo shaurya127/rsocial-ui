@@ -24,6 +24,7 @@ class Profile extends StatefulWidget {
   User currentUser;
   User user;
   String photoUrl;
+
   Profile({this.currentUser, this.photoUrl, this.user});
 }
 

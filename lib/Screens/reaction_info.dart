@@ -75,8 +75,8 @@ class _Reaction_InfoState extends State<Reaction_Info>
                         child: Row(
                           children: <Widget>[
                             SvgPicture.asset(
-                              "images/loved.svg",
-                              color: colorPrimaryBlue,
+                              "images/thumb_blue.svg",
+                              height: 23,
                             ),
                             SizedBox(
                               width: 5,
@@ -97,10 +97,9 @@ class _Reaction_InfoState extends State<Reaction_Info>
                       //SizedBox(width: 10,),
                       Row(
                         children: <Widget>[
-                          Icon(
-                            Icons.thumb_up,
-                            color: colorPrimaryBlue,
-                            size: 30,
+                          SvgPicture.asset(
+                            "images/rsocial_thumbUp_blue.svg",
+                            height: 23,
                           ),
                           SizedBox(
                             width: 5,
@@ -121,10 +120,9 @@ class _Reaction_InfoState extends State<Reaction_Info>
 
                       Row(
                         children: <Widget>[
-                          Icon(
-                            Icons.thumb_down,
-                            color: colorPrimaryBlue,
-                            size: 30,
+                          SvgPicture.asset(
+                            "images/rsocial_thumbDown_blue.svg",
+                            height: 23,
                           ),
                           SizedBox(
                             width: 5,
@@ -146,8 +144,8 @@ class _Reaction_InfoState extends State<Reaction_Info>
                       Row(
                         children: <Widget>[
                           SvgPicture.asset(
-                            "images/hated.svg",
-                            color: colorPrimaryBlue,
+                            "images/rsocial_punch_blue.svg",
+                            height: 23,
                           ),
                           SizedBox(
                             width: 5,
