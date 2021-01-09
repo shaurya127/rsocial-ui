@@ -8,6 +8,8 @@ import '../user.dart';
 
 AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
     String socialStanding) {
+  print("This is my photoUrl");
+  print(photoUrl);
   return AppBar(
     backgroundColor: colorButton,
     iconTheme: IconThemeData(color: Colors.white),
@@ -45,7 +47,10 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
               width: 45,
               decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: NetworkImage(photoUrl), fit: BoxFit.cover),
+                      image: photoUrl != ""
+                          ? NetworkImage(photoUrl)
+                          : AssetImage("images/avatar.jpg"),
+                      fit: BoxFit.cover),
                   shape: BoxShape.circle),
             ),
             Positioned(

@@ -249,7 +249,9 @@ class _ProfileState extends State<Profile> {
               children: <Widget>[
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage: NetworkImage(widget.user.photoUrl),
+                  backgroundImage: widget.user.photoUrl != ""
+                      ? NetworkImage(widget.user.photoUrl)
+                      : AssetImage("images/avatar.jpg"),
                 ),
                 widget.currentUser.id == widget.user.id
                     ? Icon(

@@ -476,8 +476,10 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                 widget.userPost.user,
                                 widget.userPost.user.photoUrl),
                             child: CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage(widget.userPost.user.photoUrl),
+                              backgroundImage: widget.userPost.user.photoUrl !=
+                                      ""
+                                  ? NetworkImage(widget.userPost.user.photoUrl)
+                                  : AssetImage("images/avatar.jpg"),
                             ),
                           ),
                           title: Text(
@@ -500,8 +502,10 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                 widget.userPost.user,
                                 widget.userPost.user.photoUrl),
                             child: CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage(widget.userPost.user.photoUrl),
+                              backgroundImage: widget.userPost.user.photoUrl !=
+                                      ""
+                                  ? NetworkImage(widget.userPost.user.photoUrl)
+                                  : AssetImage("images/avatar.jpg"),
                             ),
                           ),
                           title: Text(

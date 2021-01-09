@@ -73,7 +73,9 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                             borderRadius: BorderRadius.circular(30),
                             image: DecorationImage(
                                 fit: BoxFit.cover,
-                                image: NetworkImage(curUser.photoUrl))),
+                                image: curUser.photoUrl != ""
+                                    ? NetworkImage(curUser.photoUrl)
+                                    : AssetImage("images/avatar.jpg"))),
                       ),
                     ),
                     title: Text(
