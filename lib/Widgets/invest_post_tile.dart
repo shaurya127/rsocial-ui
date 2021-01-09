@@ -19,6 +19,7 @@ import 'package:rsocial2/Screens/login_page.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/Screens/reaction_info.dart';
 import 'package:rsocial2/Screens/search_page.dart';
+import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
 import '../config.dart';
 import '../constants.dart';
@@ -27,7 +28,7 @@ import '../read_more.dart';
 import '../user.dart';
 import 'package:http/http.dart' as http;
 
-Map<String, Map<String, int>> m = new Map();
+//Map<String, Map<String, int>> m = new Map();
 
 class Reaction {
   Reaction({
@@ -299,15 +300,33 @@ class _InvestPostTileState extends State<InvestPostTile>
 
       // setState(() {
       String prevrxn = rxn;
+      if(prevrxn=='loved')
+        loved.removeWhere((element) => element.id==curUser.id);
+      else if(prevrxn=='liked')
+        liked.removeWhere((element) => element.id==curUser.id);
+      else if(prevrxn=='whatever')
+        whatever.removeWhere((element) => element.id==curUser.id);
+      else if(prevrxn=='hated')
+        hated.removeWhere((element) => element.id==curUser.id);
+
       rxn = reactn;
-      print("this is my reaction $rxn");
+
+      if(reactn=='loved')
+        loved.add(curUser);
+      else if(reactn=='liked')
+        liked.add(curUser);
+      else if(reactn=='whatever')
+        whatever.add(curUser);
+      else if(reactn=='hated')
+        hated.add(curUser);
+      //print("this is my reaction $rxn");
       bool inLoop = true;
       for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
         User user = widget.userPost.reactedBy[i];
         print("rara");
         if (user.id == widget.curUser.id) {
           //print("in user post");
-          if (m.containsKey(widget.userPost.id)) m.remove(widget.userPost.id);
+          //if (m.containsKey(widget.userPost.id)) m.remove(widget.userPost.id);
           user.reactionType = reactn;
           inLoop = false;
         }
@@ -317,7 +336,7 @@ class _InvestPostTileState extends State<InvestPostTile>
       if (inLoop == true) {
         //print("charu22");
         // widget.userPost.user.firstRxn=reactn;
-        m[widget.userPost.id] = {reactn: counter[reactn]};
+        //m[widget.userPost.id] = {reactn: counter[reactn]};
         print("This is my reaction");
         if (rxn == "noreact") {
           // m[widget.userPost.id] = {reactn: counter[reactn]};
@@ -363,6 +382,7 @@ class _InvestPostTileState extends State<InvestPostTile>
           counter[prevrxn]--;
         }
       }
+      m[widget.userPost.id] = {reactn: counter[reactn]};
       // });
       setState(() {});
     }

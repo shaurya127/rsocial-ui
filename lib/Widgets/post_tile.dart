@@ -213,15 +213,32 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
 
       // setState(() {
       String prevrxn = rxn;
+      if(prevrxn=='loved')
+        loved.removeWhere((element) => element.id==curUser.id);
+      else if(prevrxn=='liked')
+        liked.removeWhere((element) => element.id==curUser.id);
+      else if(prevrxn=='whatever')
+        whatever.removeWhere((element) => element.id==curUser.id);
+      else if(prevrxn=='hated')
+        hated.removeWhere((element) => element.id==curUser.id);
       rxn = reactn;
+      if(reactn=='loved')
+        loved.add(curUser);
+      else if(reactn=='liked')
+        liked.add(curUser);
+      else if(reactn=='whatever')
+        whatever.add(curUser);
+      else if(reactn=='hated')
+        hated.add(curUser);
       print("this is my reaction $rxn");
       bool inLoop = true;
+
       for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
         User user = widget.userPost.reactedBy[i];
         print("rara");
         if (user.id == widget.curUser.id) {
           //print("in user post");
-          if (m.containsKey(widget.userPost.id)) m.remove(widget.userPost.id);
+          //if (m.containsKey(widget.userPost.id)) m.remove(widget.userPost.id);
           user.reactionType = reactn;
           inLoop = false;
         }
@@ -239,7 +256,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
           print("previous reaction is $prevrxn: ${counter[prevrxn]}");
         } else if (prevrxn != "noreact" && prevrxn != rxn) counter[prevrxn]--;
 
-        curUser.userMap.putIfAbsent(curUser.id, () => reactn);
         // else
         //   {
         //     counter[prevrxn]--;
@@ -281,6 +297,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
 
         curUser.userMap[curUser.id] = reactn;
       }
+      m[widget.userPost.id] = {reactn: counter[reactn]};
       // });
       setState(() {});
     }
@@ -449,7 +466,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
       // else if (rxn == "hated") hatedCounter = m[widget.userPost.id][3];
 
     }
-    print("This is build function");
+    //print("This is build function");
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 1),
@@ -849,7 +866,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                 //textAlign: TextAlign.left,
               ),*/
                     ),
-            Padding(
+            widget.userPost.fileUpload.length!=0 ?Padding(
                 padding: widget.userPost.storyText == null
                     ? EdgeInsets.only(top: 0, bottom: 15)
                     : EdgeInsets.only(bottom: 15, top: 6),
@@ -858,7 +875,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                     decoration:
                         BoxDecoration(borderRadius: BorderRadius.circular(8)),
                     child: isLoading == false
-                        ? Swiper(
+                        ? ( widget.userPost.fileUpload.length>1 ? Swiper(
                             loop: false,
                             pagination: SwiperPagination(),
                             scrollDirection: Axis.horizontal,
@@ -899,9 +916,24 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                 ],
                               );
                             })
+                    :
+                    Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.grey.withOpacity(0.2),
+                          image: DecorationImage(
+                              image: NetworkImage(
+                                fileList[0],
+                              ),
+                              fit: BoxFit.cover)),
+                      height: 250,
+                    )
+                    )
                         : Center(
                             child: CircularProgressIndicator(),
-                          ))),
+                          )))
+            :
+                SizedBox(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
