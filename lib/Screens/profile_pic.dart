@@ -5,14 +5,17 @@ import 'dart:io';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:rsocial2/Widgets/RoundedButton.dart';
 
 import 'package:rsocial2/Screens/bio_page.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
+import 'package:rsocial2/Widgets/alert_box.dart';
 import 'package:rsocial2/auth.dart';
 
 import '../constants.dart';
@@ -31,14 +34,87 @@ class _ProfilePicPageState extends State<ProfilePicPage> {
   String encodedFile;
 
   handleChooseFromGallery() async {
-    File file = await ImagePicker.pickImage(source: ImageSource.gallery);
-    if (file != null) {
-      this.file = file;
-      final bytes = file.readAsBytesSync();
-      print(base64Encode(bytes));
-      this.encodedFile = base64Encode(bytes);
-      print("This is encoded file:  ${this.encodedFile}");
-      setState(() {});
+    var status = await Permission.storage.status;
+
+    if (status.isGranted || status.isUndetermined) {
+      try {
+        PickedFile pickedFile = await ImagePicker().getImage(
+          source: ImageSource.gallery,
+        );
+
+        final File file = File(pickedFile.path);
+        if (file != null) {
+          if (file.lengthSync() > 5000000) {
+            print("not allowed");
+            var alertBox = AlertDialogBox(
+              title: 'Error',
+              content: 'Images must be less than 5MB',
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Back'),
+                )
+              ],
+            );
+            showDialog(context: context, builder: (context) => alertBox);
+            return;
+          }
+
+          this.file = file;
+          final bytes = file.readAsBytesSync();
+          print(base64Encode(bytes));
+          this.encodedFile = base64Encode(bytes);
+          print("This is encoded file:  ${this.encodedFile}");
+          setState(() {});
+        }
+      } on PlatformException catch (e) {
+        if (e.code == 'photo_access_denied') {
+          print(e);
+
+          var alertBox = AlertDialogBox(
+            title: "Gallery Permission",
+            content: "This app needs gallery access to take photos",
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Settings"),
+                onPressed: () {
+                  Navigator.pop(context);
+                  openAppSettings();
+                },
+              ),
+              FlatButton(
+                child: Text("Deny"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+          showDialog(context: context, builder: (context) => alertBox);
+        }
+      }
+    } else {
+      var alertBox = AlertDialogBox(
+        title: "Gallery Permission",
+        content: "This app needs gallery access to take photos",
+        actions: <Widget>[
+          FlatButton(
+            child: Text("Settings"),
+            onPressed: () {
+              openAppSettings();
+            },
+          ),
+          FlatButton(
+            child: Text("Deny"),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      );
+      showDialog(context: context, builder: (context) => alertBox);
     }
   }
 
