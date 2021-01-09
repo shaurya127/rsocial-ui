@@ -37,6 +37,9 @@ const kFacebookButtonText = "Sign up with Facebook";
 const kGoogleButtonText = "Sign up with Google";
 const kRsocialButtonText = "Sign up with Rsocial";
 
+const kFacebookButtonTextSignIn = "Sign in with Facebook";
+const kGoogleButtonTextSignIn = "Sign in with Google";
+
 const kCreateAccountText =
     "Time to value relationships, Assess your social bonds.";
 const kCreateAccountButton = "Create Account";
@@ -60,8 +63,8 @@ const kNavDrawerLogout = "Logout";
 
 const kProfilePageWage = "Make a Wage story now";
 const kProfilePageInvestment = "Make a Investment story now";
-const kProfilePageWageTab = "Wage story";
-const kProfilePageInvestmentTab = "Investment story";
+const kProfilePageWageTab = "Wage";
+const kProfilePageInvestmentTab = "Investment";
 const kProfilePagePlatformTab = "Platform Interaction";
 
 const kProfilePicText = "Pick a Profile Picture";
