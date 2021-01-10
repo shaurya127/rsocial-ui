@@ -25,7 +25,11 @@ class Profile extends StatefulWidget {
   User user;
   String photoUrl;
 
-  Profile({this.currentUser, this.photoUrl, this.user});
+  Profile({
+    this.currentUser,
+    this.photoUrl,
+    this.user,
+  });
 }
 
 class _ProfileState extends State<Profile> {
@@ -249,7 +253,9 @@ class _ProfileState extends State<Profile> {
               children: <Widget>[
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage: NetworkImage(widget.user.photoUrl),
+                  backgroundImage: widget.user.photoUrl != ""
+                      ? NetworkImage(widget.user.photoUrl)
+                      : AssetImage("images/avatar.jpg"),
                 ),
                 widget.currentUser.id == widget.user.id
                     ? Icon(
@@ -328,6 +334,10 @@ class _ProfileState extends State<Profile> {
     ];
     return list;
   }
+
+  // onBackPressed() {
+  //   widget.investingWithPageCallback();
+  // }
 
   @override
   Widget build(BuildContext context) {

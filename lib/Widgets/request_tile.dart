@@ -23,8 +23,7 @@ class Request_Tile extends StatefulWidget {
   User user;
   //User curUser;
   Request_Tile(
-      {
-      this.text,
+      {this.text,
       this.user,
       this.photourl,
       //this.curUser,
@@ -34,8 +33,12 @@ class Request_Tile extends StatefulWidget {
 }
 
 class _Request_TileState extends State<Request_Tile> {
+  // investingWithCallbackListener() {
+  //   setState(() {});
+  // }
+
   //User curUser;
- removeConnection(String friendId) async {
+  removeConnection(String friendId) async {
     var url = userEndPoint + "removeconnection";
     var user = await FirebaseAuth.instance.currentUser();
     DocumentSnapshot doc = await users.document(user.uid).get();
@@ -67,8 +70,8 @@ class _Request_TileState extends State<Request_Tile> {
       // print(body1);
       var msg = body1['message'];
       setState(() {
-        curUser=User.fromJson(msg);
-        widget.text="";
+        curUser = User.fromJson(msg);
+        widget.text = "";
         //widget.accepted = false;
       });
     }
@@ -106,8 +109,8 @@ class _Request_TileState extends State<Request_Tile> {
       // print(body1);
       var msg = body1['message'];
       setState(() {
-        curUser=User.fromJson(msg);
-        widget.text="pending";
+        curUser = User.fromJson(msg);
+        widget.text = "pending";
       });
     }
   }
@@ -147,7 +150,7 @@ class _Request_TileState extends State<Request_Tile> {
       //print(msg);
       setState(() {
         curUser = User.fromJson(msg);
-        widget.text="";
+        widget.text = "";
         //widget.accepted = true;
       });
     }
@@ -166,61 +169,53 @@ class _Request_TileState extends State<Request_Tile> {
     );
   }
 
-  buildRequest()
-  {
+  buildRequest() {
     // return (widget.accepted == false)
     //     ?
     return Row(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: GestureDetector(
-                onTap: () {},
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                      vertical: 8, horizontal: 8),
-                  child: Text(
-                    "Reject",
-                    style: TextStyle(
-                        fontFamily: "Lato",
-                        fontSize: 14,
-                        color: Colors.white
-                    ),
-                  ),
-                  decoration: BoxDecoration(
-                      color:Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                          width: 1,
-                          color: Theme.of(context).primaryColor)),
-                ),
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          child: GestureDetector(
+            onTap: () {},
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              child: Text(
+                "Reject",
+                style: TextStyle(
+                    fontFamily: "Lato", fontSize: 14, color: Colors.white),
               ),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                      width: 1, color: Theme.of(context).primaryColor)),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: GestureDetector(
-                onTap: (){acceptConnection(widget.user.id);},
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                      vertical: 8, horizontal: 8),
-                  child: Text(
-                    "Accept",
-                    style: TextStyle(
-                        fontFamily: "Lato",
-                        fontSize: 14,
-                        color: Colors.white),
-                  ),
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                          width: 1,
-                          color: Theme.of(context).primaryColor)),
-                ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          child: GestureDetector(
+            onTap: () {
+              acceptConnection(widget.user.id);
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              child: Text(
+                "Accept",
+                style: TextStyle(
+                    fontFamily: "Lato", fontSize: 14, color: Colors.white),
               ),
-            )
-          ],
-        );
+              decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                      width: 1, color: Theme.of(context).primaryColor)),
+            ),
+          ),
+        )
+      ],
+    );
     // :
     // Icon(
     //   Icons.check,
@@ -229,85 +224,73 @@ class _Request_TileState extends State<Request_Tile> {
     // );
   }
 
-  buildPending()
-  {
+  buildPending() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5),
       child: GestureDetector(
-        onTap: (){},
+        onTap: () {},
         child: Container(
-          padding: EdgeInsets.symmetric(
-              vertical: 8, horizontal: 8),
+          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
           child: Text(
             "Pending",
-            style: TextStyle(
-                fontFamily: "Lato",
-                fontSize: 14,
-                color: Colors.grey),
+            style:
+                TextStyle(fontFamily: "Lato", fontSize: 14, color: Colors.grey),
           ),
           decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                  width: 1,
-                  color: Colors.grey)),
+              border: Border.all(width: 1, color: Colors.grey)),
         ),
       ),
     );
   }
 
-  buildAdd()
-  {
+  buildAdd() {
     // return widget.accepted==false
     //     ?
     return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          child: GestureDetector(
-            onTap: (){addConnection(widget.user.id);},
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                  vertical: 8, horizontal: 8),
-              child: Text(
-                "Add",
-                style: TextStyle(
-                    fontFamily: "Lato",
-                    fontSize: 14,
-                    color: Colors.white),
-              ),
-              decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                      width: 1,
-                      color: Theme.of(context).primaryColor)),
-            ),
-          ),
-    );
-        //:buildPending();
-  }
-
-  buildRemove()
-  {
-    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5),
       child: GestureDetector(
-        onTap: (){removeConnection(widget.user.id);},
+        onTap: () {
+          addConnection(widget.user.id);
+        },
         child: Container(
-          padding: EdgeInsets.symmetric(
-              vertical: 8, horizontal: 8),
+          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
           child: Text(
-            "Remove",
+            "Add",
             style: TextStyle(
-                fontFamily: "Lato",
-                fontSize: 14,
-                color: Colors.white),
+                fontFamily: "Lato", fontSize: 14, color: Colors.white),
           ),
           decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                  width: 1,
-                  color: Theme.of(context).primaryColor)),
+              border:
+                  Border.all(width: 1, color: Theme.of(context).primaryColor)),
+        ),
+      ),
+    );
+    //:buildPending();
+  }
+
+  buildRemove() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5),
+      child: GestureDetector(
+        onTap: () {
+          removeConnection(widget.user.id);
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          child: Text(
+            "Remove",
+            style: TextStyle(
+                fontFamily: "Lato", fontSize: 14, color: Colors.white),
+          ),
+          decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.circular(10),
+              border:
+                  Border.all(width: 1, color: Theme.of(context).primaryColor)),
         ),
       ),
     );
@@ -328,8 +311,8 @@ class _Request_TileState extends State<Request_Tile> {
                   dense: true,
                   //contentPadding: EdgeInsets.all(-10)
                   leading: GestureDetector(
-                    onTap: () => showProfile(context, widget.user,
-                        widget.user.photoUrl, curUser),
+                    onTap: () => showProfile(
+                        context, widget.user, widget.user.photoUrl, curUser),
                     child: CircleAvatar(
                       backgroundImage: NetworkImage(
                         widget.user.photoUrl,
@@ -385,22 +368,22 @@ class _Request_TileState extends State<Request_Tile> {
                   ),
                 ),
               ),
-              if(widget.text=="request")
+              if (widget.text == "request")
                 buildRequest()
-              else if(widget.text=="pending")
+              else if (widget.text == "pending")
                 buildPending()
-              else if(widget.user.id==curUser.id)
+              else if (widget.user.id == curUser.id)
                 SizedBox()
-              else if(widget.text=="remove")
+              else if (widget.text == "remove")
                 buildRemove()
-              else if(widget.text=="add")
+              else if (widget.text == "add")
                 buildAdd()
               else
-                      Icon(
-                        Icons.check,
-                        size: 24,
-                        color: colorPrimaryBlue,
-                      )
+                Icon(
+                  Icons.check,
+                  size: 24,
+                  color: colorPrimaryBlue,
+                )
             ],
           ),
           Padding(

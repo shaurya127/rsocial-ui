@@ -568,8 +568,9 @@ class _InvestPostTileState extends State<InvestPostTile>
                       onTap: () => showProfile(context, widget.userPost.user,
                           widget.userPost.user.photoUrl),
                       child: CircleAvatar(
-                        backgroundImage:
-                            NetworkImage(widget.userPost.user.photoUrl),
+                        backgroundImage: widget.userPost.user.photoUrl != ""
+                            ? NetworkImage(widget.userPost.user.photoUrl)
+                            : AssetImage("images/avatar.jpg"),
                       ),
                     ),
                     title: Text(

@@ -48,101 +48,11 @@ loginWithFacebook(User _currentUser, BuildContext context) async {
     case FacebookLoginStatus.loggedIn:
       // Getting the token
       final token = result.accessToken.token;
+      var graphResponse, profile;
       try {
-        AuthCredential credential =
-            FacebookAuthProvider.getCredential(accessToken: token);
-
-        final FirebaseUser user =
-            await FirebaseAuth.instance.signInWithCredential(credential);
-
-        final FirebaseUser currentUser =
-            await FirebaseAuth.instance.currentUser();
-
-        assert(currentUser != null);
-
-        if (user.uid == currentUser.uid) {
-          // To check if the user already exists in firebase
-          DocumentSnapshot doc = await users.document(user.uid).get();
-
-          // if user does not exists
-          if (!doc.exists) {
-            final graphResponse = await http.get(
-                'https://graph.facebook.com/v2.12/me?fields=name,picture,email,birthday&access_token=$token');
-
-            // Fetching the body which contains the required fields
-            final profile = jsonDecode(graphResponse.body);
-
-            // Correcting the date format to the required format
-            String birthday = profile['birthday'];
-            birthday = birthday.substring(3, 5) +
-                "/" +
-                birthday.substring(0, 2) +
-                birthday.substring(5);
-
-            // Creating a user from the information in the body
-            User curUser = User(
-                fname: profile['name'].split(" ")[0],
-                lname: profile['name'].split(" ").length == 2
-                    ? profile['name'].split(" ")[1]
-                    : "",
-                dob: birthday,
-                email: profile['email'],
-                lollarAmount: 100,
-                socialStanding: 2,
-                photoUrl: profile["picture"]["data"]["url"]);
-
-            Navigator.pop(context);
-
-            return Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(
-                    settings: RouteSettings(name: "Profile_pic_page"),
-                    builder: (BuildContext context) =>
-                        UserInfoFacebook(currentUser: curUser)),
-                (Route<dynamic> route) => false);
-          }
-
-          // if user already exists, we go to the landing page directly
-
-          Navigator.pop(context);
-
-          return Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                  settings: RouteSettings(name: "Landing_Page"),
-                  builder: (BuildContext context) => BottomNavBar(
-                        currentUser: _currentUser,
-                        isNewUser: false,
-                        sign_in_mode: "Facebook_sign_in",
-                      )),
-              (Route<dynamic> route) => false);
-        }
+        graphResponse = await http.get(
+            'https://graph.facebook.com/v2.12/me?fields=name,picture,birthday&access_token=$token');
       } on PlatformException catch (e) {
-        if (e.code == 'ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL') {
-          var alertBox = AlertDialogBox(
-            title: "Error",
-            content:
-                "This id has been already used with a different provider. Please use a different id or sign-in with the different provider",
-            actions: <Widget>[
-              FlatButton(
-                child: Text(
-                  "Back",
-                  style: TextStyle(
-                    color: colorButton,
-                    fontFamily: "Lato",
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pop(
-                    context,
-                  );
-                },
-              ),
-            ],
-          );
-
-          showDialog(context: (context), builder: (context) => alertBox);
-        }
-
         if (e.code == 'network_error') {
           var alertBox = AlertDialogBox(
             title: "Error",
@@ -168,6 +78,183 @@ loginWithFacebook(User _currentUser, BuildContext context) async {
           );
 
           showDialog(context: (context), builder: (context) => alertBox);
+          return;
+        }
+      } catch (e) {
+        var alertBox = AlertDialogBox(
+          title: "Error",
+          content: "Some error occurred. Please try again",
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                "Back",
+                style: TextStyle(
+                  color: colorButton,
+                  fontFamily: "Lato",
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(
+                  context,
+                );
+              },
+            ),
+          ],
+        );
+
+        showDialog(context: (context), builder: (context) => alertBox);
+        return;
+      }
+      profile = jsonDecode(graphResponse.body);
+      if (profile['email'] == null || profile['email'] == "") {
+        var alertBox = AlertDialogBox(
+          title: "Email Not Found",
+          content:
+              "Email is not verified for facebook. You can either verify it first, or use another method of sign up",
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                "Back",
+                style: TextStyle(
+                  color: colorButton,
+                  fontFamily: "Lato",
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(
+                  context,
+                );
+              },
+            ),
+          ],
+        );
+
+        showDialog(context: (context), builder: (context) => alertBox);
+        return;
+      } else {
+        try {
+          AuthCredential credential =
+              FacebookAuthProvider.getCredential(accessToken: token);
+
+          final FirebaseUser user =
+              await FirebaseAuth.instance.signInWithCredential(credential);
+
+          final FirebaseUser currentUser =
+              await FirebaseAuth.instance.currentUser();
+
+          assert(currentUser != null);
+
+          if (user.uid == currentUser.uid) {
+            // To check if the user already exists in firebase
+            DocumentSnapshot doc = await users.document(user.uid).get();
+
+            // if user does not exists
+            if (!doc.exists) {
+              // final graphResponse = await http.get(
+              //     'https://graph.facebook.com/v2.12/me?fields=name,picture,email,birthday&access_token=$token');
+              //
+              // // Fetching the body which contains the required fields
+              // final profile = jsonDecode(graphResponse.body);
+
+              // Correcting the date format to the required format
+              String birthday = profile['birthday'];
+              birthday = birthday.substring(3, 5) +
+                  "/" +
+                  birthday.substring(0, 2) +
+                  birthday.substring(5);
+
+              // Creating a user from the information in the body
+              User curUser = User(
+                  fname: profile['name'].split(" ")[0],
+                  lname: profile['name'].split(" ").length == 2
+                      ? profile['name'].split(" ")[1]
+                      : "",
+                  dob: birthday,
+                  email: profile['email'],
+                  lollarAmount: 100,
+                  socialStanding: 2,
+                  photoUrl: profile["picture"]["data"]["url"]);
+
+              Navigator.pop(context);
+
+              return Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      settings: RouteSettings(name: "Profile_pic_page"),
+                      builder: (BuildContext context) =>
+                          UserInfoFacebook(currentUser: curUser)),
+                  (Route<dynamic> route) => false);
+            }
+
+            // if user already exists, we go to the landing page directly
+
+            Navigator.pop(context);
+
+            return Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                    settings: RouteSettings(name: "Landing_Page"),
+                    builder: (BuildContext context) => BottomNavBar(
+                          currentUser: _currentUser,
+                          isNewUser: false,
+                          sign_in_mode: "Facebook_sign_in",
+                        )),
+                (Route<dynamic> route) => false);
+          }
+        } on PlatformException catch (e) {
+          if (e.code == 'ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL') {
+            var alertBox = AlertDialogBox(
+              title: "Error",
+              content:
+                  "This id has been already used with a different provider. Please use a different id or sign-in with the different provider",
+              actions: <Widget>[
+                FlatButton(
+                  child: Text(
+                    "Back",
+                    style: TextStyle(
+                      color: colorButton,
+                      fontFamily: "Lato",
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(
+                      context,
+                    );
+                  },
+                ),
+              ],
+            );
+
+            showDialog(context: (context), builder: (context) => alertBox);
+          }
+
+          if (e.code == 'network_error') {
+            var alertBox = AlertDialogBox(
+              title: "Error",
+              content:
+                  "We are unable to contact our servers. Please check your internet connection.",
+              actions: <Widget>[
+                FlatButton(
+                  child: Text(
+                    "Back",
+                    style: TextStyle(
+                      color: colorButton,
+                      fontFamily: "Lato",
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(
+                      context,
+                    );
+                  },
+                ),
+              ],
+            );
+
+            showDialog(context: (context), builder: (context) => alertBox);
+          }
         }
       }
 
@@ -337,11 +424,13 @@ loginWithGoogle(User _currentUser, BuildContext context) async {
 
     final GoogleSignInAccount guser = googleSignIn.currentUser;
 
-    Inf inf = await getGenderBirthday();
-    print(inf.gender);
-    print(inf.dob);
     // If user does not exists
     if (!doc.exists) {
+      print("Hello");
+      Inf inf = await getGenderBirthday();
+      print(inf.gender);
+      print(inf.dob);
+
       print(guser.photoUrl);
       print(guser.displayName);
       User curUser = User(

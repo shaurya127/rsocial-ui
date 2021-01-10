@@ -15,7 +15,7 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
       context,
       MaterialPageRoute(
         builder: (context) => Profile(
-          currentUser:curUser,
+          currentUser: curUser,
           photoUrl: photourl,
           user: user,
         ),
@@ -61,13 +61,13 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
                 width: 45,
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                        image: NetworkImage(photoUrl), fit: BoxFit.cover),
+                        image: photoUrl != ""
+                            ? NetworkImage(photoUrl)
+                            : AssetImage("images/avatar.jpg"),
+                        fit: BoxFit.cover),
                     shape: BoxShape.circle),
               ),
-              onTap: () => showProfile(
-                  context,
-                  curUser,
-                  curUser.photoUrl),
+              onTap: () => showProfile(context, curUser, curUser.photoUrl),
             ),
             Positioned(
               left: 0,
