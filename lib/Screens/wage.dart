@@ -295,7 +295,7 @@ class _WageState extends State<Wage> {
 
       Post post = Post(
           id: uid,
-          storyText: investmentstoryText,
+          storyText: investmentstoryText.trim(),
           investedWith: idSelectedList,
           investedAmount: investmentAmount,
           duration: isOne ? 1 : 7,
@@ -1215,7 +1215,7 @@ class _WageState extends State<Wage> {
                                 text: "Time to Brag",
                                 onPressed: () {
                                   storytext = textController.text;
-                                  createPost(storytext, list);
+                                  createPost(storytext.trim(), list);
                                 },
                               )
                             ],
