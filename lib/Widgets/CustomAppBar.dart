@@ -9,7 +9,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../user.dart';
 
 AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
-    String socialStanding) {
+    String socialStanding,
+    [bool canShowProfile = true]) {
   showProfile(BuildContext context, User user, String photourl) {
     Navigator.push(
       context,
@@ -61,13 +62,16 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
                 width: 45,
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                        image: photoUrl != ""
-                            ? NetworkImage(photoUrl)
+                        image: curUser.photoUrl != ""
+                            ? NetworkImage(curUser.photoUrl)
                             : AssetImage("images/avatar.jpg"),
                         fit: BoxFit.cover),
                     shape: BoxShape.circle),
               ),
-              onTap: () => showProfile(context, curUser, curUser.photoUrl),
+              onTap: () {
+                if (canShowProfile)
+                  showProfile(context, curUser, curUser.photoUrl);
+              },
             ),
             Positioned(
               left: 0,

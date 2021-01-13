@@ -41,33 +41,34 @@ class _ProfilePicPageState extends State<ProfilePicPage> {
         PickedFile pickedFile = await ImagePicker().getImage(
           source: ImageSource.gallery,
         );
+        if (pickedFile != null) {
+          final File file = File(pickedFile.path);
+          if (file != null) {
+            if (file.lengthSync() > 5000000) {
+              print("not allowed");
+              var alertBox = AlertDialogBox(
+                title: 'Error',
+                content: 'Images must be less than 5MB',
+                actions: <Widget>[
+                  FlatButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Back'),
+                  )
+                ],
+              );
+              showDialog(context: context, builder: (context) => alertBox);
+              return;
+            }
 
-        final File file = File(pickedFile.path);
-        if (file != null) {
-          if (file.lengthSync() > 5000000) {
-            print("not allowed");
-            var alertBox = AlertDialogBox(
-              title: 'Error',
-              content: 'Images must be less than 5MB',
-              actions: <Widget>[
-                FlatButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('Back'),
-                )
-              ],
-            );
-            showDialog(context: context, builder: (context) => alertBox);
-            return;
+            this.file = file;
+            final bytes = file.readAsBytesSync();
+            print(base64Encode(bytes));
+            this.encodedFile = base64Encode(bytes);
+            print("This is encoded file:  ${this.encodedFile}");
+            setState(() {});
           }
-
-          this.file = file;
-          final bytes = file.readAsBytesSync();
-          print(base64Encode(bytes));
-          this.encodedFile = base64Encode(bytes);
-          print("This is encoded file:  ${this.encodedFile}");
-          setState(() {});
         }
       } on PlatformException catch (e) {
         if (e.code == 'photo_access_denied') {

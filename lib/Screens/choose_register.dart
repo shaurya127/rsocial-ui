@@ -70,7 +70,7 @@ class _ChooseRegisterState extends State<ChooseRegister> {
                     // ),
                     Container(
                       child: SvgPicture.asset(
-                        "images/rsocial-text.svg",
+                        "images/rsocial-logo.svg",
                         height: 90,
                       ),
                     ),

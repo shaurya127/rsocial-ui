@@ -393,7 +393,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       final jsonUser = jsonDecode(response.body);
       var body = jsonUser['body'];
       var body1 = jsonDecode(body);
-      //print("body is $body");
+      print("body is $body");
       //print(body1);
       var msg = body1['message'];
       //print(msg.length);

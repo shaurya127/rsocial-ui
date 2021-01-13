@@ -526,6 +526,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                           ),
                           title: Text(
                             "${widget.userPost.user.fname} ${widget.userPost.user.lname}",
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               //fontWeight: FontWeight.bold,
                               fontFamily: "Lato",
@@ -538,85 +539,103 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                               widget.userPost.investedWithUser != []
                                   ? Row(
                                       children: <Widget>[
-                                        Text(
-                                          "Investing with ",
-                                          style: TextStyle(
-                                            fontFamily: "Lato",
-                                            fontSize: 12,
-                                            color: subtitile,
-                                          ),
-                                        ),
                                         GestureDetector(
                                           onTap: () {
-                                            if (widget.userPost.investedWithUser
-                                                    .length >=
-                                                2)
-                                              Navigator.push(
-                                                  context,
-                                                  PageTransition(
-                                                      // settings: RouteSettings(
-                                                      //     name: "Login_Page"),
-                                                      type: PageTransitionType
-                                                          .fade,
-                                                      child: InvestedWithPage(
-                                                        investedWithUser: this
-                                                            .investedWithUser,
-                                                        curUser: widget.curUser,
-                                                      )));
-                                            else
-                                              Navigator.push(
-                                                  context,
-                                                  PageTransition(
+                                            Navigator.push(
+                                                context,
+                                                PageTransition(
                                                     // settings: RouteSettings(
                                                     //     name: "Login_Page"),
                                                     type:
                                                         PageTransitionType.fade,
-                                                    child: Profile(
-                                                      currentUser:
-                                                          widget.curUser,
-                                                      photoUrl:
-                                                          investedWithUser[0]
-                                                              .photoUrl,
-                                                      user: investedWithUser[0],
-                                                    ),
-                                                  ));
+                                                    child: InvestedWithPage(
+                                                      investedWithUser:
+                                                          this.investedWithUser,
+                                                      curUser: widget.curUser,
+                                                    )));
                                           },
                                           child: Text(
-                                            (widget.userPost.investedWithUser[0]
-                                                                .fname +
-                                                            " " +
-                                                            widget
-                                                                .userPost
-                                                                .investedWithUser[
-                                                                    0]
-                                                                .lname)
-                                                        .length <
-                                                    11
-                                                ? "${widget.userPost.investedWithUser[0].fname} ${widget.userPost.investedWithUser[0].lname}"
-                                                : (widget
-                                                                .userPost
-                                                                .investedWithUser[
-                                                                    0]
-                                                                .fname +
-                                                            " " +
-                                                            widget
-                                                                .userPost
-                                                                .investedWithUser[
-                                                                    0]
-                                                                .lname)
-                                                        .substring(0, 7) +
-                                                    ".",
+                                            "Invested ${(double.parse(widget.userPost.investedAmount) / 1000).toString() + ' k'} with ${widget.userPost.investedWithUser.length} people",
+                                            overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                               fontFamily: "Lato",
                                               fontSize: 12,
                                               color: subtitile,
                                             ),
                                           ),
-                                        )
+                                        ),
+                                        // GestureDetector(
+                                        //   onTap: () {
+                                        //     if (widget.userPost.investedWithUser
+                                        //             .length >=
+                                        //         2)
+                                        //       Navigator.push(
+                                        //           context,
+                                        //           PageTransition(
+                                        //               // settings: RouteSettings(
+                                        //               //     name: "Login_Page"),
+                                        //               type: PageTransitionType
+                                        //                   .fade,
+                                        //               child: InvestedWithPage(
+                                        //                 investedWithUser: this
+                                        //                     .investedWithUser,
+                                        //                 curUser: widget.curUser,
+                                        //               )));
+                                        //     else
+                                        //       Navigator.push(
+                                        //           context,
+                                        //           PageTransition(
+                                        //             // settings: RouteSettings(
+                                        //             //     name: "Login_Page"),
+                                        //             type:
+                                        //                 PageTransitionType.fade,
+                                        //             child: Profile(
+                                        //               currentUser:
+                                        //                   widget.curUser,
+                                        //               photoUrl:
+                                        //                   investedWithUser[0]
+                                        //                       .photoUrl,
+                                        //               user: investedWithUser[0],
+                                        //             ),
+                                        //           ));
+                                        //   },
+                                        //   child: Text(
+                                        //     (widget.userPost.investedWithUser[0]
+                                        //                         .fname +
+                                        //                     " " +
+                                        //                     widget
+                                        //                         .userPost
+                                        //                         .investedWithUser[
+                                        //                             0]
+                                        //                         .lname)
+                                        //                 .length <
+                                        //             11
+                                        //         ? "${widget.userPost.investedWithUser[0].fname} ${widget.userPost.investedWithUser[0].lname}"
+                                        //         : (widget
+                                        //                         .userPost
+                                        //                         .investedWithUser[
+                                        //                             0]
+                                        //                         .fname +
+                                        //                     " " +
+                                        //                     widget
+                                        //                         .userPost
+                                        //                         .investedWithUser[
+                                        //                             0]
+                                        //                         .lname)
+                                        //                 .substring(0, 7) +
+                                        //             ".",
+                                        //     style: TextStyle(
+                                        //       fontFamily: "Lato",
+                                        //       fontSize: 12,
+                                        //       color: subtitile,
+                                        //     ),
+                                        //   ),
+                                        // )
                                       ],
                                     )
                                   : Text(
-                                      "Investing alone",
+                                      "Invested ${(double.parse(widget.userPost.investedAmount) / 1000).toString() + ' k'} alone",
+                                      overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         fontFamily: "Lato",
                                         fontSize: 12,
@@ -626,31 +645,31 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                               SizedBox(
                                 width: 2,
                               ),
-                              widget.userPost.investedWithUser.length >= 2
-                                  ? GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            PageTransition(
-                                                // settings: RouteSettings(
-                                                //     name: "Login_Page"),
-                                                type: PageTransitionType.fade,
-                                                child: InvestedWithPage(
-                                                  investedWithUser:
-                                                      this.investedWithUser,
-                                                  curUser: widget.curUser,
-                                                )));
-                                      },
-                                      child: Text(
-                                        "+ ${widget.userPost.investedWithUser.length - 1}",
-                                        style: TextStyle(
-                                          fontFamily: "Lato",
-                                          fontSize: 12,
-                                          color: colorButton,
-                                        ),
-                                      ),
-                                    )
-                                  : SizedBox.shrink()
+                              // widget.userPost.investedWithUser.length >= 2
+                              //     ? GestureDetector(
+                              //         onTap: () {
+                              //           Navigator.push(
+                              //               context,
+                              //               PageTransition(
+                              //                   // settings: RouteSettings(
+                              //                   //     name: "Login_Page"),
+                              //                   type: PageTransitionType.fade,
+                              //                   child: InvestedWithPage(
+                              //                     investedWithUser:
+                              //                         this.investedWithUser,
+                              //                     curUser: widget.curUser,
+                              //                   )));
+                              //         },
+                              //         child: Text(
+                              //           "+ ${widget.userPost.investedWithUser.length - 1}",
+                              //           style: TextStyle(
+                              //             fontFamily: "Lato",
+                              //             fontSize: 12,
+                              //             color: colorButton,
+                              //           ),
+                              //         ),
+                              //       )
+                              //     : SizedBox.shrink()
                             ],
                           ),
                         ),
@@ -659,6 +678,49 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
+                    widget.userPost.storyType == "Wage"
+                        ? SizedBox()
+                        : SizedBox.shrink(),
+                    // : Column(
+                    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //     crossAxisAlignment: CrossAxisAlignment.center,
+                    //     children: <Widget>[
+                    //       Row(
+                    //         children: <Widget>[
+                    //           SvgPicture.asset(
+                    //             "images/coins.svg",
+                    //             color: colorCoins,
+                    //           ),
+                    //           Container(
+                    //             child: Text(
+                    //               "Invested",
+                    //               style: TextStyle(
+                    //                   fontFamily: "Lato",
+                    //                   fontSize: 12,
+                    //                   color: subtitile),
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //       SizedBox(
+                    //         height: 6,
+                    //       ),
+                    //       Container(
+                    //         child: Text(
+                    //           "${widget.userPost.investedAmount}",
+                    //           style: TextStyle(
+                    //             fontFamily: "Lato",
+                    //             fontSize: 12,
+                    //             color: Color(0xff4DBAE6),
+                    //           ),
+                    //         ),
+                    //         //transform: Matrix4.translationValues(-35, 0.0, 0.0),
+                    //       ),
+                    //     ],
+                    //   ),
+                    SizedBox(
+                      width: 0,
+                    ),
                     widget.userPost.storyType == "Wage"
                         ? SizedBox()
                         : Column(
@@ -672,12 +734,14 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                     color: colorCoins,
                                   ),
                                   Container(
+                                    //transform: Matrix4.translationValues(-38, 0.0, 0.0),
                                     child: Text(
-                                      "Invested",
+                                      "Profit",
                                       style: TextStyle(
-                                          fontFamily: "Lato",
-                                          fontSize: 12,
-                                          color: subtitile),
+                                        fontFamily: "Lato",
+                                        fontSize: 12,
+                                        color: subtitile,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -687,58 +751,21 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                               ),
                               Container(
                                 child: Text(
-                                  "${widget.userPost.investedAmount}",
+                                  "500",
                                   style: TextStyle(
                                     fontFamily: "Lato",
                                     fontSize: 12,
-                                    color: Color(0xff4DBAE6),
+                                    color: Color(0xff37B44B),
                                   ),
+                                  //     TextStyle(
+                                  //     fontSize: 12,
+                                  //     color: Color(0xff37B44B)
+                                  // ),
                                 ),
                                 //transform: Matrix4.translationValues(-35, 0.0, 0.0),
                               ),
                             ],
                           ),
-                    SizedBox(
-                      width: 14,
-                    ),
-                    widget.userPost.storyType == "Wage"
-                        ? SizedBox()
-                        : SizedBox(),
-                    // Column(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //   crossAxisAlignment: CrossAxisAlignment.center,
-                    //   children: <Widget>[
-                    //     Row(
-                    //       children: <Widget>[
-                    //         SvgPicture.asset("images/coins.svg",color: colorCoins,),
-                    //
-                    //         Container(
-                    //           //transform: Matrix4.translationValues(-38, 0.0, 0.0),
-                    //           child: Text("Profit",
-                    //             style: TextStyle(
-                    //               fontFamily: "Lato",
-                    //               fontSize:12,color:subtitile,
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       ],
-                    //     ),
-                    //     SizedBox(height: 6,),
-                    //     Container(
-                    //       child: Text("500",
-                    //         style: TextStyle(
-                    //           fontFamily: "Lato",
-                    //           fontSize:12,color:Color(0xff37B44B),
-                    //         ),
-                    //     //     TextStyle(
-                    //     //     fontSize: 12,
-                    //     //     color: Color(0xff37B44B)
-                    //     // ),
-                    //       ),
-                    //       //transform: Matrix4.translationValues(-35, 0.0, 0.0),
-                    //     ),
-                    //   ],
-                    // ),
                     SizedBox(
                       width: 14,
                     ),
@@ -840,10 +867,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                     whatever: whatevers,
                                   )));
                         },
-                        child: SvgPicture.asset(
-                          "images/rsocial_punch_blue.svg",
-                          height: 23,
-                        ),
+                        child: SvgPicture.asset("images/rsocial_punch_blue.svg",
+                            height: 23, fit: BoxFit.cover),
                       ),
                     //SizedBox(width: 14,),
                     Icon(
@@ -1264,7 +1289,9 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                           fit: BoxFit.cover,
                                         )
                                       : SvgPicture.asset(
-                                          "images/rsocial_punch_outline.svg"),
+                                          "images/rsocial_punch_outline.svg",
+                                          fit: BoxFit.cover,
+                                        ),
                                 ),
                                 SizedBox(
                                   height: 4 -
@@ -1315,7 +1342,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                             fit: BoxFit.cover,
                                           )
                                         : SvgPicture.asset(
-                                            "images/rsocial_punch_outline.svg"),
+                                            "images/rsocial_punch_outline.svg",
+                                            fit: BoxFit.cover),
                                   ),
                                   SizedBox(
                                     height: 4 -

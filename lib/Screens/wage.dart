@@ -83,38 +83,41 @@ class _WageState extends State<Wage> {
         maxHeight: 675,
         maxWidth: 960,
       );
+      if (pickedFile != null) {
+        final File file = File(pickedFile.path);
+        if (file != null) {
+          print("File size");
+          print(file.lengthSync());
 
-      final File file = File(pickedFile.path);
-      if (file != null) {
-        print("File size");
-        print(file.lengthSync());
+          if (file.lengthSync() > 5000000) {
+            print("not allowed");
+            var alertBox = AlertDialogBox(
+              title: 'Error',
+              content: 'Images must be less than 5MB',
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Back'),
+                )
+              ],
+            );
+            showDialog(context: context, builder: (context) => alertBox);
+            return;
+          }
 
-        if (file.lengthSync() > 5000000) {
-          print("not allowed");
-          var alertBox = AlertDialogBox(
-            title: 'Error',
-            content: 'Images must be less than 5MB',
-            actions: <Widget>[
-              FlatButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('Back'),
-              )
-            ],
-          );
-          showDialog(context: context, builder: (context) => alertBox);
-          return;
+          final bytes = file.readAsBytesSync();
+          String img64 = base64Encode(bytes);
+          setState(() {
+            orientation == "wage"
+                ? fileList.add(file)
+                : investmentfileList.add(file);
+            orientation == "wage"
+                ? list.add(img64)
+                : selectedImgList.add(img64);
+          });
         }
-
-        final bytes = file.readAsBytesSync();
-        String img64 = base64Encode(bytes);
-        setState(() {
-          orientation == "wage"
-              ? fileList.add(file)
-              : investmentfileList.add(file);
-          orientation == "wage" ? list.add(img64) : selectedImgList.add(img64);
-        });
       }
     } else {
       var alertBox = AlertDialogBox(
@@ -150,38 +153,39 @@ class _WageState extends State<Wage> {
           maxHeight: 675,
           maxWidth: 960,
         );
-
-        final File file = File(pickedFile.path);
-        if (file != null) {
-          print("File size");
-          print(file.lengthSync());
-          if (file.lengthSync() > 5000000) {
-            print("not allowed");
-            var alertBox = AlertDialogBox(
-              title: 'Error',
-              content: 'Images must be less than 5MB',
-              actions: <Widget>[
-                FlatButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('Back'),
-                )
-              ],
-            );
-            showDialog(context: context, builder: (context) => alertBox);
-            return;
+        if (pickedFile != null) {
+          final File file = File(pickedFile.path);
+          if (file != null) {
+            print("File size");
+            print(file.lengthSync());
+            if (file.lengthSync() > 5000000) {
+              print("not allowed");
+              var alertBox = AlertDialogBox(
+                title: 'Error',
+                content: 'Images must be less than 5MB',
+                actions: <Widget>[
+                  FlatButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Back'),
+                  )
+                ],
+              );
+              showDialog(context: context, builder: (context) => alertBox);
+              return;
+            }
+            final bytes = file.readAsBytesSync();
+            String img64 = base64Encode(bytes);
+            setState(() {
+              orientation == "wage"
+                  ? fileList.add(file)
+                  : investmentfileList.add(file);
+              orientation == "wage"
+                  ? list.add(img64)
+                  : selectedImgList.add(img64);
+            });
           }
-          final bytes = file.readAsBytesSync();
-          String img64 = base64Encode(bytes);
-          setState(() {
-            orientation == "wage"
-                ? fileList.add(file)
-                : investmentfileList.add(file);
-            orientation == "wage"
-                ? list.add(img64)
-                : selectedImgList.add(img64);
-          });
         }
       } on PlatformException catch (e) {
         if (e.code == 'photo_access_denied') {

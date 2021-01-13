@@ -300,25 +300,24 @@ class _InvestPostTileState extends State<InvestPostTile>
 
       // setState(() {
       String prevrxn = rxn;
-      if(prevrxn=='loved')
-        loved.removeWhere((element) => element.id==curUser.id);
-      else if(prevrxn=='liked')
-        liked.removeWhere((element) => element.id==curUser.id);
-      else if(prevrxn=='whatever')
-        whatever.removeWhere((element) => element.id==curUser.id);
-      else if(prevrxn=='hated')
-        hated.removeWhere((element) => element.id==curUser.id);
+      if (prevrxn == 'loved')
+        loved.removeWhere((element) => element.id == curUser.id);
+      else if (prevrxn == 'liked')
+        liked.removeWhere((element) => element.id == curUser.id);
+      else if (prevrxn == 'whatever')
+        whatever.removeWhere((element) => element.id == curUser.id);
+      else if (prevrxn == 'hated')
+        hated.removeWhere((element) => element.id == curUser.id);
 
       rxn = reactn;
 
-      if(reactn=='loved')
+      if (reactn == 'loved')
         loved.add(curUser);
-      else if(reactn=='liked')
+      else if (reactn == 'liked')
         liked.add(curUser);
-      else if(reactn=='whatever')
+      else if (reactn == 'whatever')
         whatever.add(curUser);
-      else if(reactn=='hated')
-        hated.add(curUser);
+      else if (reactn == 'hated') hated.add(curUser);
       //print("this is my reaction $rxn");
       bool inLoop = true;
       for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
@@ -575,6 +574,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                     ),
                     title: Text(
                       "${widget.userPost.user.fname} ${widget.userPost.user.lname}",
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         //fontWeight: FontWeight.bold,
                         fontFamily: "Lato",
@@ -587,61 +587,79 @@ class _InvestPostTileState extends State<InvestPostTile>
                         widget.userPost.investedWithUser != []
                             ? Row(
                                 children: <Widget>[
-                                  Text(
-                                    "Investing with ",
-                                    style: TextStyle(
-                                      fontFamily: "Lato",
-                                      fontSize: 12,
-                                      color: subtitile,
-                                    ),
-                                  ),
                                   GestureDetector(
                                     onTap: () {
                                       Navigator.push(
                                           context,
                                           PageTransition(
-                                            // settings: RouteSettings(
-                                            //     name: "Login_Page"),
-                                            type: PageTransitionType.fade,
-                                            child: Profile(
-                                              currentUser: widget.curUser,
-                                              photoUrl:
-                                                  investedWithUser[0].photoUrl,
-                                              user: investedWithUser[0],
-                                            ),
-                                          ));
+                                              // settings: RouteSettings(
+                                              //     name: "Login_Page"),
+                                              type: PageTransitionType.fade,
+                                              child: InvestedWithPage(
+                                                investedWithUser:
+                                                    this.investedWithUser,
+                                                curUser: widget.curUser,
+                                              )));
                                     },
                                     child: Text(
-                                      (widget.userPost.investedWithUser[0]
-                                                          .fname +
-                                                      " " +
-                                                      widget
-                                                          .userPost
-                                                          .investedWithUser[0]
-                                                          .lname)
-                                                  .length <
-                                              11
-                                          ? "${widget.userPost.investedWithUser[0].fname} ${widget.userPost.investedWithUser[0].lname}"
-                                          : (widget.userPost.investedWithUser[0]
-                                                          .fname +
-                                                      " " +
-                                                      widget
-                                                          .userPost
-                                                          .investedWithUser[0]
-                                                          .lname)
-                                                  .substring(0, 7) +
-                                              ".",
+                                      "Invested ${(double.parse(widget.userPost.investedAmount) / 1000).toString() + ' k'} with ${widget.userPost.investedWithUser.length} people",
+                                      overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         fontFamily: "Lato",
                                         fontSize: 12,
                                         color: subtitile,
                                       ),
                                     ),
-                                  )
+                                  ),
+                                  // GestureDetector(
+                                  //   onTap: () {
+                                  //     Navigator.push(
+                                  //         context,
+                                  //         PageTransition(
+                                  //           // settings: RouteSettings(
+                                  //           //     name: "Login_Page"),
+                                  //           type: PageTransitionType.fade,
+                                  //           child: Profile(
+                                  //             currentUser: widget.curUser,
+                                  //             photoUrl:
+                                  //                 investedWithUser[0].photoUrl,
+                                  //             user: investedWithUser[0],
+                                  //           ),
+                                  //         ));
+                                  //   },
+                                  //   child: Text(
+                                  //     // (widget.userPost.investedWithUser[0]
+                                  //     //                     .fname +
+                                  //     //                 " " +
+                                  //     //                 widget
+                                  //     //                     .userPost
+                                  //     //                     .investedWithUser[0]
+                                  //     //                     .lname)
+                                  //     //             .length <
+                                  //     //         11
+                                  //     //     ? "${widget.userPost.investedWithUser[0].fname} ${widget.userPost.investedWithUser[0].lname}"
+                                  //     //     : (widget.userPost.investedWithUser[0]
+                                  //     //                     .fname +
+                                  //     //                 " " +
+                                  //     //                 widget
+                                  //     //                     .userPost
+                                  //     //                     .investedWithUser[0]
+                                  //     //                     .lname)
+                                  //     //             .substring(0, 7) +
+                                  //     //         ".",
+                                  //     "${widget.userPost.investedWithUser.length} people",
+                                  //     style: TextStyle(
+                                  //       fontFamily: "Lato",
+                                  //       fontSize: 12,
+                                  //       color: subtitile,
+                                  //     ),
+                                  //   ),
+                                  // )
                                 ],
                               )
                             : Text(
-                                "Investing alone",
+                                "Invested ${(double.parse(widget.userPost.investedAmount) / 1000).toString() + ' k'} alone",
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontFamily: "Lato",
                                   fontSize: 12,
@@ -651,31 +669,31 @@ class _InvestPostTileState extends State<InvestPostTile>
                         SizedBox(
                           width: 2,
                         ),
-                        widget.userPost.investedWithUser.length >= 2
-                            ? GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      PageTransition(
-                                          // settings: RouteSettings(
-                                          //     name: "Login_Page"),
-                                          type: PageTransitionType.fade,
-                                          child: InvestedWithPage(
-                                            investedWithUser:
-                                                this.investedWithUser,
-                                            curUser: widget.curUser,
-                                          )));
-                                },
-                                child: Text(
-                                  "+ ${widget.userPost.investedWithUser.length - 1}",
-                                  style: TextStyle(
-                                    fontFamily: "Lato",
-                                    fontSize: 12,
-                                    color: colorButton,
-                                  ),
-                                ),
-                              )
-                            : SizedBox.shrink()
+                        // widget.userPost.investedWithUser.length >= 2
+                        //     ? GestureDetector(
+                        //         onTap: () {
+                        //           Navigator.push(
+                        //               context,
+                        //               PageTransition(
+                        //                   // settings: RouteSettings(
+                        //                   //     name: "Login_Page"),
+                        //                   type: PageTransitionType.fade,
+                        //                   child: InvestedWithPage(
+                        //                     investedWithUser:
+                        //                         this.investedWithUser,
+                        //                     curUser: widget.curUser,
+                        //                   )));
+                        //         },
+                        //         child: Text(
+                        //           "+ ${widget.userPost.investedWithUser.length - 1}",
+                        //           style: TextStyle(
+                        //             fontFamily: "Lato",
+                        //             fontSize: 12,
+                        //             color: colorButton,
+                        //           ),
+                        //         ),
+                        //       )
+                        //     : SizedBox.shrink()
                       ],
                     ),
                   ),
@@ -684,6 +702,46 @@ class _InvestPostTileState extends State<InvestPostTile>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
+                    // Column(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   crossAxisAlignment: CrossAxisAlignment.center,
+                    //   children: <Widget>[
+                    //     Row(
+                    //       children: <Widget>[
+                    //         SvgPicture.asset(
+                    //           "images/coins.svg",
+                    //           color: colorCoins,
+                    //         ),
+                    //         Container(
+                    //           child: Text(
+                    //             "Invested",
+                    //             style: TextStyle(
+                    //                 fontFamily: "Lato",
+                    //                 fontSize: 12,
+                    //                 color: subtitile),
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //     SizedBox(
+                    //       height: 6,
+                    //     ),
+                    //     Container(
+                    //       child: Text(
+                    //         "${widget.userPost.investedAmount}",
+                    //         style: TextStyle(
+                    //           fontFamily: "Lato",
+                    //           fontSize: 12,
+                    //           color: Color(0xff4DBAE6),
+                    //         ),
+                    //       ),
+                    //       //transform: Matrix4.translationValues(-35, 0.0, 0.0),
+                    //     ),
+                    //   ],
+                    // ),
+                    SizedBox(
+                      width: 0,
+                    ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -695,12 +753,14 @@ class _InvestPostTileState extends State<InvestPostTile>
                               color: colorCoins,
                             ),
                             Container(
+                              //transform: Matrix4.translationValues(-38, 0.0, 0.0),
                               child: Text(
-                                "Invested",
+                                "Profit",
                                 style: TextStyle(
-                                    fontFamily: "Lato",
-                                    fontSize: 12,
-                                    color: subtitile),
+                                  fontFamily: "Lato",
+                                  fontSize: 12,
+                                  color: subtitile,
+                                ),
                               ),
                             ),
                           ],
@@ -710,55 +770,21 @@ class _InvestPostTileState extends State<InvestPostTile>
                         ),
                         Container(
                           child: Text(
-                            "${widget.userPost.investedAmount}",
+                            "500",
                             style: TextStyle(
                               fontFamily: "Lato",
                               fontSize: 12,
-                              color: Color(0xff4DBAE6),
+                              color: Color(0xff37B44B),
                             ),
+                            //     TextStyle(
+                            //     fontSize: 12,
+                            //     color: Color(0xff37B44B)
+                            // ),
                           ),
                           //transform: Matrix4.translationValues(-35, 0.0, 0.0),
                         ),
                       ],
                     ),
-                    SizedBox(
-                      width: 14,
-                    ),
-                    // Column(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //   crossAxisAlignment: CrossAxisAlignment.center,
-                    //   children: <Widget>[
-                    //     Row(
-                    //       children: <Widget>[
-                    //         SvgPicture.asset("images/coins.svg",color: colorCoins,),
-                    //
-                    //         Container(
-                    //           //transform: Matrix4.translationValues(-38, 0.0, 0.0),
-                    //           child: Text("Profit",
-                    //             style: TextStyle(
-                    //               fontFamily: "Lato",
-                    //               fontSize:12,color:subtitile,
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       ],
-                    //     ),
-                    //     SizedBox(height: 6,),
-                    //     Container(
-                    //       child: Text("500",
-                    //         style: TextStyle(
-                    //           fontFamily: "Lato",
-                    //           fontSize:12,color:Color(0xff37B44B),
-                    //         ),
-                    //     //     TextStyle(
-                    //     //     fontSize: 12,
-                    //     //     color: Color(0xff37B44B)
-                    //     // ),
-                    //       ),
-                    //       //transform: Matrix4.translationValues(-35, 0.0, 0.0),
-                    //     ),
-                    //   ],
-                    // ),
                     SizedBox(
                       width: 14,
                     ),
@@ -863,6 +889,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                         child: SvgPicture.asset(
                           "images/rsocial_punch_blue.svg",
                           height: 23,
+                          fit: BoxFit.cover,
                         ),
                       ),
                     //SizedBox(width: 14,),
@@ -908,59 +935,81 @@ class _InvestPostTileState extends State<InvestPostTile>
                 //textAlign: TextAlign.left,
               ),*/
                     ),
-            Padding(
-                padding: widget.userPost.storyText == null
-                    ? EdgeInsets.only(top: 0, bottom: 15)
-                    : EdgeInsets.only(bottom: 15, top: 6),
-                child: Container(
-                    height: widget.userPost.fileUpload.length != 0 ? 250 : 0,
-                    decoration:
-                        BoxDecoration(borderRadius: BorderRadius.circular(8)),
-                    child: isLoading == false
-                        ? Swiper(
-                            loop: false,
-                            pagination: SwiperPagination(),
-                            scrollDirection: Axis.horizontal,
-                            itemCount: widget.userPost.fileUpload.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Stack(
-                                children: <Widget>[
-                                  Container(
+            widget.userPost.fileUpload.length != 0
+                ? Padding(
+                    padding: widget.userPost.storyText == null
+                        ? EdgeInsets.only(top: 0, bottom: 15)
+                        : EdgeInsets.only(bottom: 15, top: 6),
+                    child: Container(
+                        height:
+                            widget.userPost.fileUpload.length != 0 ? 250 : 0,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8)),
+                        child: isLoading == false
+                            ? (widget.userPost.fileUpload.length > 1
+                                ? Swiper(
+                                    loop: false,
+                                    pagination: SwiperPagination(),
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount:
+                                        widget.userPost.fileUpload.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return Stack(
+                                        children: <Widget>[
+                                          Container(
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                color: Colors.grey
+                                                    .withOpacity(0.2),
+                                                image: DecorationImage(
+                                                    image: NetworkImage(
+                                                      fileList[index],
+                                                    ),
+                                                    fit: BoxFit.cover)),
+                                            height: 250,
+                                          ),
+                                          // Container(
+                                          //   decoration: BoxDecoration(
+                                          //       borderRadius: BorderRadius.only(
+                                          //           bottomRight:
+                                          //           Radius.circular(8)),
+                                          //       color: Colors.red
+                                          //           .withOpacity(0.2)),
+                                          //   child: IconButton(
+                                          //     icon: Icon(
+                                          //       Icons.clear,
+                                          //     ),
+                                          //     onPressed: () {
+                                          //       setState(() {
+                                          //         fileList.removeAt(index);
+                                          //         list.removeAt(index);
+                                          //       });
+                                          //     },
+                                          //   ),
+                                          // )
+                                        ],
+                                      );
+                                    })
+                                : Container(
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(10),
                                         color: Colors.grey.withOpacity(0.2),
                                         image: DecorationImage(
                                             image: NetworkImage(
-                                              fileList[index],
+                                              fileList[0],
                                             ),
                                             fit: BoxFit.cover)),
                                     height: 250,
-                                  ),
-                                  // Container(
-                                  //   decoration: BoxDecoration(
-                                  //       borderRadius: BorderRadius.only(
-                                  //           bottomRight:
-                                  //           Radius.circular(8)),
-                                  //       color: Colors.red
-                                  //           .withOpacity(0.2)),
-                                  //   child: IconButton(
-                                  //     icon: Icon(
-                                  //       Icons.clear,
-                                  //     ),
-                                  //     onPressed: () {
-                                  //       setState(() {
-                                  //         fileList.removeAt(index);
-                                  //         list.removeAt(index);
-                                  //       });
-                                  //     },
-                                  //   ),
-                                  // )
-                                ],
-                              );
-                            })
-                        : Center(
-                            child: CircularProgressIndicator(),
-                          ))),
+                                  ))
+                            : Center(
+                                child: CircularProgressIndicator(),
+                              )))
+                : SizedBox.shrink(),
+            SizedBox(
+              height: widget.userPost.fileUpload.length == 0 ? 10 : 0,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -1266,7 +1315,9 @@ class _InvestPostTileState extends State<InvestPostTile>
                                           fit: BoxFit.cover,
                                         )
                                       : SvgPicture.asset(
-                                          "images/rsocial_punch_outline.svg"),
+                                          "images/rsocial_punch_outline.svg",
+                                          fit: BoxFit.cover,
+                                        ),
                                 ),
                                 SizedBox(
                                   height: 4 -
@@ -1317,7 +1368,9 @@ class _InvestPostTileState extends State<InvestPostTile>
                                             fit: BoxFit.cover,
                                           )
                                         : SvgPicture.asset(
-                                            "images/rsocial_punch_outline.svg"),
+                                            "images/rsocial_punch_outline.svg",
+                                            fit: BoxFit.cover,
+                                          ),
                                   ),
                                   SizedBox(
                                     height: 4 -
