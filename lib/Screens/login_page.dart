@@ -276,7 +276,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           Container(
                             child: SvgPicture.asset(
-                              "images/rsocial-text.svg",
+                              "images/rsocial-logo.svg",
                               height: 90,
                             ),
                           ),

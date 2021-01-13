@@ -32,6 +32,7 @@ import 'package:package_info/package_info.dart';
 
 Map<String, Map<String, int>> m = new Map();
 Map<String, Map<String, int>> mp = new Map();
+
 class Reaction {
   Reaction({
     this.id,
@@ -261,7 +262,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
           counter[prevrxn]--;
           //print("previous reaction is $prevrxn: ${counter[prevrxn]}");
         } else if (prevrxn != "noreact" && prevrxn != rxn) counter[prevrxn]--;
-
       } else {
         // if a user toggles to another reaction we need to
         // decrease the counter of the previous reaction type
@@ -429,7 +429,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   }
 
   Future<Uri> createDynamicLink() async {
-
     var queryParameters = {
       'postid': widget.userPost.id.toString(),
     };
@@ -441,26 +440,25 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     });
 
     final DynamicLinkParameters parameters = DynamicLinkParameters(
-      // This should match firebase but without the username query param
-      uriPrefix: 'https://rsocial.page.link',
-      // This can be whatever you want for the uri, https://yourapp.com/groupinvite?username=$userName
-      link: Uri.parse('https://rsocial.page.link/posts?postid=${widget.userPost.id}&'),
+        // This should match firebase but without the username query param
+        uriPrefix: 'https://rsocial.page.link',
+        // This can be whatever you want for the uri, https://yourapp.com/groupinvite?username=$userName
+        link: Uri.parse(
+            'https://rsocial.page.link/posts?postid=${widget.userPost.id}&'),
+        androidParameters: AndroidParameters(
+          packageName: packageInfo.packageName,
+          minimumVersion: 0,
+        ),
 
-      androidParameters: AndroidParameters(
-        packageName: packageInfo.packageName,
-        minimumVersion: 0,
-      ),
+        // dynamicLinkParametersOptions: DynamicLinkParametersOptions(
+        //   shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short,
+        // ),
 
-      // dynamicLinkParametersOptions: DynamicLinkParametersOptions(
-      //   shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short,
-      // ),
-
-
-      iosParameters: IosParameters(
-        bundleId: packageInfo.packageName,
-        minimumVersion: '0',
-        appStoreId: '123456789',
-      ),
+        iosParameters: IosParameters(
+          bundleId: packageInfo.packageName,
+          minimumVersion: '0',
+          appStoreId: '123456789',
+        ),
         googleAnalyticsParameters: GoogleAnalyticsParameters(
           campaign: 'example-promo',
           medium: 'social',
@@ -470,22 +468,19 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
           providerToken: '123456',
           campaignToken: 'example-promo',
         ),
-
         socialMetaTagParameters: SocialMetaTagParameters(
-            title:'${widget.userPost.user.fname} on RSocial' ,
+            title: '${widget.userPost.user.fname} on RSocial',
             // description: event.post?.excerpt,
-            imageUrl: Uri.parse(widget.userPost.fileUpload[0])
-        ),
-        navigationInfoParameters: NavigationInfoParameters(
-            forcedRedirectEnabled: true
-        )
-
-    );
+            imageUrl: Uri.parse(widget.userPost.fileUpload[0])),
+        navigationInfoParameters:
+            NavigationInfoParameters(forcedRedirectEnabled: true));
 
     final link = await parameters.buildUrl();
-    final ShortDynamicLink shortenedLink = await DynamicLinkParameters.shortenUrl(
+    final ShortDynamicLink shortenedLink =
+        await DynamicLinkParameters.shortenUrl(
       link,
-      DynamicLinkParametersOptions(shortDynamicLinkPathLength: ShortDynamicLinkPathLength.unguessable),
+      DynamicLinkParametersOptions(
+          shortDynamicLinkPathLength: ShortDynamicLinkPathLength.unguessable),
     );
     setState(() {
       //_linkMessage = url;
@@ -501,8 +496,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
         title: 'Hey! checkout this post',
         //text: '${widget.userPost.user.fname} on RSocial',
         linkUrl: uri.toString(),
-        chooserTitle: 'Share this post with'
-    );
+        chooserTitle: 'Share this post with');
   }
 
   @override
@@ -513,7 +507,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
       for (var key in map.keys) rxn = key;
       // print("my reaction is now $rxn ${counter[rxn]}");
       setState(() {
-        counter=map2;
+        counter = map2;
         counter[rxn] = map[rxn];
       });
 
@@ -559,10 +553,11 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   widget.userPost.user,
                                   widget.userPost.user.photoUrl),
                               child: CircleAvatar(
-                                backgroundImage: widget.userPost.user.photoUrl !=
-                                        ""
-                                    ? NetworkImage(widget.userPost.user.photoUrl)
-                                    : AssetImage("images/avatar.jpg"),
+                                backgroundImage:
+                                    widget.userPost.user.photoUrl != ""
+                                        ? NetworkImage(
+                                            widget.userPost.user.photoUrl)
+                                        : AssetImage("images/avatar.jpg"),
                               ),
                             ),
                             title: Text(
@@ -585,14 +580,18 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   widget.userPost.user,
                                   widget.userPost.user.photoUrl),
                               child: CircleAvatar(
-                                backgroundImage: widget.userPost.user.photoUrl !=
-                                        ""
-                                    ? NetworkImage(widget.userPost.user.photoUrl)
-                                    : AssetImage("images/avatar.jpg"),
+                                backgroundImage:
+                                    widget.userPost.user.photoUrl != ""
+                                        ? NetworkImage(
+                                            widget.userPost.user.photoUrl)
+                                        : AssetImage("images/avatar.jpg"),
                               ),
                             ),
+
+                            //),
                             title: Text(
                               "${widget.userPost.user.fname} ${widget.userPost.user.lname}",
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 //fontWeight: FontWeight.bold,
                                 fontFamily: "Lato",
@@ -605,85 +604,36 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                 widget.userPost.investedWithUser != []
                                     ? Row(
                                         children: <Widget>[
-                                          Text(
-                                            "Investing with ",
-                                            style: TextStyle(
-                                              fontFamily: "Lato",
-                                              fontSize: 12,
-                                              color: subtitile,
-                                            ),
-                                          ),
                                           GestureDetector(
                                             onTap: () {
-                                              if (widget.userPost.investedWithUser
-                                                      .length >=
-                                                  2)
-                                                Navigator.push(
-                                                    context,
-                                                    PageTransition(
-                                                        // settings: RouteSettings(
-                                                        //     name: "Login_Page"),
-                                                        type: PageTransitionType
-                                                            .fade,
-                                                        child: InvestedWithPage(
-                                                          investedWithUser: this
-                                                              .investedWithUser,
-                                                          curUser: widget.curUser,
-                                                        )));
-                                              else
-                                                Navigator.push(
-                                                    context,
-                                                    PageTransition(
+                                              Navigator.push(
+                                                  context,
+                                                  PageTransition(
                                                       // settings: RouteSettings(
                                                       //     name: "Login_Page"),
-                                                      type:
-                                                          PageTransitionType.fade,
-                                                      child: Profile(
-                                                        currentUser:
-                                                            widget.curUser,
-                                                        photoUrl:
-                                                            investedWithUser[0]
-                                                                .photoUrl,
-                                                        user: investedWithUser[0],
-                                                      ),
-                                                    ));
+                                                      type: PageTransitionType
+                                                          .fade,
+                                                      child: InvestedWithPage(
+                                                        investedWithUser: this
+                                                            .investedWithUser,
+                                                        curUser: widget.curUser,
+                                                      )));
                                             },
                                             child: Text(
-                                              (widget.userPost.investedWithUser[0]
-                                                                  .fname +
-                                                              " " +
-                                                              widget
-                                                                  .userPost
-                                                                  .investedWithUser[
-                                                                      0]
-                                                                  .lname)
-                                                          .length <
-                                                      11
-                                                  ? "${widget.userPost.investedWithUser[0].fname} ${widget.userPost.investedWithUser[0].lname}"
-                                                  : (widget
-                                                                  .userPost
-                                                                  .investedWithUser[
-                                                                      0]
-                                                                  .fname +
-                                                              " " +
-                                                              widget
-                                                                  .userPost
-                                                                  .investedWithUser[
-                                                                      0]
-                                                                  .lname)
-                                                          .substring(0, 7) +
-                                                      ".",
+                                              "Invested ${(double.parse(widget.userPost.investedAmount) / 1000).toString() + ' k'} with ${widget.userPost.investedWithUser.length} people",
+                                              overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
                                                 fontFamily: "Lato",
                                                 fontSize: 12,
                                                 color: subtitile,
                                               ),
                                             ),
-                                          )
+                                          ),
                                         ],
                                       )
                                     : Text(
-                                        "Investing alone",
+                                        "Invested ${(double.parse(widget.userPost.investedAmount) / 1000).toString() + ' k'} alone",
+                                        overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           fontFamily: "Lato",
                                           fontSize: 12,
@@ -693,39 +643,57 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                 SizedBox(
                                   width: 2,
                                 ),
-                                widget.userPost.investedWithUser.length >= 2
-                                    ? GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              PageTransition(
-                                                  // settings: RouteSettings(
-                                                  //     name: "Login_Page"),
-                                                  type: PageTransitionType.fade,
-                                                  child: InvestedWithPage(
-                                                    investedWithUser:
-                                                        this.investedWithUser,
-                                                    curUser: widget.curUser,
-                                                  )));
-                                        },
-                                        child: Text(
-                                          "+ ${widget.userPost.investedWithUser.length - 1}",
-                                          style: TextStyle(
-                                            fontFamily: "Lato",
-                                            fontSize: 12,
-                                            color: colorButton,
-                                          ),
-                                        ),
-                                      )
-                                    : SizedBox.shrink()
                               ],
                             ),
                           ),
                   ),
-                  //SizedBox(width: 1,),
+                  // //SizedBox(width: 1,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
+                      // widget.userPost.storyType == "Wage"
+                      //     ? SizedBox()
+                      //     : SizedBox.shrink(),
+                      // : Column(
+                      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //     crossAxisAlignment: CrossAxisAlignment.center,
+                      //     children: <Widget>[
+                      //       Row(
+                      //         children: <Widget>[
+                      //           SvgPicture.asset(
+                      //             "images/coins.svg",
+                      //             color: colorCoins,
+                      //           ),
+                      //           Container(
+                      //             child: Text(
+                      //               "Invested",
+                      //               style: TextStyle(
+                      //                   fontFamily: "Lato",
+                      //                   fontSize: 12,
+                      //                   color: subtitile),
+                      //             ),
+                      //           ),
+                      //         ],
+                      //       ),
+                      //       SizedBox(
+                      //         height: 6,
+                      //       ),
+                      //       Container(
+                      //         child: Text(
+                      //           "${widget.userPost.investedAmount}",
+                      //           style: TextStyle(
+                      //             fontFamily: "Lato",
+                      //             fontSize: 12,
+                      //             color: Color(0xff4DBAE6),
+                      //           ),
+                      //         ),
+                      //         //transform: Matrix4.translationValues(-35, 0.0, 0.0),
+                      //       ),
+                      //     ],
+                      //   ),
+                      SizedBox(
+                        width: 0,
+                      ),
                       widget.userPost.storyType == "Wage"
                           ? SizedBox()
                           : Column(
@@ -739,12 +707,14 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                       color: colorCoins,
                                     ),
                                     Container(
+                                      //transform: Matrix4.translationValues(-38, 0.0, 0.0),
                                       child: Text(
-                                        "Invested",
+                                        "Profit",
                                         style: TextStyle(
-                                            fontFamily: "Lato",
-                                            fontSize: 12,
-                                            color: subtitile),
+                                          fontFamily: "Lato",
+                                          fontSize: 12,
+                                          color: subtitile,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -754,58 +724,21 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                 ),
                                 Container(
                                   child: Text(
-                                    "${widget.userPost.investedAmount}",
+                                    "500",
                                     style: TextStyle(
                                       fontFamily: "Lato",
                                       fontSize: 12,
-                                      color: Color(0xff4DBAE6),
+                                      color: Color(0xff37B44B),
                                     ),
+                                    //     TextStyle(
+                                    //     fontSize: 12,
+                                    //     color: Color(0xff37B44B)
+                                    // ),
                                   ),
                                   //transform: Matrix4.translationValues(-35, 0.0, 0.0),
                                 ),
                               ],
                             ),
-                      SizedBox(
-                        width: 14,
-                      ),
-                      widget.userPost.storyType == "Wage"
-                          ? SizedBox()
-                          : SizedBox(),
-                      // Column(
-                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //   crossAxisAlignment: CrossAxisAlignment.center,
-                      //   children: <Widget>[
-                      //     Row(
-                      //       children: <Widget>[
-                      //         SvgPicture.asset("images/coins.svg",color: colorCoins,),
-                      //
-                      //         Container(
-                      //           //transform: Matrix4.translationValues(-38, 0.0, 0.0),
-                      //           child: Text("Profit",
-                      //             style: TextStyle(
-                      //               fontFamily: "Lato",
-                      //               fontSize:12,color:subtitile,
-                      //             ),
-                      //           ),
-                      //         ),
-                      //       ],
-                      //     ),
-                      //     SizedBox(height: 6,),
-                      //     Container(
-                      //       child: Text("500",
-                      //         style: TextStyle(
-                      //           fontFamily: "Lato",
-                      //           fontSize:12,color:Color(0xff37B44B),
-                      //         ),
-                      //     //     TextStyle(
-                      //     //     fontSize: 12,
-                      //     //     color: Color(0xff37B44B)
-                      //     // ),
-                      //       ),
-                      //       //transform: Matrix4.translationValues(-35, 0.0, 0.0),
-                      //     ),
-                      //   ],
-                      // ),
                       SizedBox(
                         width: 14,
                       ),
@@ -914,15 +847,37 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                         ),
                       //SizedBox(width: 14,),
                       GestureDetector(
-                        onTap: ()=>Navigator.push(
+// <<<<<<< HEAD
+//                         onTap: () {
+//                           buildReactionTile();
+//                           Navigator.push(
+//                               context,
+//                               PageTransition(
+//                                   // settings: RouteSettings(
+//                                   //     name: "Login_Page"),
+//                                   type: PageTransitionType.fade,
+//                                   child: Reaction_Info(
+//                                     like: likes,
+//                                     love: love,
+//                                     hate: hates,
+//                                     whatever: whatevers,
+//                                   )));
+//                         },
+//                         child: SvgPicture.asset("images/rsocial_punch_blue.svg",
+//                             height: 23, fit: BoxFit.cover),
+// =======
+                        onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => DisplayPost(postId: widget.userPost.id,))),
+                                builder: (context) => DisplayPost(
+                                      postId: widget.userPost.id,
+                                    ))),
                         child: Icon(
                           Icons.more_vert,
                           color: colorUnselectedBottomNav,
                           size: 30,
                         ),
+//>>>>>>> master
                       ),
                     ],
                   ),
@@ -935,7 +890,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                   )
                 : Padding(
                     padding: const EdgeInsets.only(
-                        bottom: 10, left: 18, right: 18),
+                        top: 12, bottom: 3, left: 3, right: 3),
                     child: Read_More(
                       "${widget.userPost.storyText}",
                       trimLines: 2,
@@ -950,6 +905,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                       ),
                     )
                     /*Text(
+
                 "today was a great day with my cats! ",
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
@@ -964,11 +920,11 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
             widget.userPost.fileUpload.length != 0
                 ? Padding(
                     padding: widget.userPost.storyText == null
-                        ? EdgeInsets.only(top: 0, )
-                        : EdgeInsets.only( top: 6),
+                        ? EdgeInsets.only(top: 0, bottom: 15)
+                        : EdgeInsets.only(bottom: 15, top: 6),
                     child: Container(
                         height:
-                            widget.userPost.fileUpload.length != 0 ? 350 : 0,
+                            widget.userPost.fileUpload.length != 0 ? 250 : 0,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8)),
                         child: isLoading == false
@@ -985,8 +941,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                         children: <Widget>[
                                           Container(
                                             decoration: BoxDecoration(
-                                                // borderRadius:
-                                                //     BorderRadius.circular(10),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
                                                 color: Colors.grey
                                                     .withOpacity(0.2),
                                                 image: DecorationImage(
@@ -994,7 +950,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                                       fileList[index],
                                                     ),
                                                     fit: BoxFit.cover)),
-                                            height: 350,
+                                            height: 250,
                                           ),
                                           // Container(
                                           //   decoration: BoxDecoration(
@@ -1019,23 +975,26 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                       );
                                     })
                                 : Container(
-                          padding: EdgeInsets.symmetric(horizontal: 1),
                                     decoration: BoxDecoration(
-                                        //borderRadius: BorderRadius.circular(10),
+                                        borderRadius: BorderRadius.circular(10),
                                         color: Colors.grey.withOpacity(0.2),
                                         image: DecorationImage(
                                             image: NetworkImage(
                                               fileList[0],
                                             ),
                                             fit: BoxFit.cover)),
-                                    height: 450,
+                                    height: 250,
                                   ))
                             : Center(
                                 child: CircularProgressIndicator(),
                               )))
                 : SizedBox(),
             Padding(
-              padding: EdgeInsets.only(right: 15,left: 15,top: 15,),
+              padding: EdgeInsets.only(
+                right: 15,
+                left: 15,
+                top: 15,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -1090,18 +1049,18 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                             : GestureDetector(
                                 onTap: () => {
                                   reaction('loved')
-                                  //widget.userPost.user.id != widget.curUser.id
-                                  //  ?
-                                  //     ? Fluttertoast.showToast(
-                                  //         msg: "You cannot react on your own post!",
-                                  //         toastLength: Toast.LENGTH_SHORT,
-                                  //         gravity: ToastGravity.BOTTOM,
-                                  //         fontSize: 15)
-                                  //     :
+                                  // widget.userPost.user.id != widget.curUser.id
+                                  //     ?
+                                  // //     ? Fluttertoast.showToast(
+                                  // //         msg: "You cannot react on your own post!",
+                                  // //         toastLength: Toast.LENGTH_SHORT,
+                                  // //         gravity: ToastGravity.BOTTOM,
+                                  // //         fontSize: 15)
+                                  // //     :
                                   // (rxn == 'loved'
                                   //     ? {react("noreact"), counter['loved']--}
                                   //     : {react("loved"), counter['loved']++})
-                                  // : print("not allowed")
+                                  //     : print("not allowed")
                                 },
                                 child: Column(
                                   children: <Widget>[
@@ -1189,15 +1148,15 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   reaction('liked')
                                   // widget.userPost.user.id != widget.curUser.id
                                   //     ?
-                                  //     //     ? Fluttertoast.showToast(
-                                  //     //         msg: "You cannot react on your own post!",
-                                  //     //         toastLength: Toast.LENGTH_SHORT,
-                                  //     //         gravity: ToastGravity.BOTTOM,
-                                  //     //         fontSize: 15)
-                                  //     //     :
-                                  //     (rxn == 'liked'
-                                  //         ? {react("noreact"), counter['liked']--}
-                                  //         : {react("liked"), counter['liked']++})
+                                  // //     ? Fluttertoast.showToast(
+                                  // //         msg: "You cannot react on your own post!",
+                                  // //         toastLength: Toast.LENGTH_SHORT,
+                                  // //         gravity: ToastGravity.BOTTOM,
+                                  // //         fontSize: 15)
+                                  // //     :
+                                  // (rxn == 'liked'
+                                  //     ? {react("noreact"), counter['liked']--}
+                                  //     : {react("liked"), counter['liked']++})
                                   //     : print("not allowed")
                                 },
                                 child: Column(
@@ -1236,7 +1195,9 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                         SizedBox(
                           width: 20 -
                               likedAnimation.value * reactionSizeIncrease / 2 -
-                              whateverAnimation.value * reactionSizeIncrease / 2,
+                              whateverAnimation.value *
+                                  reactionSizeIncrease /
+                                  2,
                         ),
                         isDisabled
                             ? Column(
@@ -1273,21 +1234,21 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   reaction('whatever')
                                   // widget.userPost.user.id != widget.curUser.id
                                   //     ?
-                                  //     //     ? Fluttertoast.showToast(
-                                  //     //         msg: "You cannot react on your own post!",
-                                  //     //         toastLength: Toast.LENGTH_SHORT,
-                                  //     //         gravity: ToastGravity.BOTTOM,
-                                  //     //         fontSize: 15)
-                                  //     //     :
-                                  //     (rxn == 'whatever'
-                                  //         ? {
-                                  //             react("noreact"),
-                                  //             counter['whatever']--
-                                  //           }
-                                  //         : {
-                                  //             react("whatever"),
-                                  //             counter['whatever']++
-                                  //           })
+                                  // //     ? Fluttertoast.showToast(
+                                  // //         msg: "You cannot react on your own post!",
+                                  // //         toastLength: Toast.LENGTH_SHORT,
+                                  // //         gravity: ToastGravity.BOTTOM,
+                                  // //         fontSize: 15)
+                                  // //     :
+                                  // (rxn == 'whatever'
+                                  //     ? {
+                                  //   react("noreact"),
+                                  //   counter['whatever']--
+                                  // }
+                                  //     : {
+                                  //   react("whatever"),
+                                  //   counter['whatever']++
+                                  // })
                                   //     : print("not allowed")
                                 },
                                 child: Column(
@@ -1323,7 +1284,9 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                         SizedBox(
                           width: 20 -
                               hatedAnimation.value * reactionSizeIncrease -
-                              whateverAnimation.value * reactionSizeIncrease / 2,
+                              whateverAnimation.value *
+                                  reactionSizeIncrease /
+                                  2,
                         ),
                         isDisabled
                             ? Column(
@@ -1341,7 +1304,9 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                             fit: BoxFit.cover,
                                           )
                                         : SvgPicture.asset(
-                                            "images/rsocial_punch_outline.svg"),
+                                            "images/rsocial_punch_outline.svg",
+                                            fit: BoxFit.cover,
+                                          ),
                                   ),
                                   SizedBox(
                                     height: 4 -
@@ -1366,15 +1331,15 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   //     : reaction('hated')
                                   // widget.userPost.user.id != widget.curUser.id
                                   //     ?
-                                  //     //     ? Fluttertoast.showToast(
-                                  //     //         msg: "You cannot react on your own post!",
-                                  //     //         toastLength: Toast.LENGTH_SHORT,
-                                  //     //         gravity: ToastGravity.BOTTOM,
-                                  //     //         fontSize: 15)
-                                  //     //     :
-                                  //     (rxn == 'hated'
-                                  //         ? {react("noreact"), counter['hated']--}
-                                  //         : {react("hated"), counter['hated']++})
+                                  // //     ? Fluttertoast.showToast(
+                                  // //         msg: "You cannot react on your own post!",
+                                  // //         toastLength: Toast.LENGTH_SHORT,
+                                  // //         gravity: ToastGravity.BOTTOM,
+                                  // //         fontSize: 15)
+                                  // //     :
+                                  // (rxn == 'hated'
+                                  //     ? {react("noreact"), counter['hated']--}
+                                  //     : {react("hated"), counter['hated']++})
                                   //     : print("not allowed")
                                 },
                                 child: Column(
@@ -1392,7 +1357,9 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                               fit: BoxFit.cover,
                                             )
                                           : SvgPicture.asset(
-                                              "images/rsocial_punch_outline.svg"),
+                                              "images/rsocial_punch_outline.svg",
+                                              fit: BoxFit.cover,
+                                            ),
                                     ),
                                     SizedBox(
                                       height: 4 -
@@ -1419,16 +1386,18 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                   //Container(),
 
                   GestureDetector(
-                    onTap: !_isCreatingLink?()async{
-                      final Uri uri= await createDynamicLink();
-                      //final Uri uri=_linkMessage;
-                      String sender = uri.queryParameters['postid'];
-                      print("link is: $uri \n sent by: $sender");
-                      //initDynamicLinks();
+                    onTap: !_isCreatingLink
+                        ? () async {
+                            final Uri uri = await createDynamicLink();
+                            //final Uri uri=_linkMessage;
+                            String sender = uri.queryParameters['postid'];
+                            print("link is: $uri \n sent by: $sender");
+                            //initDynamicLinks();
 
-                      final RenderBox box = context.findRenderObject();
-                      share(uri);
-                    }:null,
+                            final RenderBox box = context.findRenderObject();
+                            share(uri);
+                          }
+                        : null,
                     child: Column(
                       children: <Widget>[
                         Container(
