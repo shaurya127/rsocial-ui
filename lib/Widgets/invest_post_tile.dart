@@ -381,7 +381,10 @@ class _InvestPostTileState extends State<InvestPostTile>
           counter[prevrxn]--;
         }
       }
-      m[widget.userPost.id] = {reactn: counter[reactn]};
+     setState(() {
+       m[widget.userPost.id] = {reactn: counter[reactn]};
+       mp[widget.userPost.id]= counter;
+     });
       // });
       setState(() {});
     }
@@ -530,9 +533,12 @@ class _InvestPostTileState extends State<InvestPostTile>
   Widget build(BuildContext context) {
     if (m.containsKey(widget.userPost.id)) {
       Map<String, int> map = m[widget.userPost.id];
+      Map<String, int> map2 = mp[widget.userPost.id];
       for (var key in map.keys) rxn = key;
       print("my reaction is now $rxn");
+      counter = map2;
       counter[rxn] = map[rxn];
+
 
       //Map<String, int> mx = m[widget.userPost.id];
       // for (var key in mx.keys) rxn = key;

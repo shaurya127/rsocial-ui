@@ -46,7 +46,6 @@ class Post {
     List<User> rxn = [];
     if (json["ReactedBy"].isNotEmpty) {
       for (int i = 0; i < json["ReactedBy"].length; i++) {
-        print("reacted by $i is ${json["ReactedBy"][i]}");
         User user = User.fromJson(json["ReactedBy"][i]);
         rxn.add(user);
       }

@@ -1115,4 +1115,23 @@ class _ProfileState extends State<Profile> {
           ),
     );
   }
+
+  //             ],
+  //           ),
+  //         ),
+  //          Expanded(
+  //              child: isLoading
+  //                  ? Center(
+  //                      child: CircularProgressIndicator(),
+  //                    )
+  //                  : (postOrientation == 'wage'
+  //                      ? buildWagePosts()
+  //                      : (postOrientation == 'invest'
+  //                          ? buildInvestPosts()
+  //   //                       : buildPlatformPosts()))),
+  //      ],
+  //     ),
+  //    )
+  //    );
+
 }
