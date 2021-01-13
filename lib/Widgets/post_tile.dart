@@ -3,13 +3,17 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:rsocial2/Screens/display_post.dart';
+import '../auth.dart';
 import '../my_flutter_app_icons.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/invested_with.dart';
@@ -24,6 +28,7 @@ import '../post.dart';
 import '../read_more.dart';
 import '../user.dart';
 import 'package:http/http.dart' as http;
+import 'package:package_info/package_info.dart';
 
 Map<String, Map<String, int>> m = new Map();
 Map<String, Map<String, int>> mp = new Map();
@@ -92,6 +97,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   Animation whateverAnimation;
 
   int reactionSizeIncrease = 3;
+  bool _isCreatingLink = false;
+
   getReactions() {
     print(rxn);
     //bool inLoop=true;
@@ -419,6 +426,83 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     // print(counter[reaction]);
     // setState(() {});
     return;
+  }
+
+  Future<Uri> createDynamicLink() async {
+
+    var queryParameters = {
+      'postid': widget.userPost.id.toString(),
+    };
+
+    //Uri link =Uri.http('flutters.page.link', 'invites', queryParameters);
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      _isCreatingLink = true;
+    });
+
+    final DynamicLinkParameters parameters = DynamicLinkParameters(
+      // This should match firebase but without the username query param
+      uriPrefix: 'https://rsocial.page.link',
+      // This can be whatever you want for the uri, https://yourapp.com/groupinvite?username=$userName
+      link: Uri.parse('https://rsocial.page.link/posts?postid=${widget.userPost.id}&'),
+
+      androidParameters: AndroidParameters(
+        packageName: packageInfo.packageName,
+        minimumVersion: 0,
+      ),
+
+      // dynamicLinkParametersOptions: DynamicLinkParametersOptions(
+      //   shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short,
+      // ),
+
+
+      iosParameters: IosParameters(
+        bundleId: packageInfo.packageName,
+        minimumVersion: '0',
+        appStoreId: '123456789',
+      ),
+        googleAnalyticsParameters: GoogleAnalyticsParameters(
+          campaign: 'example-promo',
+          medium: 'social',
+          source: 'orkut',
+        ),
+        itunesConnectAnalyticsParameters: ItunesConnectAnalyticsParameters(
+          providerToken: '123456',
+          campaignToken: 'example-promo',
+        ),
+
+        socialMetaTagParameters: SocialMetaTagParameters(
+            title:'${widget.userPost.user.fname} on RSocial' ,
+            // description: event.post?.excerpt,
+            imageUrl: Uri.parse(widget.userPost.fileUpload[0])
+        ),
+        navigationInfoParameters: NavigationInfoParameters(
+            forcedRedirectEnabled: true
+        )
+
+    );
+
+    final link = await parameters.buildUrl();
+    final ShortDynamicLink shortenedLink = await DynamicLinkParameters.shortenUrl(
+      link,
+      DynamicLinkParametersOptions(shortDynamicLinkPathLength: ShortDynamicLinkPathLength.unguessable),
+    );
+    setState(() {
+      //_linkMessage = url;
+      //print(link.queryParameters['sender']);
+      _isCreatingLink = false;
+    });
+    //print(shortenedLink.shortUrl.queryParameters['postid']);
+    return shortenedLink.shortUrl;
+  }
+
+  Future<void> share(Uri uri) async {
+    await FlutterShare.share(
+        title: 'Hey! checkout this post',
+        //text: '${widget.userPost.user.fname} on RSocial',
+        linkUrl: uri.toString(),
+        chooserTitle: 'Share this post with'
+    );
   }
 
   @override
@@ -829,10 +913,16 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                           ),
                         ),
                       //SizedBox(width: 14,),
-                      Icon(
-                        Icons.more_vert,
-                        color: colorUnselectedBottomNav,
-                        size: 30,
+                      GestureDetector(
+                        onTap: ()=>Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DisplayPost(postId: widget.userPost.id,))),
+                        child: Icon(
+                          Icons.more_vert,
+                          color: colorUnselectedBottomNav,
+                          size: 30,
+                        ),
                       ),
                     ],
                   ),
@@ -1328,28 +1418,40 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                   ),
                   //Container(),
 
-                  Column(
-                    children: <Widget>[
-                      Container(
-                        height: 23,
-                        width: 23,
-                        child: SvgPicture.asset(
-                          "images/share.svg",
-                          color: postIcons,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: Text(
-                          "Share",
-                          style: TextStyle(
-                            fontFamily: "Lato",
-                            fontSize: 10,
-                            color: postDesc,
+                  GestureDetector(
+                    onTap: !_isCreatingLink?()async{
+                      final Uri uri= await createDynamicLink();
+                      //final Uri uri=_linkMessage;
+                      String sender = uri.queryParameters['postid'];
+                      print("link is: $uri \n sent by: $sender");
+                      //initDynamicLinks();
+
+                      final RenderBox box = context.findRenderObject();
+                      share(uri);
+                    }:null,
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          height: 23,
+                          width: 23,
+                          child: SvgPicture.asset(
+                            "images/share.svg",
+                            color: postIcons,
                           ),
                         ),
-                      )
-                    ],
+                        Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Text(
+                            "Share",
+                            style: TextStyle(
+                              fontFamily: "Lato",
+                              fontSize: 10,
+                              color: postDesc,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ],
               ),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -29,12 +30,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import '../post.dart';
 import 'create_account_page.dart';
+import 'display_post.dart';
 import 'login_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 final googleSignIn = GoogleSignIn();
 final fblogin = FacebookLogin();
 User curUser;
+//String postId;
 
 class BottomNavBar extends StatefulWidget {
   User currentUser;
@@ -506,6 +509,8 @@ class _BottomNavBarState extends State<BottomNavBar>
       getUserAwait();
       getAllUsers();
       getUserPosts();
+      if(postId==null)
+        initDynamicLinks();
     }
   }
 
@@ -515,6 +520,40 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   getUserAwait() async {
     await getUser();
+  }
+
+  void initDynamicLinks() async {
+    // setState(() {
+    //   findingLink=true;
+    // });
+    //final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    //final Uri deepLink = data?.link;
+
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+          final Uri deepLink = dynamicLink?.link;
+          if (deepLink != null) {
+            print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
+            postId = deepLink.queryParameters['postid'];
+            Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
+          }
+        }, onError: (OnLinkErrorException e) async {
+      print('onLinkError');
+      print(e.message);
+    }
+    );
+
+    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    final Uri deepLink = data?.link;
+
+    if (deepLink != null) {
+      postId = deepLink.queryParameters['postid'];
+      Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
+    }
+
+    // setState(() {
+    //   findingLink=false;
+    // });
   }
 
   final List<String> _labels = [
@@ -604,7 +643,7 @@ class _BottomNavBarState extends State<BottomNavBar>
                   child: CircularProgressIndicator(),
                 ),
               )
-            : Scaffold(
+            : (postId==null ? Scaffold(
                 appBar: customAppBar(
                     context,
                     kBottomNavPageBarTitle,
@@ -717,6 +756,8 @@ class _BottomNavBarState extends State<BottomNavBar>
                       .values
                       .toList(),
                 ),
-              );
+              )
+        : DisplayPost(postId: postId,)
+    );
   }
 }
