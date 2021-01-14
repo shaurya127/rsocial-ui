@@ -1,5 +1,6 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -9,6 +10,7 @@ import 'package:rsocial2/Screens/choose_register.dart';
 import 'package:rsocial2/Screens/register_page.dart';
 import 'package:rsocial2/main.dart';
 
+import '../auth.dart';
 import '../constants.dart';
 import 'choose_register.dart';
 import 'login_page.dart';
@@ -22,7 +24,42 @@ class _CreateAccountState extends State<CreateAccount> {
   @override
   void initState() {
     super.initState();
+    initDynamicLinks();
     FirebaseAnalytics().setCurrentScreen(screenName: "Create_Acc");
+  }
+
+  void initDynamicLinks() async {
+    // setState(() {
+    //   findingLink=true;
+    // });
+    //final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    //final Uri deepLink = data?.link;
+
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+          final Uri deepLink = dynamicLink?.link;
+          if (deepLink != null) {
+            print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
+            postId = deepLink.queryParameters['postid'];
+            //Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
+          }
+        }, onError: (OnLinkErrorException e) async {
+      print('onLinkError');
+      print(e.message);
+    }
+    );
+
+    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    final Uri deepLink = data?.link;
+
+    if (deepLink != null) {
+      postId = deepLink.queryParameters['postid'];
+      //Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
+    }
+
+    // setState(() {
+    //   findingLink=false;
+    // });
   }
 
   @override

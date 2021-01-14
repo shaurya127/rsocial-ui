@@ -533,9 +533,9 @@ class _BottomNavBarState extends State<BottomNavBar>
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
           final Uri deepLink = dynamicLink?.link;
           if (deepLink != null) {
-            print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
-            postId = deepLink.queryParameters['postid'];
-            Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
+            //print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
+            //postId = deepLink.queryParameters['postid'];
+            Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:deepLink.queryParameters['postid'])));
           }
         }, onError: (OnLinkErrorException e) async {
       print('onLinkError');
@@ -547,8 +547,8 @@ class _BottomNavBarState extends State<BottomNavBar>
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {
-      postId = deepLink.queryParameters['postid'];
-      Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
+      //postId = deepLink.queryParameters['postid'];
+      Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:deepLink.queryParameters['postid'])));
     }
 
     // setState(() {
@@ -646,7 +646,7 @@ class _BottomNavBarState extends State<BottomNavBar>
             : (postId==null ? Scaffold(
                 appBar: customAppBar(
                     context,
-                    kBottomNavPageBarTitle,
+                    "",
                     curUser != null ? curUser.lollarAmount.toString() : "",
                     curUser != null ? curUser.photoUrl : "",
                     curUser != null ? curUser.socialStanding.toString() : ""),

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 
 import '../config.dart';
@@ -24,10 +25,10 @@ class _DisplayPostState extends State<DisplayPost> {
   @override
   void initState() {
     super.initState();
-    getUserPosts();
+    getPost();
   }
 
-  Future<void> getUserPosts() async {
+  Future<void> getPost() async {
     setState(() {
       isLoading = true;
     });
@@ -83,7 +84,12 @@ class _DisplayPostState extends State<DisplayPost> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Post"),
+        iconTheme: IconThemeData(color: Colors.white),
+        title: Text("Post",
+        style: TextStyle(
+          fontFamily: 'Lato',
+          color: Colors.white
+        ),),
       ),
       body: !isLoading ? ListView(
         children: <Widget>[

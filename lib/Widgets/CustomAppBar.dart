@@ -106,10 +106,15 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
       ),
     ],
     titleSpacing: 0,
-    title: SvgPicture.asset(
+    title: title=="" ?SvgPicture.asset(
       "images/rsocial-text.svg",
       height: 90,
       width: 90,
-    ),
+    ): Text(title,
+      style: TextStyle(
+        fontFamily: 'Lato',
+        color: Colors.white
+      ),
+    )
   );
 }

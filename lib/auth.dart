@@ -32,7 +32,7 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   final _auth = FirebaseAuth.instance;
   bool isAuthenticated = null;
-  bool findingLink =false;
+  bool findingLink =true;
 
   void isUserAuthenticated() async {
     FirebaseUser user = await _auth.currentUser();
@@ -112,16 +112,15 @@ class _AuthScreenState extends State<AuthScreen> {
             //     alignment: AlignmentDirectional.topStart // or Alignment.topLeft
             //     ),
             )
-        : (isAuthenticated
-            ? (
-            findingLink
-                ? Center(child: CircularProgressIndicator(),)
-            : BottomNavBar(
+        : (findingLink ? Scaffold(body: Center(child: CircularProgressIndicator()))
+            :( isAuthenticated
+            ? BottomNavBar(
                 currentUser: currentUser,
                 isNewUser: false,
                 sign_in_mode: "",
               )
+            : CreateAccount()
     )
-            : CreateAccount());
+    );
   }
 }

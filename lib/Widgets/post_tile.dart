@@ -471,7 +471,10 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
         socialMetaTagParameters: SocialMetaTagParameters(
             title: '${widget.userPost.user.fname} on RSocial',
             // description: event.post?.excerpt,
-            imageUrl: Uri.parse(widget.userPost.fileUpload[0])),
+            imageUrl: widget.userPost.fileUpload.isNotEmpty
+                ? Uri.parse(widget.userPost.fileUpload[0])
+                : Uri.parse(widget.userPost.user.photoUrl)
+        ) ,
         navigationInfoParameters:
             NavigationInfoParameters(forcedRedirectEnabled: true));
 
@@ -531,13 +534,13 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
       child: Container(
         //margin: EdgeInsets.only(top: 5,bottom: 5),
         width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.only(top: 15, bottom: 15),
+        padding: EdgeInsets.only(top: 15, bottom: 15,left: 15,right: 15),
         color: Colors.white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(right: 15, left: 15, top: 5, bottom: 10),
+              padding: EdgeInsets.only(top: 5, bottom: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -890,7 +893,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                   )
                 : Padding(
                     padding: const EdgeInsets.only(
-                        top: 12, bottom: 3, left: 3, right: 3),
+                        top: 5, bottom: 3, left: 3, right: 3),
                     child: Read_More(
                       "${widget.userPost.storyText}",
                       trimLines: 2,
@@ -991,8 +994,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                 : SizedBox(),
             Padding(
               padding: EdgeInsets.only(
-                right: 15,
-                left: 15,
                 top: 15,
               ),
               child: Row(
