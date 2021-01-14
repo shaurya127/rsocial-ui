@@ -80,8 +80,8 @@ class _WageState extends State<Wage> {
     if (status.isGranted || status.isUndetermined) {
       PickedFile pickedFile = await ImagePicker().getImage(
         source: ImageSource.camera,
-        maxHeight: 675,
-        maxWidth: 960,
+        // maxHeight: 675,
+        // maxWidth: 960,
       );
       if (pickedFile != null) {
         final File file = File(pickedFile.path);
@@ -150,8 +150,8 @@ class _WageState extends State<Wage> {
       try {
         PickedFile pickedFile = await ImagePicker().getImage(
           source: ImageSource.gallery,
-          maxHeight: 675,
-          maxWidth: 960,
+          // maxHeight: 675,
+          // maxWidth: 960,
         );
         if (pickedFile != null) {
           final File file = File(pickedFile.path);
