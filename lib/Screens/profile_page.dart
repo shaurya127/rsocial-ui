@@ -82,8 +82,8 @@ class _ProfileState extends State<Profile> {
     if (status.isGranted || status.isUndetermined) {
       PickedFile pickedFile = await ImagePicker().getImage(
         source: ImageSource.camera,
-        maxHeight: 675,
-        maxWidth: 960,
+        // maxHeight: 675,
+        // maxWidth: 960,
       );
       if (pickedFile != null) {
         file = File(pickedFile.path);
@@ -148,8 +148,8 @@ class _ProfileState extends State<Profile> {
       try {
         PickedFile pickedFile = await ImagePicker().getImage(
           source: ImageSource.gallery,
-          maxHeight: 675,
-          maxWidth: 960,
+          // maxHeight: 675,
+          // maxWidth: 960,
         );
         if (pickedFile != null) {
           file = File(pickedFile.path);
