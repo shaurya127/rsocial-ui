@@ -33,6 +33,9 @@ class Profile extends StatefulWidget {
   User user;
   String photoUrl;
   bool isLoading = false;
+  String previousWidget;
+  Function callBack;
+  String text;
   Profile({
     this.currentUser,
     this.photoUrl,

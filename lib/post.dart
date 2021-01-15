@@ -5,18 +5,18 @@ import 'dart:io';
 import 'package:rsocial2/user.dart';
 
 class Post {
-  Post({
-    this.investedWithUser,
-    this.id,
-    this.storyType,
-    this.user,
-    this.storyText,
-    this.investedWith,
-    this.investedAmount,
-    this.fileUpload,
-    this.reactedBy,
-    this.duration
-  });
+  Post(
+      {this.investedWithUser,
+      this.id,
+      this.storyType,
+      this.user,
+      this.storyText,
+      this.investedWith,
+      this.investedAmount,
+      this.fileUpload,
+      this.reactedBy,
+      this.duration,
+      this.profit});
 
   String id;
   User user;
@@ -28,6 +28,7 @@ class Post {
   List<String> fileUpload;
   List<User> reactedBy;
   int duration;
+  String profit;
 
   factory Post.fromJsonI(final json) {
     var uid = json["UserId"];
@@ -58,6 +59,7 @@ class Post {
         storyText: json["StoryText"],
         investedWithUser: investedWith,
         investedAmount: json["InvestedAmount"],
+        profit: json["PresentValue"].toString(),
         reactedBy: rxn,
         fileUpload: json["FileUpload"] == null
             ? []
@@ -93,7 +95,7 @@ class Post {
         "StoryText": storyText,
         "InvestedWith": investedWith == null ? [] : this.investedWith,
         "InvestedAmount": investedAmount,
-        "Duration" : duration.toString(),
+        "Duration": duration.toString(),
         "FileUpload": fileUpload != null
             ? List<String>.from(fileUpload.map((x) => x))
             : [],

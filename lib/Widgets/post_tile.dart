@@ -473,8 +473,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
             // description: event.post?.excerpt,
             imageUrl: widget.userPost.fileUpload.isNotEmpty
                 ? Uri.parse(widget.userPost.fileUpload[0])
-                : Uri.parse(widget.userPost.user.photoUrl)
-        ) ,
+                : Uri.parse(widget.userPost.user.photoUrl)),
         navigationInfoParameters:
             NavigationInfoParameters(forcedRedirectEnabled: true));
 
@@ -534,7 +533,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
       child: Container(
         //margin: EdgeInsets.only(top: 5,bottom: 5),
         width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.only(top: 15, bottom: 15,left: 15,right: 15),
+        padding: EdgeInsets.only(top: 15, bottom: 15, left: 15, right: 15),
         color: Colors.white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -727,7 +726,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                 ),
                                 Container(
                                   child: Text(
-                                    "500",
+                                    widget.userPost.profit,
                                     style: TextStyle(
                                       fontFamily: "Lato",
                                       fontSize: 12,

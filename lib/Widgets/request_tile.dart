@@ -38,6 +38,7 @@ class _Request_TileState extends State<Request_Tile> {
   // }
 
   //User curUser;
+
   removeConnection(String friendId) async {
     var url = userEndPoint + "removeconnection";
     var user = await FirebaseAuth.instance.currentUser();
@@ -298,6 +299,11 @@ class _Request_TileState extends State<Request_Tile> {
 
   @override
   Widget build(BuildContext context) {
+    // print("This is my build");
+    // print(widget.text);
+    widget.text = curUser.userMap.containsKey(widget.user.id)
+        ? curUser.userMap[widget.user.id]
+        : "add";
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Column(
@@ -314,9 +320,11 @@ class _Request_TileState extends State<Request_Tile> {
                     onTap: () => showProfile(
                         context, widget.user, widget.user.photoUrl, curUser),
                     child: CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        widget.user.photoUrl,
-                      ),
+                      backgroundImage: widget.user.photoUrl != ""
+                          ? NetworkImage(
+                              widget.user.photoUrl,
+                            )
+                          : AssetImage("images/avatar.jpg"),
                     ),
                   ),
                   title: Text(

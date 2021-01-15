@@ -381,10 +381,10 @@ class _InvestPostTileState extends State<InvestPostTile>
           counter[prevrxn]--;
         }
       }
-     setState(() {
-       m[widget.userPost.id] = {reactn: counter[reactn]};
-       mp[widget.userPost.id]= counter;
-     });
+      setState(() {
+        m[widget.userPost.id] = {reactn: counter[reactn]};
+        mp[widget.userPost.id] = counter;
+      });
       // });
       setState(() {});
     }
@@ -538,7 +538,6 @@ class _InvestPostTileState extends State<InvestPostTile>
       print("my reaction is now $rxn");
       counter = map2;
       counter[rxn] = map[rxn];
-
 
       //Map<String, int> mx = m[widget.userPost.id];
       // for (var key in mx.keys) rxn = key;
@@ -776,7 +775,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                         ),
                         Container(
                           child: Text(
-                            "500",
+                            widget.userPost.profit,
                             style: TextStyle(
                               fontFamily: "Lato",
                               fontSize: 12,
