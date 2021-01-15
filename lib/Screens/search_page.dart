@@ -51,8 +51,9 @@ class _Search_PageState extends State<Search_Page>
     //getAllConnections();
     //getUser();
     //getConnections();
-    print("all users in search page");
-    print(widget.allusers.length);
+    // print("all users in search page");
+    // print(widget.allusers.length);
+    getUser();
   }
 
   setOrientation(String Orientation) {
