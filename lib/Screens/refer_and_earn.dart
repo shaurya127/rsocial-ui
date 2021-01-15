@@ -1,6 +1,10 @@
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:package_info/package_info.dart';
+import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/RoundedButton.dart';
 
@@ -12,11 +16,88 @@ class Refer_and_Earn extends StatefulWidget {
 }
 
 class _Refer_and_EarnState extends State<Refer_and_Earn> {
+  bool _isCreatingLink = false;
+
+  Future<Uri> createDynamicLink() async {
+    var queryParameters = {
+      'sender': curUser.id,
+    };
+
+    //Uri link =Uri.http('flutters.page.link', 'invites', queryParameters);
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      _isCreatingLink = true;
+    });
+
+    final DynamicLinkParameters parameters = DynamicLinkParameters(
+      // This should match firebase but without the username query param
+        uriPrefix: 'https://rsocial.page.link',
+        // This can be whatever you want for the uri, https://yourapp.com/groupinvite?username=$userName
+        link: Uri.parse(
+            'https://rsocial.page.link/invites?sender=${curUser.id}&'),
+        androidParameters: AndroidParameters(
+          packageName: packageInfo.packageName,
+          minimumVersion: 0,
+        ),
+
+        // dynamicLinkParametersOptions: DynamicLinkParametersOptions(
+        //   shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short,
+        // ),
+
+        iosParameters: IosParameters(
+          bundleId: packageInfo.packageName,
+          minimumVersion: '0',
+          appStoreId: '123456789',
+        ),
+        googleAnalyticsParameters: GoogleAnalyticsParameters(
+          campaign: 'example-promo',
+          medium: 'social',
+          source: 'orkut',
+        ),
+        itunesConnectAnalyticsParameters: ItunesConnectAnalyticsParameters(
+          providerToken: '123456',
+          campaignToken: 'example-promo',
+        ),
+        socialMetaTagParameters: SocialMetaTagParameters(
+            title: 'Hey! join me on RSocial',
+            description: "Join via this link and we both can earn 50 Lollar amount!",
+            //imageUrl: 'images/rsocial-text-2.svg'
+        ) ,
+        navigationInfoParameters:
+        NavigationInfoParameters(forcedRedirectEnabled: true));
+
+    final link = await parameters.buildUrl();
+    final ShortDynamicLink shortenedLink =
+    await DynamicLinkParameters.shortenUrl(
+      link,
+      DynamicLinkParametersOptions(
+          shortDynamicLinkPathLength: ShortDynamicLinkPathLength.unguessable),
+    );
+    setState(() {
+      //_linkMessage = url;
+      //print(link.queryParameters['sender']);
+      _isCreatingLink = false;
+    });
+    //print(shortenedLink.shortUrl.queryParameters['postid']);
+    return shortenedLink.shortUrl;
+  }
+
+  Future<void> share(Uri uri) async {
+    await FlutterShare.share(
+        title: 'Hey! Join me on RSocial',
+        //text: '${widget.userPost.user.fname} on RSocial',
+        linkUrl: uri.toString(),
+        chooserTitle: 'Invite a friend with');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // App bar to be updated
-      appBar: customAppBar(context, "Refer & earn", "100", "",""),
+      appBar: customAppBar(context, "Refer & earn",
+          curUser.lollarAmount.toString(),curUser.photoUrl,
+        curUser.socialStanding.toString(),
+      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -78,7 +159,13 @@ class _Refer_and_EarnState extends State<Refer_and_Earn> {
               color: Color(0xff4dbae6),
               textColor: Colors.white,
               text: "Send invite",
-              onPressed: () {},
+              onPressed: !_isCreatingLink
+                  ? () async {
+                print("creating link");
+                final Uri uri = await createDynamicLink();
+                print("invite link is: $uri");
+                share(uri);
+              } : null,
             ),
           )
         ],

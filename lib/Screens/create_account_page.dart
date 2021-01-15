@@ -41,6 +41,7 @@ class _CreateAccountState extends State<CreateAccount> {
           if (deepLink != null) {
             print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
             postId = deepLink.queryParameters['postid'];
+            inviteSenderId = deepLink.queryParameters['sender'];
             //Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
           }
         }, onError: (OnLinkErrorException e) async {
@@ -54,6 +55,7 @@ class _CreateAccountState extends State<CreateAccount> {
 
     if (deepLink != null) {
       postId = deepLink.queryParameters['postid'];
+      inviteSenderId = deepLink.queryParameters['sender'];
       //Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
     }
 
