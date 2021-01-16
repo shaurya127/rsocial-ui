@@ -622,7 +622,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                                       )));
                                             },
                                             child: Text(
-                                              "Invested ${(double.parse(widget.userPost.investedAmount) / 1000).toString() + ' k'} with ${widget.userPost.investedWithUser.length} people",
+                                              "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k with ${widget.userPost.investedWithUser.length} people",
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
                                                 fontFamily: "Lato",
@@ -634,7 +634,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                         ],
                                       )
                                     : Text(
-                                        "Invested ${(double.parse(widget.userPost.investedAmount) / 1000).toString() + ' k'} alone",
+                                        "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k alone",
                                         overflow: TextOverflow.ellipsis,
                                         style: TextStyle(
                                           fontFamily: "Lato",
@@ -696,51 +696,52 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                       SizedBox(
                         width: 0,
                       ),
-                      widget.userPost.storyType == "Wage"
-                          ? SizedBox()
-                          : Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Row(
-                                  children: <Widget>[
-                                    SvgPicture.asset(
-                                      "images/coins.svg",
-                                      color: colorCoins,
-                                    ),
-                                    Container(
-                                      //transform: Matrix4.translationValues(-38, 0.0, 0.0),
-                                      child: Text(
-                                        "Profit",
-                                        style: TextStyle(
-                                          fontFamily: "Lato",
-                                          fontSize: 12,
-                                          color: subtitile,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 6,
-                                ),
-                                Container(
-                                  child: Text(
-                                    widget.userPost.profit,
-                                    style: TextStyle(
-                                      fontFamily: "Lato",
-                                      fontSize: 12,
-                                      color: Color(0xff37B44B),
-                                    ),
-                                    //     TextStyle(
-                                    //     fontSize: 12,
-                                    //     color: Color(0xff37B44B)
-                                    // ),
+                      // widget.userPost.storyType == "Wage"
+                      //     ? SizedBox()
+                      //     :
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              SvgPicture.asset(
+                                "images/coins.svg",
+                                color: colorCoins,
+                              ),
+                              Container(
+                                //transform: Matrix4.translationValues(-38, 0.0, 0.0),
+                                child: Text(
+                                  "Profit",
+                                  style: TextStyle(
+                                    fontFamily: "Lato",
+                                    fontSize: 12,
+                                    color: subtitile,
                                   ),
-                                  //transform: Matrix4.translationValues(-35, 0.0, 0.0),
                                 ),
-                              ],
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 6,
+                          ),
+                          Container(
+                            child: Text(
+                              widget.userPost.profit,
+                              style: TextStyle(
+                                fontFamily: "Lato",
+                                fontSize: 12,
+                                color: Color(0xff37B44B),
+                              ),
+                              //     TextStyle(
+                              //     fontSize: 12,
+                              //     color: Color(0xff37B44B)
+                              // ),
                             ),
+                            //transform: Matrix4.translationValues(-35, 0.0, 0.0),
+                          ),
+                        ],
+                      ),
                       SizedBox(
                         width: 14,
                       ),
