@@ -779,7 +779,9 @@ class _InvestPostTileState extends State<InvestPostTile>
                             style: TextStyle(
                               fontFamily: "Lato",
                               fontSize: 12,
-                              color: Color(0xff37B44B),
+                              color: int.parse(widget.userPost.profit) >= 0
+                                  ? colorProfitPositive
+                                  : colorProfitNegative,
                             ),
                             //     TextStyle(
                             //     fontSize: 12,
