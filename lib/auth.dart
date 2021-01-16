@@ -18,6 +18,7 @@ import 'Screens/login_page.dart';
 
 User currentUser;
 String postId;
+String inviteSenderId;
 
 class AuthScreen extends StatefulWidget {
   FirebaseAnalytics analytics;
@@ -69,7 +70,7 @@ class _AuthScreenState extends State<AuthScreen> {
           if (deepLink != null) {
             print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
             postId = deepLink.queryParameters['postid'];
-            //Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
+            inviteSenderId = deepLink.queryParameters['sender'];
           }
         }, onError: (OnLinkErrorException e) async {
       print('onLinkError');
@@ -82,7 +83,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
     if (deepLink != null) {
       postId = deepLink.queryParameters['postid'];
-      //Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
+      inviteSenderId = deepLink.queryParameters['sender'];
     }
 
     setState(() {

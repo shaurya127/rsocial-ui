@@ -28,6 +28,7 @@ import 'package:rsocial2/constants.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
+import '../connection.dart';
 import '../post.dart';
 import 'create_account_page.dart';
 import 'display_post.dart';
@@ -326,10 +327,9 @@ class _BottomNavBarState extends State<BottomNavBar>
 
       curUser = User.fromJson(msg);
 
-      //print(curUser);
-      // setState(() {
-      //   isLoading = false;
-      // });
+      if(inviteSenderId!=null)
+        addConnection(inviteSenderId);
+
       return curUser;
     } else {
       print(response.statusCode);
@@ -487,6 +487,42 @@ class _BottomNavBarState extends State<BottomNavBar>
     }
   }
 
+  addConnection(String friendId) async {
+    var url = userEndPoint + "addconnection";
+    var user = await FirebaseAuth.instance.currentUser();
+    //print(uid);
+    Connection connection = Connection(
+      id: curUser.id,
+      friendId: friendId,
+    );
+    var token = await user.getIdToken();
+    print(jsonEncode(connection.toJson()));
+    //print(token);
+    var response = await http.put(
+      url,
+      encoding: Encoding.getByName("utf-8"),
+      body: jsonEncode(connection.toJson()),
+      headers: {
+        "Authorization": "Bearer: $token",
+        "Content-Type": "application/json",
+      },
+    );
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      print(response.body);
+      final jsonUser = jsonDecode(response.body);
+      var body = jsonUser['body'];
+      var body1 = jsonDecode(body);
+      //print("body is $body");
+      // print(body1);
+      var msg = body1['message'];
+      setState(() {
+        curUser = User.fromJson(msg);
+        //widget.text = "pending";
+      });
+    }
+  }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -535,7 +571,8 @@ class _BottomNavBarState extends State<BottomNavBar>
           if (deepLink != null) {
             //print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
             //postId = deepLink.queryParameters['postid'];
-            Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:deepLink.queryParameters['postid'])));
+            if(deepLink.queryParameters['postid']!=null)
+              Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:deepLink.queryParameters['postid'])));
           }
         }, onError: (OnLinkErrorException e) async {
       print('onLinkError');
@@ -548,7 +585,8 @@ class _BottomNavBarState extends State<BottomNavBar>
 
     if (deepLink != null) {
       //postId = deepLink.queryParameters['postid'];
-      Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:deepLink.queryParameters['postid'])));
+      if(deepLink.queryParameters['postid']!=null)
+        Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:deepLink.queryParameters['postid'])));
     }
 
     // setState(() {
