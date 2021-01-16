@@ -677,7 +677,7 @@ class _WageState extends State<Wage> {
                 inactiveColor: colorGreyTint,
                 onChanged: (value) {
                   setState(() {
-                    amount = value.round();
+                    if (value <= curUser.lollarAmount) amount = value.round();
                   });
                 },
               ),
