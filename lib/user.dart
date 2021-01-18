@@ -20,7 +20,9 @@ class User {
       this.pendingConnection,
       this.sentPendingConnection,
       this.receivedPendingConnection,
-      this.userMap});
+      this.userMap,
+      this.inviteSenderId,
+      this.connectionCount});
 
   final String fname;
   final String lname;
@@ -39,6 +41,8 @@ class User {
   Map<String, String> userMap = new Map();
   String photoUrl;
   String reactionType;
+  String inviteSenderId;
+  int connectionCount;
   //List<String> list= new List();
 
   factory User.fromJson(final json) {
@@ -97,6 +101,7 @@ class User {
       receivedPendingConnection:
           json["ReceivedPendingConnection"] == null ? [] : incoming,
       userMap: map,
+      connectionCount: json['NumConnection'],
     );
   }
 
@@ -111,5 +116,6 @@ class User {
         'lollarAmount': this.lollarAmount,
         'socialStanding': this.socialStanding,
         'profilepic': this.photoUrl == null ? "" : this.photoUrl,
+        'referred_by' : this.inviteSenderId,
       };
 }

@@ -15,6 +15,7 @@ import 'package:http/http.dart' as http;
 
 import 'Screens/display_post.dart';
 import 'Screens/login_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 User currentUser;
 String postId;
@@ -61,6 +62,7 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() {
       findingLink=true;
     });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     //final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
     //final Uri deepLink = data?.link;
 
@@ -71,6 +73,7 @@ class _AuthScreenState extends State<AuthScreen> {
             print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
             postId = deepLink.queryParameters['postid'];
             inviteSenderId = deepLink.queryParameters['sender'];
+            prefs.setString('inviteSenderId', inviteSenderId);
           }
         }, onError: (OnLinkErrorException e) async {
       print('onLinkError');
