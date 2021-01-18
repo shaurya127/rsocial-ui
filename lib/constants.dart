@@ -24,6 +24,8 @@ const postDesc = Color(0xff707070);
 const nameCol = Color(0xff263238);
 const subtitile = Color(0xff7F7F7F);
 const postIcons = Colors.grey;
+const colorProfitPositive = Color(0xff37B44B);
+const colorProfitNegative = Colors.red;
 
 const kBioPageTitle = "Describe yourself";
 const kBioPageSubtitle = "What makes you special ?";

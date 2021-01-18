@@ -82,6 +82,7 @@ class Post {
         id: json["id"],
         user: User.fromJson(uid),
         storyText: json["StoryText"],
+        profit: json["PresentValue"].toString(),
         reactedBy: rxn,
         //investedWithUser: User.fromJson(json['InvestedWith']),
         //investedAmount: json["InvestedAmount"],
