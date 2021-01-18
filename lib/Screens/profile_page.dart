@@ -17,6 +17,7 @@ import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:http/http.dart' as http;
 import 'package:rsocial2/Widgets/alert_box.dart';
 import 'package:rsocial2/Widgets/invest_post_tile.dart';
+import 'package:rsocial2/Widgets/platform_post_tile.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/Widgets/request_button.dart';
 import 'package:rsocial2/auth.dart';
@@ -50,10 +51,13 @@ class _ProfileState extends State<Profile> {
   List<Post> postsI = [];
   List<InvestPostTile> InvestTiles = [];
   List<Post_Tile> WageTiles = [];
+  List<Post> platformPost = [];
+  List<PlatformPostTile> platformTiles = [];
   TextEditingController bioController = TextEditingController();
   bool isEditable = false;
   File file;
   String encodedFile = null;
+  bool isPlatformLoading = true;
   setPostOrientation(String postOrientation) {
     setState(() {
       this.postOrientation = postOrientation;
@@ -65,7 +69,9 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
+
     getUserPosts();
+    getPlatformPosts();
     print("init fired");
     isEditable = false;
     isLoading = false;
@@ -288,16 +294,60 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  getPlatformPosts() async {
+    setState(() {
+      isPlatformLoading = true;
+    });
+
+    var user = await FirebaseAuth.instance.currentUser();
+    final url = storyEndPoint + 'platformactivity';
+    var token = await user.getIdToken();
+    //print(token);
+
+    final response = await http.post(url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode({
+          "id": widget.user.id,
+        }));
+
+    final jsonResponse = jsonDecode(response.body);
+    if (jsonResponse['statusCode'] == 200) {
+      var body = jsonResponse['body'];
+      var body1 = jsonDecode(body);
+
+      //print("body is $body");
+      //print(body1);
+      var msg = body1['message'];
+      print("Platform Posts");
+      print(msg);
+      for (int i = 0; i < msg.length; i++) {
+        Post post;
+        if (msg[i]['StoryType'] == "Investment")
+          post = Post.fromJsonI(msg[i]);
+        else
+          post = Post.fromJsonW(msg[i]);
+        if (post != null) {
+          platformPost.add(post);
+          // if (msg[i]['StoryType'] == "Investment")
+          //   postsI.add(post);
+          // else
+          //   postsW.add(post);
+        }
+      }
+      setState(() {
+        isPlatformLoading = false;
+      });
+    }
+  }
+
   buildWagePosts() {
     print("build wage post started");
     WageTiles = [];
-    setState(() {
-      widget.isLoading = true;
-    });
+
     if (postsW.isEmpty) {
-      setState(() {
-        widget.isLoading = false;
-      });
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -321,6 +371,9 @@ class _ProfileState extends State<Profile> {
         ),
       );
     } else {
+      setState(() {
+        widget.isLoading = true;
+      });
       //print(posts.length);
       for (int i = 0; i < postsW.length; i++) {
         print("wage reaction");
@@ -346,13 +399,8 @@ class _ProfileState extends State<Profile> {
   buildInvestPosts() {
     print("build invest post started");
     InvestTiles = [];
-    setState(() {
-      widget.isLoading = true;
-    });
+
     if (postsI.isEmpty) {
-      setState(() {
-        widget.isLoading = false;
-      });
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -376,6 +424,9 @@ class _ProfileState extends State<Profile> {
         ),
       );
     } else {
+      setState(() {
+        widget.isLoading = true;
+      });
       //print(posts.length);
       for (int i = 0; i < postsI.length; i++) {
         print("Invest reaction");
@@ -394,6 +445,41 @@ class _ProfileState extends State<Profile> {
       print("build invest post ended");
       return ListView(
         children: InvestTiles.reversed.toList(),
+      );
+    }
+  }
+
+  buildplatformInteraction() {
+    platformTiles = [];
+    if (platformPost.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              "No $postOrientation interaction yet!",
+              style: TextStyle(
+                  fontFamily: "Lato",
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: colorHintText),
+            ),
+          ],
+        ),
+      );
+    } else {
+      for (int i = 0; i < platformPost.length; i++) {
+        PlatformPostTile tile = PlatformPostTile(
+            curUser: widget.currentUser,
+            userPost: platformPost[i],
+            photoUrl: curUser.id == widget.user.id
+                ? curUser.photoUrl
+                : widget.user.photoUrl);
+        platformTiles.add(tile);
+      }
+
+      return ListView(
+        children: platformTiles.reversed.toList(),
       );
     }
   }
@@ -441,8 +527,8 @@ class _ProfileState extends State<Profile> {
 
   buildButton() {
     return RequestButton(
-      text: widget.currentUser.userMap.containsKey(widget.user.id)
-          ? widget.currentUser.userMap[widget.user.id]
+      text: curUser.userMap.containsKey(widget.user.id)
+          ? curUser.userMap[widget.user.id]
           : "add",
       user: widget.user,
     );
@@ -899,7 +985,11 @@ class _ProfileState extends State<Profile> {
                                     ? buildWagePosts()
                                     : (postOrientation == 'invest'
                                         ? buildInvestPosts()
-                                        : buildPlatformPosts()))),
+                                        : (isPlatformLoading
+                                            ? Center(
+                                                child:
+                                                    CircularProgressIndicator())
+                                            : buildplatformInteraction())))),
                       ],
                     ),
             ),
