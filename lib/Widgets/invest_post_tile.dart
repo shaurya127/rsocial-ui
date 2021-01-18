@@ -607,7 +607,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                                               )));
                                     },
                                     child: Text(
-                                      "Invested ${(double.parse(widget.userPost.investedAmount) / 1000).toString() + ' k'} with ${widget.userPost.investedWithUser.length} people",
+                                      "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k with ${widget.userPost.investedWithUser.length} people",
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         fontFamily: "Lato",
@@ -663,7 +663,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                                 ],
                               )
                             : Text(
-                                "Invested ${(double.parse(widget.userPost.investedAmount) / 1000).toString() + ' k'} alone",
+                                "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k alone",
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontFamily: "Lato",
@@ -779,7 +779,9 @@ class _InvestPostTileState extends State<InvestPostTile>
                             style: TextStyle(
                               fontFamily: "Lato",
                               fontSize: 12,
-                              color: Color(0xff37B44B),
+                              color: int.parse(widget.userPost.profit) >= 0
+                                  ? colorProfitPositive
+                                  : colorProfitNegative,
                             ),
                             //     TextStyle(
                             //     fontSize: 12,

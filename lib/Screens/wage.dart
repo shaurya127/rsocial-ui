@@ -353,7 +353,7 @@ class _WageState extends State<Wage> {
   }
 
   createPost(String storyText, List<String> list) async {
-    if (storyText == null && list.isEmpty) {
+    if (storyText == null || storyText.isEmpty) {
       // Fluttertoast.showToast(
       //     msg: "Please enter text or upload pic",
       //     toastLength: Toast.LENGTH_SHORT,
@@ -362,7 +362,7 @@ class _WageState extends State<Wage> {
       return;
     }
 
-    if (list.isNotEmpty || storyText != null) {
+    if (storyText != null) {
       setState(() {
         isloading = true;
       });
@@ -677,7 +677,7 @@ class _WageState extends State<Wage> {
                 inactiveColor: colorGreyTint,
                 onChanged: (value) {
                   setState(() {
-                    amount = value.round();
+                    if (value <= curUser.lollarAmount) amount = value.round();
                   });
                 },
               ),
@@ -872,7 +872,7 @@ class _WageState extends State<Wage> {
                               children: <Widget>[
                                 Container(
                                   decoration: BoxDecoration(
-                                      color: Colors.red,
+                                      color: colorPrimaryBlue,
                                       image: DecorationImage(
                                           image: FileImage(
                                               investmentfileList[index]),
@@ -1119,7 +1119,8 @@ class _WageState extends State<Wage> {
                                                     children: <Widget>[
                                                       Container(
                                                         decoration: BoxDecoration(
-                                                            color: Colors.red,
+                                                            color:
+                                                                colorPrimaryBlue,
                                                             image: DecorationImage(
                                                                 image: FileImage(
                                                                     fileList[
