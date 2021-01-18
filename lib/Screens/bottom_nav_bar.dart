@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -82,12 +83,12 @@ class _BottomNavBarState extends State<BottomNavBar>
   createNgetUser() async {
     var url = userEndPoint + 'create';
     var user = await FirebaseAuth.instance.currentUser();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     photourl = user.photoUrl;
     var token = await user.getIdToken();
-    //print("uid is ${user.uid}");
-    String uid = user.uid;
-    String phn = user.phoneNumber;
-    String email = user.email;
+    String inviteId = prefs.getString('inviteSenderId');
+    if(inviteId!=null || inviteSenderId!=null)
+      widget.currentUser.inviteSenderId = inviteId==null?inviteSenderId:inviteId;
     var response = await http.post(
       url,
       encoding: Encoding.getByName("utf-8"),
@@ -104,8 +105,8 @@ class _BottomNavBarState extends State<BottomNavBar>
     if (response.statusCode == 200) {
       print('Response body: ${response.body}');
       log('Response body: ${response.body}');
-
       var res = json.decode(response.body);
+      prefs.remove('inviteSenderId');
 
       var resBody = json.decode(res['body']);
 
@@ -326,9 +327,9 @@ class _BottomNavBarState extends State<BottomNavBar>
       }
 
       curUser = User.fromJson(msg);
-
-      if(inviteSenderId!=null)
-        addConnection(inviteSenderId);
+      print("my send requests are ${curUser.sentPendingConnection.length}");
+      // if(inviteSenderId!=null)
+      //   addConnection(inviteSenderId);
 
       return curUser;
     } else {
@@ -484,42 +485,6 @@ class _BottomNavBarState extends State<BottomNavBar>
     } else {
       print(response.statusCode);
       throw Exception();
-    }
-  }
-
-  addConnection(String friendId) async {
-    var url = userEndPoint + "addconnection";
-    var user = await FirebaseAuth.instance.currentUser();
-    //print(uid);
-    Connection connection = Connection(
-      id: curUser.id,
-      friendId: friendId,
-    );
-    var token = await user.getIdToken();
-    print(jsonEncode(connection.toJson()));
-    //print(token);
-    var response = await http.put(
-      url,
-      encoding: Encoding.getByName("utf-8"),
-      body: jsonEncode(connection.toJson()),
-      headers: {
-        "Authorization": "Bearer: $token",
-        "Content-Type": "application/json",
-      },
-    );
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      print(response.body);
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      //print("body is $body");
-      // print(body1);
-      var msg = body1['message'];
-      setState(() {
-        curUser = User.fromJson(msg);
-        //widget.text = "pending";
-      });
     }
   }
 

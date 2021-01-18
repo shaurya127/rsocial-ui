@@ -98,6 +98,17 @@ class _InvestPostTileState extends State<InvestPostTile>
   int reactionSizeIncrease = 3;
   getReactions() {
     print(rxn);
+    loved=[];
+    liked=[];
+    whatever=[];
+    hated=[];
+    counter = {
+      'loved': 0,
+      'liked': 0,
+      'whatever': 0,
+      'hated': 0,
+      'noreact': 0
+    };
     //bool inLoop=true;
     for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
       User user = widget.userPost.reactedBy[i];
@@ -182,97 +193,6 @@ class _InvestPostTileState extends State<InvestPostTile>
     );
   }
 
-  // react(String reactn) async {
-  //   setState(() {
-  //     isDisabled = true;
-  //   });
-  //   var url = storyEndPoint + 'react';
-  //   var user = await FirebaseAuth.instance.currentUser();
-  //   //print(uid);
-  //   Reaction reaction = Reaction(
-  //       id: curUser.id, storyId: widget.userPost.id, reactionType: reactn);
-  //   var token = await user.getIdToken();
-  //   //print(jsonEncode(reaction.toJson()));
-  //   //print(token);
-  //   var response = await http.put(
-  //     url,
-  //     encoding: Encoding.getByName("utf-8"),
-  //     body: jsonEncode(reaction.toJson()),
-  //     headers: {
-  //       "Authorization": "Bearer: $token",
-  //       "Content-Type": "application/json",
-  //     },
-  //   );
-  //   print(response.statusCode);
-  //   if (response.statusCode == 200) {
-  //     print(response.body);
-  //
-  //     setState(() {
-  //       String prevrxn = rxn;
-  //       rxn = reactn;
-  //       print("this is my reaction $rxn");
-  //       bool inLoop = true;
-  //       for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
-  //         User user = widget.userPost.reactedBy[i];
-  //         print("rara");
-  //         if (user.id == widget.curUser.id) {
-  //           //print("in user post");
-  //           if (m.containsKey(widget.userPost.id)) m.remove(widget.userPost.id);
-  //           user.reactionType = reactn;
-  //           inLoop = false;
-  //         }
-  //       }
-  //
-  //       //when user reacts on the post for the first time
-  //       if (inLoop == true) {
-  //         //print("charu22");
-  //         // widget.userPost.user.firstRxn=reactn;
-  //         if (rxn == "noreact") {
-  //           m[widget.userPost.id] = {reactn: counter[reactn]};
-  //           return;
-  //         }
-  //         if (prevrxn != "noreact" && prevrxn != rxn) counter[prevrxn]--;
-  //         // else
-  //         //   {
-  //         //     counter[prevrxn]--;
-  //         //     counter[rxn]++;
-  //         //   }
-  //         m[widget.userPost.id] = {reactn: counter[reactn]};
-  //         // if (rxn == "loved")
-  //         //   m[widget.userPost.id][0] = ++lovedCounter;
-  //         // else if (rxn == "liked")
-  //         //   m[widget.userPost.id][1] = ++likedCounter;
-  //         // else if (rxn == "whatever")
-  //         //   m[widget.userPost.id][2] = ++whateverCounter;
-  //         // else if (rxn == "hated")
-  //         //   m[widget.userPost.id][3] = ++hatedCounter;
-  //
-  //         // m[widget.userPost.id][reactn] = reactn == "loved"
-  //         //     ? ++lovedCounter
-  //         //     : (reactn == "liked"
-  //         //         ? ++likedCounter
-  //         //         : (reactn == "whatever"
-  //         //             ? ++whateverCounter
-  //         //             : (reactn == "hated" ? ++hatedCounter : rxn)));
-  //         // rxn = reactn;
-  //         // print("hello");
-  //         // print(rxn);
-  //       } else {
-  //         // if a user toggles to another reaction we need to
-  //         // decrease the counter of the previous reaction type
-  //         // if(rxn=='noreact')
-  //         //   rxn="noreact";
-  //         if (prevrxn != rxn && rxn != "noreact") {
-  //           counter[prevrxn]--;
-  //         }
-  //       }
-  //     });
-  //   }
-  //   setState(() {
-  //     isDisabled = false;
-  //   });
-  // }
-
   react(String reactn) async {
     setState(() {
       isDisabled = true;
@@ -296,94 +216,24 @@ class _InvestPostTileState extends State<InvestPostTile>
     );
     print(response.statusCode);
     if (response.statusCode == 200) {
-      print(response.body);
-
-      // setState(() {
-      String prevrxn = rxn;
-      if (prevrxn == 'loved')
-        loved.removeWhere((element) => element.id == curUser.id);
-      else if (prevrxn == 'liked')
-        liked.removeWhere((element) => element.id == curUser.id);
-      else if (prevrxn == 'whatever')
-        whatever.removeWhere((element) => element.id == curUser.id);
-      else if (prevrxn == 'hated')
-        hated.removeWhere((element) => element.id == curUser.id);
-
-      rxn = reactn;
-
-      if (reactn == 'loved')
-        loved.add(curUser);
-      else if (reactn == 'liked')
-        liked.add(curUser);
-      else if (reactn == 'whatever')
-        whatever.add(curUser);
-      else if (reactn == 'hated') hated.add(curUser);
-      //print("this is my reaction $rxn");
-      bool inLoop = true;
-      for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
-        User user = widget.userPost.reactedBy[i];
-        print("rara");
-        if (user.id == widget.curUser.id) {
-          //print("in user post");
-          //if (m.containsKey(widget.userPost.id)) m.remove(widget.userPost.id);
-          user.reactionType = reactn;
-          inLoop = false;
-        }
-      }
-
-      //when user reacts on the post for the first time
-      if (inLoop == true) {
-        //print("charu22");
-        // widget.userPost.user.firstRxn=reactn;
-        //m[widget.userPost.id] = {reactn: counter[reactn]};
-        print("This is my reaction");
-        if (rxn == "noreact") {
-          // m[widget.userPost.id] = {reactn: counter[reactn]};
-          counter[prevrxn]--;
-          print("previous reaction is $prevrxn: ${counter[prevrxn]}");
-        } else if (prevrxn != "noreact" && prevrxn != rxn) counter[prevrxn]--;
-        // else
-        //   {
-        //     counter[prevrxn]--;
-        //     counter[rxn]++;
-        //   }
-
-        // if (rxn == "loved")
-        //   m[widget.userPost.id][0] = ++lovedCounter;
-        // else if (rxn == "liked")
-        //   m[widget.userPost.id][1] = ++likedCounter;
-        // else if (rxn == "whatever")
-        //   m[widget.userPost.id][2] = ++whateverCounter;
-        // else if (rxn == "hated")
-        //   m[widget.userPost.id][3] = ++hatedCounter;
-
-        // m[widget.userPost.id][reactn] = reactn == "loved"
-        //     ? ++lovedCounter
-        //     : (reactn == "liked"
-        //         ? ++likedCounter
-        //         : (reactn == "whatever"
-        //             ? ++whateverCounter
-        //             : (reactn == "hated" ? ++hatedCounter : rxn)));
-        // rxn = reactn;
-        // print("hello");
-        // print(rxn);
-      } else {
-        // if a user toggles to another reaction we need to
-        // decrease the counter of the previous reaction type
-        // if(rxn=='noreact')
-        //   rxn="noreact";
-        print("This is my second reaction");
-        if (rxn == "noreact") {
-          // m[widget.userPost.id] = {reactn: counter[reactn]};
-          counter[prevrxn]--;
-          print("previous reaction is $prevrxn: ${counter[prevrxn]}");
-        } else if (prevrxn != rxn && rxn != "noreact") {
-          counter[prevrxn]--;
-        }
-      }
       setState(() {
+        final jsonUser = jsonDecode(response.body);
+        var body = jsonUser['body'];
+        var body1 = jsonDecode(body);
+        print("body is $body");
+        //print(body1);
+        var msg = body1['message'];
+        if(widget.userPost.storyType=='Wage')
+          widget.userPost=Post.fromJsonW(msg);
+        else
+          widget.userPost=Post.fromJsonI(msg);
+
+        getReactions();
+
         m[widget.userPost.id] = {reactn: counter[reactn]};
+        //print("updating mp");
         mp[widget.userPost.id] = counter;
+        prft[widget.userPost.id] = widget.userPost.profit;
       });
       // });
       setState(() {});
@@ -518,7 +368,7 @@ class _InvestPostTileState extends State<InvestPostTile>
         //  m[widget.userPost.user.id] = {reaction: --counter[reaction]};
       } else {
         react(reaction);
-        counter[reaction]++;
+        //counter[reaction]++;
       }
     } else
       print("not allowed");
@@ -538,16 +388,7 @@ class _InvestPostTileState extends State<InvestPostTile>
       print("my reaction is now $rxn");
       counter = map2;
       counter[rxn] = map[rxn];
-
-      //Map<String, int> mx = m[widget.userPost.id];
-      // for (var key in mx.keys) rxn = key;
-      // if (rxn == "loved")
-      //   lovedCounter = m[widget.userPost.id][0];
-      // else if (rxn == "liked")
-      //   likedCounter = m[widget.userPost.id][1];
-      // else if (rxn == "whatever")
-      //   whateverCounter = m[widget.userPost.id][2];
-      // else if (rxn == "hated") hatedCounter = m[widget.userPost.id][3];
+      widget.userPost.profit=prft[widget.userPost.id];
     }
 
     return Padding(
