@@ -103,17 +103,11 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
 
   getReactions() {
     print(rxn);
-    loved=[];
-    liked=[];
-    whatever=[];
-    hated=[];
-    counter = {
-      'loved': 0,
-      'liked': 0,
-      'whatever': 0,
-      'hated': 0,
-      'noreact': 0
-    };
+    loved = [];
+    liked = [];
+    whatever = [];
+    hated = [];
+    counter = {'loved': 0, 'liked': 0, 'whatever': 0, 'hated': 0, 'noreact': 0};
     //bool inLoop=true;
     for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
       User user = widget.userPost.reactedBy[i];
@@ -236,10 +230,10 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
         print("body is $body");
         //print(body1);
         var msg = body1['message'];
-        if(widget.userPost.storyType=='Wage')
-          widget.userPost=Post.fromJsonW(msg);
+        if (widget.userPost.storyType == 'Wage')
+          widget.userPost = Post.fromJsonW(msg);
         else
-          widget.userPost=Post.fromJsonI(msg);
+          widget.userPost = Post.fromJsonI(msg);
 
         getReactions();
 
@@ -476,7 +470,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
       setState(() {
         counter = map2;
         counter[rxn] = map[rxn];
-        widget.userPost.profit=prft[widget.userPost.id];
+        widget.userPost.profit = prft[widget.userPost.id];
       });
     }
 
@@ -683,7 +677,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                               style: TextStyle(
                                 fontFamily: "Lato",
                                 fontSize: 12,
-                                color: int.parse(widget.userPost.profit) >= 0
+                                color: double.parse(widget.userPost.profit) >= 0
                                     ? colorProfitPositive
                                     : colorProfitNegative,
                               ),
