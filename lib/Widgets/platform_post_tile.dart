@@ -102,6 +102,8 @@ class _PlatformPostTileState extends State<PlatformPostTile>
 
   int reactionSizeIncrease = 3;
   bool _isCreatingLink = false;
+  bool _showPreview = false;
+  String _image;
 
   getReactions() {
     print(rxn);
@@ -912,18 +914,6 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                         color: postDesc,
                       ),
                     )
-                    /*Text(
-
-                "today was a great day with my cats! ",
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-                softWrap: true,
-                style: GoogleFonts.lato(
-                  fontSize:15,
-                  color: postDesc,
-                ),
-                //textAlign: TextAlign.left,
-              ),*/
                     ),
             widget.userPost.fileUpload.length != 0
                 ? Padding(

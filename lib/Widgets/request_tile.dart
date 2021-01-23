@@ -370,6 +370,7 @@ class _Request_TileState extends State<Request_Tile> {
                       ),
                       Text(
                         widget.user.connection.length!=widget.user.connectionCount
+                        && widget.user.connectionCount!=null
                             ?"${widget.user.connectionCount}"
                             :"${widget.user.connection.length}",
                         style: TextStyle(color: Colors.grey),
