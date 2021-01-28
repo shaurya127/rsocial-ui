@@ -45,6 +45,7 @@ dependencies:
   package_info:
   firebase_dynamic_links:
   shared_preferences: ^0.5.8
+  pinch_zoom_image_updated: ^0.2.6
   firebase_messaging:
  # fluttertoast:
 

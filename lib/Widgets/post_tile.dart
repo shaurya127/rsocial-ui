@@ -12,7 +12,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:rsocial2/Screens/display_image.dart';
+import 'package:pinch_zoom_image_updated/pinch_zoom_image_updated.dart';
 import 'package:rsocial2/Screens/display_post.dart';
 import '../auth.dart';
 import '../my_flutter_app_icons.dart';
@@ -515,6 +515,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                               style: TextStyle(
                                 //fontWeight: FontWeight.bold,
                                 fontFamily: "Lato",
+                                fontWeight: FontWeight.bold,
                                 fontSize: 14,
                                 color: nameCol,
                               ),
@@ -545,6 +546,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                               style: TextStyle(
                                 //fontWeight: FontWeight.bold,
                                 fontFamily: "Lato",
+                                fontWeight: FontWeight.bold,
                                 fontSize: 14,
                                 color: nameCol,
                               ),
@@ -859,18 +861,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                         color: postDesc,
                       ),
                     )
-                    /*Text(
-
-                "today was a great day with my cats! ",
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-                softWrap: true,
-                style: GoogleFonts.lato(
-                  fontSize:15,
-                  color: postDesc,
-                ),
-                //textAlign: TextAlign.left,
-              ),*/
                     ),
             widget.userPost.fileUpload.length != 0
                 ? Padding(
@@ -894,70 +884,49 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                         (BuildContext context, int index) {
                                       return Stack(
                                         children: <Widget>[
-                                          GestureDetector(
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
+                                          PinchZoomImage(
+                                            image: ClipRRect(
+                                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
                                                       BorderRadius.circular(10),
-                                                  color: Colors.grey
-                                                      .withOpacity(0.2),
-                                                  image: DecorationImage(
-                                                      image: NetworkImage(
-                                                        fileList[index],
-                                                      ),
-                                                      fit: BoxFit.cover)),
-                                              height: 250,
+                                                      color: Colors.grey.withOpacity(0.2),
+                                                      image: DecorationImage(
+                                                          image: NetworkImage(
+                                                            fileList[index],
+                                                          ),
+                                                          fit: BoxFit.cover)),
+                                                  height: 250,
+                                                )
                                             ),
-                                            onLongPress: () => Navigator.push(
-                                                (context),
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        DisplayImage(
-                                                          url: fileList[index],
-                                                        ))),
+                                            zoomedBackgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
+                                            //hideStatusBarWhileZooming: true,
                                           ),
-                                          // Container(
-                                          //   decoration: BoxDecoration(
-                                          //       borderRadius: BorderRadius.only(
-                                          //           bottomRight:
-                                          //           Radius.circular(8)),
-                                          //       color: Colors.red
-                                          //           .withOpacity(0.2)),
-                                          //   child: IconButton(
-                                          //     icon: Icon(
-                                          //       Icons.clear,
-                                          //     ),
-                                          //     onPressed: () {
-                                          //       setState(() {
-                                          //         fileList.removeAt(index);
-                                          //         list.removeAt(index);
-                                          //       });
-                                          //     },
-                                          //   ),
-                                          // )
                                         ],
                                       );
                                     })
-                                : GestureDetector(
-                                    onLongPress: () => Navigator.push(
-                                        (context),
-                                        MaterialPageRoute(
-                                            builder: (context) => DisplayImage(
-                                                  url: fileList[0],
-                                                ))),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          color: Colors.grey.withOpacity(0.2),
-                                          image: DecorationImage(
-                                              image: NetworkImage(
-                                                fileList[0],
-                                              ),
-                                              fit: BoxFit.cover)),
-                                      height: 250,
-                                    ),
-                                  ))
+                                :
+                        PinchZoomImage(
+                          image: ClipRRect(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius:
+                                  BorderRadius.circular(10),
+                                  color: Colors.grey.withOpacity(0.2),
+                                  image: DecorationImage(
+                                      image: NetworkImage(
+                                        fileList[0],
+                                      ),
+                                      fit: BoxFit.cover)),
+                              height: 250,
+                            )
+                          ),
+                          zoomedBackgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
+                          //hideStatusBarWhileZooming: true,
+                        )
+                        )
                             : Center(
                                 child: CircularProgressIndicator(),
                               )))

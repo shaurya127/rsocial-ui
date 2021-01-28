@@ -331,7 +331,7 @@ class _Request_TileState extends State<Request_Tile> {
                     "${widget.user.fname} ${widget.user.lname}",
                     style: TextStyle(
                       fontFamily: "Lato",
-                      //fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.bold,
                       fontSize: 16,
                       color: nameCol,
                     ),
