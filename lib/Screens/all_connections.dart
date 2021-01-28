@@ -28,7 +28,7 @@ class _AllConnectionsState extends State<AllConnections> {
           text: "remove",
           accepted: true,
           //request: false,
-          photourl: curUser.photoUrl,
+          //photourl: curUser.photoUrl,
           //curUser: curUser,
         );
         friendResults.add(tile);
@@ -38,13 +38,13 @@ class _AllConnectionsState extends State<AllConnections> {
       );
     } else
       return ListView(
-            children: <Widget>[
-              Text(
-                "You have no friends till now",
-                textAlign: TextAlign.center,
-              ),
-            ],
-          );
+        children: <Widget>[
+          Text(
+            "You have no friends till now",
+            textAlign: TextAlign.center,
+          ),
+        ],
+      );
   }
 
   @override

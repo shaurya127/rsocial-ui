@@ -310,7 +310,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
             : "add",
         //accepted: aconnection,
         user: loved[i],
-        photourl: loved[i].photoUrl,
+        //photourl: loved[i].photoUrl,
         //curUser: widget.curUser,
       );
       love.add(tile);
@@ -324,7 +324,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
             : "add",
         //accepted: aconnection ,
         user: liked[i],
-        photourl: liked[i].photoUrl,
+        //photourl: liked[i].photoUrl,
         //curUser: widget.curUser,
       );
       likes.add(tile);
@@ -338,7 +338,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
             : "add",
         //accepted: aconnection ,
         user: hated[i],
-        photourl: hated[i].photoUrl,
+        //photourl: hated[i].photoUrl,
         //curUser: widget.curUser,
       );
       hates.add(tile);
@@ -352,7 +352,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
             : "add",
         //accepted: aconnection ? true : false,
         user: whatever[i],
-        photourl: whatever[i].photoUrl,
+        //photourl: whatever[i].photoUrl,
         //curUser: widget.curUser,
       );
       whatevers.add(tile);
@@ -915,8 +915,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                         fontFamily: "Lato",
                         color: postDesc,
                       ),
-                    )
-                    ),
+                    )),
             widget.userPost.fileUpload.length != 0
                 ? Padding(
                     padding: widget.userPost.storyText == null

@@ -263,7 +263,7 @@ class _Search_PageState extends State<Search_Page>
             ? curUser.userMap[suggestionList[i].id]
             : "add",
         //request: false,
-        photourl: photourl,
+        //photourl: photourl,
       );
       searchResults.add(tile);
     }
@@ -320,7 +320,7 @@ class _Search_PageState extends State<Search_Page>
           text: "remove",
           accepted: true,
           //request: false,
-          photourl: photourl,
+          //photourl: photourl,
           //curUser: curUser,
         );
         friendResults.add(tile);
@@ -349,7 +349,7 @@ class _Search_PageState extends State<Search_Page>
           user: requestList[i],
           //request: true,
           accepted: false,
-          photourl: requestList[i].photoUrl,
+          //photourl: requestList[i].photoUrl,
           text: "request",
           //curUser: curUser,
         );

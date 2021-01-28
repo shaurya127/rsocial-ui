@@ -103,10 +103,10 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
                   height: 17,
                   // width: 40,
                   decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xff37B44B)),
+                      border: Border.all(color: colorProfitPositive),
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       //shape: BoxShape.circle,
-                      color: Color(0xff37B44B)),
+                      color: colorProfitPositive),
                   child: Padding(
                     padding: const EdgeInsets.all(2.0),
                     child: Center(

@@ -266,7 +266,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
             : "add",
         //accepted: aconnection,
         user: loved[i],
-        photourl: loved[i].photoUrl,
+        //photourl: loved[i].photoUrl,
         //curUser: widget.curUser,
       );
       love.add(tile);
@@ -280,7 +280,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
             : "add",
         //accepted: aconnection ,
         user: liked[i],
-        photourl: liked[i].photoUrl,
+        // photourl: liked[i].photoUrl,
         //curUser: widget.curUser,
       );
       likes.add(tile);
@@ -294,7 +294,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
             : "add",
         //accepted: aconnection ,
         user: hated[i],
-        photourl: hated[i].photoUrl,
+        //photourl: hated[i].photoUrl,
         //curUser: widget.curUser,
       );
       hates.add(tile);
@@ -308,7 +308,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
             : "add",
         //accepted: aconnection ? true : false,
         user: whatever[i],
-        photourl: whatever[i].photoUrl,
+        //photourl: whatever[i].photoUrl,
         //curUser: widget.curUser,
       );
       whatevers.add(tile);
@@ -908,10 +908,13 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                                       fit: BoxFit.cover)),
                                               height: 250,
                                             ),
-                                            onLongPress: ()=>Navigator.push(
-                                                (context), MaterialPageRoute(
-                                                builder: (context)=>DisplayImage(
-                                                  url: fileList[index],))),
+                                            onLongPress: () => Navigator.push(
+                                                (context),
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        DisplayImage(
+                                                          url: fileList[index],
+                                                        ))),
                                           ),
                                           // Container(
                                           //   decoration: BoxDecoration(
@@ -936,13 +939,16 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                       );
                                     })
                                 : GestureDetector(
-                                  onLongPress: ()=>Navigator.push(
-                                      (context), MaterialPageRoute(
-                                      builder: (context)=>DisplayImage(
-                                        url: fileList[0],))),
-                                  child: Container(
+                                    onLongPress: () => Navigator.push(
+                                        (context),
+                                        MaterialPageRoute(
+                                            builder: (context) => DisplayImage(
+                                                  url: fileList[0],
+                                                ))),
+                                    child: Container(
                                       decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
                                           color: Colors.grey.withOpacity(0.2),
                                           image: DecorationImage(
                                               image: NetworkImage(
@@ -951,7 +957,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                               fit: BoxFit.cover)),
                                       height: 250,
                                     ),
-                                ))
+                                  ))
                             : Center(
                                 child: CircularProgressIndicator(),
                               )))
