@@ -12,6 +12,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:rsocial2/Screens/display_image.dart';
 import 'package:rsocial2/Screens/display_post.dart';
 import '../auth.dart';
 import '../my_flutter_app_icons.dart';
@@ -893,18 +894,24 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                         (BuildContext context, int index) {
                                       return Stack(
                                         children: <Widget>[
-                                          Container(
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                color: Colors.grey
-                                                    .withOpacity(0.2),
-                                                image: DecorationImage(
-                                                    image: NetworkImage(
-                                                      fileList[index],
-                                                    ),
-                                                    fit: BoxFit.cover)),
-                                            height: 250,
+                                          GestureDetector(
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                  color: Colors.grey
+                                                      .withOpacity(0.2),
+                                                  image: DecorationImage(
+                                                      image: NetworkImage(
+                                                        fileList[index],
+                                                      ),
+                                                      fit: BoxFit.cover)),
+                                              height: 250,
+                                            ),
+                                            onLongPress: ()=>Navigator.push(
+                                                (context), MaterialPageRoute(
+                                                builder: (context)=>DisplayImage(
+                                                  url: fileList[index],))),
                                           ),
                                           // Container(
                                           //   decoration: BoxDecoration(
@@ -928,17 +935,23 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                         ],
                                       );
                                     })
-                                : Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Colors.grey.withOpacity(0.2),
-                                        image: DecorationImage(
-                                            image: NetworkImage(
-                                              fileList[0],
-                                            ),
-                                            fit: BoxFit.cover)),
-                                    height: 250,
-                                  ))
+                                : GestureDetector(
+                                  onLongPress: ()=>Navigator.push(
+                                      (context), MaterialPageRoute(
+                                      builder: (context)=>DisplayImage(
+                                        url: fileList[0],))),
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(10),
+                                          color: Colors.grey.withOpacity(0.2),
+                                          image: DecorationImage(
+                                              image: NetworkImage(
+                                                fileList[0],
+                                              ),
+                                              fit: BoxFit.cover)),
+                                      height: 250,
+                                    ),
+                                ))
                             : Center(
                                 child: CircularProgressIndicator(),
                               )))

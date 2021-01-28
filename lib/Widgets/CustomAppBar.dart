@@ -24,25 +24,27 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
     );
   }
 
-  String lollarAmountFormat(int a, int num) {
+  String formatNumber(int a) {
     String res = a.toString();
-    if (num == 10000) {
-      res = (a / 1000).toString() + "," + (a % 1000).toString();
-      return res;
-    }
-    if (a > num) {
-      res = (a / num).toString() + "," + (a % num).toString();
+
+    if (a < 10000) return res;
+
+    int num = res.length;
+
+    // res = (a/1000).floor().toString() + "," + (a%1000).toString();
+
+    if (num % 2 == 0) {
+      for (int i = 1; i < num; i = i + 2) {
+        res = res.substring(0, i) + "," + res.substring(i);
+        i++;
+      }
+    } else {
+      for (int i = 2; i < num; i = i + 2) {
+        res = res.substring(0, i) + "," + res.substring(i);
+        i++;
+      }
     }
     return res;
-
-    // String res = a.toString();
-    // if (a > 1000){
-    //   res = (a/1000).toString() + "," + (a%1000).toString();
-    // }
-    // else if (a > 100000){
-    //   res = (a/100000).toString() + "," + lollarAmountFormat(a%100000);
-    // }
-    // else if (a > 1)
   }
 
   return AppBar(
@@ -60,7 +62,7 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
                 height: 23,
               ),
               Text(
-                curUser.lollarAmount.toString(),
+                formatNumber(curUser.lollarAmount),
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
