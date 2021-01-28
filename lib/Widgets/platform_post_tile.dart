@@ -730,11 +730,13 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                           ),
                           Container(
                             child: Text(
-                              widget.userPost.profit,
+                              double.parse(widget.userPost.profit)
+                                  .round()
+                                  .toString(),
                               style: TextStyle(
                                 fontFamily: "Lato",
                                 fontSize: 12,
-                                color: int.parse(widget.userPost.profit) >= 0
+                                color: double.parse(widget.userPost.profit) >= 0
                                     ? colorProfitPositive
                                     : colorProfitNegative,
                               ),

@@ -24,6 +24,27 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
     );
   }
 
+  String lollarAmountFormat(int a, int num) {
+    String res = a.toString();
+    if (num == 10000) {
+      res = (a / 1000).toString() + "," + (a % 1000).toString();
+      return res;
+    }
+    if (a > num) {
+      res = (a / num).toString() + "," + (a % num).toString();
+    }
+    return res;
+
+    // String res = a.toString();
+    // if (a > 1000){
+    //   res = (a/1000).toString() + "," + (a%1000).toString();
+    // }
+    // else if (a > 100000){
+    //   res = (a/100000).toString() + "," + lollarAmountFormat(a%100000);
+    // }
+    // else if (a > 1)
+  }
+
   return AppBar(
       backgroundColor: colorButton,
       iconTheme: IconThemeData(color: Colors.white),

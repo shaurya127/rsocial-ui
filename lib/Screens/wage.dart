@@ -282,6 +282,10 @@ class _WageState extends State<Wage> {
   }
 
   createPostInvestment(String investmentAmount, List<String> list) async {
+    if (selectedList.isEmpty) {
+      return;
+    }
+
     if (investmentstoryText != null || investmentfileList.isNotEmpty) {
       setState(() {
         isloading = true;
@@ -672,7 +676,7 @@ class _WageState extends State<Wage> {
                 divisions: 80,
                 label: amount.round().toString(),
                 min: 1000,
-                max: 9000,
+                max: curUser.lollarAmount.toDouble(),
                 activeColor: colorPrimaryBlue,
                 inactiveColor: colorGreyTint,
                 onChanged: (value) {
@@ -694,7 +698,7 @@ class _WageState extends State<Wage> {
                           fontSize: 12),
                     ),
                     Text(
-                      "9000",
+                      curUser.lollarAmount.toString(),
                       style: TextStyle(
                           color: colorGreyTint,
                           fontFamily: "Lato",
@@ -876,7 +880,7 @@ class _WageState extends State<Wage> {
                                       image: DecorationImage(
                                           image: FileImage(
                                               investmentfileList[index]),
-                                          fit: BoxFit.cover)),
+                                          fit: BoxFit.fill)),
                                   height: 250,
                                 ),
                                 Container(

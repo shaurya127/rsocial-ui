@@ -43,9 +43,12 @@ class Post {
         investedWith.add(user);
       }
     }
+    print("hsdfljsdfklsdjfkllsdjfklsdfjsdklfjdkfjdf");
+    print(json["id"]);
+    print(json["ReactedBy"]);
 
     List<User> rxn = [];
-    if (json["ReactedBy"].isNotEmpty) {
+    if (json["ReactedBy"] != null) if (json["ReactedBy"].isNotEmpty) {
       for (int i = 0; i < json["ReactedBy"].length; i++) {
         User user = User.fromJson(json["ReactedBy"][i]);
         rxn.add(user);

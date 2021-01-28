@@ -228,6 +228,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
         var body = jsonUser['body'];
         var body1 = jsonDecode(body);
         print("body is $body");
+
         //print(body1);
         var msg = body1['message'];
         if (widget.userPost.storyType == 'Wage')
@@ -236,7 +237,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
           widget.userPost = Post.fromJsonI(msg);
 
         getReactions();
-
+        print(widget.userPost.profit);
         m[widget.userPost.id] = {reactn: counter[reactn]};
         //print("updating mp");
         mp[widget.userPost.id] = counter;
@@ -673,7 +674,9 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                           ),
                           Container(
                             child: Text(
-                              widget.userPost.profit,
+                              double.parse(widget.userPost.profit)
+                                  .round()
+                                  .toString(),
                               style: TextStyle(
                                 fontFamily: "Lato",
                                 fontSize: 12,

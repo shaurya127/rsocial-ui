@@ -28,7 +28,7 @@ import 'package:rsocial2/Widgets/RoundedButton.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:openid_client/openid_client_io.dart';
+
 import 'package:search_widget/search_widget.dart';
 
 import '../post.dart';
