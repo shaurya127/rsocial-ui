@@ -3,8 +3,9 @@ import 'dart:io';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:rsocial2/Screens/rcash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 import '../config.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
@@ -59,6 +60,8 @@ class _BottomNavBarState extends State<BottomNavBar>
     with SingleTickerProviderStateMixin {
   // This is our animation controller
 
+  FirebaseMessaging _messaging = FirebaseMessaging();
+
   final authInstance = FirebaseAuth.instance;
   final _authInstance = FirebaseAuth.instance;
   bool isLoading = true;
@@ -87,8 +90,9 @@ class _BottomNavBarState extends State<BottomNavBar>
     photourl = user.photoUrl;
     var token = await user.getIdToken();
     String inviteId = prefs.getString('inviteSenderId');
-    if(inviteId!=null || inviteSenderId!=null)
-      widget.currentUser.inviteSenderId = inviteId==null?inviteSenderId:inviteId;
+    if (inviteId != null || inviteSenderId != null)
+      widget.currentUser.inviteSenderId =
+          inviteId == null ? inviteSenderId : inviteId;
     var response = await http.post(
       url,
       encoding: Encoding.getByName("utf-8"),
@@ -506,13 +510,19 @@ class _BottomNavBarState extends State<BottomNavBar>
       });
       createNgetUserAwait();
     } else {
+      getFirebaseMessagingToken();
       // createUser();
       getUserAwait();
       getAllUsers();
       getUserPosts();
-      if(postId==null)
-        initDynamicLinks();
+      if (postId == null) initDynamicLinks();
     }
+  }
+
+  getFirebaseMessagingToken() async {
+    var token = await _messaging.getToken();
+    print("Here is my messaging token");
+    print(token);
   }
 
   createNgetUserAwait() async {
@@ -532,26 +542,34 @@ class _BottomNavBarState extends State<BottomNavBar>
 
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
-          final Uri deepLink = dynamicLink?.link;
-          if (deepLink != null) {
-            //print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
-            //postId = deepLink.queryParameters['postid'];
-            if(deepLink.queryParameters['postid']!=null)
-              Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:deepLink.queryParameters['postid'])));
-          }
-        }, onError: (OnLinkErrorException e) async {
+      final Uri deepLink = dynamicLink?.link;
+      if (deepLink != null) {
+        //print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
+        //postId = deepLink.queryParameters['postid'];
+        if (deepLink.queryParameters['postid'] != null)
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      DisplayPost(postId: deepLink.queryParameters['postid'])));
+      }
+    }, onError: (OnLinkErrorException e) async {
       print('onLinkError');
       print(e.message);
-    }
-    );
+    });
 
-    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    final PendingDynamicLinkData data =
+        await FirebaseDynamicLinks.instance.getInitialLink();
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {
       //postId = deepLink.queryParameters['postid'];
-      if(deepLink.queryParameters['postid']!=null)
-        Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:deepLink.queryParameters['postid'])));
+      if (deepLink.queryParameters['postid'] != null)
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    DisplayPost(postId: deepLink.queryParameters['postid'])));
     }
 
     // setState(() {
@@ -578,7 +596,7 @@ class _BottomNavBarState extends State<BottomNavBar>
         isPostedCallback: isPostedCallback,
       ),
       Scaffold(),
-      Scaffold(),
+      RcashScreen()
       //BioPage(analytics:widget.analytics,observer:widget.observer,currentUser: currentUser,),
       //ProfilePicPage(currentUser: widget.currentUser,analytics:widget.analytics,observer:widget.observer),
     ];
@@ -646,121 +664,128 @@ class _BottomNavBarState extends State<BottomNavBar>
                   child: CircularProgressIndicator(),
                 ),
               )
-            : (postId==null ? Scaffold(
-                appBar: customAppBar(
-                    context,
-                    "",
-                    curUser != null ? curUser.lollarAmount.toString() : "",
-                    curUser != null ? curUser.photoUrl : "",
-                    curUser != null ? curUser.socialStanding.toString() : ""),
+            : (postId == null
+                ? Scaffold(
+                    appBar: customAppBar(
+                        context,
+                        "",
+                        curUser != null ? curUser.lollarAmount.toString() : "",
+                        curUser != null ? curUser.photoUrl : "",
+                        curUser != null
+                            ? curUser.socialStanding.toString()
+                            : ""),
 
-                drawer: Nav_Drawer(
-                  currentUser: curUser,
-                  photoUrl: curUser.photoUrl != null ? curUser.photoUrl : "",
-                ),
-                // AppBar(
-                //   backgroundColor: colorGreenTint,
-                //   leading: Padding(
-                //     padding: const EdgeInsets.only(left: 13, top: 2),
-                //     child: Stack(
-                //       children: <Widget>[
-                //         Container(
-                //           height: 60,
-                //           width: 60,
-                //           decoration: BoxDecoration(
-                //               image: DecorationImage(
-                //                   image: AssetImage("images/circle1.png")),
-                //               shape: BoxShape.circle),
-                //         ),
-                //         Positioned(
-                //           left: 23,
-                //           top: 30,
-                //           child: Container(
-                //             height: 21,
-                //             width: 21,
-                //             decoration: BoxDecoration(
-                //                 border: Border.all(color: Colors.grey),
-                //                 shape: BoxShape.circle,
-                //                 color: Colors.white),
-                //             child: Center(
-                //               child: FaIcon(
-                //                 FontAwesomeIcons.bars,
-                //                 color: colorGreenTint,
-                //                 size: 15,
-                //               ),
-                //             ),
-                //           ),
-                //         )
-                //       ],
-                //     ),
-                //   ),
-                // ),
-                body:
-                    // isLoading || curUser == null
-                    //     ? Center(
-                    //         child: CircularProgressIndicator(),
-                    //       )
-                    //     :
-                    _screens[_currentIndex],
-                bottomNavigationBar: BottomNavigationBar(
-                  currentIndex: _currentIndex,
-                  onTap: (index) => setState(() => _currentIndex = index),
-                  type: BottomNavigationBarType.fixed,
-                  backgroundColor: Colors.white,
-                  showSelectedLabels: true,
-                  showUnselectedLabels: true,
-                  unselectedItemColor:
-                      colorUnselectedBottomNav.withOpacity(0.5),
-                  elevation: 5,
-                  items: [
-                    Icons.home,
-                    Icons.search,
-                    Icons.add_circle_outline,
-                    Icons.notifications,
-                    Icons.account_balance_wallet
-                    // FaIcon(FontAwesomeIcons.plus),
-                    // FaIcon(FontAwesomeIcons.bell),
-                    // FaIcon(FontAwesomeIcons.wallet),
-                  ]
-                      .asMap()
-                      .map(
-                        (key, value) => MapEntry(
-                          key,
-                          BottomNavigationBarItem(
-                            title: Text(
-                              _labels[key],
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: _currentIndex == key
-                                    ? colorButton
-                                    : colorUnselectedBottomNav.withOpacity(0.5),
-                                fontFamily: "Lato",
-                                fontWeight: FontWeight.bold,
+                    drawer: Nav_Drawer(
+                      currentUser: curUser,
+                      photoUrl:
+                          curUser.photoUrl != null ? curUser.photoUrl : "",
+                    ),
+                    // AppBar(
+                    //   backgroundColor: colorGreenTint,
+                    //   leading: Padding(
+                    //     padding: const EdgeInsets.only(left: 13, top: 2),
+                    //     child: Stack(
+                    //       children: <Widget>[
+                    //         Container(
+                    //           height: 60,
+                    //           width: 60,
+                    //           decoration: BoxDecoration(
+                    //               image: DecorationImage(
+                    //                   image: AssetImage("images/circle1.png")),
+                    //               shape: BoxShape.circle),
+                    //         ),
+                    //         Positioned(
+                    //           left: 23,
+                    //           top: 30,
+                    //           child: Container(
+                    //             height: 21,
+                    //             width: 21,
+                    //             decoration: BoxDecoration(
+                    //                 border: Border.all(color: Colors.grey),
+                    //                 shape: BoxShape.circle,
+                    //                 color: Colors.white),
+                    //             child: Center(
+                    //               child: FaIcon(
+                    //                 FontAwesomeIcons.bars,
+                    //                 color: colorGreenTint,
+                    //                 size: 15,
+                    //               ),
+                    //             ),
+                    //           ),
+                    //         )
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+                    body:
+                        // isLoading || curUser == null
+                        //     ? Center(
+                        //         child: CircularProgressIndicator(),
+                        //       )
+                        //     :
+                        _screens[_currentIndex],
+                    bottomNavigationBar: BottomNavigationBar(
+                      currentIndex: _currentIndex,
+                      onTap: (index) => setState(() => _currentIndex = index),
+                      type: BottomNavigationBarType.fixed,
+                      backgroundColor: Colors.white,
+                      showSelectedLabels: true,
+                      showUnselectedLabels: true,
+                      unselectedItemColor:
+                          colorUnselectedBottomNav.withOpacity(0.5),
+                      elevation: 5,
+                      items: [
+                        Icons.home,
+                        Icons.search,
+                        Icons.add_circle_outline,
+                        Icons.notifications,
+                        Icons.account_balance_wallet
+                        // FaIcon(FontAwesomeIcons.plus),
+                        // FaIcon(FontAwesomeIcons.bell),
+                        // FaIcon(FontAwesomeIcons.wallet),
+                      ]
+                          .asMap()
+                          .map(
+                            (key, value) => MapEntry(
+                              key,
+                              BottomNavigationBarItem(
+                                title: Text(
+                                  _labels[key],
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: _currentIndex == key
+                                        ? colorButton
+                                        : colorUnselectedBottomNav
+                                            .withOpacity(0.5),
+                                    fontFamily: "Lato",
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                icon: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 0, horizontal: 16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Icon(
+                                    value,
+                                    color: _currentIndex == key
+                                        ? colorButton
+                                        : colorUnselectedBottomNav
+                                            .withOpacity(0.5),
+                                    size: 24,
+                                  ),
+                                ),
                               ),
                             ),
-                            icon: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 0, horizontal: 16),
-                              decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Icon(
-                                value,
-                                color: _currentIndex == key
-                                    ? colorButton
-                                    : colorUnselectedBottomNav.withOpacity(0.5),
-                                size: 24,
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                      .values
-                      .toList(),
-                ),
-              )
-        : DisplayPost(postId: postId,)
-    );
+                          )
+                          .values
+                          .toList(),
+                    ),
+                  )
+                : DisplayPost(
+                    postId: postId,
+                  ));
   }
 }

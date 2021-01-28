@@ -491,11 +491,23 @@ void logout(BuildContext context) async {
   if (user != null) {
     if (Platform.isIOS) {
       if (user.providerData[0].providerId == 'google.com') {
-        await googleSignIn.disconnect();
+        try {
+          await googleSignIn.disconnect();
+        } on PlatformException catch (e) {
+          if (e.code == 'Failed to disconnect') {
+            print("Failed to disconnect");
+          }
+        }
       }
     } else {
       if (user.providerData[1].providerId == 'google.com') {
-        await googleSignIn.disconnect();
+        try {
+          await googleSignIn.disconnect();
+        } on PlatformException catch (e) {
+          if (e.code == 'Failed to disconnect') {
+            print("Failed to disconnect");
+          }
+        }
       } else if (user.providerData[0].providerId == 'facebook.com') {
         await fblogin.logOut();
       }

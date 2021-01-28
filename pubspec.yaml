@@ -28,7 +28,6 @@ dependencies:
   image_picker: ^0.6.7+21
   flutter_swiper:
   search_widget: ^1.0.2
-  openid_client: ^0.3.1
   url_launcher:
   firebase_remote_config:
   firebase_core:
@@ -46,6 +45,7 @@ dependencies:
   package_info:
   firebase_dynamic_links:
   shared_preferences: ^0.5.8
+  firebase_messaging:
  # fluttertoast:
 
 dev_dependencies:

@@ -24,6 +24,29 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
     );
   }
 
+  String formatNumber(int a) {
+    String res = a.toString();
+
+    if (a < 10000) return res;
+
+    int num = res.length;
+
+    // res = (a/1000).floor().toString() + "," + (a%1000).toString();
+
+    if (num % 2 == 0) {
+      for (int i = 1; i < num; i = i + 2) {
+        res = res.substring(0, i) + "," + res.substring(i);
+        i++;
+      }
+    } else {
+      for (int i = 2; i < num; i = i + 2) {
+        res = res.substring(0, i) + "," + res.substring(i);
+        i++;
+      }
+    }
+    return res;
+  }
+
   return AppBar(
       backgroundColor: colorButton,
       iconTheme: IconThemeData(color: Colors.white),
@@ -39,7 +62,7 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
                 height: 23,
               ),
               Text(
-                curUser.lollarAmount.toString(),
+                formatNumber(curUser.lollarAmount),
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -80,10 +103,10 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
                   height: 17,
                   // width: 40,
                   decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xff37B44B)),
+                      border: Border.all(color: colorProfitPositive),
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                       //shape: BoxShape.circle,
-                      color: Color(0xff37B44B)),
+                      color: colorProfitPositive),
                   child: Padding(
                     padding: const EdgeInsets.all(2.0),
                     child: Center(

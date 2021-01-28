@@ -27,6 +27,29 @@ class Nav_Drawer extends StatefulWidget {
 }
 
 class _Nav_DrawerState extends State<Nav_Drawer> {
+  String formatNumber(int a) {
+    String res = a.toString();
+
+    if (a < 10000) return res;
+
+    int num = res.length;
+
+    // res = (a/1000).floor().toString() + "," + (a%1000).toString();
+
+    if (num % 2 == 0) {
+      for (int i = 1; i < num; i = i + 2) {
+        res = res.substring(0, i) + "," + res.substring(i);
+        i++;
+      }
+    } else {
+      for (int i = 2; i < num; i = i + 2) {
+        res = res.substring(0, i) + "," + res.substring(i);
+        i++;
+      }
+    }
+    return res;
+  }
+
   @override
   Widget build(BuildContext context) {
     //print(widget.currentUser);
@@ -105,18 +128,18 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                     ),
                   ),
                   trailing: Text(
-                    curUser != null ? curUser.lollarAmount.toString() : "",
+                    curUser != null ? formatNumber(curUser.lollarAmount) : "",
                     style: TextStyle(color: Colors.grey, fontSize: 16),
                   ),
                 ),
                 Nav_Drawer_Tile(
-                  f: (){
-                    Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AllConnections()));
-                  },
+                    f: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AllConnections()));
+                    },
                     title: kNavDrawerConnection,
                     icon: Container(
                       height: 23,

@@ -98,17 +98,11 @@ class _InvestPostTileState extends State<InvestPostTile>
   int reactionSizeIncrease = 3;
   getReactions() {
     print(rxn);
-    loved=[];
-    liked=[];
-    whatever=[];
-    hated=[];
-    counter = {
-      'loved': 0,
-      'liked': 0,
-      'whatever': 0,
-      'hated': 0,
-      'noreact': 0
-    };
+    loved = [];
+    liked = [];
+    whatever = [];
+    hated = [];
+    counter = {'loved': 0, 'liked': 0, 'whatever': 0, 'hated': 0, 'noreact': 0};
     //bool inLoop=true;
     for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
       User user = widget.userPost.reactedBy[i];
@@ -223,10 +217,10 @@ class _InvestPostTileState extends State<InvestPostTile>
         print("body is $body");
         //print(body1);
         var msg = body1['message'];
-        if(widget.userPost.storyType=='Wage')
-          widget.userPost=Post.fromJsonW(msg);
+        if (widget.userPost.storyType == 'Wage')
+          widget.userPost = Post.fromJsonW(msg);
         else
-          widget.userPost=Post.fromJsonI(msg);
+          widget.userPost = Post.fromJsonI(msg);
 
         getReactions();
 
@@ -257,7 +251,7 @@ class _InvestPostTileState extends State<InvestPostTile>
             : "add",
         //accepted: aconnection,
         user: loved[i],
-        photourl: loved[i].photoUrl,
+        //photourl: loved[i].photoUrl,
         //curUser: widget.curUser,
       );
       love.add(tile);
@@ -271,7 +265,7 @@ class _InvestPostTileState extends State<InvestPostTile>
             : "add",
         //accepted: aconnection ,
         user: liked[i],
-        photourl: liked[i].photoUrl,
+        //photourl: liked[i].photoUrl,
         //curUser: widget.curUser,
       );
       likes.add(tile);
@@ -285,7 +279,7 @@ class _InvestPostTileState extends State<InvestPostTile>
             : "add",
         //accepted: aconnection ,
         user: hated[i],
-        photourl: hated[i].photoUrl,
+        //photourl: hated[i].photoUrl,
         //curUser: widget.curUser,
       );
       hates.add(tile);
@@ -299,7 +293,7 @@ class _InvestPostTileState extends State<InvestPostTile>
             : "add",
         //accepted: aconnection ? true : false,
         user: whatever[i],
-        photourl: whatever[i].photoUrl,
+        //photourl: whatever[i].photoUrl,
         //curUser: widget.curUser,
       );
       whatevers.add(tile);
@@ -388,7 +382,7 @@ class _InvestPostTileState extends State<InvestPostTile>
       print("my reaction is now $rxn");
       counter = map2;
       counter[rxn] = map[rxn];
-      widget.userPost.profit=prft[widget.userPost.id];
+      widget.userPost.profit = prft[widget.userPost.id];
     }
 
     return Padding(
@@ -616,11 +610,13 @@ class _InvestPostTileState extends State<InvestPostTile>
                         ),
                         Container(
                           child: Text(
-                            widget.userPost.profit,
+                            double.parse(widget.userPost.profit)
+                                .round()
+                                .toString(),
                             style: TextStyle(
                               fontFamily: "Lato",
                               fontSize: 12,
-                              color: int.parse(widget.userPost.profit) >= 0
+                              color: double.parse(widget.userPost.profit) >= 0
                                   ? colorProfitPositive
                                   : colorProfitNegative,
                             ),

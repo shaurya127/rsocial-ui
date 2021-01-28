@@ -18,14 +18,14 @@ import '../user.dart';
 class Request_Tile extends StatefulWidget {
   //bool request = false;
   bool accepted = false;
-  String photourl;
+  //String photourl;
   String text;
   User user;
   //User curUser;
   Request_Tile(
       {this.text,
       this.user,
-      this.photourl,
+      //  this.photourl,
       //this.curUser,
       this.accepted});
   @override
@@ -369,10 +369,11 @@ class _Request_TileState extends State<Request_Tile> {
                         ),
                       ),
                       Text(
-                        widget.user.connection.length!=widget.user.connectionCount
-                        && widget.user.connectionCount!=null
-                            ?"${widget.user.connectionCount}"
-                            :"${widget.user.connection.length}",
+                        widget.user.connection.length !=
+                                    widget.user.connectionCount &&
+                                widget.user.connectionCount != null
+                            ? "${widget.user.connectionCount}"
+                            : "${widget.user.connection.length}",
                         style: TextStyle(color: Colors.grey),
                       ),
                     ],

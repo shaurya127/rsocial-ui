@@ -29,7 +29,7 @@ class _InvestedWithPageState extends State<InvestedWithPage> {
             ? curUser.userMap[widget.investedWithUser[i].id]
             : "add",
         //request: false,
-        photourl: curUser.photoUrl,
+        //photourl: curUser.photoUrl,
       );
 
       tiles.add(tile);
