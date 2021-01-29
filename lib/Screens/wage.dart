@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
@@ -69,6 +70,22 @@ class _WageState extends State<Wage> {
   String search_query;
   TextEditingController investingWithController = TextEditingController();
 
+  Future<File> _cropImage(filePath) async {
+    File croppedImage = await ImageCropper.cropImage(
+      aspectRatio: CropAspectRatio(
+        ratioX: 4,
+        ratioY: 3,
+      ),
+      sourcePath: filePath,
+      maxWidth: 1080,
+      maxHeight: 1080,
+    );
+    if (croppedImage != null) {
+      //setState(() {});
+      return croppedImage;
+    }
+  }
+
   handleTakePhoto() async {
     // File file = await ImagePicker.pickImage(
     //   source: ImageSource.camera,
@@ -84,7 +101,7 @@ class _WageState extends State<Wage> {
         // maxWidth: 960,
       );
       if (pickedFile != null) {
-        final File file = File(pickedFile.path);
+        final File file = await _cropImage(pickedFile.path);
         if (file != null) {
           print("File size");
           print(file.lengthSync());
@@ -154,7 +171,8 @@ class _WageState extends State<Wage> {
           // maxWidth: 960,
         );
         if (pickedFile != null) {
-          final File file = File(pickedFile.path);
+          final File file = await _cropImage(pickedFile.path);
+          //final File file = File(pickedFile.path);
           if (file != null) {
             print("File size");
             print(file.lengthSync());

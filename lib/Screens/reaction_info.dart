@@ -49,7 +49,7 @@ class _Reaction_InfoState extends State<Reaction_Info>
         ),
         iconTheme: IconThemeData(color: Colors.white),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(57),
+          preferredSize: Size.fromHeight(50),
           child: Align(
             alignment: Alignment.centerLeft,
             child: Container(
