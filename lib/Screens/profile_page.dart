@@ -22,6 +22,7 @@ import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/Widgets/request_button.dart';
 import 'package:rsocial2/auth.dart';
 import 'package:rsocial2/constants.dart';
+import 'package:rsocial2/functions.dart';
 import 'package:rsocial2/user.dart';
 
 import '../config.dart';
@@ -743,18 +744,57 @@ class _ProfileState extends State<Profile> {
             ),
             //widget.currentUser.id == widget.user.id
             //   ?
-            widget.currentUser.id == widget.user.id ?Text(
-              "${widget.user.email}",
-              style: TextStyle(
-                fontFamily: "Lato",
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: colorGreyTint,
-              ),
-            ):SizedBox.shrink(),
+            // widget.currentUser.id == widget.user.id
+            //     ? Text(
+            //         "${widget.user.email}",
+            //         style: TextStyle(
+            //           fontFamily: "Lato",
+            //           fontWeight: FontWeight.bold,
+            //           fontSize: 18,
+            //           color: colorGreyTint,
+            //         ),
+            //       )
+            //     : SizedBox.shrink(),
+            // SizedBox(
+            //   height: 3,
+            // ),
+            curUser.id == widget.user.id
+                ? Text(
+                    "Total Connections: ${curUser.connection.length}",
+                    style: TextStyle(
+                        fontFamily: "Lato",
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15),
+                  )
+                : Text(
+                    "Total Connections: ${widget.user.connection.length}",
+                    style: TextStyle(
+                        fontFamily: "Lato",
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15),
+                  ),
             SizedBox(
               height: 3,
             ),
+            curUser.id == widget.user.id
+                ? Text(
+                    "Amount : " + formatNumber(curUser.lollarAmount),
+                    style: TextStyle(
+                        fontFamily: "Lato",
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15),
+                  )
+                : Text(
+                    "Amount: " + formatNumber(widget.user.lollarAmount),
+                    style: TextStyle(
+                        fontFamily: "Lato",
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15),
+                  ),
+            SizedBox(
+              height: 3,
+            ),
+
             widget.user.mobile != null
                 ? Text(
                     widget.user.mobile != null
@@ -827,163 +867,161 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     print(isEditable);
     return WillPopScope(
-      onWillPop: back,
-      child: Scaffold(
-          // Here app bar to be updated
-          appBar: customAppBar(
-              context,
-              widget.currentUser.id == widget.user.id
-                  ? "My Profile"
-                  : "Profile",
-              widget.currentUser.lollarAmount.toString(),
-              widget.currentUser.photoUrl,
-              widget.currentUser.socialStanding.toString(),
-              widget.user.id == curUser.id ? false : true),
-          body: ModalProgressHUD(
-            inAsyncCall: isLoading,
-            child: NestedScrollView(
-              headerSliverBuilder: (context, _) {
-                return [
-                  SliverList(
-                    delegate: SliverChildListDelegate(
-                      buildHeader(context),
-                    ),
-                  )
-                ];
-              },
-              body: isEditable
-                  ? Column()
-                  : Column(
-                      children: <Widget>[
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
-                          color: Colors.white,
-                          height: 40,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Container(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setPostOrientation("wage");
-                                  },
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Text(
-                                        kProfilePageWageTab,
-                                        style: TextStyle(
-                                          fontFamily: "Lato",
-                                          fontSize: 15,
+        onWillPop: back,
+        child: Scaffold(
+            // Here app bar to be updated
+            appBar: customAppBar(
+                context,
+                widget.currentUser.id == widget.user.id
+                    ? "My Profile"
+                    : "Profile",
+                widget.currentUser.lollarAmount.toString(),
+                widget.currentUser.photoUrl,
+                widget.currentUser.socialStanding.toString(),
+                widget.user.id == curUser.id ? false : true),
+            body: ModalProgressHUD(
+              inAsyncCall: isLoading,
+              child: NestedScrollView(
+                headerSliverBuilder: (context, _) {
+                  return [
+                    SliverList(
+                      delegate: SliverChildListDelegate(
+                        buildHeader(context),
+                      ),
+                    )
+                  ];
+                },
+                body: isEditable
+                    ? Column()
+                    : Column(
+                        children: <Widget>[
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            color: Colors.white,
+                            height: 40,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Container(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setPostOrientation("wage");
+                                    },
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Text(
+                                          kProfilePageWageTab,
+                                          style: TextStyle(
+                                            fontFamily: "Lato",
+                                            fontSize: 15,
+                                            color: postOrientation == 'wage'
+                                                ? Theme.of(context).primaryColor
+                                                : Colors.grey,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Container(
+                                          width: 50,
+                                          height: 2,
                                           color: postOrientation == 'wage'
                                               ? Theme.of(context).primaryColor
-                                              : Colors.grey,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Container(
-                                        width: 50,
-                                        height: 2,
-                                        color: postOrientation == 'wage'
-                                            ? Theme.of(context).primaryColor
-                                            : Colors.white,
-                                      )
-                                    ],
+                                              : Colors.white,
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Container(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setPostOrientation("invest");
-                                  },
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Text(
-                                        kProfilePageInvestmentTab,
-                                        style: TextStyle(
-                                          fontFamily: "Lato",
-                                          fontSize: 15,
+                                Container(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setPostOrientation("invest");
+                                    },
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Text(
+                                          kProfilePageInvestmentTab,
+                                          style: TextStyle(
+                                            fontFamily: "Lato",
+                                            fontSize: 15,
+                                            color: postOrientation == 'invest'
+                                                ? Theme.of(context).primaryColor
+                                                : Colors.grey,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Container(
+                                          width: 50,
+                                          height: 2,
                                           color: postOrientation == 'invest'
                                               ? Theme.of(context).primaryColor
-                                              : Colors.grey,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Container(
-                                        width: 50,
-                                        height: 2,
-                                        color: postOrientation == 'invest'
-                                            ? Theme.of(context).primaryColor
-                                            : Colors.white,
-                                      )
-                                    ],
+                                              : Colors.white,
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Container(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setPostOrientation("platform");
-                                  },
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Text(
-                                        kProfilePagePlatformTab,
-                                        style: TextStyle(
-                                          fontFamily: "Lato",
-                                          fontSize: 15,
+                                Container(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setPostOrientation("platform");
+                                    },
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        Text(
+                                          kProfilePagePlatformTab,
+                                          style: TextStyle(
+                                            fontFamily: "Lato",
+                                            fontSize: 15,
+                                            color: postOrientation == 'platform'
+                                                ? Theme.of(context).primaryColor
+                                                : Colors.grey,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Container(
+                                          width: 50,
+                                          height: 2,
                                           color: postOrientation == 'platform'
                                               ? Theme.of(context).primaryColor
-                                              : Colors.grey,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Container(
-                                        width: 50,
-                                        height: 2,
-                                        color: postOrientation == 'platform'
-                                            ? Theme.of(context).primaryColor
-                                            : Colors.white,
-                                      )
-                                    ],
+                                              : Colors.white,
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        Expanded(
-                            child: widget.isLoading
-                                ? Center(
-                                    child: CircularProgressIndicator(),
-                                  )
-                                : (postOrientation == 'wage'
-                                    ? buildWagePosts()
-                                    : (postOrientation == 'invest'
-                                        ? buildInvestPosts()
-                                        : (isPlatformLoading
-                                            ? Center(
-                                                child:
-                                                    CircularProgressIndicator())
-                                            : buildplatformInteraction())))),
-                      ],
-                    ),
-            ),
-          )
-    ));
+                          Expanded(
+                              child: widget.isLoading
+                                  ? Center(
+                                      child: CircularProgressIndicator(),
+                                    )
+                                  : (postOrientation == 'wage'
+                                      ? buildWagePosts()
+                                      : (postOrientation == 'invest'
+                                          ? buildInvestPosts()
+                                          : (isPlatformLoading
+                                              ? Center(
+                                                  child:
+                                                      CircularProgressIndicator())
+                                              : buildplatformInteraction())))),
+                        ],
+                      ),
+              ),
+            )));
   }
-
 }
