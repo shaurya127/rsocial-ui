@@ -19,11 +19,11 @@ import 'package:rsocial2/config.dart';
 import 'package:rsocial2/constants.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rsocial2/Screens/investment.dart';
-
+import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter_swiper/flutter_swiper.dart';
-
+import 'package:path_provider/path_provider.dart';
 import '../post.dart';
 import '../user.dart';
 import 'investment.dart';
@@ -31,6 +31,7 @@ import 'package:http/http.dart' as http;
 import 'login_page.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:image/image.dart' as im;
 
 class Wage extends StatefulWidget {
   User currentUser;
@@ -54,7 +55,7 @@ class _WageState extends State<Wage> {
   String orientation = "wage";
   var textController = new TextEditingController();
   bool isloading = false;
-
+  String path;
   String investmentstoryText;
   List<File> investmentfileList = new List();
   List<String> selectedImgList = new List();
@@ -63,6 +64,7 @@ class _WageState extends State<Wage> {
   List<User> investmentlist = new List();
   List<User> connections = [];
   var investmentTextController = new TextEditingController();
+  List<String> imageCacheIds = [];
 
   int amount = 1000;
   bool isOne = true;
@@ -101,27 +103,33 @@ class _WageState extends State<Wage> {
         // maxWidth: 960,
       );
       if (pickedFile != null) {
-        final File file = await _cropImage(pickedFile.path);
+        File file = await _cropImage(pickedFile.path);
         if (file != null) {
           print("File size");
           print(file.lengthSync());
 
           if (file.lengthSync() > 5000000) {
+            //  if (file.lengthSync() > 5000000) {
+            file = await compressImage(file);
+            print("New length =" + file.lengthSync().toString());
+
             print("not allowed");
-            var alertBox = AlertDialogBox(
-              title: 'Error',
-              content: 'Images must be less than 5MB',
-              actions: <Widget>[
-                FlatButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('Back'),
-                )
-              ],
-            );
-            showDialog(context: context, builder: (context) => alertBox);
-            return;
+            if (file.lengthSync() > 5000000) {
+              var alertBox = AlertDialogBox(
+                title: 'Error',
+                content: 'Image is too large',
+                actions: <Widget>[
+                  FlatButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Back'),
+                  )
+                ],
+              );
+              showDialog(context: context, builder: (context) => alertBox);
+              return;
+            }
           }
 
           final bytes = file.readAsBytesSync();
@@ -160,6 +168,21 @@ class _WageState extends State<Wage> {
     }
   }
 
+  Future<File> compressImage(File f) async {
+    final tempDir = await getTemporaryDirectory();
+    path = tempDir.path;
+    im.Image imageFile = im.decodeImage(f.readAsBytesSync());
+    String randomId = Uuid().v4();
+    imageCacheIds.add(randomId);
+    final compressedImageFile = File('$path/img_$randomId.jpg')
+      ..writeAsBytesSync(im.encodeJpg(imageFile,
+          quality: ((5000000 / f.lengthSync()) * 100).floor()));
+
+    // print('$path/img_${Uuid().v4()}.jpg');
+
+    return compressedImageFile;
+  }
+
   handleChooseFromGallery() async {
     var status = await Permission.storage.status;
 
@@ -171,27 +194,34 @@ class _WageState extends State<Wage> {
           // maxWidth: 960,
         );
         if (pickedFile != null) {
-          final File file = await _cropImage(pickedFile.path);
+          File file = await _cropImage(pickedFile.path);
           //final File file = File(pickedFile.path);
           if (file != null) {
             print("File size");
             print(file.lengthSync());
+
             if (file.lengthSync() > 5000000) {
+              //  if (file.lengthSync() > 5000000) {
+              file = await compressImage(file);
+              print("New length =" + file.lengthSync().toString());
+
               print("not allowed");
-              var alertBox = AlertDialogBox(
-                title: 'Error',
-                content: 'Images must be less than 5MB',
-                actions: <Widget>[
-                  FlatButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('Back'),
-                  )
-                ],
-              );
-              showDialog(context: context, builder: (context) => alertBox);
-              return;
+              if (file.lengthSync() > 5000000) {
+                var alertBox = AlertDialogBox(
+                  title: 'Error',
+                  content: 'Image is too large',
+                  actions: <Widget>[
+                    FlatButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Back'),
+                    )
+                  ],
+                );
+                showDialog(context: context, builder: (context) => alertBox);
+                return;
+              }
             }
             final bytes = file.readAsBytesSync();
             String img64 = base64Encode(bytes);
@@ -300,7 +330,8 @@ class _WageState extends State<Wage> {
   }
 
   createPostInvestment(String investmentAmount, List<String> list) async {
-    if (selectedList.isEmpty) {
+    if (selectedList.isEmpty || double.parse(investmentAmount) == 0) {
+      print("returned");
       return;
     }
 
@@ -352,6 +383,15 @@ class _WageState extends State<Wage> {
           isloading = false;
           selectedList.clear();
         });
+
+        if (imageCacheIds.length != 0) {
+          for (String i in imageCacheIds) {
+            try {
+              await File('$path/img_$i.jpg').delete();
+            } catch (e) {}
+          }
+        }
+
         widget.isPostedCallback();
         // Fluttertoast.showToast(
         //     msg: "Uploaded investment story!",
@@ -427,7 +467,13 @@ class _WageState extends State<Wage> {
         //     toastLength: Toast.LENGTH_SHORT,
         //     gravity: ToastGravity.BOTTOM,
         //     fontSize: 15);
-
+        if (imageCacheIds.length != 0) {
+          for (String i in imageCacheIds) {
+            try {
+              await File('$path/img_$i.jpg').delete();
+            } catch (e) {}
+          }
+        }
         widget.isPostedCallback();
       } else {
         setState(() {
@@ -464,7 +510,7 @@ class _WageState extends State<Wage> {
           setState(() {
             isSelected = false;
             if (!selectedList.contains(suggestionList[index]) &&
-                selectedList.length <= 5) {
+                selectedList.length <= 1) {
               selectedList.add(suggestionList[index]);
               investingWithController.clear();
             } else {
