@@ -12,7 +12,6 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:pinch_zoom_image_updated/pinch_zoom_image_updated.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/invested_with.dart';
 
@@ -376,6 +375,7 @@ class _InvestPostTileState extends State<InvestPostTile>
 
   @override
   Widget build(BuildContext context) {
+    final transformationController = TransformationController();
     if (m.containsKey(widget.userPost.id)) {
       Map<String, int> map = m[widget.userPost.id];
       Map<String, int> map2 = mp[widget.userPost.id];
@@ -802,24 +802,31 @@ class _InvestPostTileState extends State<InvestPostTile>
                                         (BuildContext context, int index) {
                                       return Stack(
                                         children: <Widget>[
-                                          PinchZoomImage(
-                                            image: ClipRRect(
-                                                borderRadius: BorderRadius.all(Radius.circular(10)),
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                      BorderRadius.circular(10),
-                                                      color: Colors.grey.withOpacity(0.2),
-                                                      image: DecorationImage(
-                                                          image: NetworkImage(
-                                                            fileList[0],
-                                                          ),
-                                                          fit: BoxFit.cover)),
-                                                  height: 250,
-                                                )
+                                          InteractiveViewer(
+                                            transformationController: transformationController,
+                                            onInteractionEnd: (details) {
+                                              setState(() {
+                                                transformationController.toScene(Offset.zero);
+                                              });
+                                            },
+                                            //boundaryMargin: EdgeInsets.all(20.0),
+                                            minScale: 0.1,
+                                            maxScale: 2,
+                                            child: ClipRRect(
+                                              borderRadius:
+                                              BorderRadius.circular(10),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+
+                                                    color: Colors.grey.withOpacity(0.2),
+                                                    image: DecorationImage(
+                                                        image: NetworkImage(
+                                                          fileList[index],
+                                                        ),
+                                                        fit: BoxFit.cover)),
+                                                height: 250,
+                                              ),
                                             ),
-                                            zoomedBackgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
-                                            //hideStatusBarWhileZooming: true,
                                           ),
                                           // Container(
                                           //   decoration: BoxDecoration(
@@ -843,25 +850,33 @@ class _InvestPostTileState extends State<InvestPostTile>
                                         ],
                                       );
                                     })
-                                : PinchZoomImage(
-                          image: ClipRRect(
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                    BorderRadius.circular(10),
-                                    color: Colors.grey.withOpacity(0.2),
-                                    image: DecorationImage(
-                                        image: NetworkImage(
-                                          fileList[0],
-                                        ),
-                                        fit: BoxFit.cover)),
-                                height: 250,
-                              )
-                          ),
-                          zoomedBackgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
-                          //hideStatusBarWhileZooming: true,
-                        ))
+                               : InteractiveViewer(
+                          transformationController: transformationController,
+                          onInteractionEnd: (details) {
+                            setState(() {
+                              transformationController.toScene(Offset.zero);
+                            });
+                          },
+                          //boundaryMargin: EdgeInsets.all(20.0),
+                          minScale: 0.1,
+                          maxScale: 2,
+                                 child: ClipRRect(
+                                   borderRadius:
+                                   BorderRadius.circular(10),
+                                   child: Container(
+                                       decoration: BoxDecoration(
+
+                                           color: Colors.grey.withOpacity(0.2),
+                                           image: DecorationImage(
+                                               image: NetworkImage(
+                                                 fileList[0],
+                                               ),
+                                               fit: BoxFit.cover)),
+                                       height: 250,
+                                   ),
+                                 ),
+                               )
+                        )
                             : Center(
                                 child: CircularProgressIndicator(),
                               )))
