@@ -520,6 +520,15 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                 color: nameCol,
                               ),
                             ),
+                      subtitle: Text(
+                        "${widget.userPost.createdOn}",
+                        style: TextStyle(
+                          //fontWeight: FontWeight.bold,
+                          fontFamily: "Lato",
+                          fontSize: 12,
+                          color: subtitile,
+                        ),
+                      ),
                           )
                         : ListTile(
                             dense: true,
@@ -551,49 +560,64 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                 color: nameCol,
                               ),
                             ),
-                            subtitle: Row(
-                              children: <Widget>[
-                                widget.userPost.investedWithUser != []
-                                    ? Row(
-                                        children: <Widget>[
-                                          GestureDetector(
-                                            onTap: () {
-                                              Navigator.push(
-                                                  context,
-                                                  PageTransition(
-                                                      // settings: RouteSettings(
-                                                      //     name: "Login_Page"),
-                                                      type: PageTransitionType
-                                                          .fade,
-                                                      child: InvestedWithPage(
-                                                        investedWithUser: this
-                                                            .investedWithUser,
-                                                        curUser: widget.curUser,
-                                                      )));
-                                            },
-                                            child: Text(
-                                              "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k with ${widget.userPost.investedWithUser.length} people",
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                fontFamily: "Lato",
-                                                fontSize: 12,
-                                                color: subtitile,
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: <Widget>[
+                                    widget.userPost.investedWithUser != []
+                                        ? Row(
+                                            children: <Widget>[
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      PageTransition(
+                                                          // settings: RouteSettings(
+                                                          //     name: "Login_Page"),
+                                                          type: PageTransitionType
+                                                              .fade,
+                                                          child: InvestedWithPage(
+                                                            investedWithUser: this
+                                                                .investedWithUser,
+                                                            curUser: widget.curUser,
+                                                          )));
+                                                },
+                                                child: Text(
+                                                  "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k with ${widget.userPost.investedWithUser.length} people",
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontFamily: "Lato",
+                                                    fontSize: 12,
+                                                    color: subtitile,
+                                                  ),
+                                                ),
                                               ),
+                                            ],
+                                          )
+                                        : Text(
+                                            "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k alone",
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontFamily: "Lato",
+                                              fontSize: 12,
+                                              color: subtitile,
                                             ),
                                           ),
-                                        ],
-                                      )
-                                    : Text(
-                                        "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k alone",
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontFamily: "Lato",
-                                          fontSize: 12,
-                                          color: subtitile,
-                                        ),
-                                      ),
-                                SizedBox(
-                                  width: 2,
+                                    SizedBox(
+                                      width: 2,
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "${widget.userPost.createdOn}",
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                    //fontWeight: FontWeight.bold,
+                                    fontFamily: "Lato",
+                                    fontSize: 12,
+                                    color: subtitile,
+                                  ),
                                 ),
                               ],
                             ),
