@@ -423,118 +423,132 @@ class _InvestPostTileState extends State<InvestPostTile>
                         color: nameCol,
                       ),
                     ),
-                    subtitle: Row(
-                      children: <Widget>[
-                        widget.userPost.investedWithUser != []
-                            ? Row(
-                                children: <Widget>[
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          PageTransition(
-                                              // settings: RouteSettings(
-                                              //     name: "Login_Page"),
-                                              type: PageTransitionType.fade,
-                                              child: InvestedWithPage(
-                                                investedWithUser:
-                                                    this.investedWithUser,
-                                                curUser: widget.curUser,
-                                              )));
-                                    },
-                                    child: Text(
-                                      "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k with ${widget.userPost.investedWithUser.length} people",
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontFamily: "Lato",
-                                        fontSize: 12,
-                                        color: subtitile,
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: <Widget>[
+                            widget.userPost.investedWithUser != []
+                                ? Row(
+                                    children: <Widget>[
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              PageTransition(
+                                                  // settings: RouteSettings(
+                                                  //     name: "Login_Page"),
+                                                  type: PageTransitionType.fade,
+                                                  child: InvestedWithPage(
+                                                    investedWithUser:
+                                                        this.investedWithUser,
+                                                    curUser: widget.curUser,
+                                                  )));
+                                        },
+                                        child: Text(
+                                          "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k with ${widget.userPost.investedWithUser.length} people",
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontFamily: "Lato",
+                                            fontSize: 12,
+                                            color: subtitile,
+                                          ),
+                                        ),
                                       ),
+                                      // GestureDetector(
+                                      //   onTap: () {
+                                      //     Navigator.push(
+                                      //         context,
+                                      //         PageTransition(
+                                      //           // settings: RouteSettings(
+                                      //           //     name: "Login_Page"),
+                                      //           type: PageTransitionType.fade,
+                                      //           child: Profile(
+                                      //             currentUser: widget.curUser,
+                                      //             photoUrl:
+                                      //                 investedWithUser[0].photoUrl,
+                                      //             user: investedWithUser[0],
+                                      //           ),
+                                      //         ));
+                                      //   },
+                                      //   child: Text(
+                                      //     // (widget.userPost.investedWithUser[0]
+                                      //     //                     .fname +
+                                      //     //                 " " +
+                                      //     //                 widget
+                                      //     //                     .userPost
+                                      //     //                     .investedWithUser[0]
+                                      //     //                     .lname)
+                                      //     //             .length <
+                                      //     //         11
+                                      //     //     ? "${widget.userPost.investedWithUser[0].fname} ${widget.userPost.investedWithUser[0].lname}"
+                                      //     //     : (widget.userPost.investedWithUser[0]
+                                      //     //                     .fname +
+                                      //     //                 " " +
+                                      //     //                 widget
+                                      //     //                     .userPost
+                                      //     //                     .investedWithUser[0]
+                                      //     //                     .lname)
+                                      //     //             .substring(0, 7) +
+                                      //     //         ".",
+                                      //     "${widget.userPost.investedWithUser.length} people",
+                                      //     style: TextStyle(
+                                      //       fontFamily: "Lato",
+                                      //       fontSize: 12,
+                                      //       color: subtitile,
+                                      //     ),
+                                      //   ),
+                                      // )
+                                    ],
+                                  )
+                                : Text(
+                                    "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k alone",
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontFamily: "Lato",
+                                      fontSize: 12,
+                                      color: subtitile,
                                     ),
                                   ),
-                                  // GestureDetector(
-                                  //   onTap: () {
-                                  //     Navigator.push(
-                                  //         context,
-                                  //         PageTransition(
-                                  //           // settings: RouteSettings(
-                                  //           //     name: "Login_Page"),
-                                  //           type: PageTransitionType.fade,
-                                  //           child: Profile(
-                                  //             currentUser: widget.curUser,
-                                  //             photoUrl:
-                                  //                 investedWithUser[0].photoUrl,
-                                  //             user: investedWithUser[0],
-                                  //           ),
-                                  //         ));
-                                  //   },
-                                  //   child: Text(
-                                  //     // (widget.userPost.investedWithUser[0]
-                                  //     //                     .fname +
-                                  //     //                 " " +
-                                  //     //                 widget
-                                  //     //                     .userPost
-                                  //     //                     .investedWithUser[0]
-                                  //     //                     .lname)
-                                  //     //             .length <
-                                  //     //         11
-                                  //     //     ? "${widget.userPost.investedWithUser[0].fname} ${widget.userPost.investedWithUser[0].lname}"
-                                  //     //     : (widget.userPost.investedWithUser[0]
-                                  //     //                     .fname +
-                                  //     //                 " " +
-                                  //     //                 widget
-                                  //     //                     .userPost
-                                  //     //                     .investedWithUser[0]
-                                  //     //                     .lname)
-                                  //     //             .substring(0, 7) +
-                                  //     //         ".",
-                                  //     "${widget.userPost.investedWithUser.length} people",
-                                  //     style: TextStyle(
-                                  //       fontFamily: "Lato",
-                                  //       fontSize: 12,
-                                  //       color: subtitile,
-                                  //     ),
-                                  //   ),
-                                  // )
-                                ],
-                              )
-                            : Text(
-                                "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k alone",
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontFamily: "Lato",
-                                  fontSize: 12,
-                                  color: subtitile,
-                                ),
-                              ),
-                        SizedBox(
-                          width: 2,
+                            SizedBox(
+                              width: 2,
+                            ),
+                            // widget.userPost.investedWithUser.length >= 2
+                            //     ? GestureDetector(
+                            //         onTap: () {
+                            //           Navigator.push(
+                            //               context,
+                            //               PageTransition(
+                            //                   // settings: RouteSettings(
+                            //                   //     name: "Login_Page"),
+                            //                   type: PageTransitionType.fade,
+                            //                   child: InvestedWithPage(
+                            //                     investedWithUser:
+                            //                         this.investedWithUser,
+                            //                     curUser: widget.curUser,
+                            //                   )));
+                            //         },
+                            //         child: Text(
+                            //           "+ ${widget.userPost.investedWithUser.length - 1}",
+                            //           style: TextStyle(
+                            //             fontFamily: "Lato",
+                            //             fontSize: 12,
+                            //             color: colorButton,
+                            //           ),
+                            //         ),
+                            //       )
+                            //     : SizedBox.shrink()
+                          ],
                         ),
-                        // widget.userPost.investedWithUser.length >= 2
-                        //     ? GestureDetector(
-                        //         onTap: () {
-                        //           Navigator.push(
-                        //               context,
-                        //               PageTransition(
-                        //                   // settings: RouteSettings(
-                        //                   //     name: "Login_Page"),
-                        //                   type: PageTransitionType.fade,
-                        //                   child: InvestedWithPage(
-                        //                     investedWithUser:
-                        //                         this.investedWithUser,
-                        //                     curUser: widget.curUser,
-                        //                   )));
-                        //         },
-                        //         child: Text(
-                        //           "+ ${widget.userPost.investedWithUser.length - 1}",
-                        //           style: TextStyle(
-                        //             fontFamily: "Lato",
-                        //             fontSize: 12,
-                        //             color: colorButton,
-                        //           ),
-                        //         ),
-                        //       )
-                        //     : SizedBox.shrink()
+                        Text(
+                          "${widget.userPost.createdOn}",
+                          style: TextStyle(
+                            //fontWeight: FontWeight.bold,
+                            fontFamily: "Lato",
+                            fontSize: 12,
+                            color: subtitile,
+                          ),
+                        ),
                       ],
                     ),
                   ),

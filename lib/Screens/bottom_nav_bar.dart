@@ -104,11 +104,11 @@ class _BottomNavBarState extends State<BottomNavBar>
       },
     );
 
-    print('Response status: ${response.statusCode}');
+    //print('Response status: ${response.statusCode}');
     log('Response status: ${response.statusCode}');
     if (response.statusCode == 200) {
-      print('Response body: ${response.body}');
-      log('Response body: ${response.body}');
+      // print('Response body: ${response.body}');
+      // log('Response body: ${response.body}');
       var res = json.decode(response.body);
       prefs.remove('inviteSenderId');
 
@@ -135,10 +135,10 @@ class _BottomNavBarState extends State<BottomNavBar>
 
         var msg = body1['message'];
         //print("id is: ${msg['id']}");
-        print(msg);
+        //print(msg);
         curUser = User.fromJson(msg);
         //print("haha");
-        print(curUser);
+        //print(curUser);
         // setState(() {
         //   isLoading = false;
         // });
@@ -150,7 +150,7 @@ class _BottomNavBarState extends State<BottomNavBar>
         try {
           //  user = await FirebaseAuth.instance.currentUser();
           photourl = user.photoUrl;
-          print(user);
+          //print(user);
           // DocumentSnapshot doc = await users.document(user.uid).get();
           // if (doc == null) print("error from get user post");
           //id = doc['id'];
@@ -220,7 +220,7 @@ class _BottomNavBarState extends State<BottomNavBar>
           var body = jsonUser['body'];
           var body1 = jsonDecode(body);
           var msg = body1['message'];
-          print(msg);
+          //print(msg);
           //print("length is ${msg.length}")
           for (int i = 0; i < msg.length; i++) {
             // print(msg[i]['PendingConnection']);
@@ -236,8 +236,8 @@ class _BottomNavBarState extends State<BottomNavBar>
           setState(() {
             isLoading = false;
           });
-          print("all the users");
-          print(allUsers.length);
+          // print("all the users");
+          // print(allUsers.length);
           return allUsers;
         } else {
           print(response.statusCode);
@@ -272,8 +272,8 @@ class _BottomNavBarState extends State<BottomNavBar>
     var user = await FirebaseAuth.instance.currentUser();
     var token = await user.getIdToken();
     print(token);
-    print("This is my email");
-    print(user.email);
+    // print("This is my email");
+    // print(user.email);
     DocumentSnapshot doc = await users.document(user.uid).get();
     print("This is the doc");
     print(doc.data);
@@ -287,16 +287,16 @@ class _BottomNavBarState extends State<BottomNavBar>
 
     var id = doc['id'];
     final url = userEndPoint + "get";
-    print(url);
+    //print(url);
     //var user = await FirebaseAuth.instance.currentUser();
     //print("this user id is ${user.uid}");
     var response;
     try {
       token = await user.getIdToken();
-      print(token);
-      print(id);
-      print(user.email);
-      print("blalb");
+      // print(token);
+      // print(id);
+      // print(user.email);
+      // print("blalb");
       response = await http.post(url,
           encoding: Encoding.getByName("utf-8"),
           headers: {
@@ -311,18 +311,18 @@ class _BottomNavBarState extends State<BottomNavBar>
         isFailedGetUser = true;
       });
     }
-    print("This is my response: $response");
+    //print("This is my response: $response");
     //print(response.body);
     //print(response.statusCode);
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body);
       var body = jsonUser['body'];
       var body1 = jsonDecode(body);
-      print("body is $body");
+      //print("body is $body");
       // print(body1);
       var msg = body1['message'];
       //print("id is: ${msg['id']}");
-      print(msg);
+      //print(msg);
       if (msg == 'User Not Found') {
         setState(() {
           isLoading = false;
@@ -331,7 +331,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       }
 
       curUser = User.fromJson(msg);
-      print("my send requests are ${curUser.sentPendingConnection.length}");
+      //print("my send requests are ${curUser.sentPendingConnection.length}");
       // if(inviteSenderId!=null)
       //   addConnection(inviteSenderId);
 
@@ -378,7 +378,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     try {
       user = await FirebaseAuth.instance.currentUser();
       photourl = user.photoUrl;
-      print(user);
+      //print(user);
       DocumentSnapshot doc = await users.document(user.uid).get();
       if (doc == null) print("error from get user post");
       id = doc['id'];
@@ -396,12 +396,12 @@ class _BottomNavBarState extends State<BottomNavBar>
     });
     //print("body is ${response.body}");
     //print(response.statusCode);
-    print("User posts $response");
+    //print("User posts $response");
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body);
       var body = jsonUser['body'];
       var body1 = jsonDecode(body);
-      print("body is $body");
+      //print("body is $body");
       //print(body1);
       var msg = body1['message'];
       //print(msg.length);
@@ -435,7 +435,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     setState(() {
       isLoading = true;
     });
-    print("==========Inside get all users ===================");
+    //print("==========Inside get all users ===================");
     var user;
     var id;
     try {
@@ -467,7 +467,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       var body = jsonUser['body'];
       var body1 = jsonDecode(body);
       var msg = body1['message'];
-      print(msg);
+      //print(msg);
       //print("length is ${msg.length}")
       for (int i = 0; i < msg.length; i++) {
         // print(msg[i]['PendingConnection']);
@@ -483,8 +483,8 @@ class _BottomNavBarState extends State<BottomNavBar>
       setState(() {
         isLoading = false;
       });
-      print("all the users");
-      print(allUsers.length);
+      // print("all the users");
+      // print(allUsers.length);
       return allUsers;
     } else {
       print(response.statusCode);
