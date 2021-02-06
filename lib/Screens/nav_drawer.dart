@@ -138,7 +138,7 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => AllConnections()));
+                              builder: (context) => AllConnections(user: curUser,)));
                     },
                     title: kNavDrawerConnection,
                     icon: Container(

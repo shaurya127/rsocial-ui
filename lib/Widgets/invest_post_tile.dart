@@ -432,21 +432,9 @@ class _InvestPostTileState extends State<InvestPostTile>
                                 ? Row(
                                     children: <Widget>[
                                       GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              PageTransition(
-                                                  // settings: RouteSettings(
-                                                  //     name: "Login_Page"),
-                                                  type: PageTransitionType.fade,
-                                                  child: InvestedWithPage(
-                                                    investedWithUser:
-                                                        this.investedWithUser,
-                                                    curUser: widget.curUser,
-                                                  )));
-                                        },
+                                        onTap: () =>showProfile(context, widget.userPost.investedWithUser[0], widget.userPost.user.photoUrl),
                                         child: Text(
-                                          "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k with ${widget.userPost.investedWithUser.length} people",
+                                          "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k with ${widget.userPost.investedWithUser[0].fname}",
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                             fontFamily: "Lato",
