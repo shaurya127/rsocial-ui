@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:pinch_zoom_image_updated/pinch_zoom_image_updated.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
@@ -468,6 +467,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
 
   @override
   Widget build(BuildContext context) {
+    final transformationController = TransformationController();
     if (m.containsKey(widget.userPost.id)) {
       Map<String, int> map = m[widget.userPost.id];
       Map<String, int> map2 = mp[widget.userPost.id];
@@ -478,19 +478,6 @@ class _PlatformPostTileState extends State<PlatformPostTile>
         counter[rxn] = map[rxn];
         widget.userPost.profit = prft[widget.userPost.id];
       });
-
-      //print(counter['hated']);
-      //Map<String, int> mx = m[widget.userPost.id];
-      // for (var key in mx.keys) rxn = key;
-
-      // if (rxn == "loved")
-      //   lovedCounter = m[widget.userPost.id][0];
-      // else if (rxn == "liked")
-      //   likedCounter = m[widget.userPost.id][1];
-      // else if (rxn == "whatever")
-      //   whateverCounter = m[widget.userPost.id][2];
-      // else if (rxn == "hated") hatedCounter = m[widget.userPost.id][3];
-
     }
     //print("This is build function");
 
@@ -537,6 +524,15 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                 color: nameCol,
                               ),
                             ),
+                            subtitle: Text(
+                              "${widget.userPost.createdOn}",
+                              style: TextStyle(
+                                //fontWeight: FontWeight.bold,
+                                fontFamily: "Lato",
+                                fontSize: 12,
+                                color: subtitile,
+                              ),
+                            ),
                           )
                         : ListTile(
                             dense: true,
@@ -567,49 +563,63 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                 color: nameCol,
                               ),
                             ),
-                            subtitle: Row(
-                              children: <Widget>[
-                                widget.userPost.investedWithUser != []
-                                    ? Row(
-                                        children: <Widget>[
-                                          GestureDetector(
-                                            onTap: () {
-                                              Navigator.push(
-                                                  context,
-                                                  PageTransition(
-                                                      // settings: RouteSettings(
-                                                      //     name: "Login_Page"),
-                                                      type: PageTransitionType
-                                                          .fade,
-                                                      child: InvestedWithPage(
-                                                        investedWithUser: this
-                                                            .investedWithUser,
-                                                        curUser: widget.curUser,
-                                                      )));
-                                            },
-                                            child: Text(
-                                              "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k with ${widget.userPost.investedWithUser.length} people",
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                fontFamily: "Lato",
-                                                fontSize: 12,
-                                                color: subtitile,
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: <Widget>[
+                                    widget.userPost.investedWithUser != []
+                                        ? Row(
+                                            children: <Widget>[
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      PageTransition(
+                                                          // settings: RouteSettings(
+                                                          //     name: "Login_Page"),
+                                                          type: PageTransitionType
+                                                              .fade,
+                                                          child: InvestedWithPage(
+                                                            investedWithUser: this
+                                                                .investedWithUser,
+                                                            curUser: widget.curUser,
+                                                          )));
+                                                },
+                                                child: Text(
+                                                  "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k with ${widget.userPost.investedWithUser.length} people",
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontFamily: "Lato",
+                                                    fontSize: 12,
+                                                    color: subtitile,
+                                                  ),
+                                                ),
                                               ),
+                                            ],
+                                          )
+                                        : Text(
+                                            "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k alone",
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontFamily: "Lato",
+                                              fontSize: 12,
+                                              color: subtitile,
                                             ),
                                           ),
-                                        ],
-                                      )
-                                    : Text(
-                                        "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k alone",
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontFamily: "Lato",
-                                          fontSize: 12,
-                                          color: subtitile,
-                                        ),
-                                      ),
-                                SizedBox(
-                                  width: 2,
+                                    SizedBox(
+                                      width: 2,
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "${widget.userPost.createdOn}",
+                                  style: TextStyle(
+                                    //fontWeight: FontWeight.bold,
+                                    fontFamily: "Lato",
+                                    fontSize: 12,
+                                    color: subtitile,
+                                  ),
                                 ),
                               ],
                             ),
@@ -899,25 +909,32 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                         (BuildContext context, int index) {
                                       return Stack(
                                         children: <Widget>[
-                                          PinchZoomImage(
-                                            image: ClipRRect(
-                                                borderRadius: BorderRadius.all(Radius.circular(10)),
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                      BorderRadius.circular(10),
-                                                      color: Colors.grey.withOpacity(0.2),
-                                                      image: DecorationImage(
-                                                          image: NetworkImage(
-                                                            fileList[0],
-                                                          ),
-                                                          fit: BoxFit.cover)),
-                                                  height: 250,
-                                                )
+                                          InteractiveViewer(
+                                            transformationController: transformationController,
+                                            onInteractionEnd: (details) {
+                                              setState(() {
+                                                transformationController.toScene(Offset.zero);
+                                              });
+                                            },
+                                            //boundaryMargin: EdgeInsets.all(20.0),
+                                            minScale: 0.1,
+                                            maxScale: 2,
+                                            child: ClipRRect(
+                                              borderRadius:
+                                              BorderRadius.circular(10),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+
+                                                    color: Colors.grey.withOpacity(0.2),
+                                                    image: DecorationImage(
+                                                        image: NetworkImage(
+                                                          fileList[index],
+                                                        ),
+                                                        fit: BoxFit.cover)),
+                                                height: 250,
+                                              ),
                                             ),
-                                            zoomedBackgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
-                                            //hideStatusBarWhileZooming: true,
-                                          ),
+                                          )
                                           // Container(
                                           //   decoration: BoxDecoration(
                                           //       borderRadius: BorderRadius.only(
@@ -940,24 +957,31 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                         ],
                                       );
                                     })
-                                : PinchZoomImage(
-                          image: ClipRRect(
-                              borderRadius: BorderRadius.all(Radius.circular(10)),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius:
-                                    BorderRadius.circular(10),
-                                    color: Colors.grey.withOpacity(0.2),
-                                    image: DecorationImage(
-                                        image: NetworkImage(
-                                          fileList[0],
-                                        ),
-                                        fit: BoxFit.cover)),
-                                height: 250,
-                              )
+                                : InteractiveViewer(
+                          transformationController: transformationController,
+                          onInteractionEnd: (details) {
+                            setState(() {
+                              transformationController.toScene(Offset.zero);
+                            });
+                          },
+                          //boundaryMargin: EdgeInsets.all(20.0),
+                          minScale: 0.1,
+                          maxScale: 2,
+                          child: ClipRRect(
+                            borderRadius:
+                            BorderRadius.circular(10),
+                            child: Container(
+                              decoration: BoxDecoration(
+
+                                  color: Colors.grey.withOpacity(0.2),
+                                  image: DecorationImage(
+                                      image: NetworkImage(
+                                        fileList[0],
+                                      ),
+                                      fit: BoxFit.cover)),
+                              height: 250,
+                            ),
                           ),
-                          zoomedBackgroundColor: Color.fromRGBO(240, 240, 240, 1.0),
-                          //hideStatusBarWhileZooming: true,
                         ))
                             : Center(
                                 child: CircularProgressIndicator(),

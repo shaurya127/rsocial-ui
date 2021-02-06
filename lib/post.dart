@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:rsocial2/user.dart';
+import 'package:timeago/timeago.dart' as timeago;
+
+var locale = 'en';
 
 class Post {
   Post(
@@ -16,7 +19,8 @@ class Post {
       this.fileUpload,
       this.reactedBy,
       this.duration,
-      this.profit});
+      this.profit,
+      this.createdOn});
 
   String id;
   User user;
@@ -29,10 +33,14 @@ class Post {
   List<User> reactedBy;
   int duration;
   String profit;
+  String createdOn;
 
   factory Post.fromJsonI(final json) {
     var uid = json["UserId"];
     var frnd = json['InvestedWith'];
+    final diff = DateTime.now().difference(DateTime.parse(json['PostedOn']));
+    final txt = timeago.format(DateTime.now().subtract(diff), locale: locale);
+    print(txt);
     //print("frnd is $frnd with type ${json['StoryType']}");
 
     List<User> investedWith = [];
@@ -43,9 +51,9 @@ class Post {
         investedWith.add(user);
       }
     }
-    print("hsdfljsdfklsdjfkllsdjfklsdfjsdklfjdkfjdf");
-    print(json["id"]);
-    print(json["ReactedBy"]);
+    // print("hsdfljsdfklsdjfkllsdjfklsdfjsdklfjdkfjdf");
+    // print(json["id"]);
+    // print(json["ReactedBy"]);
 
     List<User> rxn = [];
     if (json["ReactedBy"] != null) if (json["ReactedBy"].isNotEmpty) {
@@ -64,12 +72,16 @@ class Post {
         investedAmount: json["InvestedAmount"],
         profit: json["PresentValue"].toString(),
         reactedBy: rxn,
+        createdOn: txt,
         fileUpload: json["FileUpload"] == null
             ? []
             : List<String>.from(json["FileUpload"].map((x) => x)));
   }
 
   factory Post.fromJsonW(final json) {
+    final diff = DateTime.now().difference(DateTime.parse(json['PostedOn']));
+    final txt = timeago.format(DateTime.now().subtract(diff), locale: locale);
+    print(txt);
     var uid = json["UserId"];
     List<User> rxn = [];
     if (json["ReactedBy"].isNotEmpty) {
@@ -87,6 +99,7 @@ class Post {
         storyText: json["StoryText"],
         profit: json["PresentValue"].toString(),
         reactedBy: rxn,
+        createdOn: txt,
         //investedWithUser: User.fromJson(json['InvestedWith']),
         //investedAmount: json["InvestedAmount"],
         fileUpload: json["FileUpload"] == null
@@ -104,6 +117,36 @@ class Post {
             ? List<String>.from(fileUpload.map((x) => x))
             : [],
       };
+
+  Map<String, dynamic> toJsonInvestDao() => {
+        "id": id,
+        "StoryText": storyText,
+        "InvestedWith": investedWith == null ? [] : this.investedWith,
+        "InvestedAmount": investedAmount,
+        "Duration": duration.toString(),
+        "FileUpload": fileUpload != null
+            ? List<String>.from(fileUpload.map((x) => x))
+            : [],
+        "PresentValue": profit,
+        "ReactedBy": reactedBy,
+        "createdOn": createdOn,
+        "StoryType": storyType,
+        "Owner": user,
+      };
+
+  Map<String, dynamic> toJsonWageDao() => {
+        "id": id,
+        "StoryText": storyText,
+        "FileUpload": fileUpload != null
+            ? List<String>.from(fileUpload.map((x) => x))
+            : [],
+        "PresentValue": profit,
+        "ReactedBy": reactedBy,
+        "createdOn": createdOn,
+        "StoryType": storyType,
+        "Owner": user,
+      };
+
   Map<String, dynamic> toJsonWage() => {
         "id": id,
         "StoryText": storyText,
