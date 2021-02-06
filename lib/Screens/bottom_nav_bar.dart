@@ -115,9 +115,11 @@ class _BottomNavBarState extends State<BottomNavBar>
       var resBody = json.decode(res['body']);
 
       var id = resBody['message']['id'];
-
+      var messagingToken = await getFirebaseMessagingToken();
       //print(widget.sign_in_mode);
-      await users.document(user.uid).setData({"id": resBody['message']['id']});
+      await users
+          .document(user.uid)
+          .setData({"id": resBody['message']['id'], "token": messagingToken});
 
       final url = userEndPoint + "get";
 
@@ -312,7 +314,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       });
     }
     //print("This is my response: $response");
-    //print(response.body);
+    print(response.body);
     //print(response.statusCode);
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body);
@@ -443,6 +445,12 @@ class _BottomNavBarState extends State<BottomNavBar>
       //
       DocumentSnapshot doc = await users.document(user.uid).get();
       id = doc['id'];
+
+      if (doc['token'] == null) {
+        var messagingToken = await getFirebaseMessagingToken();
+        await users.document(user.uid).updateData({"token": messagingToken});
+      }
+
       //var id = curUser.id;
     } catch (e) {
       setState(() {
@@ -510,7 +518,6 @@ class _BottomNavBarState extends State<BottomNavBar>
       });
       createNgetUserAwait();
     } else {
-      getFirebaseMessagingToken();
       // createUser();
       getUserAwait();
       getAllUsers();
@@ -519,10 +526,9 @@ class _BottomNavBarState extends State<BottomNavBar>
     }
   }
 
-  getFirebaseMessagingToken() async {
+  Future<String> getFirebaseMessagingToken() async {
     var token = await _messaging.getToken();
-    print("Here is my messaging token");
-    print(token);
+    return token;
   }
 
   createNgetUserAwait() async {

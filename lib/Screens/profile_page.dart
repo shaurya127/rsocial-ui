@@ -761,33 +761,40 @@ class _ProfileState extends State<Profile> {
             // ),
             curUser.id == widget.user.id
                 ? GestureDetector(
-              onTap: (){
-                Navigator.push(context,  MaterialPageRoute(
-                  builder: (context) => AllConnections(user: curUser),
-                ),);
-              },
-                  child: Text(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AllConnections(user: curUser),
+                        ),
+                      );
+                    },
+                    child: Text(
                       "Total Connections: ${curUser.connection.length}",
                       style: TextStyle(
                           fontFamily: "Lato",
                           fontWeight: FontWeight.bold,
                           fontSize: 15),
                     ),
-                )
+                  )
                 : GestureDetector(
-              onTap: (){
-                Navigator.push(context,  MaterialPageRoute(
-                  builder: (context) => AllConnections(user: widget.user),
-                ),);
-              },
-                  child: Text(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              AllConnections(user: widget.user),
+                        ),
+                      );
+                    },
+                    child: Text(
                       "Total Connections: ${widget.user.connection.length}",
                       style: TextStyle(
                           fontFamily: "Lato",
                           fontWeight: FontWeight.bold,
                           fontSize: 15),
                     ),
-                ),
+                  ),
             SizedBox(
               height: 3,
             ),

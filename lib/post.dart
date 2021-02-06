@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:rsocial2/user.dart';
 import 'package:timeago/timeago.dart' as timeago;
+
 var locale = 'en';
 
 class Post {
@@ -34,11 +35,10 @@ class Post {
   String profit;
   String createdOn;
 
-
   factory Post.fromJsonI(final json) {
     var uid = json["UserId"];
     var frnd = json['InvestedWith'];
-    final diff =DateTime.now().difference(DateTime.parse(json['PostedOn']));
+    final diff = DateTime.now().difference(DateTime.parse(json['PostedOn']));
     final txt = timeago.format(DateTime.now().subtract(diff), locale: locale);
     print(txt);
     //print("frnd is $frnd with type ${json['StoryType']}");
@@ -79,7 +79,7 @@ class Post {
   }
 
   factory Post.fromJsonW(final json) {
-    final diff =DateTime.now().difference(DateTime.parse(json['PostedOn']));
+    final diff = DateTime.now().difference(DateTime.parse(json['PostedOn']));
     final txt = timeago.format(DateTime.now().subtract(diff), locale: locale);
     print(txt);
     var uid = json["UserId"];
@@ -117,6 +117,36 @@ class Post {
             ? List<String>.from(fileUpload.map((x) => x))
             : [],
       };
+
+  Map<String, dynamic> toJsonInvestDao() => {
+        "id": id,
+        "StoryText": storyText,
+        "InvestedWith": investedWith == null ? [] : this.investedWith,
+        "InvestedAmount": investedAmount,
+        "Duration": duration.toString(),
+        "FileUpload": fileUpload != null
+            ? List<String>.from(fileUpload.map((x) => x))
+            : [],
+        "PresentValue": profit,
+        "ReactedBy": reactedBy,
+        "createdOn": createdOn,
+        "StoryType": storyType,
+        "Owner": user,
+      };
+
+  Map<String, dynamic> toJsonWageDao() => {
+        "id": id,
+        "StoryText": storyText,
+        "FileUpload": fileUpload != null
+            ? List<String>.from(fileUpload.map((x) => x))
+            : [],
+        "PresentValue": profit,
+        "ReactedBy": reactedBy,
+        "createdOn": createdOn,
+        "StoryType": storyType,
+        "Owner": user,
+      };
+
   Map<String, dynamic> toJsonWage() => {
         "id": id,
         "StoryText": storyText,
