@@ -314,7 +314,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       });
     }
     //print("This is my response: $response");
-    //print(response.body);
+    print(response.body);
     //print(response.statusCode);
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body);
