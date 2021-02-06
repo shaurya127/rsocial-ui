@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:rsocial2/Screens/all_connections.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/login_page.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
@@ -392,7 +393,7 @@ class _ProfileState extends State<Profile> {
       });
       print("build wage post ended");
       return ListView(
-        children: WageTiles.reversed.toList(),
+        children: WageTiles,
       );
     }
   }
@@ -445,7 +446,7 @@ class _ProfileState extends State<Profile> {
       });
       print("build invest post ended");
       return ListView(
-        children: InvestTiles.reversed.toList(),
+        children: InvestTiles,
       );
     }
   }
@@ -759,20 +760,34 @@ class _ProfileState extends State<Profile> {
             //   height: 3,
             // ),
             curUser.id == widget.user.id
-                ? Text(
-                    "Total Connections: ${curUser.connection.length}",
-                    style: TextStyle(
-                        fontFamily: "Lato",
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15),
-                  )
-                : Text(
-                    "Total Connections: ${widget.user.connection.length}",
-                    style: TextStyle(
-                        fontFamily: "Lato",
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15),
-                  ),
+                ? GestureDetector(
+              onTap: (){
+                Navigator.push(context,  MaterialPageRoute(
+                  builder: (context) => AllConnections(user: curUser),
+                ),);
+              },
+                  child: Text(
+                      "Total Connections: ${curUser.connection.length}",
+                      style: TextStyle(
+                          fontFamily: "Lato",
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15),
+                    ),
+                )
+                : GestureDetector(
+              onTap: (){
+                Navigator.push(context,  MaterialPageRoute(
+                  builder: (context) => AllConnections(user: widget.user),
+                ),);
+              },
+                  child: Text(
+                      "Total Connections: ${widget.user.connection.length}",
+                      style: TextStyle(
+                          fontFamily: "Lato",
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15),
+                    ),
+                ),
             SizedBox(
               height: 3,
             ),

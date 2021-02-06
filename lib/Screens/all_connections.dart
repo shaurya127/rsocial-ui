@@ -8,6 +8,8 @@ import 'bottom_nav_bar.dart';
 import 'bottom_nav_bar.dart';
 
 class AllConnections extends StatefulWidget {
+  User user;
+  AllConnections({@required this.user});
   @override
   _AllConnectionsState createState() => _AllConnectionsState();
 }
@@ -16,13 +18,13 @@ class _AllConnectionsState extends State<AllConnections> {
   List<User> connections = [];
 
   buildSuggestedTab() {
-    connections = curUser.connection;
+    connections = widget.user.connection;
     List<Request_Tile> friendResults = [];
     if (connections.isNotEmpty) {
       for (int i = 0; i < connections.length; i++) {
-        print("printing connection length");
-        print(connections[i].connection.length);
-        print(connections[i].fname);
+        // print("printing connection length");
+        // print(connections[i].connection.length);
+        // print(connections[i].fname);
         Request_Tile tile = Request_Tile(
           user: connections[i],
           text: "remove",
