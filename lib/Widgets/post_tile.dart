@@ -203,6 +203,16 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   react(String reactn) async {
     setState(() {
       isDisabled = true;
+      String prvrxn = rxn;
+      rxn = reactn;
+      counter[prvrxn]--;
+      counter[rxn]++;
+      //print(widget.userPost.profit);
+      m[widget.userPost.id] = {reactn: counter[reactn]};
+      //print("updating mp");
+      mp[widget.userPost.id] = counter;
+      prft[widget.userPost.id] = widget.userPost.profit;
+
     });
     var url = storyEndPoint + 'react';
     var user = await FirebaseAuth.instance.currentUser();
@@ -223,7 +233,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     );
     print(response.statusCode);
     if (response.statusCode == 200) {
-      setState(() {
+
         final jsonUser = jsonDecode(response.body);
         var body = jsonUser['body'];
         var body1 = jsonDecode(body);
@@ -231,22 +241,21 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
 
         //print(body1);
         var msg = body1['message'];
-        if (widget.userPost.storyType == 'Wage')
-          widget.userPost = Post.fromJsonW(msg);
-        else
-          widget.userPost = Post.fromJsonI(msg);
+        setState(() {
+          prft[widget.userPost.id] = msg["PresentValue"].toString();
+        });
+
+        // if (widget.userPost.storyType == 'Wage')
+        //   widget.userPost = Post.fromJsonW(msg);
+        // else
+        //   widget.userPost = Post.fromJsonI(msg);
 
         getReactions();
-        print(widget.userPost.profit);
-        m[widget.userPost.id] = {reactn: counter[reactn]};
-        //print("updating mp");
-        mp[widget.userPost.id] = counter;
-        prft[widget.userPost.id] = widget.userPost.profit;
-      });
+
       // });
       setState(() {});
     }
-    print("hello hello");
+    //print("hello hello");
     setState(() {
       isDisabled = false;
     });
