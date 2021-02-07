@@ -713,108 +713,108 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                         width: 14,
                       ),
 
-                      if (counter['loved'] == 0 &&
-                          counter['liked'] == 0 &&
-                          counter['whatever'] == 0 &&
-                          counter['hated'] == 0)
-                        SizedBox()
-                      else if (counter['loved'] >= counter['liked'] &&
-                          counter['loved'] >= counter['whatever'] &&
-                          counter['loved'] >= counter['hated'])
-                        GestureDetector(
-                          onTap: () {
-                            buildReactionTile();
-                            Navigator.push(
-                                context,
-                                PageTransition(
-                                    // settings: RouteSettings(
-                                    //     name: "Login_Page"),
-                                    type: PageTransitionType.fade,
-                                    child: Reaction_Info(
-                                      like: likes,
-                                      love: love,
-                                      hate: hates,
-                                      whatever: whatevers,
-                                    )));
-                          },
-                          child: SvgPicture.asset(
-                            "images/thumb_blue.svg",
-                            //color: colorPrimaryBlue,
-                            height: 23,
-                          ),
-                        )
-                      else if (counter['liked'] > counter['loved'] &&
-                          counter['liked'] >= counter['whatever'] &&
-                          counter['liked'] >= counter['hated'])
-                        GestureDetector(
-                          onTap: () {
-                            buildReactionTile();
-                            Navigator.push(
-                                context,
-                                PageTransition(
-                                    // settings: RouteSettings(
-                                    //     name: "Login_Page"),
-                                    type: PageTransitionType.fade,
-                                    child: Reaction_Info(
-                                      like: likes,
-                                      love: love,
-                                      hate: hates,
-                                      whatever: whatevers,
-                                    )));
-                          },
-                          child: SvgPicture.asset(
-                            "images/rsocial_thumbUp_blue.svg",
-                            height: 23,
-                          ),
-                        )
-                      else if (counter['whatever'] > counter['loved'] &&
-                          counter['whatever'] > counter['liked'] &&
-                          counter['whatever'] >= counter['hated'])
-                        GestureDetector(
-                          onTap: () {
-                            buildReactionTile();
-                            Navigator.push(
-                                context,
-                                PageTransition(
-                                    // settings: RouteSettings(
-                                    //     name: "Login_Page"),
-                                    type: PageTransitionType.fade,
-                                    child: Reaction_Info(
-                                      like: likes,
-                                      love: love,
-                                      hate: hates,
-                                      whatever: whatevers,
-                                    )));
-                          },
-                          child: SvgPicture.asset(
-                            "images/rsocial_thumbDown_blue.svg",
-                            height: 23,
-                          ),
-                        )
-                      else if (counter['hated'] > counter['liked'] &&
-                          counter['hated'] > counter['loved'] &&
-                          counter['hated'] > counter['whatever'])
-                        GestureDetector(
-                          onTap: () {
-                            buildReactionTile();
-                            Navigator.push(
-                                context,
-                                PageTransition(
-                                    // settings: RouteSettings(
-                                    //     name: "Login_Page"),
-                                    type: PageTransitionType.fade,
-                                    child: Reaction_Info(
-                                      like: likes,
-                                      love: love,
-                                      hate: hates,
-                                      whatever: whatevers,
-                                    )));
-                          },
-                          child: SvgPicture.asset(
-                            "images/rsocial_punch_blue.svg",
-                            height: 23,
-                          ),
-                        ),
+                      // if (counter['loved'] == 0 &&
+                      //     counter['liked'] == 0 &&
+                      //     counter['whatever'] == 0 &&
+                      //     counter['hated'] == 0)
+                      //   SizedBox()
+                      // else if (counter['loved'] >= counter['liked'] &&
+                      //     counter['loved'] >= counter['whatever'] &&
+                      //     counter['loved'] >= counter['hated'])
+                      //   GestureDetector(
+                      //     onTap: () {
+                      //       buildReactionTile();
+                      //       Navigator.push(
+                      //           context,
+                      //           PageTransition(
+                      //               // settings: RouteSettings(
+                      //               //     name: "Login_Page"),
+                      //               type: PageTransitionType.fade,
+                      //               child: Reaction_Info(
+                      //                 like: likes,
+                      //                 love: love,
+                      //                 hate: hates,
+                      //                 whatever: whatevers,
+                      //               )));
+                      //     },
+                      //     child: SvgPicture.asset(
+                      //       "images/thumb_blue.svg",
+                      //       //color: colorPrimaryBlue,
+                      //       height: 23,
+                      //     ),
+                      //   )
+                      // else if (counter['liked'] > counter['loved'] &&
+                      //     counter['liked'] >= counter['whatever'] &&
+                      //     counter['liked'] >= counter['hated'])
+                      //   GestureDetector(
+                      //     onTap: () {
+                      //       buildReactionTile();
+                      //       Navigator.push(
+                      //           context,
+                      //           PageTransition(
+                      //               // settings: RouteSettings(
+                      //               //     name: "Login_Page"),
+                      //               type: PageTransitionType.fade,
+                      //               child: Reaction_Info(
+                      //                 like: likes,
+                      //                 love: love,
+                      //                 hate: hates,
+                      //                 whatever: whatevers,
+                      //               )));
+                      //     },
+                      //     child: SvgPicture.asset(
+                      //       "images/rsocial_thumbUp_blue.svg",
+                      //       height: 23,
+                      //     ),
+                      //   )
+                      // else if (counter['whatever'] > counter['loved'] &&
+                      //     counter['whatever'] > counter['liked'] &&
+                      //     counter['whatever'] >= counter['hated'])
+                      //   GestureDetector(
+                      //     onTap: () {
+                      //       buildReactionTile();
+                      //       Navigator.push(
+                      //           context,
+                      //           PageTransition(
+                      //               // settings: RouteSettings(
+                      //               //     name: "Login_Page"),
+                      //               type: PageTransitionType.fade,
+                      //               child: Reaction_Info(
+                      //                 like: likes,
+                      //                 love: love,
+                      //                 hate: hates,
+                      //                 whatever: whatevers,
+                      //               )));
+                      //     },
+                      //     child: SvgPicture.asset(
+                      //       "images/rsocial_thumbDown_blue.svg",
+                      //       height: 23,
+                      //     ),
+                      //   )
+                      // else if (counter['hated'] > counter['liked'] &&
+                      //     counter['hated'] > counter['loved'] &&
+                      //     counter['hated'] > counter['whatever'])
+                      //   GestureDetector(
+                      //     onTap: () {
+                      //       buildReactionTile();
+                      //       Navigator.push(
+                      //           context,
+                      //           PageTransition(
+                      //               // settings: RouteSettings(
+                      //               //     name: "Login_Page"),
+                      //               type: PageTransitionType.fade,
+                      //               child: Reaction_Info(
+                      //                 like: likes,
+                      //                 love: love,
+                      //                 hate: hates,
+                      //                 whatever: whatevers,
+                      //               )));
+                      //     },
+                      //     child: SvgPicture.asset(
+                      //       "images/rsocial_punch_blue.svg",
+                      //       height: 23,
+                      //     ),
+                      //   ),
                       //SizedBox(width: 14,),
                       GestureDetector(
 // <<<<<<< HEAD
