@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:package_info/package_info.dart';
 import 'package:rsocial2/Screens/rcash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -40,6 +41,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 final googleSignIn = GoogleSignIn();
 final fblogin = FacebookLogin();
 User curUser;
+PackageInfo packageInfo;
 //String postId;
 
 class BottomNavBar extends StatefulWidget {
@@ -76,6 +78,8 @@ class _BottomNavBarState extends State<BottomNavBar>
   int _currentIndex = 0;
   bool isLoadingPost = false;
   bool isForward = true;
+
+
   void isPostedCallback() {
     setState(() {
       _currentIndex = 0;
@@ -273,6 +277,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   Future<User> getUser() async {
     var user = await FirebaseAuth.instance.currentUser();
     var token = await user.getIdToken();
+
     print(token);
     // print("This is my email");
     // print(user.email);
@@ -442,7 +447,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     var id;
     try {
       user = await FirebaseAuth.instance.currentUser();
-      //
+      packageInfo = await PackageInfo.fromPlatform();
       DocumentSnapshot doc = await users.document(user.uid).get();
       id = doc['id'];
 

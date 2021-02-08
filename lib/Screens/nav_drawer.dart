@@ -223,6 +223,14 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                     logout(context);
                   },
                 ),
+                SizedBox(height: 100,),
+                Text("version: ${packageInfo.version}",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Lato',
+                    fontSize: 14,
+                    color: Color(0xff7F7F7F),
+                  ),)
               ],
             ),
           ),

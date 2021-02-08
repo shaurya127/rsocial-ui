@@ -29,6 +29,13 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
 
+<!--           This is required for push notifications -->
+            <intent-filter>
+                    <action android:name="FLUTTER_NOTIFICATION_CLICK" />
+                    <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+
 
 
 

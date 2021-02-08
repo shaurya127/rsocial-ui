@@ -30,6 +30,13 @@
             </list>
           </value>
         </entry>
+        <entry key="audioplayers">
+          <value>
+            <list>
+              <option value="C:/flutter/.pub-cache/hosted/pub.dartlang.org/audioplayers-0.11.0/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="boolean_selector">
           <value>
             <list>
@@ -370,6 +377,13 @@
           <value>
             <list>
               <option value="C:/flutter/.pub-cache/hosted/pub.dartlang.org/modal_progress_hud-0.1.3/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="overlay_support">
+          <value>
+            <list>
+              <option value="C:/flutter/.pub-cache/hosted/pub.dartlang.org/overlay_support-1.0.5/lib" />
             </list>
           </value>
         </entry>
@@ -716,6 +730,7 @@
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/archive-2.0.11/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/args-1.5.2/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/async-2.5.0-nullsafety.2/lib" />
+      <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/audioplayers-0.11.0/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/boolean_selector-2.1.0-nullsafety.2/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/characters-1.1.0-nullsafety.4/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/charcode-1.2.0-nullsafety.2/lib" />
@@ -762,6 +777,7 @@
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/matcher-0.12.10-nullsafety.2/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/meta-1.3.0-nullsafety.5/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/modal_progress_hud-0.1.3/lib" />
+      <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/overlay_support-1.0.5/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/package_info-0.4.3+4/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/page_transition-1.1.7+2/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/path-1.8.0-nullsafety.2/lib" />

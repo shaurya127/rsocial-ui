@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
@@ -99,7 +101,8 @@ class _PlatformPostTileState extends State<PlatformPostTile>
   Animation lovedAnimation;
   Animation likedAnimation;
   Animation whateverAnimation;
-
+  AudioPlayer audioPlayer;
+  AudioCache audioCache;
   int reactionSizeIncrease = 3;
   bool _isCreatingLink = false;
   bool _showPreview = false;
@@ -147,7 +150,8 @@ class _PlatformPostTileState extends State<PlatformPostTile>
   @override
   void initState() {
     super.initState();
-
+    audioPlayer = new AudioPlayer();
+    audioCache = new AudioCache(fixedPlayer: audioPlayer);
     lovedController =
         AnimationController(duration: Duration(milliseconds: 400), vsync: this);
     lovedAnimation = CurvedAnimation(
@@ -207,6 +211,16 @@ class _PlatformPostTileState extends State<PlatformPostTile>
   react(String reactn) async {
     setState(() {
       isDisabled = true;
+      audioCache.play("click.mp3");
+      String prvrxn = rxn;
+      rxn = reactn;
+      counter[prvrxn]--;
+      counter[rxn]++;
+      //print(widget.userPost.profit);
+      m[widget.userPost.id] = {reactn: counter[reactn]};
+      //print("updating mp");
+      mp[widget.userPost.id] = counter;
+      prft[widget.userPost.id] = widget.userPost.profit;
     });
     var url = storyEndPoint + 'react';
     var user = await FirebaseAuth.instance.currentUser();
@@ -227,26 +241,29 @@ class _PlatformPostTileState extends State<PlatformPostTile>
     );
     print(response.statusCode);
     if (response.statusCode == 200) {
+      //setState(() {
+      final jsonUser = jsonDecode(response.body);
+      var body = jsonUser['body'];
+      var body1 = jsonDecode(body);
+      print("body is $body");
+
+      //print(body1);
+      var msg = body1['message'];
       setState(() {
-        final jsonUser = jsonDecode(response.body);
-        var body = jsonUser['body'];
-        var body1 = jsonDecode(body);
-        print("body is $body");
-
-        //print(body1);
-        var msg = body1['message'];
-        if (widget.userPost.storyType == 'Wage')
-          widget.userPost = Post.fromJsonW(msg);
-        else
-          widget.userPost = Post.fromJsonI(msg);
-
-        getReactions();
-        print(widget.userPost.profit);
-        m[widget.userPost.id] = {reactn: counter[reactn]};
-        //print("updating mp");
-        mp[widget.userPost.id] = counter;
-        prft[widget.userPost.id] = widget.userPost.profit;
+        prft[widget.userPost.id] = msg["PresentValue"].toString();
       });
+      // if (widget.userPost.storyType == 'Wage')
+      //   widget.userPost = Post.fromJsonW(msg);
+      // else
+      //   widget.userPost = Post.fromJsonI(msg);
+      //
+      // getReactions();
+      // print(widget.userPost.profit);
+      // m[widget.userPost.id] = {reactn: counter[reactn]};
+      // //print("updating mp");
+      // mp[widget.userPost.id] = counter;
+      // prft[widget.userPost.id] = widget.userPost.profit;
+      //});
       // });
       setState(() {});
     }
@@ -572,10 +589,16 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                         ? Row(
                                             children: <Widget>[
                                               GestureDetector(
-                                                onTap: () =>showProfile(context, widget.userPost.investedWithUser[0], widget.userPost.user.photoUrl),
+                                                onTap: () => showProfile(
+                                                    context,
+                                                    widget.userPost
+                                                        .investedWithUser[0],
+                                                    widget.userPost.user
+                                                        .photoUrl),
                                                 child: Text(
                                                   "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k with ${widget.userPost.investedWithUser[0].fname}",
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   style: TextStyle(
                                                     fontFamily: "Lato",
                                                     fontSize: 12,
@@ -713,108 +736,108 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                         width: 14,
                       ),
 
-                      if (counter['loved'] == 0 &&
-                          counter['liked'] == 0 &&
-                          counter['whatever'] == 0 &&
-                          counter['hated'] == 0)
-                        SizedBox()
-                      else if (counter['loved'] >= counter['liked'] &&
-                          counter['loved'] >= counter['whatever'] &&
-                          counter['loved'] >= counter['hated'])
-                        GestureDetector(
-                          onTap: () {
-                            buildReactionTile();
-                            Navigator.push(
-                                context,
-                                PageTransition(
-                                    // settings: RouteSettings(
-                                    //     name: "Login_Page"),
-                                    type: PageTransitionType.fade,
-                                    child: Reaction_Info(
-                                      like: likes,
-                                      love: love,
-                                      hate: hates,
-                                      whatever: whatevers,
-                                    )));
-                          },
-                          child: SvgPicture.asset(
-                            "images/thumb_blue.svg",
-                            //color: colorPrimaryBlue,
-                            height: 23,
-                          ),
-                        )
-                      else if (counter['liked'] > counter['loved'] &&
-                          counter['liked'] >= counter['whatever'] &&
-                          counter['liked'] >= counter['hated'])
-                        GestureDetector(
-                          onTap: () {
-                            buildReactionTile();
-                            Navigator.push(
-                                context,
-                                PageTransition(
-                                    // settings: RouteSettings(
-                                    //     name: "Login_Page"),
-                                    type: PageTransitionType.fade,
-                                    child: Reaction_Info(
-                                      like: likes,
-                                      love: love,
-                                      hate: hates,
-                                      whatever: whatevers,
-                                    )));
-                          },
-                          child: SvgPicture.asset(
-                            "images/rsocial_thumbUp_blue.svg",
-                            height: 23,
-                          ),
-                        )
-                      else if (counter['whatever'] > counter['loved'] &&
-                          counter['whatever'] > counter['liked'] &&
-                          counter['whatever'] >= counter['hated'])
-                        GestureDetector(
-                          onTap: () {
-                            buildReactionTile();
-                            Navigator.push(
-                                context,
-                                PageTransition(
-                                    // settings: RouteSettings(
-                                    //     name: "Login_Page"),
-                                    type: PageTransitionType.fade,
-                                    child: Reaction_Info(
-                                      like: likes,
-                                      love: love,
-                                      hate: hates,
-                                      whatever: whatevers,
-                                    )));
-                          },
-                          child: SvgPicture.asset(
-                            "images/rsocial_thumbDown_blue.svg",
-                            height: 23,
-                          ),
-                        )
-                      else if (counter['hated'] > counter['liked'] &&
-                          counter['hated'] > counter['loved'] &&
-                          counter['hated'] > counter['whatever'])
-                        GestureDetector(
-                          onTap: () {
-                            buildReactionTile();
-                            Navigator.push(
-                                context,
-                                PageTransition(
-                                    // settings: RouteSettings(
-                                    //     name: "Login_Page"),
-                                    type: PageTransitionType.fade,
-                                    child: Reaction_Info(
-                                      like: likes,
-                                      love: love,
-                                      hate: hates,
-                                      whatever: whatevers,
-                                    )));
-                          },
-                          child: SvgPicture.asset(
-                            "images/rsocial_punch_blue.svg",
-                            height: 23,
-                          ),
-                        ),
+                      // if (counter['loved'] == 0 &&
+                      //     counter['liked'] == 0 &&
+                      //     counter['whatever'] == 0 &&
+                      //     counter['hated'] == 0)
+                      //   SizedBox()
+                      // else if (counter['loved'] >= counter['liked'] &&
+                      //     counter['loved'] >= counter['whatever'] &&
+                      //     counter['loved'] >= counter['hated'])
+                      //   GestureDetector(
+                      //     onTap: () {
+                      //       buildReactionTile();
+                      //       Navigator.push(
+                      //           context,
+                      //           PageTransition(
+                      //               // settings: RouteSettings(
+                      //               //     name: "Login_Page"),
+                      //               type: PageTransitionType.fade,
+                      //               child: Reaction_Info(
+                      //                 like: likes,
+                      //                 love: love,
+                      //                 hate: hates,
+                      //                 whatever: whatevers,
+                      //               )));
+                      //     },
+                      //     child: SvgPicture.asset(
+                      //       "images/thumb_blue.svg",
+                      //       //color: colorPrimaryBlue,
+                      //       height: 23,
+                      //     ),
+                      //   )
+                      // else if (counter['liked'] > counter['loved'] &&
+                      //     counter['liked'] >= counter['whatever'] &&
+                      //     counter['liked'] >= counter['hated'])
+                      //   GestureDetector(
+                      //     onTap: () {
+                      //       buildReactionTile();
+                      //       Navigator.push(
+                      //           context,
+                      //           PageTransition(
+                      //               // settings: RouteSettings(
+                      //               //     name: "Login_Page"),
+                      //               type: PageTransitionType.fade,
+                      //               child: Reaction_Info(
+                      //                 like: likes,
+                      //                 love: love,
+                      //                 hate: hates,
+                      //                 whatever: whatevers,
+                      //               )));
+                      //     },
+                      //     child: SvgPicture.asset(
+                      //       "images/rsocial_thumbUp_blue.svg",
+                      //       height: 23,
+                      //     ),
+                      //   )
+                      // else if (counter['whatever'] > counter['loved'] &&
+                      //     counter['whatever'] > counter['liked'] &&
+                      //     counter['whatever'] >= counter['hated'])
+                      //   GestureDetector(
+                      //     onTap: () {
+                      //       buildReactionTile();
+                      //       Navigator.push(
+                      //           context,
+                      //           PageTransition(
+                      //               // settings: RouteSettings(
+                      //               //     name: "Login_Page"),
+                      //               type: PageTransitionType.fade,
+                      //               child: Reaction_Info(
+                      //                 like: likes,
+                      //                 love: love,
+                      //                 hate: hates,
+                      //                 whatever: whatevers,
+                      //               )));
+                      //     },
+                      //     child: SvgPicture.asset(
+                      //       "images/rsocial_thumbDown_blue.svg",
+                      //       height: 23,
+                      //     ),
+                      //   )
+                      // else if (counter['hated'] > counter['liked'] &&
+                      //     counter['hated'] > counter['loved'] &&
+                      //     counter['hated'] > counter['whatever'])
+                      //   GestureDetector(
+                      //     onTap: () {
+                      //       buildReactionTile();
+                      //       Navigator.push(
+                      //           context,
+                      //           PageTransition(
+                      //               // settings: RouteSettings(
+                      //               //     name: "Login_Page"),
+                      //               type: PageTransitionType.fade,
+                      //               child: Reaction_Info(
+                      //                 like: likes,
+                      //                 love: love,
+                      //                 hate: hates,
+                      //                 whatever: whatevers,
+                      //               )));
+                      //     },
+                      //     child: SvgPicture.asset(
+                      //       "images/rsocial_punch_blue.svg",
+                      //       height: 23,
+                      //     ),
+                      //   ),
                       //SizedBox(width: 14,),
                       GestureDetector(
 // <<<<<<< HEAD
@@ -897,10 +920,12 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                       return Stack(
                                         children: <Widget>[
                                           InteractiveViewer(
-                                            transformationController: transformationController,
+                                            transformationController:
+                                                transformationController,
                                             onInteractionEnd: (details) {
                                               setState(() {
-                                                transformationController.toScene(Offset.zero);
+                                                transformationController
+                                                    .toScene(Offset.zero);
                                               });
                                             },
                                             //boundaryMargin: EdgeInsets.all(20.0),
@@ -908,11 +933,11 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                             maxScale: 2,
                                             child: ClipRRect(
                                               borderRadius:
-                                              BorderRadius.circular(10),
+                                                  BorderRadius.circular(10),
                                               child: Container(
                                                 decoration: BoxDecoration(
-
-                                                    color: Colors.grey.withOpacity(0.2),
+                                                    color: Colors.grey
+                                                        .withOpacity(0.2),
                                                     image: DecorationImage(
                                                         image: NetworkImage(
                                                           fileList[index],
@@ -945,31 +970,31 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                       );
                                     })
                                 : InteractiveViewer(
-                          transformationController: transformationController,
-                          onInteractionEnd: (details) {
-                            setState(() {
-                              transformationController.toScene(Offset.zero);
-                            });
-                          },
-                          //boundaryMargin: EdgeInsets.all(20.0),
-                          minScale: 0.1,
-                          maxScale: 2,
-                          child: ClipRRect(
-                            borderRadius:
-                            BorderRadius.circular(10),
-                            child: Container(
-                              decoration: BoxDecoration(
-
-                                  color: Colors.grey.withOpacity(0.2),
-                                  image: DecorationImage(
-                                      image: NetworkImage(
-                                        fileList[0],
+                                    transformationController:
+                                        transformationController,
+                                    onInteractionEnd: (details) {
+                                      setState(() {
+                                        transformationController
+                                            .toScene(Offset.zero);
+                                      });
+                                    },
+                                    //boundaryMargin: EdgeInsets.all(20.0),
+                                    minScale: 0.1,
+                                    maxScale: 2,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey.withOpacity(0.2),
+                                            image: DecorationImage(
+                                                image: NetworkImage(
+                                                  fileList[0],
+                                                ),
+                                                fit: BoxFit.cover)),
+                                        height: 250,
                                       ),
-                                      fit: BoxFit.cover)),
-                              height: 250,
-                            ),
-                          ),
-                        ))
+                                    ),
+                                  ))
                             : Center(
                                 child: CircularProgressIndicator(),
                               )))
