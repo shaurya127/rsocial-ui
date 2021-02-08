@@ -616,13 +616,13 @@ class _ProfileState extends State<Profile> {
               );
             }
 
-            print(response);
+            //print(response);
             if (response.statusCode == 200) {
               final jsonUser = jsonDecode(response.body);
               var body = jsonUser['body'];
               var body1 = jsonDecode(body);
               //print("body is $body");
-              // print(body1);
+              print(body1);
               var msg = body1['message'];
               // print(msg);
               curUser = User.fromJson(msg);

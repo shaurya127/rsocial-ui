@@ -53,7 +53,7 @@ dependencies:
   sembast:
   timeago: ^2.0.29
 
- # fluttertoast:
+  fluttertoast:
 
 dev_dependencies:
   flutter_test:
