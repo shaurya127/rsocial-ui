@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
 
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -94,7 +96,8 @@ class _InvestPostTileState extends State<InvestPostTile>
   Animation lovedAnimation;
   Animation likedAnimation;
   Animation whateverAnimation;
-
+  AudioPlayer audioPlayer;
+  AudioCache audioCache;
   int reactionSizeIncrease = 3;
   getReactions() {
     print(rxn);
@@ -138,7 +141,8 @@ class _InvestPostTileState extends State<InvestPostTile>
   @override
   void initState() {
     super.initState();
-
+    audioPlayer = new AudioPlayer();
+    audioCache = new AudioCache(fixedPlayer: audioPlayer);
     lovedController =
         AnimationController(duration: Duration(milliseconds: 400), vsync: this);
     lovedAnimation = CurvedAnimation(
@@ -190,6 +194,7 @@ class _InvestPostTileState extends State<InvestPostTile>
   react(String reactn) async {
     setState(() {
       isDisabled = true;
+      audioCache.play("click.mp3");
       String prvrxn = rxn;
       rxn = reactn;
       counter[prvrxn]--;
@@ -220,26 +225,26 @@ class _InvestPostTileState extends State<InvestPostTile>
     print(response.statusCode);
     if (response.statusCode == 200) {
       //setState(() {
-        final jsonUser = jsonDecode(response.body);
-        var body = jsonUser['body'];
-        var body1 = jsonDecode(body);
-        print("body is $body");
-        //print(body1);
-        var msg = body1['message'];
-        setState(() {
-          prft[widget.userPost.id] = msg["PresentValue"].toString();
-        });
-        // if (widget.userPost.storyType == 'Wage')
-        //   widget.userPost = Post.fromJsonW(msg);
-        // else
-        //   widget.userPost = Post.fromJsonI(msg);
-        //
-        // getReactions();
-        //
-        // m[widget.userPost.id] = {reactn: counter[reactn]};
-        // //print("updating mp");
-        // mp[widget.userPost.id] = counter;
-        // prft[widget.userPost.id] = widget.userPost.profit;
+      final jsonUser = jsonDecode(response.body);
+      var body = jsonUser['body'];
+      var body1 = jsonDecode(body);
+      print("body is $body");
+      //print(body1);
+      var msg = body1['message'];
+      setState(() {
+        prft[widget.userPost.id] = msg["PresentValue"].toString();
+      });
+      // if (widget.userPost.storyType == 'Wage')
+      //   widget.userPost = Post.fromJsonW(msg);
+      // else
+      //   widget.userPost = Post.fromJsonI(msg);
+      //
+      // getReactions();
+      //
+      // m[widget.userPost.id] = {reactn: counter[reactn]};
+      // //print("updating mp");
+      // mp[widget.userPost.id] = counter;
+      // prft[widget.userPost.id] = widget.userPost.profit;
       //});
       // });
       setState(() {});
@@ -444,7 +449,10 @@ class _InvestPostTileState extends State<InvestPostTile>
                                 ? Row(
                                     children: <Widget>[
                                       GestureDetector(
-                                        onTap: () =>showProfile(context, widget.userPost.investedWithUser[0], widget.userPost.user.photoUrl),
+                                        onTap: () => showProfile(
+                                            context,
+                                            widget.userPost.investedWithUser[0],
+                                            widget.userPost.user.photoUrl),
                                         child: Text(
                                           "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k with ${widget.userPost.investedWithUser[0].fname}",
                                           overflow: TextOverflow.ellipsis,
@@ -817,10 +825,12 @@ class _InvestPostTileState extends State<InvestPostTile>
                                       return Stack(
                                         children: <Widget>[
                                           InteractiveViewer(
-                                            transformationController: transformationController,
+                                            transformationController:
+                                                transformationController,
                                             onInteractionEnd: (details) {
                                               setState(() {
-                                                transformationController.toScene(Offset.zero);
+                                                transformationController
+                                                    .toScene(Offset.zero);
                                               });
                                             },
                                             //boundaryMargin: EdgeInsets.all(20.0),
@@ -828,11 +838,11 @@ class _InvestPostTileState extends State<InvestPostTile>
                                             maxScale: 2,
                                             child: ClipRRect(
                                               borderRadius:
-                                              BorderRadius.circular(10),
+                                                  BorderRadius.circular(10),
                                               child: Container(
                                                 decoration: BoxDecoration(
-
-                                                    color: Colors.grey.withOpacity(0.2),
+                                                    color: Colors.grey
+                                                        .withOpacity(0.2),
                                                     image: DecorationImage(
                                                         image: NetworkImage(
                                                           fileList[index],
@@ -864,33 +874,32 @@ class _InvestPostTileState extends State<InvestPostTile>
                                         ],
                                       );
                                     })
-                               : InteractiveViewer(
-                          transformationController: transformationController,
-                          onInteractionEnd: (details) {
-                            setState(() {
-                              transformationController.toScene(Offset.zero);
-                            });
-                          },
-                          //boundaryMargin: EdgeInsets.all(20.0),
-                          minScale: 0.1,
-                          maxScale: 2,
-                                 child: ClipRRect(
-                                   borderRadius:
-                                   BorderRadius.circular(10),
-                                   child: Container(
-                                       decoration: BoxDecoration(
-
-                                           color: Colors.grey.withOpacity(0.2),
-                                           image: DecorationImage(
-                                               image: NetworkImage(
-                                                 fileList[0],
-                                               ),
-                                               fit: BoxFit.cover)),
-                                       height: 250,
-                                   ),
-                                 ),
-                               )
-                        )
+                                : InteractiveViewer(
+                                    transformationController:
+                                        transformationController,
+                                    onInteractionEnd: (details) {
+                                      setState(() {
+                                        transformationController
+                                            .toScene(Offset.zero);
+                                      });
+                                    },
+                                    //boundaryMargin: EdgeInsets.all(20.0),
+                                    minScale: 0.1,
+                                    maxScale: 2,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey.withOpacity(0.2),
+                                            image: DecorationImage(
+                                                image: NetworkImage(
+                                                  fileList[0],
+                                                ),
+                                                fit: BoxFit.cover)),
+                                        height: 250,
+                                      ),
+                                    ),
+                                  ))
                             : Center(
                                 child: CircularProgressIndicator(),
                               )))

@@ -29,6 +29,8 @@ import '../read_more.dart';
 import '../user.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info/package_info.dart';
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 Map<String, Map<String, int>> m = new Map();
 Map<String, Map<String, int>> mp = new Map();
@@ -97,7 +99,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   Animation lovedAnimation;
   Animation likedAnimation;
   Animation whateverAnimation;
-
+  AudioPlayer audioPlayer;
+  AudioCache audioCache;
   int reactionSizeIncrease = 3;
   bool _isCreatingLink = false;
 
@@ -143,7 +146,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-
+    audioPlayer = new AudioPlayer();
+    audioCache = new AudioCache(fixedPlayer: audioPlayer);
     lovedController =
         AnimationController(duration: Duration(milliseconds: 400), vsync: this);
     lovedAnimation = CurvedAnimation(
@@ -203,6 +207,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   react(String reactn) async {
     setState(() {
       isDisabled = true;
+      audioCache.play("click.mp3");
       String prvrxn = rxn;
       rxn = reactn;
       counter[prvrxn]--;
@@ -212,7 +217,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
       //print("updating mp");
       mp[widget.userPost.id] = counter;
       prft[widget.userPost.id] = widget.userPost.profit;
-
     });
     var url = storyEndPoint + 'react';
     var user = await FirebaseAuth.instance.currentUser();
@@ -233,24 +237,23 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     );
     print(response.statusCode);
     if (response.statusCode == 200) {
+      final jsonUser = jsonDecode(response.body);
+      var body = jsonUser['body'];
+      var body1 = jsonDecode(body);
+      print("body is $body");
 
-        final jsonUser = jsonDecode(response.body);
-        var body = jsonUser['body'];
-        var body1 = jsonDecode(body);
-        print("body is $body");
+      //print(body1);
+      var msg = body1['message'];
+      setState(() {
+        prft[widget.userPost.id] = msg["PresentValue"].toString();
+      });
 
-        //print(body1);
-        var msg = body1['message'];
-        setState(() {
-          prft[widget.userPost.id] = msg["PresentValue"].toString();
-        });
+      // if (widget.userPost.storyType == 'Wage')
+      //   widget.userPost = Post.fromJsonW(msg);
+      // else
+      //   widget.userPost = Post.fromJsonI(msg);
 
-        // if (widget.userPost.storyType == 'Wage')
-        //   widget.userPost = Post.fromJsonW(msg);
-        // else
-        //   widget.userPost = Post.fromJsonI(msg);
-
-        getReactions();
+      getReactions();
 
       // });
       setState(() {});
@@ -529,15 +532,15 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                 color: nameCol,
                               ),
                             ),
-                      subtitle: Text(
-                        "${widget.userPost.createdOn}",
-                        style: TextStyle(
-                          //fontWeight: FontWeight.bold,
-                          fontFamily: "Lato",
-                          fontSize: 12,
-                          color: subtitile,
-                        ),
-                      ),
+                            subtitle: Text(
+                              "${widget.userPost.createdOn}",
+                              style: TextStyle(
+                                //fontWeight: FontWeight.bold,
+                                fontFamily: "Lato",
+                                fontSize: 12,
+                                color: subtitile,
+                              ),
+                            ),
                           )
                         : ListTile(
                             dense: true,
@@ -578,10 +581,16 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                         ? Row(
                                             children: <Widget>[
                                               GestureDetector(
-                                                onTap: () =>showProfile(context, widget.userPost.investedWithUser[0], widget.userPost.user.photoUrl),
+                                                onTap: () => showProfile(
+                                                    context,
+                                                    widget.userPost
+                                                        .investedWithUser[0],
+                                                    widget.userPost.user
+                                                        .photoUrl),
                                                 child: Text(
                                                   "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k with ${widget.userPost.investedWithUser[0].fname}",
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   style: TextStyle(
                                                     fontFamily: "Lato",
                                                     fontSize: 12,
@@ -880,8 +889,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                         fontFamily: "Lato",
                         color: postDesc,
                       ),
-                    )
-                    ),
+                    )),
             widget.userPost.fileUpload.length != 0
                 ? Padding(
                     padding: widget.userPost.storyText == null
@@ -905,10 +913,12 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                       return Stack(
                                         children: <Widget>[
                                           InteractiveViewer(
-                                            transformationController: transformationController,
+                                            transformationController:
+                                                transformationController,
                                             onInteractionEnd: (details) {
                                               setState(() {
-                                                transformationController.toScene(Offset.zero);
+                                                transformationController
+                                                    .toScene(Offset.zero);
                                               });
                                             },
                                             //boundaryMargin: EdgeInsets.all(20.0),
@@ -916,11 +926,11 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                             maxScale: 2,
                                             child: ClipRRect(
                                               borderRadius:
-                                              BorderRadius.circular(10),
+                                                  BorderRadius.circular(10),
                                               child: Container(
                                                 decoration: BoxDecoration(
-
-                                                    color: Colors.grey.withOpacity(0.2),
+                                                    color: Colors.grey
+                                                        .withOpacity(0.2),
                                                     image: DecorationImage(
                                                         image: NetworkImage(
                                                           fileList[index],
@@ -933,34 +943,32 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                         ],
                                       );
                                     })
-                                :
-                        InteractiveViewer(
-                          transformationController: transformationController,
-                          onInteractionEnd: (details) {
-                            setState(() {
-                              transformationController.toScene(Offset.zero);
-                            });
-                          },
-                          //boundaryMargin: EdgeInsets.all(20.0),
-                          minScale: 0.1,
-                          maxScale: 2,
-                          child: ClipRRect(
-                            borderRadius:
-                            BorderRadius.circular(10),
-                            child: Container(
-                              decoration: BoxDecoration(
-
-                                  color: Colors.grey.withOpacity(0.2),
-                                  image: DecorationImage(
-                                      image: NetworkImage(
-                                        fileList[0],
+                                : InteractiveViewer(
+                                    transformationController:
+                                        transformationController,
+                                    onInteractionEnd: (details) {
+                                      setState(() {
+                                        transformationController
+                                            .toScene(Offset.zero);
+                                      });
+                                    },
+                                    //boundaryMargin: EdgeInsets.all(20.0),
+                                    minScale: 0.1,
+                                    maxScale: 2,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey.withOpacity(0.2),
+                                            image: DecorationImage(
+                                                image: NetworkImage(
+                                                  fileList[0],
+                                                ),
+                                                fit: BoxFit.cover)),
+                                        height: 250,
                                       ),
-                                      fit: BoxFit.cover)),
-                              height: 250,
-                            ),
-                          ),
-                        )
-                        )
+                                    ),
+                                  ))
                             : Center(
                                 child: CircularProgressIndicator(),
                               )))
