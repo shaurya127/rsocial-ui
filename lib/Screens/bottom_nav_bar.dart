@@ -590,7 +590,7 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   final List<String> _labels = [
     "Home",
-    "Socialise",
+    "Bonds",
     "Post",
     "Notifications",
     "R cash"
