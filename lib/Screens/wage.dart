@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
@@ -15,6 +16,7 @@ import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/RoundedButton.dart';
 import 'package:rsocial2/Widgets/alert_box.dart';
+import 'package:rsocial2/Widgets/selectButton.dart';
 import 'package:rsocial2/config.dart';
 import 'package:rsocial2/constants.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -52,7 +54,7 @@ class _WageState extends State<Wage> {
   File file;
   List<String> list = new List();
   List<File> fileList = new List();
-  String orientation = "wage";
+  String orientation = "invest";
   var textController = new TextEditingController();
   bool isloading = false;
   String path;
@@ -330,8 +332,32 @@ class _WageState extends State<Wage> {
   }
 
   createPostInvestment(String investmentAmount, List<String> list) async {
-    if (selectedList.isEmpty || double.parse(investmentAmount) == 0) {
-      print("returned");
+    if (selectedList.isEmpty) {
+      Fluttertoast.showToast(
+          msg: "You must invest with a bond",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
+      return;
+    }
+
+    if (double.parse(investmentAmount) == 0) {
+      Fluttertoast.showToast(
+          msg: "Investment amount cannot be 0",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
+
+      return;
+    }
+
+    if (investmentstoryText == null && investmentfileList.isEmpty ||
+        (investmentstoryText.isEmpty && investmentfileList.isEmpty)) {
+      Fluttertoast.showToast(
+          msg: "Please upload text or photo",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
       return;
     }
 
@@ -416,11 +442,11 @@ class _WageState extends State<Wage> {
 
   createPost(String storyText, List<String> list) async {
     if (storyText == null || storyText.isEmpty) {
-      // Fluttertoast.showToast(
-      //     msg: "Please enter text or upload pic",
-      //     toastLength: Toast.LENGTH_SHORT,
-      //     gravity: ToastGravity.BOTTOM,
-      //     fontSize: 15);
+      Fluttertoast.showToast(
+          msg: "Please enter text and upload pic",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
       return;
     }
 
@@ -515,6 +541,11 @@ class _WageState extends State<Wage> {
               investingWithController.clear();
             } else {
               investingWithController.clear();
+              Fluttertoast.showToast(
+                  msg: "You can only invest with one bond",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  fontSize: 15);
             }
           });
           // Navigator.push(
@@ -616,17 +647,17 @@ class _WageState extends State<Wage> {
         //     )
         //   ],
         // ),
-        Padding(
-          padding: const EdgeInsets.only(top: 11.0),
-          child: Text(
-            "Create an Investment Story",
-            style: TextStyle(
-                color: Colors.black,
-                fontFamily: "Lato",
-                fontWeight: FontWeight.bold,
-                fontSize: 15),
-          ),
-        ),
+        // Padding(
+        //   padding: const EdgeInsets.only(top: 11.0),
+        //   child: Text(
+        //     "Create an Investment Story",
+        //     style: TextStyle(
+        //         color: Colors.black,
+        //         fontFamily: "Lato",
+        //         fontWeight: FontWeight.bold,
+        //         fontSize: 15),
+        //   ),
+        //),
         SizedBox(
           height: 32,
         ),
@@ -644,7 +675,8 @@ class _WageState extends State<Wage> {
                     fontWeight: FontWeight.w700),
               ),
               SizedBox(
-                height: 12,
+                height:
+                    selectedList == null || selectedList.length == 0 ? 0 : 12,
               ),
               Container(
                 height: selectedList != null
@@ -735,20 +767,6 @@ class _WageState extends State<Wage> {
               SizedBox(
                 height: 12,
               ),
-              Slider(
-                value: amount.toDouble(),
-                divisions: 80,
-                label: amount.round().toString(),
-                min: 1000,
-                max: curUser.lollarAmount.toDouble(),
-                activeColor: colorPrimaryBlue,
-                inactiveColor: colorGreyTint,
-                onChanged: (value) {
-                  setState(() {
-                    if (value <= curUser.lollarAmount) amount = value.round();
-                  });
-                },
-              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Row(
@@ -770,6 +788,20 @@ class _WageState extends State<Wage> {
                     )
                   ],
                 ),
+              ),
+              Slider(
+                value: amount.toDouble(),
+                divisions: 80,
+                label: amount.round().toString(),
+                min: 1000,
+                max: curUser.lollarAmount.toDouble(),
+                activeColor: colorPrimaryBlue,
+                inactiveColor: colorGreyTint,
+                onChanged: (value) {
+                  setState(() {
+                    if (value <= curUser.lollarAmount) amount = value.round();
+                  });
+                },
               ),
             ],
           ),
@@ -1021,6 +1053,197 @@ class _WageState extends State<Wage> {
     );
   }
 
+  buildWage() {
+    return Column(
+      children: <Widget>[
+        // Padding(
+        //   padding: const EdgeInsets.only(top: 11.0),
+        //   child: Text(
+        //     "Create a Wage Story",
+        //     style: TextStyle(
+        //         color: Colors.black,
+        //         fontFamily: "Lato",
+        //         fontWeight: FontWeight.bold,
+        //         fontSize: 15),
+        //   ),
+        // ),
+        Padding(
+          padding: const EdgeInsets.only(left: 25.0, right: 25, top: 32),
+          child: Container(
+            decoration: BoxDecoration(
+                color: colorGreyTint.withOpacity(0.03),
+                borderRadius: BorderRadius.all(Radius.circular(8)),
+                border: Border.all(color: colorGreyTint, width: 0.5)),
+            child: Column(
+              children: <Widget>[
+                Column(
+                  children: <Widget>[
+                    // Row(
+                    //   children: <Widget>[
+                    //     IconButton(
+                    //       icon: Icon(Icons.format_bold),
+                    //       onPressed: () {
+                    //         setState(() {
+                    //           boldInput = !boldInput;
+                    //         });
+                    //       },
+                    //     ),
+                    //     IconButton(
+                    //       icon: Icon(Icons.format_italic),
+                    //       onPressed: () {
+                    //         setState(() {
+                    //           italics = !italics;
+                    //         });
+                    //       },
+                    //     ),
+                    //     IconButton(
+                    //       icon: Icon(Icons.format_underlined),
+                    //       onPressed: () {
+                    //         setState(() {
+                    //           boldInput = !boldInput;
+                    //         });
+                    //       },
+                    //     ),
+                    //   ],
+                    // ),
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 24, top: 12, right: 24),
+                      child: TextFormField(
+                        controller: textController,
+                        onTap: () {
+                          setState(() {
+                            isSelected = false;
+                          });
+                        },
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: boldInput
+                                ? FontWeight.bold
+                                : FontWeight.normal),
+                        maxLength: 150,
+                        maxLines: 6,
+                        decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "Type about your post@ ...",
+                            hintStyle: TextStyle(
+                              fontFamily: "Lato",
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                              color: colorGreyTint,
+                            )),
+                      ),
+                    ),
+                    Container(
+                      height: fileList.length != 0 ? 250 : 0,
+                      child: Swiper(
+                          loop: false,
+                          pagination: SwiperPagination(),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: fileList.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Stack(
+                              children: <Widget>[
+                                Container(
+                                  decoration: BoxDecoration(
+                                      color: colorPrimaryBlue,
+                                      image: DecorationImage(
+                                          image: FileImage(fileList[index]),
+                                          fit: BoxFit.cover)),
+                                  height: 250,
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                          bottomRight: Radius.circular(8)),
+                                      color: colorPrimaryBlue),
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.clear,
+                                      color: Colors.white,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        fileList.removeAt(index);
+                                        list.removeAt(index);
+                                      });
+                                    },
+                                  ),
+                                )
+                              ],
+                            );
+                          }),
+                    )
+                  ],
+                ),
+                Divider(
+                  height: 2,
+                  color: Colors.black,
+                ),
+                Row(
+                  children: <Widget>[
+                    IconButton(
+                      icon: Icon(
+                        Icons.photo,
+                        color: colorGreyTint,
+                        size: 23,
+                      ),
+                      onPressed: () {
+                        handleChooseFromGallery();
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.camera_alt,
+                        color: colorGreyTint,
+                        size: 23,
+                      ),
+                      onPressed: () {
+                        handleTakePhoto();
+                      },
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: 60, bottom: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              FaIcon(
+                FontAwesomeIcons.coins,
+                color: colorCoins,
+              ),
+              SizedBox(
+                width: 12,
+              ),
+              Text(
+                "Earn: 50",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Lato"),
+              )
+            ],
+          ),
+        ),
+        RoundedButton(
+          color: colorPrimaryBlue,
+          textColor: Colors.white,
+          text: "Time to Brag",
+          onPressed: () {
+            storytext = textController.text;
+            createPost(storytext.trim(), list);
+          },
+        )
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1042,258 +1265,27 @@ class _WageState extends State<Wage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              orientation = "wage";
-                            });
-                          },
-                          child: Container(
-                            child: SvgPicture.asset(
-                              "images/group2773.svg",
-                              color: orientation == "wage"
-                                  ? colorPrimaryBlue
-                                  : colorGreyTint.withOpacity(0.3),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 18,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              orientation = "invest";
-                              // Navigator.pushReplacement(
-                              //     context,
-                              //     PageTransition(
-                              //         // settings: RouteSettings(
-                              //         //     name: "Login_Page"),
-                              //         type: PageTransitionType.fade,
-                              //         child: Investment2(
-                              //           curUser: curUser,
-                              //         )));
-                            });
-                          },
-                          child: Container(
-                            child: SvgPicture.asset(
-                              "images/group2771.svg",
-                              color: orientation == "invest"
-                                  ? colorPrimaryBlue
-                                  : colorGreyTint.withOpacity(0.3),
-                            ),
-                          ),
-                        )
+                        SelectButton(
+                            onTap: () {
+                              setState(() {
+                                orientation = "invest";
+                              });
+                            },
+                            text: "Investment",
+                            orientation: "invest",
+                            curOrientation: orientation),
+                        SelectButton(
+                            onTap: () {
+                              setState(() {
+                                orientation = "wage";
+                              });
+                            },
+                            text: "Wage",
+                            orientation: "wage",
+                            curOrientation: orientation),
                       ],
                     ),
-                    orientation == "wage"
-                        ? Column(
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(top: 11.0),
-                                child: Text(
-                                  "Create a Wage Story",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontFamily: "Lato",
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 25.0, right: 25, top: 32),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      color: colorGreyTint.withOpacity(0.03),
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(8)),
-                                      border: Border.all(
-                                          color: colorGreyTint, width: 0.5)),
-                                  child: Column(
-                                    children: <Widget>[
-                                      Column(
-                                        children: <Widget>[
-                                          // Row(
-                                          //   children: <Widget>[
-                                          //     IconButton(
-                                          //       icon: Icon(Icons.format_bold),
-                                          //       onPressed: () {
-                                          //         setState(() {
-                                          //           boldInput = !boldInput;
-                                          //         });
-                                          //       },
-                                          //     ),
-                                          //     IconButton(
-                                          //       icon: Icon(Icons.format_italic),
-                                          //       onPressed: () {
-                                          //         setState(() {
-                                          //           italics = !italics;
-                                          //         });
-                                          //       },
-                                          //     ),
-                                          //     IconButton(
-                                          //       icon: Icon(Icons.format_underlined),
-                                          //       onPressed: () {
-                                          //         setState(() {
-                                          //           boldInput = !boldInput;
-                                          //         });
-                                          //       },
-                                          //     ),
-                                          //   ],
-                                          // ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 24, top: 12, right: 24),
-                                            child: TextFormField(
-                                              controller: textController,
-                                              onTap: () {
-                                                setState(() {
-                                                  isSelected = false;
-                                                });
-                                              },
-                                              style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: boldInput
-                                                      ? FontWeight.bold
-                                                      : FontWeight.normal),
-                                              maxLength: 150,
-                                              maxLines: 6,
-                                              decoration: InputDecoration(
-                                                  border: InputBorder.none,
-                                                  hintText:
-                                                      "Type about your post@ ...",
-                                                  hintStyle: TextStyle(
-                                                    fontFamily: "Lato",
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: 14,
-                                                    color: colorGreyTint,
-                                                  )),
-                                            ),
-                                          ),
-                                          Container(
-                                            height:
-                                                fileList.length != 0 ? 250 : 0,
-                                            child: Swiper(
-                                                loop: false,
-                                                pagination: SwiperPagination(),
-                                                scrollDirection:
-                                                    Axis.horizontal,
-                                                itemCount: fileList.length,
-                                                itemBuilder:
-                                                    (BuildContext context,
-                                                        int index) {
-                                                  return Stack(
-                                                    children: <Widget>[
-                                                      Container(
-                                                        decoration: BoxDecoration(
-                                                            color:
-                                                                colorPrimaryBlue,
-                                                            image: DecorationImage(
-                                                                image: FileImage(
-                                                                    fileList[
-                                                                        index]),
-                                                                fit: BoxFit
-                                                                    .cover)),
-                                                        height: 250,
-                                                      ),
-                                                      Container(
-                                                        decoration: BoxDecoration(
-                                                            borderRadius:
-                                                                BorderRadius.only(
-                                                                    bottomRight:
-                                                                        Radius.circular(
-                                                                            8)),
-                                                            color:
-                                                                colorPrimaryBlue),
-                                                        child: IconButton(
-                                                          icon: Icon(
-                                                            Icons.clear,
-                                                            color: Colors.white,
-                                                          ),
-                                                          onPressed: () {
-                                                            setState(() {
-                                                              fileList.removeAt(
-                                                                  index);
-                                                              list.removeAt(
-                                                                  index);
-                                                            });
-                                                          },
-                                                        ),
-                                                      )
-                                                    ],
-                                                  );
-                                                }),
-                                          )
-                                        ],
-                                      ),
-                                      Divider(
-                                        height: 2,
-                                        color: Colors.black,
-                                      ),
-                                      Row(
-                                        children: <Widget>[
-                                          IconButton(
-                                            icon: Icon(
-                                              Icons.photo,
-                                              color: colorGreyTint,
-                                              size: 23,
-                                            ),
-                                            onPressed: () {
-                                              handleChooseFromGallery();
-                                            },
-                                          ),
-                                          IconButton(
-                                            icon: Icon(
-                                              Icons.camera_alt,
-                                              color: colorGreyTint,
-                                              size: 23,
-                                            ),
-                                            onPressed: () {
-                                              handleTakePhoto();
-                                            },
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(top: 60, bottom: 20),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    FaIcon(
-                                      FontAwesomeIcons.coins,
-                                      color: colorCoins,
-                                    ),
-                                    SizedBox(
-                                      width: 12,
-                                    ),
-                                    Text(
-                                      "Earn: 50",
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: "Lato"),
-                                    )
-                                  ],
-                                ),
-                              ),
-                              RoundedButton(
-                                color: colorPrimaryBlue,
-                                textColor: Colors.white,
-                                text: "Time to Brag",
-                                onPressed: () {
-                                  storytext = textController.text;
-                                  createPost(storytext.trim(), list);
-                                },
-                              )
-                            ],
-                          )
-                        : buildInvestment()
+                    orientation == "wage" ? buildWage() : buildInvestment()
                   ],
                 ),
               ),
