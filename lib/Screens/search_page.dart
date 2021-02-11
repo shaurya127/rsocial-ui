@@ -9,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
+import 'package:rsocial2/Widgets/selectButton.dart';
 import 'package:rsocial2/auth.dart';
 import 'package:rsocial2/config.dart';
 import '../Widgets/request_tile.dart';
@@ -127,51 +128,6 @@ class _Search_PageState extends State<Search_Page>
       throw Exception();
     }
   }
-  // Future<List<User>> getConnections() async {
-  //   setState(() {
-  //     isLoading=true;
-  //   });
-  //   List<User> connections = [];
-  //   var user = await FirebaseAuth.instance.currentUser();
-  //   //photourl = user.photoUrl;
-  //   DocumentSnapshot doc = await users.document(user.uid).get();
-  //   var id = doc['id'];
-  //   final url =
-  //       "https://9dhzla746i.execute-api.ap-south-1.amazonaws.com/user/${id}";
-  //   //var user = await FirebaseAuth.instance.currentUser();
-  //   //print("this user id is ${user.uid}");
-  //   var token = await user.getIdToken();
-  //   //print(token);
-  //   final response = await http.get(url, headers: {
-  //     "Authorization": "Bearer $token",
-  //     "Content-Type": "application/json",
-  //   });
-  //   // print(response.body);
-  //   // print(response.statusCode);
-  //   if (response.statusCode == 200) {
-  //     final jsonUser = jsonDecode(response.body);
-  //     var body = jsonUser['body'];
-  //     var body1 = jsonDecode(body);
-  //     // print("body is $body");
-  //     // print(body1);
-  //     var msg = body1['message'];
-  //     //print("length is ${msg.length}");
-  //     //print(msg[0]['id']);
-  //     for(int i=0;i<msg.length;i++)
-  //     {
-  //       User connection = User.fromJson(msg[i]);
-  //       connections.add(connection);
-  //     }
-  //     this.connections = connections;
-  //     setState(() {
-  //       isLoading=false;
-  //     });
-  //     return connections;
-  //   } else {
-  //     print(response.statusCode);
-  //     throw Exception();
-  //   }
-  // }
 
   Widget buildSuggestions(BuildContext context, String query) {
     // show when someone searches for something
@@ -410,78 +366,33 @@ class _Search_PageState extends State<Search_Page>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  GestureDetector(
-                    onTap: () => setOrientation("request"),
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 18),
-                      child: Text(
-                        "Requests",
-                        style: TextStyle(
-                          fontFamily: 'Lato',
-                          fontSize: 16,
-                          color: Orientation == 'request'
-                              ? Colors.white
-                              : Theme.of(context).primaryColor,
-                        ),
-                      ),
-                      decoration: BoxDecoration(
-                          color: Orientation == 'request'
-                              ? Theme.of(context).primaryColor
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                              width: 1, color: Theme.of(context).primaryColor)),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => setOrientation("suggest"),
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 18),
-                      child: Text(
-                        "Suggested",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontFamily: "Lato",
-                          color: Orientation == 'suggest'
-                              ? Colors.white
-                              : Theme.of(context).primaryColor,
-                        ),
-                      ),
-                      decoration: BoxDecoration(
-                          color: Orientation == 'suggest'
-                              ? Theme.of(context).primaryColor
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                              width: 1, color: Theme.of(context).primaryColor)),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => setOrientation("search"),
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 18),
-                      child: Text(
-                        "Search",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontFamily: "Lato",
-                          color: Orientation == 'search'
-                              ? Colors.white
-                              : Theme.of(context).primaryColor,
-                        ),
-                      ),
-                      decoration: BoxDecoration(
-                          color: Orientation == 'search'
-                              ? Theme.of(context).primaryColor
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                              width: 1, color: Theme.of(context).primaryColor)),
-                    ),
-                  ),
+                  SelectButton(
+                      onTap: (){
+                        setState(() {
+                          this.Orientation="request";
+                        });
+                      },
+                      text: "Requests",
+                      orientation: 'request',
+                      curOrientation: Orientation),
+                  SelectButton(
+                      onTap: (){
+                        setState(() {
+                          this.Orientation="suggest";
+                        });
+                      },
+                      text: "Suggested",
+                      orientation: 'suggest',
+                      curOrientation: Orientation),
+                  SelectButton(
+                      onTap: (){
+                        setState(() {
+                          this.Orientation="search";
+                        });
+                      },
+                      text: "Search",
+                      orientation: 'search',
+                      curOrientation: Orientation),
                 ],
               ),
             ),

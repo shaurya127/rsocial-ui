@@ -7,6 +7,7 @@ import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
 import 'package:http/http.dart' as http;
+import '../reaction_model.dart';
 import '../user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -37,29 +38,6 @@ import '../user.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info/package_info.dart';
 
-class Reaction {
-  Reaction({
-    this.id,
-    this.storyId,
-    this.reactionType,
-  });
-
-  String id;
-  String storyId;
-  String reactionType;
-
-  factory Reaction.fromJson(Map<String, dynamic> json) => Reaction(
-        id: json["id"],
-        storyId: json["StoryId"],
-        reactionType: json["ReactionType"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "StoryId": storyId,
-        "ReactionType": reactionType,
-      };
-}
 
 class PlatformPostTile extends StatefulWidget {
   Post userPost;

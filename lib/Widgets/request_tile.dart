@@ -343,7 +343,7 @@ class _Request_TileState extends State<Request_Tile> {
                         width: 15,
                         padding: EdgeInsets.only(right: 2),
                         child: SvgPicture.asset(
-                          "images/yollar_icon.svg",
+                          "images/yollar_Icon.svg",
                           color: nameCol.withOpacity(0.4),
                         ),
                       ),
@@ -364,7 +364,7 @@ class _Request_TileState extends State<Request_Tile> {
                         width: 15,
                         padding: EdgeInsets.only(right: 2),
                         child: SvgPicture.asset(
-                          "images/high-five.svg",
+                          "images/social-standing.svg",
                           color: nameCol.withOpacity(0.4),
                         ),
                       ),

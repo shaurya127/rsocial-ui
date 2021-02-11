@@ -787,7 +787,7 @@ class _ProfileState extends State<Profile> {
                   width: 20,
                   padding: EdgeInsets.only(right: 2),
                   child: SvgPicture.asset(
-                    "images/high-five.svg",
+                    "images/social-standing.svg",
                     color: profileHeaderSubtitiles,
                   ),
                 ),
