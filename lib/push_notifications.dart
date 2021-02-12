@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:rsocial2/push_notification_model.dart';
@@ -32,9 +33,9 @@ class PushNotificationService {
 
         if (Platform.isAndroid) {
           PushNotificationMessage notification = PushNotificationMessage(
-            title: message['notification']['title'],
-            body: message['notification']['body'],
-          );
+              title: message['notification']['title'],
+              body: message['notification']['body'],
+              notificationType: message['data']['notification_type']);
 
           //Here you can add the count when you get a notification you can increase the number by one
           FlutterAppBadger.updateBadgeCount(1);
@@ -54,13 +55,13 @@ class PushNotificationService {
           //Here you can remove the badge you created when it's launched
           FlutterAppBadger.removeBadge();
 
-          // Navigate to a particular page
-          navigatorKey.currentState.push(MaterialPageRoute(
-            builder: (_) => Profile(
-              currentUser: curUser,
-              user: curUser,
-            ),
-          ));
+          // // Navigate to a particular page
+          // navigatorKey.currentState.push(MaterialPageRoute(
+          //   builder: (_) => Profile(
+          //     currentUser: curUser,
+          //     user: curUser,
+          //   ),
+          // ));
         }
       },
       onResume: (Map<String, dynamic> message) async {
@@ -68,23 +69,31 @@ class PushNotificationService {
 
         if (Platform.isAndroid) {
           PushNotificationMessage notification = PushNotificationMessage(
-            title: message['notification']['title'],
-            body: message['notification']['body'],
-          );
+              title: message['notification']['title'],
+              body: message['notification']['body'],
+              notificationType: message['data']['notification_type']);
 
-          // final jsonUser = jsonDecode(message['body']['user']);
-          // var body = jsonUser['body'];
-          // var body1 = jsonDecode(body);
-          // var msg = body1['message'];
-          // var user = User.fromJson(msg);
+          if (notification.notificationType == "newFriend" ||
+              notification.notificationType == "friendRequest") {
+            final jsonUser = jsonDecode(message['data']['user']);
+            var body = jsonUser['body'];
+            var body1 = jsonDecode(body);
+            var msg = body1['message'];
+            User user = User.fromJson(msg);
+            print(user.fname);
 
-          // Navigate to a particular page
-          navigatorKey.currentState.push(MaterialPageRoute(
-            builder: (_) => Profile(
-              currentUser: curUser,
-              user: curUser,
-            ),
-          ));
+            if (user != null) {
+              SchedulerBinding.instance.addPostFrameCallback((_) {
+                Navigator.of(navigatorKey.currentContext)
+                    .push(MaterialPageRoute(
+                  builder: (context) => Profile(
+                    currentUser: curUser,
+                    user: user,
+                  ),
+                ));
+              });
+            }
+          }
         }
       },
     );
