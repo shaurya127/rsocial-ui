@@ -8,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -743,78 +744,86 @@ class _ProfileState extends State<Profile> {
             SizedBox(
               height: 3,
             ),
-            //widget.currentUser.id == widget.user.id
-            //   ?
-            // widget.currentUser.id == widget.user.id
-            //     ? Text(
-            //         "${widget.user.email}",
-            //         style: TextStyle(
-            //           fontFamily: "Lato",
-            //           fontWeight: FontWeight.bold,
-            //           fontSize: 18,
-            //           color: colorGreyTint,
-            //         ),
-            //       )
-            //     : SizedBox.shrink(),
-            // SizedBox(
-            //   height: 3,
-            // ),
-            curUser.id == widget.user.id
-                ? GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AllConnections(user: curUser),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      "Total Connections: ${curUser.connection.length}",
-                      style: TextStyle(
-                          fontFamily: "Lato",
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15),
-                    ),
-                  )
-                : GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              AllConnections(user: widget.user),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      "Total Connections: ${widget.user.connection.length}",
-                      style: TextStyle(
-                          fontFamily: "Lato",
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15),
-                    ),
-                  ),
-            SizedBox(
-              height: 3,
-            ),
-            curUser.id == widget.user.id
+            widget.currentUser.id == widget.user.id
                 ? Text(
-                    "Amount : " + formatNumber(curUser.lollarAmount),
+                    "${widget.user.email}",
                     style: TextStyle(
-                        fontFamily: "Lato",
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15),
+                      fontFamily: "Lato",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: colorGreyTint,
+                    ),
                   )
-                : Text(
-                    "Amount: " + formatNumber(widget.user.lollarAmount),
-                    style: TextStyle(
-                        fontFamily: "Lato",
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15),
-                  ),
+                : SizedBox.shrink(),
             SizedBox(
-              height: 3,
+              height: 15,
+            ),
+
+            Row(
+              children: <Widget>[
+                Container(
+                  height: 20,
+                  width: 20,
+                  //padding: EdgeInsets.only(right: 2),
+                  child: SvgPicture.asset(
+                    "images/yollar_Icon.svg",
+                    color: profileHeaderSubtitiles,
+                  ),
+                ),
+                Text(
+                  "${widget.user.lollarAmount}",
+                  style: TextStyle(color: profileHeaderSubtitiles,fontSize: 17),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Container(
+                    width: 1,
+                    height: 15,
+                    color: profileHeaderSubtitiles,
+                  ),
+                ),
+                Container(
+                  height: 20,
+                  width: 20,
+                  padding: EdgeInsets.only(right: 2),
+                  child: SvgPicture.asset(
+                    "images/social-standing.svg",
+                    color: profileHeaderSubtitiles,
+                  ),
+                ),
+                Text(
+                  widget.user.connection.length !=
+                      widget.user.connectionCount &&
+                      widget.user.connectionCount != null
+                      ? "${widget.user.connectionCount}"
+                      : "${widget.user.connection.length}",
+                  style: TextStyle(color: profileHeaderSubtitiles,fontSize: 17),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Container(
+                    width: 1,
+                    height: 10,
+                    color: Colors.grey,
+                  ),
+                ),
+                Container(
+                  height: 20,
+                  width: 20,
+                  padding: EdgeInsets.only(right: 2),
+                  child: SvgPicture.asset(
+                    "images/high-five.svg",
+                    color: profileHeaderSubtitiles
+                  ),
+                ),
+                Text("${widget.user.socialStanding}",
+                  style: TextStyle(color: profileHeaderSubtitiles,fontSize: 17),
+                ),
+              ],
+            ),
+
+            SizedBox(
+              height: 15,
             ),
 
             widget.user.mobile != null

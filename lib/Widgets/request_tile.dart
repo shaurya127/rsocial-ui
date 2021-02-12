@@ -343,7 +343,7 @@ class _Request_TileState extends State<Request_Tile> {
                         width: 15,
                         padding: EdgeInsets.only(right: 2),
                         child: SvgPicture.asset(
-                          "images/group2834.svg",
+                          "images/yollar_Icon.svg",
                           color: nameCol.withOpacity(0.4),
                         ),
                       ),
@@ -364,7 +364,7 @@ class _Request_TileState extends State<Request_Tile> {
                         width: 15,
                         padding: EdgeInsets.only(right: 2),
                         child: SvgPicture.asset(
-                          "images/high-five.svg",
+                          "images/social-standing.svg",
                           color: nameCol.withOpacity(0.4),
                         ),
                       ),
@@ -374,6 +374,26 @@ class _Request_TileState extends State<Request_Tile> {
                                 widget.user.connectionCount != null
                             ? "${widget.user.connectionCount}"
                             : "${widget.user.connection.length}",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Container(
+                          width: 1,
+                          height: 10,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      Container(
+                        height: 15,
+                        width: 15,
+                        padding: EdgeInsets.only(right: 2),
+                        child: SvgPicture.asset(
+                          "images/high-five.svg",
+                          color: nameCol.withOpacity(0.4),
+                        ),
+                      ),
+                      Text("${widget.user.socialStanding}",
                         style: TextStyle(color: Colors.grey),
                       ),
                     ],

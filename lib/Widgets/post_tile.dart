@@ -25,6 +25,7 @@ import 'package:rsocial2/Widgets/request_tile.dart';
 import 'package:rsocial2/config.dart';
 import '../constants.dart';
 import '../post.dart';
+import '../reaction_model.dart';
 import '../read_more.dart';
 import '../user.dart';
 import 'package:http/http.dart' as http;
@@ -36,29 +37,7 @@ Map<String, Map<String, int>> m = new Map();
 Map<String, Map<String, int>> mp = new Map();
 Map<String, String> prft = new Map();
 
-class Reaction {
-  Reaction({
-    this.id,
-    this.storyId,
-    this.reactionType,
-  });
 
-  String id;
-  String storyId;
-  String reactionType;
-
-  factory Reaction.fromJson(Map<String, dynamic> json) => Reaction(
-        id: json["id"],
-        storyId: json["StoryId"],
-        reactionType: json["ReactionType"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "StoryId": storyId,
-        "ReactionType": reactionType,
-      };
-}
 
 class Post_Tile extends StatefulWidget {
   Post userPost;
