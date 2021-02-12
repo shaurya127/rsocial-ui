@@ -1,6 +1,7 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Widgets/RoundedButton.dart';
@@ -64,7 +65,10 @@ class _BioPageState extends State<BioPage> {
                 height: 40,
               ),
               Container(
-                child: Image.asset("images/logo2.png"),
+                child: SvgPicture.asset(
+                  "images/rsocial-logo.svg",
+                  height: 90,
+                ),
               ),
               SizedBox(
                 height: 40,

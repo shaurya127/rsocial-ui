@@ -9,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
+import 'package:rsocial2/Widgets/error.dart';
 import 'package:rsocial2/Widgets/selectButton.dart';
 import 'package:rsocial2/auth.dart';
 import 'package:rsocial2/config.dart';
@@ -31,7 +32,7 @@ class Search_Page extends StatefulWidget {
 
 class _Search_PageState extends State<Search_Page>
     with TickerProviderStateMixin {
-  String Orientation = "request";
+  String Orientation = "suggest";
   List<User> connections = [];
   List<String> sentPendingConnections = [];
   List<String> idConnections = [];
@@ -41,6 +42,7 @@ class _Search_PageState extends State<Search_Page>
   bool isLoading = false;
   String searchQuery = "";
   String photourl = "";
+  bool isGetUserFail = false;
   //User curUser;
   @override
   void initState() {
@@ -70,22 +72,27 @@ class _Search_PageState extends State<Search_Page>
     var user = await FirebaseAuth.instance.currentUser();
     var token = await user.getIdToken();
     print(token);
-
-    DocumentSnapshot doc = await users.document(user.uid).get();
-    //print("This is the doc");
-    //print(doc.data);
-
-    var id = doc['id'];
+    var id = curUser.id;
     final url = userEndPoint + "get";
 
     token = await user.getIdToken();
-    //print(token);
-    final response = await http.post(url,
-        headers: {
-          "Authorization": "Bearer $token",
-          "Content-Type": "application/json",
-        },
-        body: jsonEncode({"id": id, "email": user.email}));
+
+    var response;
+    try {
+      response = await http.post(url,
+          headers: {
+            "Authorization": "Bearer $token",
+            "Content-Type": "application/json",
+          },
+          body: jsonEncode({"id": id, "email": user.email}));
+    } catch (e) {
+      setState(() {
+        setState(() {
+          isGetUserFail = true;
+          isLoading = false;
+        });
+      });
+    }
     //print(response.body);
     //print(response.statusCode);
     if (response.statusCode == 200) {
@@ -329,19 +336,39 @@ class _Search_PageState extends State<Search_Page>
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : RefreshIndicator(
-              onRefresh: getUser,
-              child: buildRequestTab(),
-            );
+          : isGetUserFail
+              ? ErrWidget(
+                  tryAgainOnPressed: () {
+                    setState(() {
+                      isGetUserFail = false;
+                      isLoading = true;
+                    });
+                    getUser();
+                  },
+                )
+              : RefreshIndicator(
+                  onRefresh: getUser,
+                  child: buildRequestTab(),
+                );
     else if (Orientation == "suggest")
       return isLoading
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : RefreshIndicator(
-              onRefresh: getUser,
-              child: buildSuggestedTab(),
-            );
+          : isGetUserFail
+              ? ErrWidget(
+                  tryAgainOnPressed: () {
+                    setState(() {
+                      isGetUserFail = false;
+                      isLoading = true;
+                    });
+                    getUser();
+                  },
+                )
+              : RefreshIndicator(
+                  onRefresh: getUser,
+                  child: buildSuggestedTab(),
+                );
     else if (Orientation == "search")
       return isLoading
           ? Center(
@@ -367,27 +394,27 @@ class _Search_PageState extends State<Search_Page>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   SelectButton(
-                      onTap: (){
+                      onTap: () {
                         setState(() {
-                          this.Orientation="request";
+                          this.Orientation = "request";
                         });
                       },
-                      text: "Requests",
+                      text: "Request",
                       orientation: 'request',
                       curOrientation: Orientation),
                   SelectButton(
-                      onTap: (){
+                      onTap: () {
                         setState(() {
-                          this.Orientation="suggest";
+                          this.Orientation = "suggest";
                         });
                       },
-                      text: "Suggested",
+                      text: "Bonds",
                       orientation: 'suggest',
                       curOrientation: Orientation),
                   SelectButton(
-                      onTap: (){
+                      onTap: () {
                         setState(() {
-                          this.Orientation="search";
+                          this.Orientation = "search";
                         });
                       },
                       text: "Search",

@@ -1,7 +1,12 @@
+import 'dart:io';
+
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:rsocial2/Screens/bio_page.dart';
 import 'package:rsocial2/Screens/userInfoGoogle.dart';
 import 'package:rsocial2/auth.dart';
 import 'package:flutter/services.dart';
@@ -17,6 +22,9 @@ void main() {
   ));
   runApp(MyApp());
 }
+
+final GlobalKey<NavigatorState> navigatorKey =
+    GlobalKey(debugLabel: "Main Navigator");
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -44,7 +52,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Initialising push notification service
-    final pushNotificationService = PushNotificationService(_firebaseMessaging);
+    final pushNotificationService =
+        PushNotificationService(_firebaseMessaging, context);
     pushNotificationService.initialise();
 
     // The app will stay in potrait
@@ -61,6 +70,7 @@ class MyApp extends StatelessWidget {
       },
       child: OverlaySupport(
         child: MaterialApp(
+            navigatorKey: navigatorKey,
             debugShowCheckedModeBanner: false,
             navigatorObservers: <NavigatorObserver>[observer],
             theme: ThemeData(
@@ -68,7 +78,18 @@ class MyApp extends StatelessWidget {
               //brightness: Brightness.light,
               primaryColor: colorPrimaryBlue,
             ),
-            home: AuthScreen(analytics: analytics, observer: observer)),
+            home: AnimatedSplashScreen(
+              splashIconSize: double.infinity,
+              duration: 300,
+              animationDuration: Duration(milliseconds: 300),
+              splash: Image.asset(
+                "images/splashScreenAndroid.gif",
+                fit: BoxFit.cover,
+              ),
+              backgroundColor: Colors.white,
+              nextScreen: AuthScreen(analytics: analytics, observer: observer),
+              pageTransitionType: PageTransitionType.fade,
+            )),
       ),
     );
   }

@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
@@ -25,6 +26,7 @@ import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
 import '../config.dart';
 import '../constants.dart';
+import '../functions.dart';
 import '../post.dart';
 import '../reaction_model.dart';
 import '../read_more.dart';
@@ -359,7 +361,11 @@ class _InvestPostTileState extends State<InvestPostTile>
         //counter[reaction]++;
       }
     } else
-      print("not allowed");
+      Fluttertoast.showToast(
+          msg: "You cannot react on your own post",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
 
     // print("state is set");
     // print(counter[reaction]);
@@ -431,7 +437,12 @@ class _InvestPostTileState extends State<InvestPostTile>
                                             widget.userPost.investedWithUser[0],
                                             widget.userPost.user.photoUrl),
                                         child: Text(
-                                          "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k with ${widget.userPost.investedWithUser[0].fname}",
+                                          "Invested " +
+                                              investAmountFormatting(
+                                                  double.parse(widget.userPost
+                                                          .investedAmount)
+                                                      .floor()) +
+                                              " with ${widget.userPost.investedWithUser[0].fname}",
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                             fontFamily: "Lato",
@@ -487,7 +498,11 @@ class _InvestPostTileState extends State<InvestPostTile>
                                     ],
                                   )
                                 : Text(
-                                    "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k alone",
+                                    "Invested " +
+                                        investAmountFormatting(double.parse(
+                                                widget.userPost.investedAmount)
+                                            .floor()) +
+                                        " alone",
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontFamily: "Lato",

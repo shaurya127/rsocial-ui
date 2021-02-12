@@ -21,6 +21,7 @@ import 'package:rsocial2/config.dart';
 import 'package:rsocial2/constants.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rsocial2/Screens/investment.dart';
+import 'package:rsocial2/functions.dart';
 import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -58,7 +59,7 @@ class _WageState extends State<Wage> {
   var textController = new TextEditingController();
   bool isloading = false;
   String path;
-  String investmentstoryText;
+  String investmentstoryText = "";
   List<File> investmentfileList = new List();
   List<String> selectedImgList = new List();
   List<User> selectedList = new List();
@@ -367,9 +368,6 @@ class _WageState extends State<Wage> {
       });
       var url = storyEndPoint + "createinvestment";
       var user = await FirebaseAuth.instance.currentUser();
-      // DocumentSnapshot doc = await users.document(user.uid).get();
-      // var uid = doc['id'];
-      // print(uid);
       var uid = curUser.id;
 
       for (int i = 0; i < selectedList.length; i++) {
@@ -386,15 +384,30 @@ class _WageState extends State<Wage> {
       var token = await user.getIdToken();
       print(jsonEncode(post.toJsonInvest()));
       //print(token);
-      var response = await http.post(
-        url,
-        encoding: Encoding.getByName("utf-8"),
-        body: jsonEncode(post.toJsonInvest()),
-        headers: {
-          "Authorization": "Bearer: $token",
-          "Content-Type": "application/json",
-        },
-      );
+
+      var response;
+      try {
+        response = await http.post(
+          url,
+          encoding: Encoding.getByName("utf-8"),
+          body: jsonEncode(post.toJsonInvest()),
+          headers: {
+            "Authorization": "Bearer: $token",
+            "Content-Type": "application/json",
+          },
+        );
+      } catch (e) {
+        setState(() {
+          isloading = false;
+        });
+        Fluttertoast.showToast(
+            msg: "Error occurred, please check Internet connection.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            fontSize: 15);
+        return;
+      }
+
       print(response.statusCode);
       print(response.reasonPhrase);
 
@@ -419,11 +432,11 @@ class _WageState extends State<Wage> {
         }
 
         widget.isPostedCallback();
-        // Fluttertoast.showToast(
-        //     msg: "Uploaded investment story!",
-        //     toastLength: Toast.LENGTH_SHORT,
-        //     gravity: ToastGravity.BOTTOM,
-        //     fontSize: 15);
+        Fluttertoast.showToast(
+            msg: "Uploaded investment story!",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            fontSize: 15);
       } else {
         print(response.statusCode);
         setState(() {
@@ -470,15 +483,30 @@ class _WageState extends State<Wage> {
       var token = await user.getIdToken();
       print(jsonEncode(post.toJsonWage()));
       print(token);
-      var response = await http.post(
-        url,
-        encoding: Encoding.getByName("utf-8"),
-        body: jsonEncode(post.toJsonWage()),
-        headers: {
-          "Authorization": "Bearer: $token",
-          "Content-Type": "application/json",
-        },
-      );
+
+      var response;
+      try {
+        response = await http.post(
+          url,
+          encoding: Encoding.getByName("utf-8"),
+          body: jsonEncode(post.toJsonWage()),
+          headers: {
+            "Authorization": "Bearer: $token",
+            "Content-Type": "application/json",
+          },
+        );
+      } catch (e) {
+        setState(() {
+          isloading = false;
+        });
+        Fluttertoast.showToast(
+            msg: "Error occurred, please check Internet connection.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            fontSize: 15);
+        return;
+      }
+
       print(response.statusCode);
 
       if (response.statusCode == 200) {
@@ -488,11 +516,11 @@ class _WageState extends State<Wage> {
           fileList.clear();
           isloading = false;
         });
-        // Fluttertoast.showToast(
-        //     msg: "Uploaded wage story!",
-        //     toastLength: Toast.LENGTH_SHORT,
-        //     gravity: ToastGravity.BOTTOM,
-        //     fontSize: 15);
+        Fluttertoast.showToast(
+            msg: "Uploaded wage story!",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            fontSize: 15);
         if (imageCacheIds.length != 0) {
           for (String i in imageCacheIds) {
             try {
@@ -535,8 +563,12 @@ class _WageState extends State<Wage> {
         onTap: () {
           setState(() {
             isSelected = false;
-            if (!selectedList.contains(suggestionList[index]) &&
-                selectedList.length <= 1) {
+            if (!selectedList.contains(suggestionList[index])
+                //&&
+                //selectedList.length == 0
+
+                ) {
+              selectedList.clear();
               selectedList.add(suggestionList[index]);
               investingWithController.clear();
             } else {
@@ -757,7 +789,7 @@ class _WageState extends State<Wage> {
               ),
               Center(
                 child: Text(
-                  amount.toString(),
+                  formatNumber(amount),
                   style: TextStyle(
                       color: colorPrimaryBlue,
                       fontFamily: "Lato",
@@ -772,19 +804,37 @@ class _WageState extends State<Wage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(
-                      "1000",
-                      style: TextStyle(
-                          color: colorGreyTint,
-                          fontFamily: "Lato",
-                          fontSize: 12),
+                    Row(
+                      children: [
+                        SvgPicture.asset(
+                          "images/yollar.svg",
+                          color: colorPrimaryBlue,
+                          height: 20,
+                        ),
+                        Text(
+                          "1000",
+                          style: TextStyle(
+                              color: colorGreyTint,
+                              fontFamily: "Lato",
+                              fontSize: 12),
+                        ),
+                      ],
                     ),
-                    Text(
-                      curUser.lollarAmount.toString(),
-                      style: TextStyle(
-                          color: colorGreyTint,
-                          fontFamily: "Lato",
-                          fontSize: 12),
+                    Row(
+                      children: [
+                        SvgPicture.asset(
+                          "images/yollar.svg",
+                          color: colorPrimaryBlue,
+                          height: 20,
+                        ),
+                        Text(
+                          formatNumber(curUser.lollarAmount),
+                          style: TextStyle(
+                              color: colorGreyTint,
+                              fontFamily: "Lato",
+                              fontSize: 12),
+                        ),
+                      ],
                     )
                   ],
                 ),
@@ -1035,11 +1085,41 @@ class _WageState extends State<Wage> {
             ),
           ),
         ),
-        SizedBox(
-          height: 30,
+
+        Padding(
+          padding: EdgeInsets.only(top: 60, bottom: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                "Earn: ",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Lato"),
+              ),
+              SvgPicture.asset(
+                "images/yollar.svg",
+                color: colorPrimaryBlue,
+                height: 20,
+              ),
+              SizedBox(
+                width: 1,
+              ),
+              Text(
+                "${formatNumber(curUser.connection.length)}",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Lato"),
+              ),
+            ],
+          ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 40.0, bottom: 30),
+          padding: const EdgeInsets.only(bottom: 30),
           child: RoundedButton(
             color: colorPrimaryBlue,
             textColor: Colors.white,
@@ -1213,21 +1293,30 @@ class _WageState extends State<Wage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              FaIcon(
-                FontAwesomeIcons.coins,
-                color: colorCoins,
-              ),
-              SizedBox(
-                width: 12,
-              ),
               Text(
-                "Earn: 50",
+                "Earn: ",
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     fontFamily: "Lato"),
-              )
+              ),
+              SvgPicture.asset(
+                "images/yollar.svg",
+                color: colorPrimaryBlue,
+                height: 20,
+              ),
+              SizedBox(
+                width: 1,
+              ),
+              Text(
+                "${curUser.connection.length}",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "Lato"),
+              ),
             ],
           ),
         ),
