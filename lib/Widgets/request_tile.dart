@@ -13,6 +13,7 @@ import '../config.dart';
 import 'package:http/http.dart' as http;
 
 import '../constants.dart';
+import '../functions.dart';
 import '../user.dart';
 
 class Request_Tile extends StatefulWidget {
@@ -348,7 +349,7 @@ class _Request_TileState extends State<Request_Tile> {
                         ),
                       ),
                       Text(
-                        "${widget.user.lollarAmount}",
+                        formatNumber(widget.user.lollarAmount),
                         style: TextStyle(color: Colors.grey),
                       ),
                       Padding(
@@ -393,7 +394,8 @@ class _Request_TileState extends State<Request_Tile> {
                           color: nameCol.withOpacity(0.4),
                         ),
                       ),
-                      Text("${widget.user.socialStanding}",
+                      Text(
+                        "${widget.user.socialStanding}",
                         style: TextStyle(color: Colors.grey),
                       ),
                     ],

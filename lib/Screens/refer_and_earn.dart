@@ -2,6 +2,7 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share/flutter_share.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:package_info/package_info.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
@@ -30,7 +31,7 @@ class _Refer_and_EarnState extends State<Refer_and_Earn> {
     });
 
     final DynamicLinkParameters parameters = DynamicLinkParameters(
-      // This should match firebase but without the username query param
+        // This should match firebase but without the username query param
         uriPrefix: 'https://rsocial.page.link',
         // This can be whatever you want for the uri, https://yourapp.com/groupinvite?username=$userName
         link: Uri.parse(
@@ -59,16 +60,17 @@ class _Refer_and_EarnState extends State<Refer_and_Earn> {
           campaignToken: 'example-promo',
         ),
         socialMetaTagParameters: SocialMetaTagParameters(
-            title: 'Hey! join me on RSocial',
-            description: "Join via this link and we both can earn 50 Lollar amount!",
-            //imageUrl: 'images/rsocial-text-2.svg'
-        ) ,
+          title: 'Hey! join me on RSocial',
+          description:
+              "Join via this link and we both can earn 50 Lollar amount!",
+          //imageUrl: 'images/rsocial-text-2.svg'
+        ),
         navigationInfoParameters:
-        NavigationInfoParameters(forcedRedirectEnabled: true));
+            NavigationInfoParameters(forcedRedirectEnabled: true));
 
     final link = await parameters.buildUrl();
     final ShortDynamicLink shortenedLink =
-    await DynamicLinkParameters.shortenUrl(
+        await DynamicLinkParameters.shortenUrl(
       link,
       DynamicLinkParametersOptions(
           shortDynamicLinkPathLength: ShortDynamicLinkPathLength.unguessable),
@@ -94,8 +96,11 @@ class _Refer_and_EarnState extends State<Refer_and_Earn> {
   Widget build(BuildContext context) {
     return Scaffold(
       // App bar to be updated
-      appBar: customAppBar(context, "Refer & earn",
-          curUser.lollarAmount.toString(),curUser.photoUrl,
+      appBar: customAppBar(
+        context,
+        "Refer & earn",
+        curUser.lollarAmount.toString(),
+        curUser.photoUrl,
         curUser.socialStanding.toString(),
       ),
       body: Column(
@@ -106,7 +111,7 @@ class _Refer_and_EarnState extends State<Refer_and_Earn> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                "Refer a friend to earn",
+                "Refer a friend to earn ",
                 style: TextStyle(
                   fontFamily: "Lato",
                   color: Color(0xff263238),
@@ -114,13 +119,10 @@ class _Refer_and_EarnState extends State<Refer_and_Earn> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: FaIcon(
-                  FontAwesomeIcons.coins,
-                  color: colorCoins,
-                  size: 22,
-                ),
+              SvgPicture.asset(
+                "images/yollar.svg",
+                color: colorPrimaryBlue,
+                height: 25,
               ),
               Text(
                 "50",
@@ -161,11 +163,12 @@ class _Refer_and_EarnState extends State<Refer_and_Earn> {
               text: "Send invite",
               onPressed: !_isCreatingLink
                   ? () async {
-                print("creating link");
-                final Uri uri = await createDynamicLink();
-                print("invite link is: $uri");
-                share(uri);
-              } : null,
+                      print("creating link");
+                      final Uri uri = await createDynamicLink();
+                      print("invite link is: $uri");
+                      share(uri);
+                    }
+                  : null,
             ),
           )
         ],

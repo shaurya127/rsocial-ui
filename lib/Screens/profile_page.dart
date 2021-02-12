@@ -838,7 +838,7 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
                 Text(
-                  "${widget.user.lollarAmount}",
+                  formatNumber(widget.user.lollarAmount),
                   style:
                       TextStyle(color: profileHeaderSubtitiles, fontSize: 17),
                 ),
