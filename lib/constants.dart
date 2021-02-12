@@ -8,6 +8,7 @@ const googlePeopleApi =
     "https://people.googleapis.com/v1/people/me?personFields=genders,birthdays&key=";
 
 const colorStatusBar = Color(0xff45A9D2);
+const profileHeaderSubtitiles = Color(0xff7F7F7F);
 const colorGreenTint = Color(0xff409FC6);
 const colorPrimaryBlue = Color(0xff4dbae6);
 const colorButton = Color(0xff4DBAE6);
@@ -56,8 +57,8 @@ const kLandingPageEmptySubtext = "It's empty now, but it won't be for long.";
 const kLoginPageNoAccount = "Don't have an account ? ";
 const kLoginPageSignUp = "Sign Up";
 
-const kNavDrawerAmount = "Amount";
-const kNavDrawerConnection = "Total Connections";
+const kNavDrawerAmount = "Yollar";
+const kNavDrawerConnection = "Bonds";
 const kNavDrawerProfile = "Profile";
 const kNavDrawerRefer = "Refer & earn";
 const kNavDrawerSettings = "Settings & Privacy";

@@ -10,9 +10,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/display_post.dart';
+import 'package:rsocial2/functions.dart';
 import '../auth.dart';
 import '../my_flutter_app_icons.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
@@ -25,6 +27,7 @@ import 'package:rsocial2/Widgets/request_tile.dart';
 import 'package:rsocial2/config.dart';
 import '../constants.dart';
 import '../post.dart';
+import '../reaction_model.dart';
 import '../read_more.dart';
 import '../user.dart';
 import 'package:http/http.dart' as http;
@@ -35,30 +38,6 @@ import 'package:audioplayers/audioplayers.dart';
 Map<String, Map<String, int>> m = new Map();
 Map<String, Map<String, int>> mp = new Map();
 Map<String, String> prft = new Map();
-
-class Reaction {
-  Reaction({
-    this.id,
-    this.storyId,
-    this.reactionType,
-  });
-
-  String id;
-  String storyId;
-  String reactionType;
-
-  factory Reaction.fromJson(Map<String, dynamic> json) => Reaction(
-        id: json["id"],
-        storyId: json["StoryId"],
-        reactionType: json["ReactionType"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "StoryId": storyId,
-        "ReactionType": reactionType,
-      };
-}
 
 class Post_Tile extends StatefulWidget {
   Post userPost;
@@ -392,7 +371,11 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
         react(reaction);
       }
     } else
-      print("not allowed");
+      Fluttertoast.showToast(
+          msg: "You cannot react on your own post",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
 
     // print("state is set");
     // print(counter[reaction]);
@@ -588,7 +571,13 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                                     widget.userPost.user
                                                         .photoUrl),
                                                 child: Text(
-                                                  "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k with ${widget.userPost.investedWithUser[0].fname}",
+                                                  "Invested " +
+                                                      investAmountFormatting(
+                                                          double.parse(widget
+                                                                  .userPost
+                                                                  .investedAmount)
+                                                              .floor()) +
+                                                      " with ${widget.userPost.investedWithUser[0].fname}",
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                   style: TextStyle(
@@ -601,7 +590,12 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                             ],
                                           )
                                         : Text(
-                                            "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k alone",
+                                            "Invested " +
+                                                investAmountFormatting(
+                                                    double.parse(widget.userPost
+                                                            .investedAmount)
+                                                        .floor()) +
+                                                " alone",
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                               fontFamily: "Lato",

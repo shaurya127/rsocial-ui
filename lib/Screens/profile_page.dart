@@ -8,6 +8,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -17,6 +19,7 @@ import 'package:rsocial2/Screens/login_page.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:http/http.dart' as http;
 import 'package:rsocial2/Widgets/alert_box.dart';
+import 'package:rsocial2/Widgets/error.dart';
 import 'package:rsocial2/Widgets/invest_post_tile.dart';
 import 'package:rsocial2/Widgets/platform_post_tile.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
@@ -60,6 +63,8 @@ class _ProfileState extends State<Profile> {
   File file;
   String encodedFile = null;
   bool isPlatformLoading = true;
+  bool isUserPostFail = false;
+  bool isPlatformPostFail = false;
   setPostOrientation(String postOrientation) {
     setState(() {
       this.postOrientation = postOrientation;
@@ -251,13 +256,22 @@ class _ProfileState extends State<Profile> {
     final url = storyEndPoint + "${widget.user.id}";
     var token = await user.getIdToken();
     //print(token);
-    final response = await http.get(
-      url,
-      headers: {
-        "Authorization": "Bearer $token",
-        "Content-Type": "application/json",
-      },
-    );
+    var response;
+    try {
+      response = await http.get(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+      );
+    } catch (e) {
+      setState(() {
+        widget.isLoading = false;
+        isUserPostFail = true;
+      });
+      return;
+    }
 
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body);
@@ -305,16 +319,22 @@ class _ProfileState extends State<Profile> {
     final url = storyEndPoint + 'platformactivity';
     var token = await user.getIdToken();
     //print(token);
-
-    final response = await http.post(url,
-        headers: {
-          "Authorization": "Bearer $token",
-          "Content-Type": "application/json",
-        },
-        body: jsonEncode({
-          "id": widget.user.id,
-        }));
-
+    var response;
+    try {
+      response = await http.post(url,
+          headers: {
+            "Authorization": "Bearer $token",
+            "Content-Type": "application/json",
+          },
+          body: jsonEncode({
+            "id": widget.user.id,
+          }));
+    } catch (e) {
+      setState(() {
+        isPlatformLoading = false;
+        isPlatformPostFail = true;
+      });
+    }
     final jsonResponse = jsonDecode(response.body);
     if (jsonResponse['statusCode'] == 200) {
       var body = jsonResponse['body'];
@@ -333,10 +353,6 @@ class _ProfileState extends State<Profile> {
           post = Post.fromJsonW(msg[i]);
         if (post != null) {
           platformPost.add(post);
-          // if (msg[i]['StoryType'] == "Investment")
-          //   postsI.add(post);
-          // else
-          //   postsW.add(post);
         }
       }
       setState(() {
@@ -578,42 +594,95 @@ class _ProfileState extends State<Profile> {
             String url = userEndPoint + 'update';
             print(encodedFile);
             if (encodedFile == null) {
-              response = await http.put(
-                url,
-                encoding: Encoding.getByName("utf-8"),
-                body: jsonEncode({'id': curUser.id, 'bio': newBio}),
-                headers: {
-                  "Authorization": "Bearer: $token",
-                  "Content-Type": "application/json",
-                },
-              );
+              try {
+                response = await http.put(
+                  url,
+                  encoding: Encoding.getByName("utf-8"),
+                  body: jsonEncode({'id': curUser.id, 'bio': newBio}),
+                  headers: {
+                    "Authorization": "Bearer: $token",
+                    "Content-Type": "application/json",
+                  },
+                );
+              } catch (e) {
+                setState(() {
+                  isLoading = false;
+                  isEditable = false;
+                  bioController.text = widget.currentUser.bio;
+                });
+                Fluttertoast.showToast(
+                    msg: "Error occured",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    fontSize: 15);
+              }
             } else if (newBio == widget.currentUser.bio) {
-              response = await http.put(
-                url,
-                encoding: Encoding.getByName("utf-8"),
-                body: jsonEncode({
-                  'id': curUser.id,
-                  'profilepic': encodedFile,
-                }),
-                headers: {
-                  "Authorization": "Bearer: $token",
-                  "Content-Type": "application/json",
-                },
-              );
+              try {
+                response = await http.put(
+                  url,
+                  encoding: Encoding.getByName("utf-8"),
+                  body: jsonEncode({
+                    'id': curUser.id,
+                    'profilepic': encodedFile,
+                  }),
+                  headers: {
+                    "Authorization": "Bearer: $token",
+                    "Content-Type": "application/json",
+                  },
+                );
+
+                Fluttertoast.showToast(
+                    msg:
+                        "Profile pic is updated and changes will be visible soon.",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    fontSize: 15);
+              } catch (e) {
+                setState(() {
+                  isLoading = false;
+                  isEditable = false;
+                  bioController.text = widget.currentUser.bio;
+                });
+                Fluttertoast.showToast(
+                    msg: "Error occured",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    fontSize: 15);
+              }
             } else {
-              response = await http.put(
-                url,
-                encoding: Encoding.getByName("utf-8"),
-                body: jsonEncode({
-                  'id': curUser.id,
-                  'profilepic': encodedFile,
-                  'bio': newBio
-                }),
-                headers: {
-                  "Authorization": "Bearer: $token",
-                  "Content-Type": "application/json",
-                },
-              );
+              try {
+                response = await http.put(
+                  url,
+                  encoding: Encoding.getByName("utf-8"),
+                  body: jsonEncode({
+                    'id': curUser.id,
+                    'profilepic': encodedFile,
+                    'bio': newBio
+                  }),
+                  headers: {
+                    "Authorization": "Bearer: $token",
+                    "Content-Type": "application/json",
+                  },
+                );
+
+                Fluttertoast.showToast(
+                    msg:
+                        "Profile pic is updated and changes will be visible soon.",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    fontSize: 15);
+              } catch (e) {
+                setState(() {
+                  isLoading = false;
+                  isEditable = false;
+                  bioController.text = widget.currentUser.bio;
+                });
+                Fluttertoast.showToast(
+                    msg: "Error occured",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    fontSize: 15);
+              }
             }
 
             //print(response);
@@ -635,8 +704,8 @@ class _ProfileState extends State<Profile> {
               //   if (user.photoUrl != null) curUser.photoUrl = user.photoUrl;
               // });
               if (curUser != null) {
-                print("This is curUser photoUrl");
-                print(curUser.photoUrl);
+                //  print("This is curUser photoUrl");
+                //  print(curUser.photoUrl);
                 bioController.text = newBio;
                 encodedFile = null;
                 file = null;
@@ -743,80 +812,87 @@ class _ProfileState extends State<Profile> {
             SizedBox(
               height: 3,
             ),
-            //widget.currentUser.id == widget.user.id
-            //   ?
-            // widget.currentUser.id == widget.user.id
-            //     ? Text(
-            //         "${widget.user.email}",
-            //         style: TextStyle(
-            //           fontFamily: "Lato",
-            //           fontWeight: FontWeight.bold,
-            //           fontSize: 18,
-            //           color: colorGreyTint,
-            //         ),
-            //       )
-            //     : SizedBox.shrink(),
-            // SizedBox(
-            //   height: 3,
-            // ),
-            curUser.id == widget.user.id
-                ? GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AllConnections(user: curUser),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      "Total Connections: ${curUser.connection.length}",
-                      style: TextStyle(
-                          fontFamily: "Lato",
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15),
-                    ),
-                  )
-                : GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              AllConnections(user: widget.user),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      "Total Connections: ${widget.user.connection.length}",
-                      style: TextStyle(
-                          fontFamily: "Lato",
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15),
-                    ),
-                  ),
-            SizedBox(
-              height: 3,
-            ),
-            curUser.id == widget.user.id
+            widget.currentUser.id == widget.user.id
                 ? Text(
-                    "Amount : " + formatNumber(curUser.lollarAmount),
+                    "${widget.user.email}",
                     style: TextStyle(
-                        fontFamily: "Lato",
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15),
+                      fontFamily: "Lato",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: colorGreyTint,
+                    ),
                   )
-                : Text(
-                    "Amount: " + formatNumber(widget.user.lollarAmount),
-                    style: TextStyle(
-                        fontFamily: "Lato",
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15),
-                  ),
+                : SizedBox.shrink(),
             SizedBox(
-              height: 3,
+              height: 15,
             ),
-
+            Row(
+              children: <Widget>[
+                Container(
+                  height: 20,
+                  width: 20,
+                  //padding: EdgeInsets.only(right: 2),
+                  child: SvgPicture.asset(
+                    "images/yollar_Icon.svg",
+                    color: profileHeaderSubtitiles,
+                  ),
+                ),
+                Text(
+                  "${widget.user.lollarAmount}",
+                  style:
+                      TextStyle(color: profileHeaderSubtitiles, fontSize: 17),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Container(
+                    width: 1,
+                    height: 15,
+                    color: profileHeaderSubtitiles,
+                  ),
+                ),
+                Container(
+                  height: 20,
+                  width: 20,
+                  padding: EdgeInsets.only(right: 2),
+                  child: SvgPicture.asset(
+                    "images/social-standing.svg",
+                    color: profileHeaderSubtitiles,
+                  ),
+                ),
+                Text(
+                  widget.user.connection.length !=
+                              widget.user.connectionCount &&
+                          widget.user.connectionCount != null
+                      ? "${widget.user.connectionCount}"
+                      : "${widget.user.connection.length}",
+                  style:
+                      TextStyle(color: profileHeaderSubtitiles, fontSize: 17),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Container(
+                    width: 1,
+                    height: 10,
+                    color: Colors.grey,
+                  ),
+                ),
+                Container(
+                  height: 20,
+                  width: 20,
+                  padding: EdgeInsets.only(right: 2),
+                  child: SvgPicture.asset("images/high-five.svg",
+                      color: profileHeaderSubtitiles),
+                ),
+                Text(
+                  "${widget.user.socialStanding}",
+                  style:
+                      TextStyle(color: profileHeaderSubtitiles, fontSize: 17),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 15,
+            ),
             widget.user.mobile != null
                 ? Text(
                     widget.user.mobile != null
@@ -1032,15 +1108,40 @@ class _ProfileState extends State<Profile> {
                                   ? Center(
                                       child: CircularProgressIndicator(),
                                     )
-                                  : (postOrientation == 'wage'
-                                      ? buildWagePosts()
-                                      : (postOrientation == 'invest'
-                                          ? buildInvestPosts()
-                                          : (isPlatformLoading
-                                              ? Center(
-                                                  child:
-                                                      CircularProgressIndicator())
-                                              : buildplatformInteraction())))),
+                                  : isUserPostFail
+                                      ? ErrWidget(
+                                          tryAgainOnPressed: () {
+                                            setState(() {
+                                              isUserPostFail = false;
+                                              widget.isLoading = true;
+                                            });
+                                            getUserPosts();
+                                          },
+                                          showLogout: false,
+                                        )
+                                      : (postOrientation == 'wage'
+                                          ? buildWagePosts()
+                                          : (postOrientation == 'invest'
+                                              ? buildInvestPosts()
+                                              : (isPlatformLoading
+                                                  ? Center(
+                                                      child:
+                                                          CircularProgressIndicator())
+                                                  : isPlatformPostFail
+                                                      ? ErrWidget(
+                                                          tryAgainOnPressed:
+                                                              () {
+                                                            setState(() {
+                                                              isPlatformPostFail =
+                                                                  false;
+                                                              isPlatformLoading =
+                                                                  true;
+                                                            });
+                                                            getPlatformPosts();
+                                                          },
+                                                          showLogout: false,
+                                                        )
+                                                      : buildplatformInteraction())))),
                         ],
                       ),
               ),

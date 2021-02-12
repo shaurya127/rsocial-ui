@@ -59,7 +59,7 @@ class _WageState extends State<Wage> {
   var textController = new TextEditingController();
   bool isloading = false;
   String path;
-  String investmentstoryText;
+  String investmentstoryText = "";
   List<File> investmentfileList = new List();
   List<String> selectedImgList = new List();
   List<User> selectedList = new List();
@@ -368,9 +368,6 @@ class _WageState extends State<Wage> {
       });
       var url = storyEndPoint + "createinvestment";
       var user = await FirebaseAuth.instance.currentUser();
-      // DocumentSnapshot doc = await users.document(user.uid).get();
-      // var uid = doc['id'];
-      // print(uid);
       var uid = curUser.id;
 
       for (int i = 0; i < selectedList.length; i++) {
@@ -387,15 +384,30 @@ class _WageState extends State<Wage> {
       var token = await user.getIdToken();
       print(jsonEncode(post.toJsonInvest()));
       //print(token);
-      var response = await http.post(
-        url,
-        encoding: Encoding.getByName("utf-8"),
-        body: jsonEncode(post.toJsonInvest()),
-        headers: {
-          "Authorization": "Bearer: $token",
-          "Content-Type": "application/json",
-        },
-      );
+
+      var response;
+      try {
+        response = await http.post(
+          url,
+          encoding: Encoding.getByName("utf-8"),
+          body: jsonEncode(post.toJsonInvest()),
+          headers: {
+            "Authorization": "Bearer: $token",
+            "Content-Type": "application/json",
+          },
+        );
+      } catch (e) {
+        setState(() {
+          isloading = false;
+        });
+        Fluttertoast.showToast(
+            msg: "Error occurred, please check Internet connection.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            fontSize: 15);
+        return;
+      }
+
       print(response.statusCode);
       print(response.reasonPhrase);
 
@@ -471,15 +483,30 @@ class _WageState extends State<Wage> {
       var token = await user.getIdToken();
       print(jsonEncode(post.toJsonWage()));
       print(token);
-      var response = await http.post(
-        url,
-        encoding: Encoding.getByName("utf-8"),
-        body: jsonEncode(post.toJsonWage()),
-        headers: {
-          "Authorization": "Bearer: $token",
-          "Content-Type": "application/json",
-        },
-      );
+
+      var response;
+      try {
+        response = await http.post(
+          url,
+          encoding: Encoding.getByName("utf-8"),
+          body: jsonEncode(post.toJsonWage()),
+          headers: {
+            "Authorization": "Bearer: $token",
+            "Content-Type": "application/json",
+          },
+        );
+      } catch (e) {
+        setState(() {
+          isloading = false;
+        });
+        Fluttertoast.showToast(
+            msg: "Error occurred, please check Internet connection.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            fontSize: 15);
+        return;
+      }
+
       print(response.statusCode);
 
       if (response.statusCode == 200) {
@@ -536,8 +563,12 @@ class _WageState extends State<Wage> {
         onTap: () {
           setState(() {
             isSelected = false;
-            if (!selectedList.contains(suggestionList[index]) &&
-                selectedList.length <= 1) {
+            if (!selectedList.contains(suggestionList[index])
+                //&&
+                //selectedList.length == 0
+
+                ) {
+              selectedList.clear();
               selectedList.add(suggestionList[index]);
               investingWithController.clear();
             } else {
@@ -758,7 +789,7 @@ class _WageState extends State<Wage> {
               ),
               Center(
                 child: Text(
-                  amount.toString(),
+                  formatNumber(amount),
                   style: TextStyle(
                       color: colorPrimaryBlue,
                       fontFamily: "Lato",

@@ -3,10 +3,13 @@ import 'dart:convert';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
 import 'package:http/http.dart' as http;
+import '../functions.dart';
+import '../reaction_model.dart';
 import '../user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -36,30 +39,6 @@ import '../read_more.dart';
 import '../user.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info/package_info.dart';
-
-class Reaction {
-  Reaction({
-    this.id,
-    this.storyId,
-    this.reactionType,
-  });
-
-  String id;
-  String storyId;
-  String reactionType;
-
-  factory Reaction.fromJson(Map<String, dynamic> json) => Reaction(
-        id: json["id"],
-        storyId: json["StoryId"],
-        reactionType: json["ReactionType"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "StoryId": storyId,
-        "ReactionType": reactionType,
-      };
-}
 
 class PlatformPostTile extends StatefulWidget {
   Post userPost;
@@ -401,7 +380,11 @@ class _PlatformPostTileState extends State<PlatformPostTile>
         react(reaction);
       }
     } else
-      print("not allowed");
+      Fluttertoast.showToast(
+          msg: "You cannot react on your own post",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
 
     // print("state is set");
     // print(counter[reaction]);
@@ -596,7 +579,13 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                                     widget.userPost.user
                                                         .photoUrl),
                                                 child: Text(
-                                                  "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k with ${widget.userPost.investedWithUser[0].fname}",
+                                                  "Invested " +
+                                                      investAmountFormatting(
+                                                          double.parse(widget
+                                                                  .userPost
+                                                                  .investedAmount)
+                                                              .floor()) +
+                                                      " with ${widget.userPost.investedWithUser[0].fname}",
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                   style: TextStyle(
@@ -609,7 +598,12 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                             ],
                                           )
                                         : Text(
-                                            "Invested ${(int.parse(widget.userPost.investedAmount) / 100) % 10 == 0 ? (widget.userPost.investedAmount[0]) : (double.parse(widget.userPost.investedAmount) / 1000).toString()} k alone",
+                                            "Invested " +
+                                                investAmountFormatting(
+                                                    double.parse(widget.userPost
+                                                            .investedAmount)
+                                                        .floor()) +
+                                                " alone",
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                               fontFamily: "Lato",

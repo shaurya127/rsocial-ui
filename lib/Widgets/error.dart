@@ -7,7 +7,7 @@ import '../constants.dart';
 class ErrWidget extends StatefulWidget {
   Function tryAgainOnPressed;
   bool showLogout = false;
-  ErrWidget({this.tryAgainOnPressed, this.showLogout});
+  ErrWidget({this.tryAgainOnPressed, this.showLogout = false});
   @override
   _ErrWidgetState createState() => _ErrWidgetState();
 }
@@ -21,13 +21,9 @@ class _ErrWidgetState extends State<ErrWidget> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          SvgPicture.asset(
-            "images/rsocial-logo.svg",
-            height: 50,
-          ),
           Center(
             child: Text(
-              "Some Error occurred",
+              "Some Error occurred, Please check Internet Connection",
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontFamily: "Lato",

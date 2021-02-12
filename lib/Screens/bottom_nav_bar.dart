@@ -100,8 +100,9 @@ class _BottomNavBarState extends State<BottomNavBar>
           inviteId == null ? inviteSenderId : inviteId;
 
     if (widget.currentUser != null) {
+      var response;
       try {
-        var response = await http.post(
+        response = await http.post(
           url,
           encoding: Encoding.getByName("utf-8"),
           body: jsonEncode(widget.currentUser.toJson()),
@@ -111,176 +112,204 @@ class _BottomNavBarState extends State<BottomNavBar>
             "Accept": "*/*"
           },
         );
+      } catch (e) {
+        setState(() {
+          isNewUserFailed = true;
+        });
+      }
+      //print('Response status: ${response.statusCode}');
+      log('Response status: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        // print('Response body: ${response.body}');
+        // log('Response body: ${response.body}');
+        var res = json.decode(response.body);
+        prefs.remove('inviteSenderId');
 
-        //print('Response status: ${response.statusCode}');
-        log('Response status: ${response.statusCode}');
-        if (response.statusCode == 200) {
-          // print('Response body: ${response.body}');
-          // log('Response body: ${response.body}');
-          var res = json.decode(response.body);
-          prefs.remove('inviteSenderId');
+        var resBody = json.decode(res['body']);
 
-          var resBody = json.decode(res['body']);
+        var id = resBody['message']['id'];
+        var messagingToken = await getFirebaseMessagingToken();
+        //print(widget.sign_in_mode);
 
-          var id = resBody['message']['id'];
-          var messagingToken = await getFirebaseMessagingToken();
-          //print(widget.sign_in_mode);
+        var responseGet;
+        try {
           await users.document(user.uid).setData(
               {"id": resBody['message']['id'], "token": messagingToken});
 
           final url = userEndPoint + "get";
 
-          final responseGet = await http.post(url,
+          responseGet = await http.post(url,
               headers: {
                 "Authorization": "Bearer $token",
                 "Content-Type": "application/json",
               },
               body: jsonEncode({"id": id, "email": user.email}));
+        } catch (e) {
+          setState(() {
+            isLoading = false;
+            isFailedGetUser = true;
+          });
+          return;
+        }
+        if (responseGet.statusCode == 200) {
+          final jsonUser = jsonDecode(responseGet.body);
+          var body = jsonUser['body'];
+          var body1 = jsonDecode(body);
 
-          if (responseGet.statusCode == 200) {
-            final jsonUser = jsonDecode(responseGet.body);
-            var body = jsonUser['body'];
-            var body1 = jsonDecode(body);
-
-            var msg = body1['message'];
-            //print("id is: ${msg['id']}");
-            //print(msg);
-            curUser = User.fromJson(msg);
-            //print("haha");
-            //print(curUser);
-            // setState(() {
-            //   isLoading = false;
-            // });
-            // return curUser;
+          var msg = body1['message'];
+          //print("id is: ${msg['id']}");
+          //print(msg);
+          curUser = User.fromJson(msg);
+          //print("haha");
+          //print(curUser);
+          // setState(() {
+          //   isLoading = false;
+          // });
+          // return curUser;
+          setState(() {
+            isLoadingPost = true;
+            isLoading = false;
+          });
+          try {
+            //  user = await FirebaseAuth.instance.currentUser();
+            photourl = user.photoUrl;
+            //print(user);
+            // DocumentSnapshot doc = await users.document(user.uid).get();
+            // if (doc == null) print("error from get user post");
+            //id = doc['id'];
+          } catch (e) {
             setState(() {
-              isLoadingPost = true;
-              isLoading = false;
+              isFailedUserPost = true;
             });
-            try {
-              //  user = await FirebaseAuth.instance.currentUser();
-              photourl = user.photoUrl;
-              //print(user);
-              // DocumentSnapshot doc = await users.document(user.uid).get();
-              // if (doc == null) print("error from get user post");
-              //id = doc['id'];
-            } catch (e) {
-              setState(() {
-                isFailedUserPost = true;
-              });
-            }
+          }
 
+          try {
             final url = storyEndPoint + "${id}/all";
             var token = await user.getIdToken();
             final response = await http.get(url, headers: {
               "Authorization": "Bearer $token",
               "Content-Type": "application/json",
             });
-            //print("body is ${response.body}");
-            //print(response.statusCode);
-            //print("User posts $response");
-            if (response.statusCode == 200) {
-              final jsonUser = jsonDecode(response.body);
-              var body = jsonUser['body'];
-              var body1 = jsonDecode(body);
-              //print("body is $body");
-              //print(body1);
-              var msg = body1['message'];
-              //print(msg.length);
-              //print("msg id ${msg}");
-              List<Post> posts = [];
-              for (int i = 0; i < msg.length; i++) {
-                //print("msg $i is ${msg[i]}");
-                Post post;
-                if (msg[i]['StoryType'] == "Investment")
-                  post = Post.fromJsonI(msg[i]);
-                else
-                  post = Post.fromJsonW(msg[i]);
-                if (post != null) {
-                  //print(post.investedWithUser);
-                  posts.add(post);
-                }
+          } catch (e) {
+            setState(() {
+              isLoadingPost = false;
+
+              isFailedUserPost = true;
+            });
+            return;
+          }
+          //print("body is ${response.body}");
+          //print(response.statusCode);
+          //print("User posts $response");
+          if (response.statusCode == 200) {
+            final jsonUser = jsonDecode(response.body);
+            var body = jsonUser['body'];
+            var body1 = jsonDecode(body);
+            //print("body is $body");
+            //print(body1);
+            var msg = body1['message'];
+            //print(msg.length);
+            //print("msg id ${msg}");
+            List<Post> posts = [];
+            for (int i = 0; i < msg.length; i++) {
+              //print("msg $i is ${msg[i]}");
+              Post post;
+              if (msg[i]['StoryType'] == "Investment")
+                post = Post.fromJsonI(msg[i]);
+              else
+                post = Post.fromJsonW(msg[i]);
+              if (post != null) {
+                //print(post.investedWithUser);
+                posts.add(post);
               }
-              //print(posts.length);
-              setState(() {
-                this.posts = posts;
-                isLoading = false;
-                isLoadingPost = false;
-              });
-            } else {
-              print(response.statusCode);
-              throw Exception();
             }
-
-            final urlAll = userEndPoint + "all";
-
-            //var token = await user.getIdToken();
-            //print(token);
-
-            final responseAll = await http.post(urlAll,
-                headers: {
-                  "Authorization": "Bearer $token",
-                  "Content-Type": "application/json"
-                },
-                body: jsonEncode({"id": id, "email": user.email}));
-
-            //print(response.statusCode);
-            if (responseAll.statusCode == 200) {
-              final jsonUser = jsonDecode(responseAll.body);
-              var body = jsonUser['body'];
-              var body1 = jsonDecode(body);
-              var msg = body1['message'];
-              //print(msg);
-              //print("length is ${msg.length}")
-              for (int i = 0; i < msg.length; i++) {
-                // print(msg[i]['PendingConnection']);
-
-                if (msg[i]['id'] == id) {
-                  continue;
-                }
-
-                User user = User.fromJson(msg[i]);
-
-                allUsers.add(user);
-              }
-              setState(() {
-                isLoading = false;
-              });
-              // print("all the users");
-              // print(allUsers.length);
-              return allUsers;
-            } else {
-              print(response.statusCode);
-              throw Exception();
-            }
+            //print(posts.length);
+            setState(() {
+              this.posts = posts;
+              isLoading = false;
+              isLoadingPost = false;
+            });
           } else {
             print(response.statusCode);
             throw Exception();
           }
 
-          // if (widget.sign_in_mode == "RSocial_sign_in") {
-          //   FirebaseAnalytics().setUserId(uid);
-          //   FirebaseAnalytics().logEvent(name: "Signed_in_with", parameters: {
-          //     "mode": widget.sign_in_mode,
-          //     'phone_number': phn,
-          //     'uid': uid,
-          //     'id': resMessage.toString(),
-          //   });
-          // } else {
-          //   FirebaseAnalytics().setUserId(uid);
-          //   FirebaseAnalytics().logEvent(name: "Signed_in_with", parameters: {
-          //     "mode": widget.sign_in_mode,
-          //     'email': email,
-          //     'uid': uid,
-          //     'id': resMessage.toString(),
-          //   });
-          // }
+          final urlAll = userEndPoint + "all";
+
+          //var token = await user.getIdToken();
+          //print(token);
+          var responseAll;
+          try {
+            responseAll = await http.post(urlAll,
+                headers: {
+                  "Authorization": "Bearer $token",
+                  "Content-Type": "application/json"
+                },
+                body: jsonEncode({"id": id, "email": user.email}));
+          } catch (e) {
+            setState(() {
+              isLoading = false;
+              isLoadingPost = false;
+              isFailedGetAllUser = true;
+            });
+            return;
+          }
+
+          //print(response.statusCode);
+          if (responseAll.statusCode == 200) {
+            final jsonUser = jsonDecode(responseAll.body);
+            var body = jsonUser['body'];
+            var body1 = jsonDecode(body);
+            var msg = body1['message'];
+            //print(msg);
+            //print("length is ${msg.length}")
+            for (int i = 0; i < msg.length; i++) {
+              // print(msg[i]['PendingConnection']);
+
+              if (msg[i]['id'] == id) {
+                continue;
+              }
+
+              User user = User.fromJson(msg[i]);
+
+              allUsers.add(user);
+            }
+            setState(() {
+              isLoading = false;
+            });
+            // print("all the users");
+            // print(allUsers.length);
+            return allUsers;
+          } else {
+            print(response.statusCode);
+            throw Exception();
+          }
+        } else {
+          print(response.statusCode);
+          throw Exception();
         }
-      } catch (e) {
-        setState(() {
-          isNewUserFailed = true;
-        });
+
+        // if (widget.sign_in_mode == "RSocial_sign_in") {
+        //   FirebaseAnalytics().setUserId(uid);
+        //   FirebaseAnalytics().logEvent(name: "Signed_in_with", parameters: {
+        //     "mode": widget.sign_in_mode,
+        //     'phone_number': phn,
+        //     'uid': uid,
+        //     'id': resMessage.toString(),
+        //   });
+        // } else {
+        //   FirebaseAnalytics().setUserId(uid);
+        //   FirebaseAnalytics().logEvent(name: "Signed_in_with", parameters: {
+        //     "mode": widget.sign_in_mode,
+        //     'email': email,
+        //     'uid': uid,
+        //     'id': resMessage.toString(),
+        //   });
+        // }
       }
-    } else {}
+    } else {
+      logout(context);
+    }
   }
 
   Future<User> getUser() async {
@@ -463,72 +492,72 @@ class _BottomNavBarState extends State<BottomNavBar>
     }
   }
 
-  // getAllUsers() async {
-  //   setState(() {
-  //     isLoading = true;
-  //   });
-  //   //print("==========Inside get all users ===================");
-  //   var user;
-  //   var id;
-  //   try {
-  //     user = await FirebaseAuth.instance.currentUser();
-  //
-  //     DocumentSnapshot doc = await users.document(user.uid).get();
-  //     id = doc['id'];
-  //
-  //     if (doc['token'] == null) {
-  //       var messagingToken = await getFirebaseMessagingToken();
-  //       await users.document(user.uid).updateData({"token": messagingToken});
-  //     }
-  //
-  //     //var id = curUser.id;
-  //   } catch (e) {
-  //     setState(() {
-  //       isFailedGetAllUser = true;
-  //     });
-  //   }
-  //   final url = userEndPoint + "all";
-  //
-  //   var token = await user.getIdToken();
-  //   //print(token);
-  //
-  //   final response = await http.post(url,
-  //       headers: {
-  //         "Authorization": "Bearer $token",
-  //         "Content-Type": "application/json"
-  //       },
-  //       body: jsonEncode({"id": id, "email": user.email}));
-  //
-  //   //print(response.statusCode);
-  //   if (response.statusCode == 200) {
-  //     final jsonUser = jsonDecode(response.body);
-  //     var body = jsonUser['body'];
-  //     var body1 = jsonDecode(body);
-  //     var msg = body1['message'];
-  //     //print(msg);
-  //     //print("length is ${msg.length}")
-  //     for (int i = 0; i < msg.length; i++) {
-  //       // print(msg[i]['PendingConnection']);
-  //
-  //       if (msg[i]['id'] == id) {
-  //         continue;
-  //       }
-  //
-  //       User user = User.fromJson(msg[i]);
-  //
-  //       allUsers.add(user);
-  //     }
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //     // print("all the users");
-  //     // print(allUsers.length);
-  //     return allUsers;
-  //   } else {
-  //     print(response.statusCode);
-  //     throw Exception();
-  //   }
-  // }
+  getAllUsers() async {
+    setState(() {
+      isLoading = true;
+    });
+    //print("==========Inside get all users ===================");
+    var user;
+    var id;
+    try {
+      user = await FirebaseAuth.instance.currentUser();
+
+      DocumentSnapshot doc = await users.document(user.uid).get();
+      id = doc['id'];
+
+      if (doc['token'] == null) {
+        var messagingToken = await getFirebaseMessagingToken();
+        await users.document(user.uid).updateData({"token": messagingToken});
+      }
+
+      //var id = curUser.id;
+    } catch (e) {
+      setState(() {
+        isFailedGetAllUser = true;
+      });
+    }
+    final url = userEndPoint + "all";
+
+    var token = await user.getIdToken();
+    //print(token);
+
+    final response = await http.post(url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        },
+        body: jsonEncode({"id": id, "email": user.email}));
+
+    //print(response.statusCode);
+    if (response.statusCode == 200) {
+      final jsonUser = jsonDecode(response.body);
+      var body = jsonUser['body'];
+      var body1 = jsonDecode(body);
+      var msg = body1['message'];
+      //print(msg);
+      //print("length is ${msg.length}")
+      for (int i = 0; i < msg.length; i++) {
+        // print(msg[i]['PendingConnection']);
+
+        if (msg[i]['id'] == id) {
+          continue;
+        }
+
+        User user = User.fromJson(msg[i]);
+
+        allUsers.add(user);
+      }
+      setState(() {
+        isLoading = false;
+      });
+      // print("all the users");
+      // print(allUsers.length);
+      return allUsers;
+    } else {
+      print(response.statusCode);
+      throw Exception();
+    }
+  }
 
   @override
   void dispose() {
@@ -552,7 +581,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       createNgetUserAwait();
     } else {
       getUserAwait();
-      //  getAllUsers();
+      getAllUsers();
       getUserPosts();
       if (postId == null) initDynamicLinks();
     }
@@ -615,13 +644,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     // });
   }
 
-  final List<String> _labels = [
-    "Home",
-    "Socialise",
-    "Post",
-    "Notifications",
-    "R cash"
-  ];
+  final List<String> _labels = ["Ticker", "Bonds", "Slip", "Gong", "Yollar"];
 
   @override
   Widget build(BuildContext context) {
@@ -643,8 +666,8 @@ class _BottomNavBarState extends State<BottomNavBar>
       //BioPage(analytics:widget.analytics,observer:widget.observer,currentUser: currentUser,),
       //ProfilePicPage(currentUser: widget.currentUser,analytics:widget.analytics,observer:widget.observer),
     ];
-    print("isFailedUserPost: " + isFailedUserPost.toString());
-    return isFailedGetAllUser || isFailedUserPost
+
+    return isNewUserFailed
         ? Scaffold(
             backgroundColor: Colors.white,
             body: Center(
@@ -652,146 +675,167 @@ class _BottomNavBarState extends State<BottomNavBar>
               tryAgainOnPressed: () {
                 setState(() {
                   isLoading = true;
+                  isNewUserFailed = false;
                   isFailedGetUser = false;
                   isFailedGetAllUser = false;
                   isFailedUserPost = false;
                 });
-                getUserAwait();
-                getUserPosts();
-                //  getAllUsers();
+                createNgetUserAwait();
               },
               showLogout: true,
             )),
           )
-        : isLoading || curUser == null
+        : isFailedGetAllUser || isFailedUserPost
             ? Scaffold(
                 backgroundColor: Colors.white,
                 body: Center(
-                  child: CircularProgressIndicator(),
-                ),
+                    child: ErrWidget(
+                  tryAgainOnPressed: () {
+                    setState(() {
+                      isLoading = true;
+                      isFailedGetUser = false;
+                      isFailedGetAllUser = false;
+                      isFailedUserPost = false;
+                    });
+                    getUserAwait();
+                    getUserPosts();
+                    getAllUsers();
+                  },
+                  showLogout: true,
+                )),
               )
-            : (postId == null
+            : isLoading || curUser == null
                 ? Scaffold(
-                    appBar: customAppBar(
-                        context,
-                        "",
-                        curUser != null ? curUser.lollarAmount.toString() : "",
-                        curUser != null ? curUser.photoUrl : "",
-                        curUser != null
-                            ? curUser.socialStanding.toString()
-                            : ""),
-
-                    drawer: Nav_Drawer(
-                      currentUser: curUser,
-                      photoUrl:
-                          curUser.photoUrl != null ? curUser.photoUrl : "",
-                    ),
-                    // AppBar(
-                    //   backgroundColor: colorGreenTint,
-                    //   leading: Padding(
-                    //     padding: const EdgeInsets.only(left: 13, top: 2),
-                    //     child: Stack(
-                    //       children: <Widget>[
-                    //         Container(
-                    //           height: 60,
-                    //           width: 60,
-                    //           decoration: BoxDecoration(
-                    //               image: DecorationImage(
-                    //                   image: AssetImage("images/circle1.png")),
-                    //               shape: BoxShape.circle),
-                    //         ),
-                    //         Positioned(
-                    //           left: 23,
-                    //           top: 30,
-                    //           child: Container(
-                    //             height: 21,
-                    //             width: 21,
-                    //             decoration: BoxDecoration(
-                    //                 border: Border.all(color: Colors.grey),
-                    //                 shape: BoxShape.circle,
-                    //                 color: Colors.white),
-                    //             child: Center(
-                    //               child: FaIcon(
-                    //                 FontAwesomeIcons.bars,
-                    //                 color: colorGreenTint,
-                    //                 size: 15,
-                    //               ),
-                    //             ),
-                    //           ),
-                    //         )
-                    //       ],
-                    //     ),
-                    //   ),
-                    // ),
-                    body:
-                        // isLoading || curUser == null
-                        //     ? Center(
-                        //         child: CircularProgressIndicator(),
-                        //       )
-                        //     :
-                        _screens[_currentIndex],
-                    bottomNavigationBar: BottomNavigationBar(
-                      currentIndex: _currentIndex,
-                      onTap: (index) => setState(() => _currentIndex = index),
-                      type: BottomNavigationBarType.fixed,
-                      backgroundColor: Colors.white,
-                      showSelectedLabels: true,
-                      showUnselectedLabels: true,
-                      unselectedItemColor:
-                          colorUnselectedBottomNav.withOpacity(0.5),
-                      elevation: 5,
-                      items: [
-                        Icons.home,
-                        Icons.search,
-                        Icons.add_circle_outline,
-                        Icons.notifications,
-                        Icons.account_balance_wallet
-                        // FaIcon(FontAwesomeIcons.plus),
-                        // FaIcon(FontAwesomeIcons.bell),
-                        // FaIcon(FontAwesomeIcons.wallet),
-                      ]
-                          .asMap()
-                          .map(
-                            (key, value) => MapEntry(
-                              key,
-                              BottomNavigationBarItem(
-                                title: Text(
-                                  _labels[key],
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: _currentIndex == key
-                                        ? colorButton
-                                        : colorUnselectedBottomNav
-                                            .withOpacity(0.5),
-                                    fontFamily: "Lato",
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                icon: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 0, horizontal: 16),
-                                  decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Icon(
-                                    value,
-                                    color: _currentIndex == key
-                                        ? colorButton
-                                        : colorUnselectedBottomNav
-                                            .withOpacity(0.5),
-                                    size: 24,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                          .values
-                          .toList(),
+                    backgroundColor: Colors.white,
+                    body: Center(
+                      child: CircularProgressIndicator(),
                     ),
                   )
-                : DisplayPost(
-                    postId: postId,
-                  ));
+                : (postId == null
+                    ? Scaffold(
+                        appBar: customAppBar(
+                            context,
+                            "",
+                            curUser != null
+                                ? curUser.lollarAmount.toString()
+                                : "",
+                            curUser != null ? curUser.photoUrl : "",
+                            curUser != null
+                                ? curUser.socialStanding.toString()
+                                : ""),
+
+                        drawer: Nav_Drawer(
+                          currentUser: curUser,
+                          photoUrl:
+                              curUser.photoUrl != null ? curUser.photoUrl : "",
+                        ),
+                        // AppBar(
+                        //   backgroundColor: colorGreenTint,
+                        //   leading: Padding(
+                        //     padding: const EdgeInsets.only(left: 13, top: 2),
+                        //     child: Stack(
+                        //       children: <Widget>[
+                        //         Container(
+                        //           height: 60,
+                        //           width: 60,
+                        //           decoration: BoxDecoration(
+                        //               image: DecorationImage(
+                        //                   image: AssetImage("images/circle1.png")),
+                        //               shape: BoxShape.circle),
+                        //         ),
+                        //         Positioned(
+                        //           left: 23,
+                        //           top: 30,
+                        //           child: Container(
+                        //             height: 21,
+                        //             width: 21,
+                        //             decoration: BoxDecoration(
+                        //                 border: Border.all(color: Colors.grey),
+                        //                 shape: BoxShape.circle,
+                        //                 color: Colors.white),
+                        //             child: Center(
+                        //               child: FaIcon(
+                        //                 FontAwesomeIcons.bars,
+                        //                 color: colorGreenTint,
+                        //                 size: 15,
+                        //               ),
+                        //             ),
+                        //           ),
+                        //         )
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
+                        body:
+                            // isLoading || curUser == null
+                            //     ? Center(
+                            //         child: CircularProgressIndicator(),
+                            //       )
+                            //     :
+                            _screens[_currentIndex],
+                        bottomNavigationBar: BottomNavigationBar(
+                          currentIndex: _currentIndex,
+                          onTap: (index) =>
+                              setState(() => _currentIndex = index),
+                          type: BottomNavigationBarType.fixed,
+                          backgroundColor: Colors.white,
+                          showSelectedLabels: true,
+                          showUnselectedLabels: true,
+                          unselectedItemColor:
+                              colorUnselectedBottomNav.withOpacity(0.5),
+                          elevation: 5,
+                          items: [
+                            Icons.home,
+                            Icons.search,
+                            Icons.add_circle_outline,
+                            Icons.notifications,
+                            Icons.account_balance_wallet
+                            // FaIcon(FontAwesomeIcons.plus),
+                            // FaIcon(FontAwesomeIcons.bell),
+                            // FaIcon(FontAwesomeIcons.wallet),
+                          ]
+                              .asMap()
+                              .map(
+                                (key, value) => MapEntry(
+                                  key,
+                                  BottomNavigationBarItem(
+                                    title: Text(
+                                      _labels[key],
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: _currentIndex == key
+                                            ? colorButton
+                                            : colorUnselectedBottomNav
+                                                .withOpacity(0.5),
+                                        fontFamily: "Lato",
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    icon: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 0, horizontal: 16),
+                                      decoration: BoxDecoration(
+                                        color: Colors.transparent,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Icon(
+                                        value,
+                                        color: _currentIndex == key
+                                            ? colorButton
+                                            : colorUnselectedBottomNav
+                                                .withOpacity(0.5),
+                                        size: 24,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .values
+                              .toList(),
+                        ),
+                      )
+                    : DisplayPost(
+                        postId: postId,
+                      ));
   }
 }

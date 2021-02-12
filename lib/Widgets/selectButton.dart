@@ -26,7 +26,7 @@ class SelectButton extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Lato',
-                fontSize: 16,
+                fontSize: 15,
                 color: curOrientation == orientation
                     ? Colors.white
                     : Theme.of(context).primaryColor,

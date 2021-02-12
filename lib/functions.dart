@@ -20,3 +20,34 @@ String formatNumber(int a) {
   }
   return res;
 }
+
+String investAmountFormatting(int a) {
+  if (a < 1000) {
+    return a.toString();
+  } else if (a >= 1000 && a < 1000000) {
+    String res = (a / 1000).toString();
+    if ((a % 1000) != 0) {
+      res = res.substring(0, res.indexOf('.') + 2);
+      return res + ' K';
+    }
+    return double.parse(res).floor().toString() + ' K';
+  } else if (a >= 1000000 && a < 1000000000) {
+    String res = (a / 1000000).toString();
+    if ((a % 1000000) != 0) {
+      res = res.substring(0, res.indexOf('.') + 2);
+      return res + ' M';
+    }
+
+    return double.parse(res).floor().toString() + ' M';
+  } else if (a >= 1000000000 && a < 1000000000000) {
+    String res = (a / 1000000000).toString();
+    if ((a % 1000000000) != 0) {
+      res = res.substring(0, res.indexOf('.') + 2);
+
+      return res + ' B';
+    }
+    return double.parse(res).floor().toString() + ' B';
+  } else {
+    return a.toString()[0];
+  }
+}
