@@ -4,9 +4,9 @@
     <item android:drawable="@android:color/white" />
 
     <!-- You can insert your own image assets here -->
-    <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@drawable/logo3" />
-    </item>
+<!--    <item>-->
+<!--        <bitmap-->
+<!--            android:gravity="center"-->
+<!--            android:src="@drawable/ic_launcher_background" />-->
+<!--    </item>-->
 </layer-list>

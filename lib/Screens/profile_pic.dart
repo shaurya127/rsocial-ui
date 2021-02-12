@@ -156,7 +156,10 @@ class _ProfilePicPageState extends State<ProfilePicPage> {
                 height: 40,
               ),
               Container(
-                child: Image.asset("images/logo2.png"),
+                child: SvgPicture.asset(
+                  "images/rsocial-logo.svg",
+                  height: 90,
+                ),
               ),
               SizedBox(
                 height: 40,

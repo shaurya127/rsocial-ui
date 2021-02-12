@@ -6,6 +6,7 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:rsocial2/Widgets/error.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/config.dart';
 import 'package:rsocial2/constants.dart';
@@ -20,7 +21,10 @@ class Landing_Page extends StatefulWidget {
   User curUser;
   List<Post> posts;
   bool isLoading;
-  Landing_Page({this.curUser, this.posts, this.isLoading});
+  bool isErrorLoadingPost;
+
+  Landing_Page(
+      {this.curUser, this.posts, this.isLoading, this.isErrorLoadingPost});
   @override
   _Landing_PageState createState() => _Landing_PageState();
 }
@@ -30,11 +34,13 @@ class _Landing_PageState extends State<Landing_Page> {
   //List<Post> posts = [];
   List<Post_Tile> postTiles = [];
   bool isLoading = false;
+  bool isPostLoadFail = false;
 
   @override
   void initState() {
     super.initState();
     FirebaseAnalytics().setCurrentScreen(screenName: "Landing_Page");
+    if (widget.isErrorLoadingPost) isPostLoadFail = true;
     //getUserPosts();
   }
 
@@ -44,19 +50,26 @@ class _Landing_PageState extends State<Landing_Page> {
     });
     var user = await FirebaseAuth.instance.currentUser();
     photourl = user.photoUrl;
-    //DocumentSnapshot doc = await users.document(user.uid).get();
-    //if (doc == null) print("error from get user post");
-    //var id = doc['id'];
+
     var id = curUser.id;
     final url = storyEndPoint + "$id/all";
     var token = await user.getIdToken();
-    final response = await http.get(
-      url,
-      headers: {
-        "Authorization": "Bearer $token",
-        "Content-Type": "application/json",
-      },
-    );
+    var response;
+    try {
+      response = await http.get(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+      );
+    } catch (e) {
+      setState(() {
+        widget.isLoading = false;
+        isPostLoadFail = true;
+      });
+      return;
+    }
     //print("body is ${response.body}");
     //print(response.statusCode);
 
@@ -148,10 +161,21 @@ class _Landing_PageState extends State<Landing_Page> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.grey.withOpacity(0.2),
-        body: widget.isLoading
-            ? Center(
-                child: CircularProgressIndicator(),
+        body: isPostLoadFail == true
+            ? ErrWidget(
+                tryAgainOnPressed: () {
+                  setState(() {
+                    this.isPostLoadFail = false;
+                  });
+                  getUserPosts();
+                },
+                showLogout: false,
               )
-            : RefreshIndicator(onRefresh: getUserPosts, child: buildPosts()));
+            : (widget.isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : RefreshIndicator(
+                    onRefresh: getUserPosts, child: buildPosts())));
   }
 }

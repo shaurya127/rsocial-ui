@@ -278,6 +278,7 @@ class _LoginPageState extends State<LoginPage> {
                             child: SvgPicture.asset(
                               "images/rsocial-logo.svg",
                               height: 90,
+                              //color: colorPrimaryBlue,
                             ),
                           ),
                           SizedBox(

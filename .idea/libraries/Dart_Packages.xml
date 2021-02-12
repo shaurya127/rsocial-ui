@@ -2,6 +2,13 @@
   <library name="Dart Packages" type="DartPackagesLibraryType">
     <properties>
       <option name="packageNameToDirsMap">
+        <entry key="animated_splash_screen">
+          <value>
+            <list>
+              <option value="C:/flutter/.pub-cache/hosted/pub.dartlang.org/animated_splash_screen-1.0.1+2/lib" />
+            </list>
+          </value>
+        </entry>
         <entry key="animated_text_kit">
           <value>
             <list>
@@ -188,6 +195,13 @@
           <value>
             <list>
               <option value="C:/flutter/packages/flutter/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="flutter_app_badger">
+          <value>
+            <list>
+              <option value="C:/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_app_badger-1.1.2/lib" />
             </list>
           </value>
         </entry>
@@ -726,6 +740,7 @@
       </option>
     </properties>
     <CLASSES>
+      <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/animated_splash_screen-1.0.1+2/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/animated_text_kit-2.4.1/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/archive-2.0.11/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/args-1.5.2/lib" />
@@ -752,6 +767,7 @@
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_dynamic_links-0.5.3/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_messaging-6.0.16/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_remote_config-0.3.1+1/lib" />
+      <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_app_badger-1.1.2/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_facebook_login-3.0.0/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_keyboard_visibility-0.7.0/lib" />
       <root url="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_launcher_icons-0.8.0/lib" />
