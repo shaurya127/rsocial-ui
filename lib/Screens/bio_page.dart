@@ -10,8 +10,8 @@ import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/profile_pic.dart';
 import 'package:rsocial2/auth.dart';
 
-import '../constants.dart';
-import '../user.dart';
+import '../contants/constants.dart';
+import '../model/user.dart';
 import 'bottom_nav_bar.dart';
 import 'package:firebase_core/firebase_core.dart';
 

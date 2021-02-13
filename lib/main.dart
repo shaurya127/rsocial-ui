@@ -11,8 +11,8 @@ import 'package:rsocial2/Screens/userInfoGoogle.dart';
 import 'package:rsocial2/auth.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:rsocial2/constants.dart';
-import 'package:rsocial2/user.dart';
+import 'file:///D:/Flutter/rsocial_ui/lib/contants/constants.dart';
+import 'model/user.dart';
 import 'push_notifications.dart';
 
 void main() {

@@ -9,7 +9,7 @@ import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/RoundedButton.dart';
 
-import '../constants.dart';
+import '../contants/constants.dart';
 
 class Refer_and_Earn extends StatefulWidget {
   @override

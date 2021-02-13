@@ -8,8 +8,8 @@ import 'package:rsocial2/Widgets/RoundedButton.dart';
 
 import '../auth.dart';
 import '../authLogic.dart';
-import '../constants.dart';
-import '../user.dart';
+import '../contants/constants.dart';
+import '../model/user.dart';
 
 class UserInfoGoogle extends StatefulWidget {
   User currentUser;
@@ -65,14 +65,13 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
     try {
       this.selectedDate = widget.currentUser.dob != null
           ? DateTime.parse(dob.substring(6, 10) +
-          "-" +
-          dob.substring(3, 5) +
-          "-" +
-          dob.substring(0, 2))
+              "-" +
+              dob.substring(3, 5) +
+              "-" +
+              dob.substring(0, 2))
           : DateTime.now();
-    }
-    catch (E){
-      this.selectedDate=DateTime.now();
+    } catch (E) {
+      this.selectedDate = DateTime.now();
     }
 
     if (widget.currentUser.dob != null) isDateSelected = true;

@@ -11,8 +11,8 @@ import 'package:rsocial2/Screens/refer_and_earn.dart';
 import 'package:rsocial2/Widgets/alert_box.dart';
 import 'package:rsocial2/auth.dart';
 import '../authLogic.dart';
-import '../constants.dart';
-import '../user.dart';
+import '../contants/constants.dart';
+import '../model/user.dart';
 import 'create_account_page.dart';
 import '../Widgets/nav_drawer_tile.dart';
 
@@ -138,7 +138,9 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => AllConnections(user: curUser,)));
+                              builder: (context) => AllConnections(
+                                    user: curUser,
+                                  )));
                     },
                     title: kNavDrawerConnection,
                     icon: Container(
@@ -223,14 +225,18 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                     logout(context);
                   },
                 ),
-                SizedBox(height: 100,),
-                Text("version: ${packageInfo.version}",
+                SizedBox(
+                  height: 100,
+                ),
+                Text(
+                  "version: ${packageInfo.version}",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Lato',
                     fontSize: 14,
                     color: Color(0xff7F7F7F),
-                  ),)
+                  ),
+                )
               ],
             ),
           ),

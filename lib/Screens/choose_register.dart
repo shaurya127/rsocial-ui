@@ -10,11 +10,11 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/profile_pic.dart';
 import 'package:rsocial2/Screens/register_page.dart';
-import 'package:rsocial2/constants.dart';
+import 'file:///D:/Flutter/rsocial_ui/lib/contants/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rsocial2/Screens/register_page.dart';
 
-import '../user.dart';
+import '../model/user.dart';
 import 'login_page.dart';
 import '../Widgets/provider_button.dart';
 import 'package:rsocial2/authLogic.dart';

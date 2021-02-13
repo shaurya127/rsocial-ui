@@ -6,8 +6,8 @@ import 'package:rsocial2/Widgets/RoundedButton.dart';
 import 'package:rsocial2/auth.dart';
 
 import '../authLogic.dart';
-import '../constants.dart';
-import '../user.dart';
+import '../contants/constants.dart';
+import '../model/user.dart';
 import 'create_account_page.dart';
 
 class UserInfoFacebook extends StatefulWidget {

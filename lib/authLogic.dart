@@ -10,7 +10,7 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/userInfoFacebook.dart';
-import 'package:rsocial2/user.dart';
+import 'model/user.dart';
 import 'Screens/bottom_nav_bar.dart';
 import 'Screens/create_account_page.dart';
 import 'Screens/login_page.dart';
@@ -18,7 +18,7 @@ import 'Screens/profile_pic.dart';
 import 'Screens/register_page.dart';
 import 'Screens/userInfoGoogle.dart';
 import 'Widgets/alert_box.dart';
-import 'constants.dart';
+import 'contants/constants.dart';
 import 'package:http/http.dart' as http;
 
 final googleSignIn = GoogleSignIn(scopes: [
@@ -182,8 +182,9 @@ loginWithFacebook(User _currentUser, BuildContext context) async {
               return Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(
                       settings: RouteSettings(name: "Profile_pic_page"),
-                      builder: (BuildContext context) =>
-                          UserInfoFacebook(currentUser: curUser)),
+                      builder: (BuildContext context) => UserInfoFacebook(
+                            currentUser: curUser,
+                          )),
                   (Route<dynamic> route) => false);
             }
 

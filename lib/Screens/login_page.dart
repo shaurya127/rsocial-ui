@@ -16,12 +16,12 @@ import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/auth.dart';
 
 import '../Widgets/RoundedButton.dart';
-import '../constants.dart';
+import '../contants/constants.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import '../user.dart';
+import '../model/user.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;

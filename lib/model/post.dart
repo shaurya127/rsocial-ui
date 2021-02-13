@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'dart:io';
 
-import 'package:rsocial2/user.dart';
+import 'user.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 var locale = 'en';

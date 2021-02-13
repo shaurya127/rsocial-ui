@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 
-import '../constants.dart';
-import '../user.dart';
+import '../contants/constants.dart';
+import '../model/user.dart';
 
 class RcashTile extends StatelessWidget {
   User user;
@@ -209,7 +209,8 @@ class RcashTile extends StatelessWidget {
                                     width: 2,
                                   ),
                                   Text(
-                                    "6000",
+                                    user.totalInvestmentEarningMaturedAmount
+                                        .toString(),
                                     style: TextStyle(
                                         fontFamily: 'Lato',
                                         fontWeight: FontWeight.bold,
@@ -243,7 +244,7 @@ class RcashTile extends StatelessWidget {
                                         width: 2,
                                       ),
                                       Text(
-                                        "6000",
+                                        "11",
                                         style: TextStyle(
                                             fontFamily: 'Lato',
                                             fontWeight: FontWeight.bold,
@@ -277,7 +278,8 @@ class RcashTile extends StatelessWidget {
                                     width: 2,
                                   ),
                                   Text(
-                                    "3000",
+                                    user.totalInvestmentEarningActiveAmount
+                                        .toString(),
                                     style: TextStyle(
                                         fontFamily: 'Lato',
                                         fontWeight: FontWeight.bold,
@@ -310,7 +312,7 @@ class RcashTile extends StatelessWidget {
                                         width: 2,
                                       ),
                                       Text(
-                                        "3000",
+                                        user.referralAmount.toString(),
                                         style: TextStyle(
                                             fontFamily: 'Lato',
                                             fontWeight: FontWeight.bold,

@@ -7,7 +7,7 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:rsocial2/user.dart';
+import 'model/user.dart';
 
 import 'Screens/bottom_nav_bar.dart';
 import 'Screens/create_account_page.dart';
@@ -34,7 +34,7 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   final _auth = FirebaseAuth.instance;
   bool isAuthenticated = null;
-  bool findingLink =true;
+  bool findingLink = true;
 
   void isUserAuthenticated() async {
     FirebaseUser user = await _auth.currentUser();
@@ -60,7 +60,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   void initDynamicLinks() async {
     setState(() {
-      findingLink=true;
+      findingLink = true;
     });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
@@ -68,20 +68,21 @@ class _AuthScreenState extends State<AuthScreen> {
 
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
-          final Uri deepLink = dynamicLink?.link;
-          if (deepLink != null) {
-            print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
-            postId = deepLink.queryParameters['postid'];
-            inviteSenderId = deepLink.queryParameters['sender'];
-            prefs.setString('inviteSenderId', inviteSenderId);
-          }
-        }, onError: (OnLinkErrorException e) async {
+      final Uri deepLink = dynamicLink?.link;
+      if (deepLink != null) {
+        print(
+            "the postid is:${deepLink.queryParameters['postid']}"); // <- prints 'abc'
+        postId = deepLink.queryParameters['postid'];
+        inviteSenderId = deepLink.queryParameters['sender'];
+        prefs.setString('inviteSenderId', inviteSenderId);
+      }
+    }, onError: (OnLinkErrorException e) async {
       print('onLinkError');
       print(e.message);
-    }
-    );
+    });
 
-    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    final PendingDynamicLinkData data =
+        await FirebaseDynamicLinks.instance.getInitialLink();
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {
@@ -90,7 +91,7 @@ class _AuthScreenState extends State<AuthScreen> {
     }
 
     setState(() {
-      findingLink=false;
+      findingLink = false;
     });
   }
 
@@ -116,15 +117,14 @@ class _AuthScreenState extends State<AuthScreen> {
             //     alignment: AlignmentDirectional.topStart // or Alignment.topLeft
             //     ),
             )
-        : (findingLink ? Scaffold(body: Center(child: CircularProgressIndicator()))
-            :( isAuthenticated
-            ? BottomNavBar(
-                currentUser: currentUser,
-                isNewUser: false,
-                sign_in_mode: "",
-              )
-            : CreateAccount()
-    )
-    );
+        : (findingLink
+            ? Scaffold(body: Center(child: CircularProgressIndicator()))
+            : (isAuthenticated
+                ? BottomNavBar(
+                    currentUser: currentUser,
+                    isNewUser: false,
+                    sign_in_mode: "",
+                  )
+                : CreateAccount()));
   }
 }

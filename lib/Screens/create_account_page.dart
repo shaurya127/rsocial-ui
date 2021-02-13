@@ -11,7 +11,7 @@ import 'package:rsocial2/Screens/register_page.dart';
 import 'package:rsocial2/main.dart';
 
 import '../auth.dart';
-import '../constants.dart';
+import '../contants/constants.dart';
 import 'choose_register.dart';
 import 'login_page.dart';
 
@@ -37,21 +37,22 @@ class _CreateAccountState extends State<CreateAccount> {
 
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
-          final Uri deepLink = dynamicLink?.link;
-          if (deepLink != null) {
-            print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
-            postId = deepLink.queryParameters['postid'];
-            inviteSenderId = deepLink.queryParameters['sender'];
-            print("the postid is:${deepLink.queryParameters['sender']}");
-            //Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
-          }
-        }, onError: (OnLinkErrorException e) async {
+      final Uri deepLink = dynamicLink?.link;
+      if (deepLink != null) {
+        print(
+            "the postid is:${deepLink.queryParameters['postid']}"); // <- prints 'abc'
+        postId = deepLink.queryParameters['postid'];
+        inviteSenderId = deepLink.queryParameters['sender'];
+        print("the postid is:${deepLink.queryParameters['sender']}");
+        //Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
+      }
+    }, onError: (OnLinkErrorException e) async {
       print('onLinkError');
       print(e.message);
-    }
-    );
+    });
 
-    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    final PendingDynamicLinkData data =
+        await FirebaseDynamicLinks.instance.getInitialLink();
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {

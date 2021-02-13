@@ -24,13 +24,13 @@ import 'package:rsocial2/Screens/reaction_info.dart';
 import 'package:rsocial2/Screens/search_page.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
-import '../config.dart';
-import '../constants.dart';
+import '../contants/config.dart';
+import '../contants/constants.dart';
 import '../functions.dart';
-import '../post.dart';
-import '../reaction_model.dart';
+import '../model/post.dart';
+import '../model/reaction_model.dart';
 import '../read_more.dart';
-import '../user.dart';
+import '../model/user.dart';
 import 'package:http/http.dart' as http;
 
 //Map<String, Map<String, int>> m = new Map();

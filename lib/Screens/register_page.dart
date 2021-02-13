@@ -4,14 +4,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import '../Widgets/RoundedButton.dart';
-import '../user.dart';
-import '../constants.dart';
+import '../model/user.dart';
+import '../contants/constants.dart';
 import 'package:rsocial2/auth.dart';
 import 'login_page.dart';
 import 'otp_page.dart';
 
 class RegisterPage extends StatefulWidget {
-
   @override
   _RegisterPageState createState() => _RegisterPageState();
 }
@@ -491,17 +490,17 @@ class _RegisterPageState extends State<RegisterPage> {
                                   fontWeight: FontWeight.bold),
                             ),
                             onPressed: () {
-                              Navigator.pop(
-                                context,
-                              );
-                              print('Phone number is: ' + phoneNumber);
-                              Navigator.push(
-                                  context,
-                                  PageTransition(
-                                      settings: RouteSettings(name: "Otp_Page"),
-                                      type: PageTransitionType.rightToLeft,
-                                      child:
-                                          OtpPage(currentUser: currentUser)));
+                              // Navigator.pop(
+                              //   context,
+                              // );
+                              // print('Phone number is: ' + phoneNumber);
+                              // Navigator.push(
+                              //     context,
+                              //     PageTransition(
+                              //         settings: RouteSettings(name: "Otp_Page"),
+                              //         type: PageTransitionType.rightToLeft,
+                              //         child:
+                              //             OtpPage(currentUser: currentUser)));
                             },
                           ),
                         ],
@@ -587,7 +586,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                 Navigator.push(
                                     context,
                                     PageTransition(
-                                        settings: RouteSettings(name: "Login_Page"),
+                                        settings:
+                                            RouteSettings(name: "Login_Page"),
                                         type: PageTransitionType.bottomToTop,
                                         child: LoginPage()));
                               }),
