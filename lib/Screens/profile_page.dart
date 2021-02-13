@@ -24,6 +24,7 @@ import 'package:rsocial2/Widgets/invest_post_tile.dart';
 import 'package:rsocial2/Widgets/platform_post_tile.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/Widgets/request_button.dart';
+import 'package:rsocial2/Widgets/selectButton.dart';
 import 'package:rsocial2/auth.dart';
 import 'package:rsocial2/constants.dart';
 import 'package:rsocial2/functions.dart';
@@ -1004,111 +1005,138 @@ class _ProfileState extends State<Profile> {
                         children: <Widget>[
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
+                                horizontal: 10, vertical: 6),
                             color: Colors.white,
-                            height: 40,
+                            height: 50,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Container(
-                                  child: GestureDetector(
+                                SelectButton(
                                     onTap: () {
-                                      setPostOrientation("wage");
+                                      setState(() {
+                                        this.postOrientation  = "wage";
+                                      });
                                     },
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Text(
-                                          kProfilePageWageTab,
-                                          style: TextStyle(
-                                            fontFamily: "Lato",
-                                            fontSize: 15,
-                                            color: postOrientation == 'wage'
-                                                ? Theme.of(context).primaryColor
-                                                : Colors.grey,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Container(
-                                          width: 50,
-                                          height: 2,
-                                          color: postOrientation == 'wage'
-                                              ? Theme.of(context).primaryColor
-                                              : Colors.white,
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  child: GestureDetector(
+                                    text: "Wage",
+                                    orientation: 'wage',
+                                    curOrientation: postOrientation),
+                                SelectButton(
                                     onTap: () {
-                                      setPostOrientation("invest");
+                                      setState(() {
+                                        this.postOrientation  = "invest";
+                                      });
                                     },
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Text(
-                                          kProfilePageInvestmentTab,
-                                          style: TextStyle(
-                                            fontFamily: "Lato",
-                                            fontSize: 15,
-                                            color: postOrientation == 'invest'
-                                                ? Theme.of(context).primaryColor
-                                                : Colors.grey,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Container(
-                                          width: 50,
-                                          height: 2,
-                                          color: postOrientation == 'invest'
-                                              ? Theme.of(context).primaryColor
-                                              : Colors.white,
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  child: GestureDetector(
+                                    text: "Investment",
+                                    orientation: 'invest',
+                                    curOrientation: postOrientation),
+                                SelectButton(
                                     onTap: () {
-                                      setPostOrientation("platform");
+                                      setState(() {
+                                        this.postOrientation  = "platform";
+                                      });
                                     },
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Text(
-                                          kProfilePagePlatformTab,
-                                          style: TextStyle(
-                                            fontFamily: "Lato",
-                                            fontSize: 15,
-                                            color: postOrientation == 'platform'
-                                                ? Theme.of(context).primaryColor
-                                                : Colors.grey,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Container(
-                                          width: 50,
-                                          height: 2,
-                                          color: postOrientation == 'platform'
-                                              ? Theme.of(context).primaryColor
-                                              : Colors.white,
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                                    text: "Platform",
+                                    orientation: 'platform',
+                                    curOrientation: postOrientation),
+                                // Container(
+                                //   child: GestureDetector(
+                                //     onTap: () {
+                                //       setPostOrientation("wage");
+                                //     },
+                                //     child: Column(
+                                //       mainAxisAlignment:
+                                //           MainAxisAlignment.spaceBetween,
+                                //       children: <Widget>[
+                                //         Text(
+                                //           kProfilePageWageTab,
+                                //           style: TextStyle(
+                                //             fontFamily: "Lato",
+                                //             fontSize: 15,
+                                //             color: postOrientation == 'wage'
+                                //                 ? Theme.of(context).primaryColor
+                                //                 : Colors.grey,
+                                //           ),
+                                //         ),
+                                //         SizedBox(
+                                //           height: 5,
+                                //         ),
+                                //         Container(
+                                //           width: 50,
+                                //           height: 2,
+                                //           color: postOrientation == 'wage'
+                                //               ? Theme.of(context).primaryColor
+                                //               : Colors.white,
+                                //         )
+                                //       ],
+                                //     ),
+                                //   ),
+                                // ),
+                                // Container(
+                                //   child: GestureDetector(
+                                //     onTap: () {
+                                //       setPostOrientation("invest");
+                                //     },
+                                //     child: Column(
+                                //       mainAxisAlignment:
+                                //           MainAxisAlignment.spaceBetween,
+                                //       children: <Widget>[
+                                //         Text(
+                                //           kProfilePageInvestmentTab,
+                                //           style: TextStyle(
+                                //             fontFamily: "Lato",
+                                //             fontSize: 15,
+                                //             color: postOrientation == 'invest'
+                                //                 ? Theme.of(context).primaryColor
+                                //                 : Colors.grey,
+                                //           ),
+                                //         ),
+                                //         SizedBox(
+                                //           height: 5,
+                                //         ),
+                                //         Container(
+                                //           width: 50,
+                                //           height: 2,
+                                //           color: postOrientation == 'invest'
+                                //               ? Theme.of(context).primaryColor
+                                //               : Colors.white,
+                                //         )
+                                //       ],
+                                //     ),
+                                //   ),
+                                // ),
+                                // Container(
+                                //   child: GestureDetector(
+                                //     onTap: () {
+                                //       setPostOrientation("platform");
+                                //     },
+                                //     child: Column(
+                                //       mainAxisAlignment:
+                                //           MainAxisAlignment.spaceBetween,
+                                //       children: <Widget>[
+                                //         Text(
+                                //           kProfilePagePlatformTab,
+                                //           style: TextStyle(
+                                //             fontFamily: "Lato",
+                                //             fontSize: 15,
+                                //             color: postOrientation == 'platform'
+                                //                 ? Theme.of(context).primaryColor
+                                //                 : Colors.grey,
+                                //           ),
+                                //         ),
+                                //         SizedBox(
+                                //           height: 5,
+                                //         ),
+                                //         Container(
+                                //           width: 50,
+                                //           height: 2,
+                                //           color: postOrientation == 'platform'
+                                //               ? Theme.of(context).primaryColor
+                                //               : Colors.white,
+                                //         )
+                                //       ],
+                                //     ),
+                                //   ),
+                                // ),
                               ],
                             ),
                           ),
