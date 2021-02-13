@@ -14,12 +14,14 @@ import 'package:rsocial2/Screens/userInfoGoogle.dart';
 import 'package:rsocial2/auth.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:rsocial2/constants.dart';
-import 'package:rsocial2/user.dart';
+
+import 'package:rsocial2/contants/constants.dart';
+import 'package:rsocial2/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Screens/bottom_nav_bar.dart';
 import 'Screens/create_account_page.dart';
 import 'Screens/login_page.dart';
+
 import 'push_notifications.dart';
 
 User currentUser;

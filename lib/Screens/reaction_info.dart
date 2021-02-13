@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rsocial2/Screens/search_page.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
 
-import '../constants.dart';
+import '../contants/constants.dart';
 
 class Reaction_Info extends StatefulWidget {
   List<Request_Tile> love;

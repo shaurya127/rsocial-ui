@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 
-import '../constants.dart';
+import '../contants/constants.dart';
 
 class NotificationPage extends StatefulWidget {
   @override
   _NotificationPageState createState() => _NotificationPageState();
 }
 
-class _NotificationPageState extends State<NotificationPage> with TickerProviderStateMixin {
+class _NotificationPageState extends State<NotificationPage>
+    with TickerProviderStateMixin {
   TabController _tabController2;
 
   @override
   void initState() {
     super.initState();
-    _tabController2 = new TabController(vsync:this,length: 2 );
+    _tabController2 = new TabController(vsync: this, length: 2);
   }
 
   @override
@@ -21,22 +22,17 @@ class _NotificationPageState extends State<NotificationPage> with TickerProvider
     _tabController2.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: TabBar(
-        indicatorColor:colorPrimaryBlue,
+        indicatorColor: colorPrimaryBlue,
         indicatorWeight: 3,
         labelColor: colorPrimaryBlue,
-        labelStyle: TextStyle(
-            fontSize: 16,
-          fontFamily: 'Lato'
-        ),
+        labelStyle: TextStyle(fontSize: 16, fontFamily: 'Lato'),
         unselectedLabelColor: colorGreyTint,
-        unselectedLabelStyle: TextStyle(
-            fontSize: 16,
-            fontFamily: 'Lato'
-        ),
+        unselectedLabelStyle: TextStyle(fontSize: 16, fontFamily: 'Lato'),
         controller: _tabController2,
         tabs: <Tab>[
           Tab(
@@ -45,7 +41,6 @@ class _NotificationPageState extends State<NotificationPage> with TickerProvider
           Tab(
             text: "User",
           ),
-
         ],
       ),
       body: TabBarView(

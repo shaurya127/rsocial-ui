@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rsocial2/constants.dart';
+import 'file:///D:/Flutter/rsocial_ui/lib/contants/constants.dart';
 
 class AlertDialogBox extends StatelessWidget {
   final String title;

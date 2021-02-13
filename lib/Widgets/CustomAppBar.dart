@@ -3,10 +3,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/auth.dart';
-import '../constants.dart';
+import '../contants/constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rsocial2/functions.dart';
-import '../user.dart';
+import '../model/user.dart';
 
 AppBar customAppBar(context, String title, int lollarAmount, String photoUrl,
     int socialStanding,

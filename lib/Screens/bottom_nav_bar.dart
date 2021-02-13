@@ -9,7 +9,7 @@ import 'package:rsocial2/Screens/rcash_screen.dart';
 import 'package:rsocial2/Widgets/error.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import '../config.dart';
+import '../contants/config.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,19 +23,21 @@ import 'package:rsocial2/Screens/wage.dart';
 import 'package:rsocial2/Widgets/alert_box.dart';
 import 'package:rsocial2/auth.dart';
 import 'package:rsocial2/authLogic.dart';
-import 'package:rsocial2/user.dart';
+import '../model/user.dart';
 import 'package:rsocial2/Screens/landing_page.dart';
 import 'package:rsocial2/Screens/nav_drawer.dart';
 import 'package:rsocial2/Screens/search_page.dart';
 import 'dart:developer';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
-import 'package:rsocial2/constants.dart';
+import 'file:///D:/Flutter/rsocial_ui/lib/contants/constants.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
-import '../connection.dart';
+import '../model/connection.dart';
+
 import '../main.dart';
-import '../post.dart';
+import '../model/post.dart';
+
 import 'create_account_page.dart';
 import 'display_post.dart';
 import 'login_page.dart';
@@ -354,7 +356,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     var response;
     try {
       token = await user.getIdToken();
-      // print(token);
+      print(token);
       // print(id);
       // print(user.email);
       // print("blalb");

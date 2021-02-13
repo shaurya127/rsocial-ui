@@ -15,8 +15,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/display_post.dart';
 import 'package:rsocial2/functions.dart';
-import '../auth.dart';
-import '../my_flutter_app_icons.dart';
+
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/invested_with.dart';
 import 'package:rsocial2/Screens/login_page.dart';
@@ -24,12 +23,12 @@ import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/Screens/reaction_info.dart';
 import 'package:rsocial2/Screens/search_page.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
-import 'package:rsocial2/config.dart';
-import '../constants.dart';
-import '../post.dart';
-import '../reaction_model.dart';
+import 'file:///D:/Flutter/rsocial_ui/lib/contants/config.dart';
+import '../contants/constants.dart';
+import '../model/post.dart';
+import '../model/reaction_model.dart';
 import '../read_more.dart';
-import '../user.dart';
+import '../model/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info/package_info.dart';
 import 'package:audioplayers/audio_cache.dart';
@@ -828,7 +827,11 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                       //   ),
                       //SizedBox(width: 14,),
                       PopupMenuButton(
-                        icon: Icon(Icons.more_vert,size:30,color: colorGreyTint,),
+                        icon: Icon(
+                          Icons.more_vert,
+                          size: 30,
+                          color: colorGreyTint,
+                        ),
                         itemBuilder: (_) => <PopupMenuItem<String>>[
                           new PopupMenuItem<String>(
                               child: GestureDetector(
@@ -837,11 +840,14 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                     Navigator.push(
                                         context,
                                         PageTransition(
-                                          // settings: RouteSettings(
-                                          //     name: "Login_Page"),
+                                            // settings: RouteSettings(
+                                            //     name: "Login_Page"),
                                             type: PageTransitionType.fade,
-                                            child: DisplayPost(postId: widget.userPost.id,)));
-                                  }, child: new Text('View post'))),
+                                            child: DisplayPost(
+                                              postId: widget.userPost.id,
+                                            )));
+                                  },
+                                  child: new Text('View post'))),
                           new PopupMenuItem<String>(
                               child: GestureDetector(
                                   onTap: () {

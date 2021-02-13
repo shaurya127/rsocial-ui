@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
 
-import '../constants.dart';
-import '../user.dart';
+import '../contants/constants.dart';
+import '../model/user.dart';
 
 class UserTile extends StatefulWidget {
   User user;

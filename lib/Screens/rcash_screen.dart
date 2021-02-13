@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Widgets/rcash_tile.dart';
-import 'package:rsocial2/constants.dart';
+import 'file:///D:/Flutter/rsocial_ui/lib/contants/constants.dart';
 
 class RcashScreen extends StatefulWidget {
   @override
@@ -20,10 +20,10 @@ class _RcashScreenState extends State<RcashScreen> {
   List values = [
     curUser.lollarAmount.toString(),
     curUser.lollarAmount.toString(),
-    "3000",
-    "3000",
-    "200",
-    "3000"
+    curUser.totalWageEarningAmount.toString(),
+    curUser.totalActiveInvestmentAmount.toString(),
+    curUser.joiningBonus.toString(),
+    curUser.totalPlatformEngagementAmount.toString()
   ];
 
   buildList() {

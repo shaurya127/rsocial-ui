@@ -26,12 +26,12 @@ import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/Widgets/request_button.dart';
 import 'package:rsocial2/Widgets/selectButton.dart';
 import 'package:rsocial2/auth.dart';
-import 'package:rsocial2/constants.dart';
+import 'file:///D:/Flutter/rsocial_ui/lib/contants/constants.dart';
 import 'package:rsocial2/functions.dart';
-import 'package:rsocial2/user.dart';
+import '../model/user.dart';
 
-import '../config.dart';
-import '../post.dart';
+import '../contants/config.dart';
+import '../model/post.dart';
 
 class Profile extends StatefulWidget {
   @override

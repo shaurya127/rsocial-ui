@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../authLogic.dart';
-import '../constants.dart';
+import '../contants/constants.dart';
 
 class ErrWidget extends StatefulWidget {
   Function tryAgainOnPressed;

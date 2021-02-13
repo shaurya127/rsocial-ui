@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
 
-import '../user.dart';
+import '../model/user.dart';
 import 'bottom_nav_bar.dart';
 import 'bottom_nav_bar.dart';
 

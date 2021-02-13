@@ -1,5 +1,5 @@
 import 'package:sembast/sembast.dart';
-import '../post.dart';
+import '../model/post.dart';
 import 'app_database.dart';
 
 class PostDao {

@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/login_page.dart';
 
-import '../config.dart';
-import '../connection.dart';
+import '../contants/config.dart';
+import '../model/connection.dart';
 import 'package:http/http.dart' as http;
 
-import '../constants.dart';
-import '../user.dart';
+import '../contants/constants.dart';
+import '../model/user.dart';
 
 class RequestButton extends StatefulWidget {
   @override

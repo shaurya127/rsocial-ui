@@ -8,11 +8,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rsocial2/Widgets/error.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
-import 'package:rsocial2/config.dart';
-import 'package:rsocial2/constants.dart';
+import 'file:///D:/Flutter/rsocial_ui/lib/contants/config.dart';
+import 'file:///D:/Flutter/rsocial_ui/lib/contants/constants.dart';
 
-import '../post.dart';
-import '../user.dart';
+import '../model/post.dart';
+import '../model/user.dart';
 import 'bottom_nav_bar.dart';
 import 'login_page.dart';
 import 'package:http/http.dart' as http;
@@ -70,7 +70,7 @@ class _Landing_PageState extends State<Landing_Page> {
       });
       return;
     }
-    //print("body is ${response.body}");
+    print("body is ${response.body}");
     //print(response.statusCode);
 
     if (response.statusCode == 200) {

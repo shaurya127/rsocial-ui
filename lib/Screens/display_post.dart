@@ -5,13 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 
-import '../config.dart';
-import '../post.dart';
+import '../contants/config.dart';
+import '../model/post.dart';
 import 'bottom_nav_bar.dart';
 import 'package:http/http.dart' as http;
 
 class DisplayPost extends StatefulWidget {
-
   String postId;
   DisplayPost({this.postId});
 
@@ -20,7 +19,7 @@ class DisplayPost extends StatefulWidget {
 }
 
 class _DisplayPostState extends State<DisplayPost> {
-  bool isLoading =false;
+  bool isLoading = false;
   Post_Tile post_tile;
   @override
   void initState() {
@@ -60,19 +59,23 @@ class _DisplayPostState extends State<DisplayPost> {
       print("--------------------------------------------------");
       print("msg is ${msg}");
 
-        //print("msg $i is ${msg[i]}");
-        Post post;
-        if (msg['StoryType'] == "Investment")
-          post = Post.fromJsonI(msg);
-        else
-          post = Post.fromJsonW(msg);
-        if (post != null) {
-          //print(post.investedWithUser);
-          post_tile = Post_Tile(curUser: curUser,userPost: post,photoUrl: curUser.photoUrl,);
-        }
-        setState(() {
-          isLoading=false;
-        });
+      //print("msg $i is ${msg[i]}");
+      Post post;
+      if (msg['StoryType'] == "Investment")
+        post = Post.fromJsonI(msg);
+      else
+        post = Post.fromJsonW(msg);
+      if (post != null) {
+        //print(post.investedWithUser);
+        post_tile = Post_Tile(
+          curUser: curUser,
+          userPost: post,
+          photoUrl: curUser.photoUrl,
+        );
+      }
+      setState(() {
+        isLoading = false;
+      });
       //print(posts.length);
     } else {
       print(response.statusCode);
@@ -85,17 +88,20 @@ class _DisplayPostState extends State<DisplayPost> {
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
-        title: Text("Post",
-        style: TextStyle(
-          fontFamily: 'Lato',
-          color: Colors.white
-        ),),
+        title: Text(
+          "Post",
+          style: TextStyle(fontFamily: 'Lato', color: Colors.white),
+        ),
       ),
-      body: !isLoading ? ListView(
-        children: <Widget>[
-          post_tile,
-        ],
-      ) : Center(child: CircularProgressIndicator(),),
+      body: !isLoading
+          ? ListView(
+              children: <Widget>[
+                post_tile,
+              ],
+            )
+          : Center(
+              child: CircularProgressIndicator(),
+            ),
     );
   }
 }

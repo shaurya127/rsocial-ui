@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 
-import '../connection.dart';
+import '../model/connection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,12 +9,12 @@ import 'package:flutter_svg/svg.dart';
 import 'package:rsocial2/Screens/login_page.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
 
-import '../config.dart';
+import '../contants/config.dart';
 import 'package:http/http.dart' as http;
 
-import '../constants.dart';
+import '../contants/constants.dart';
 import '../functions.dart';
-import '../user.dart';
+import '../model/user.dart';
 
 class Request_Tile extends StatefulWidget {
   //bool request = false;

@@ -22,7 +22,14 @@ class User {
       this.receivedPendingConnection,
       this.userMap,
       this.inviteSenderId,
-      this.connectionCount});
+      this.connectionCount,
+      this.totalActiveInvestmentAmount,
+      this.joiningBonus,
+      this.referralAmount,
+      this.totalInvestmentEarningActiveAmount,
+      this.totalInvestmentEarningMaturedAmount,
+      this.totalPlatformEngagementAmount,
+      this.totalWageEarningAmount});
 
   final String fname;
   final String lname;
@@ -43,6 +50,13 @@ class User {
   String reactionType;
   String inviteSenderId;
   int connectionCount;
+  int totalWageEarningAmount;
+  int totalInvestmentEarningMaturedAmount;
+  int totalInvestmentEarningActiveAmount;
+  int totalPlatformEngagementAmount;
+  int joiningBonus;
+  int referralAmount;
+  int totalActiveInvestmentAmount;
   //List<String> list= new List();
 
   factory User.fromJson(final json) {
@@ -83,26 +97,34 @@ class User {
     }
 
     return User(
-      id: json['id'],
-      photoUrl: json['ProfilePic'],
-      fname: json['FName'],
-      lname: json['LName'],
-      email: json['Email'],
-      lollarAmount: json['LollarAmount'],
-      socialStanding: json['SocialStanding'],
-      bio: json['Bio'],
-      gender: json['gender'],
-      reactionType: json["reaction_type"],
-      dob: json['dob'],
-      connection: json["Connection"] == null ? [] : frnds,
-      pendingConnection: json["PendingConnection"] == null ? [] : pending,
-      sentPendingConnection:
-          json["SentPendingConnection"] == null ? [] : outgoing,
-      receivedPendingConnection:
-          json["ReceivedPendingConnection"] == null ? [] : incoming,
-      userMap: map,
-      connectionCount: json['NumConnection'],
-    );
+        id: json['id'],
+        photoUrl: json['ProfilePic'],
+        fname: json['FName'],
+        lname: json['LName'],
+        email: json['Email'],
+        lollarAmount: json['LollarAmount'],
+        socialStanding: json['SocialStanding'],
+        bio: json['Bio'],
+        gender: json['gender'],
+        reactionType: json["reaction_type"],
+        dob: json['dob'],
+        connection: json["Connection"] == null ? [] : frnds,
+        pendingConnection: json["PendingConnection"] == null ? [] : pending,
+        sentPendingConnection:
+            json["SentPendingConnection"] == null ? [] : outgoing,
+        receivedPendingConnection:
+            json["ReceivedPendingConnection"] == null ? [] : incoming,
+        userMap: map,
+        connectionCount: json['NumConnection'],
+        totalActiveInvestmentAmount: json['TotalActiveInvestmentAmount'],
+        totalWageEarningAmount: json['TotalWageEarningAmount'],
+        totalInvestmentEarningActiveAmount:
+            json['TotalInvestmentEarningActiveAmount'],
+        totalInvestmentEarningMaturedAmount:
+            json['TotalInvestmentEarningMaturedAmount'],
+        totalPlatformEngagementAmount: json['TotalPlatformEngagementAmount'],
+        joiningBonus: json['JoiningBonus'],
+        referralAmount: json['ReferralAmount']);
   }
 
   Map<String, dynamic> toJson() => {
@@ -116,6 +138,6 @@ class User {
         'lollarAmount': this.lollarAmount,
         'socialStanding': this.socialStanding,
         'profilepic': this.photoUrl == null ? "" : this.photoUrl,
-        'referred_by' : this.inviteSenderId,
+        'referred_by': this.inviteSenderId,
       };
 }

@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:rsocial2/push_notification_model.dart';
+import 'package:rsocial2/model/push_notification_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:rsocial2/user.dart';
+import 'model/user.dart';
 
 import 'Screens/bottom_nav_bar.dart';
 import 'Screens/profile_page.dart';
