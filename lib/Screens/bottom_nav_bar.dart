@@ -4,6 +4,7 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:package_info/package_info.dart';
+import 'package:rsocial2/Screens/notification_page.dart';
 import 'package:rsocial2/Screens/rcash_screen.dart';
 import 'package:rsocial2/Widgets/error.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -701,7 +702,7 @@ class _BottomNavBarState extends State<BottomNavBar>
         currentUser: curUser,
         isPostedCallback: isPostedCallback,
       ),
-      Scaffold(),
+      NotificationPage(),
       RcashScreen()
       //BioPage(analytics:widget.analytics,observer:widget.observer,currentUser: currentUser,),
       //ProfilePicPage(currentUser: widget.currentUser,analytics:widget.analytics,observer:widget.observer),
