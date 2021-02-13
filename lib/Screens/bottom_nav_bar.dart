@@ -789,7 +789,8 @@ class _BottomNavBarState extends State<BottomNavBar>
                             Icons.search,
                             Icons.add_circle_outline,
                             Icons.notifications,
-                            Icons.account_balance_wallet
+                            Icons.account_balance_wallet,
+
                             // FaIcon(FontAwesomeIcons.plus),
                             // FaIcon(FontAwesomeIcons.bell),
                             // FaIcon(FontAwesomeIcons.wallet),
@@ -811,22 +812,50 @@ class _BottomNavBarState extends State<BottomNavBar>
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    icon: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 0, horizontal: 16),
-                                      decoration: BoxDecoration(
-                                        color: Colors.transparent,
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: Icon(
-                                        value,
-                                        color: _currentIndex == key
-                                            ? colorButton
-                                            : colorUnselectedBottomNav
-                                                .withOpacity(0.5),
-                                        size: 24,
-                                      ),
-                                    ),
+                                    icon: key == 1
+                                        ? Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 2, bottom: 2.5),
+                                            child: SvgPicture.asset(
+                                              "images/high-five.svg",
+                                              color: _currentIndex != key
+                                                  ? colorUnselectedBottomNav
+                                                      .withOpacity(0.5)
+                                                  : colorPrimaryBlue,
+                                              height: 19,
+                                            ),
+                                          )
+                                        : key == 4
+                                            ? Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 2, bottom: 3.5),
+                                                child: SvgPicture.asset(
+                                                  "images/yollar.svg",
+                                                  color: _currentIndex != key
+                                                      ? colorUnselectedBottomNav
+                                                          .withOpacity(0.5)
+                                                      : colorPrimaryBlue,
+                                                  height: 19,
+                                                ),
+                                              )
+                                            : Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 0,
+                                                    horizontal: 16),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.transparent,
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                                child: Icon(
+                                                  value,
+                                                  color: _currentIndex == key
+                                                      ? colorButton
+                                                      : colorUnselectedBottomNav
+                                                          .withOpacity(0.5),
+                                                  size: 24,
+                                                ),
+                                              ),
                                   ),
                                 ),
                               )
