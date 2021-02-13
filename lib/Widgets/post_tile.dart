@@ -521,7 +521,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                 //fontWeight: FontWeight.bold,
                                 fontFamily: "Lato",
                                 fontSize: 12,
-                                color: subtitile,
+                                color: colorGreyTint,
                               ),
                             ),
                           )
@@ -583,7 +583,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                                   style: TextStyle(
                                                     fontFamily: "Lato",
                                                     fontSize: 12,
-                                                    color: subtitile,
+                                                    color: colorGreyTint,
                                                   ),
                                                 ),
                                               ),
@@ -600,7 +600,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                             style: TextStyle(
                                               fontFamily: "Lato",
                                               fontSize: 12,
-                                              color: subtitile,
+                                              color: colorGreyTint,
                                             ),
                                           ),
                                     SizedBox(
@@ -615,7 +615,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                     //fontWeight: FontWeight.bold,
                                     fontFamily: "Lato",
                                     fontSize: 12,
-                                    color: subtitile,
+                                    color: colorGreyTint,
                                   ),
                                 ),
                               ],
@@ -689,7 +689,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   style: TextStyle(
                                     fontFamily: "Lato",
                                     fontSize: 12,
-                                    color: subtitile,
+                                    color: colorGreyTint,
                                   ),
                                 ),
                               ),

@@ -118,7 +118,7 @@ class _RcashTileState extends State<RcashTile> {
                           style: TextStyle(
                               fontFamily: 'Lato',
                               fontSize: 12,
-                              color: subtitile),
+                              color: colorGreyTint),
                         ),
                         Text(
                           "10 october",

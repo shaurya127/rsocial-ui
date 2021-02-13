@@ -8,7 +8,6 @@ const googlePeopleApi =
     "https://people.googleapis.com/v1/people/me?personFields=genders,birthdays&key=";
 
 const colorStatusBar = Color(0xff45A9D2);
-const profileHeaderSubtitiles = Color(0xff7F7F7F);
 const colorGreenTint = Color(0xff409FC6);
 const colorPrimaryBlue = Color(0xff4dbae6);
 const colorButton = Color(0xff4DBAE6);
@@ -23,7 +22,6 @@ const googleButtonColor = Color(0xffF5E8EA);
 const facebookButtonColor = Color(0xffE6EAF4);
 const postDesc = Color(0xff707070);
 const nameCol = Color(0xff263238);
-const subtitile = Color(0xff7F7F7F);
 const postIcons = Colors.grey;
 const colorProfitPositive = Color(0xff37B44B);
 const colorProfitNegative = Colors.red;

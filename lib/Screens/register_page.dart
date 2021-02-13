@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import '../Widgets/RoundedButton.dart';
+import '../main.dart';
 import '../user.dart';
 import '../constants.dart';
 import 'package:rsocial2/auth.dart';

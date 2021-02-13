@@ -530,7 +530,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                 //fontWeight: FontWeight.bold,
                                 fontFamily: "Lato",
                                 fontSize: 12,
-                                color: subtitile,
+                                color: colorGreyTint,
                               ),
                             ),
                           )
@@ -591,7 +591,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                                   style: TextStyle(
                                                     fontFamily: "Lato",
                                                     fontSize: 12,
-                                                    color: subtitile,
+                                                    color: colorGreyTint,
                                                   ),
                                                 ),
                                               ),
@@ -608,7 +608,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                             style: TextStyle(
                                               fontFamily: "Lato",
                                               fontSize: 12,
-                                              color: subtitile,
+                                              color: colorGreyTint,
                                             ),
                                           ),
                                     SizedBox(
@@ -622,7 +622,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                     //fontWeight: FontWeight.bold,
                                     fontFamily: "Lato",
                                     fontSize: 12,
-                                    color: subtitile,
+                                    color: colorGreyTint,
                                   ),
                                 ),
                               ],
@@ -696,7 +696,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                   style: TextStyle(
                                     fontFamily: "Lato",
                                     fontSize: 12,
-                                    color: subtitile,
+                                    color: colorGreyTint,
                                   ),
                                 ),
                               ),

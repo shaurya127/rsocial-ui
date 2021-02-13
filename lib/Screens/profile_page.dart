@@ -834,20 +834,20 @@ class _ProfileState extends State<Profile> {
                   //padding: EdgeInsets.only(right: 2),
                   child: SvgPicture.asset(
                     "images/yollar_Icon.svg",
-                    color: profileHeaderSubtitiles,
+                    color: colorGreyTint,
                   ),
                 ),
                 Text(
                   formatNumber(widget.user.lollarAmount),
                   style:
-                      TextStyle(color: profileHeaderSubtitiles, fontSize: 17),
+                      TextStyle(color: colorGreyTint, fontSize: 17),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Container(
                     width: 1,
                     height: 15,
-                    color: profileHeaderSubtitiles,
+                    color: colorGreyTint,
                   ),
                 ),
                 Container(
@@ -856,7 +856,7 @@ class _ProfileState extends State<Profile> {
                   padding: EdgeInsets.only(right: 2),
                   child: SvgPicture.asset(
                     "images/social-standing.svg",
-                    color: profileHeaderSubtitiles,
+                    color: colorGreyTint,
                   ),
                 ),
                 Text(
@@ -866,7 +866,7 @@ class _ProfileState extends State<Profile> {
                       ? "${widget.user.connectionCount}"
                       : "${widget.user.connection.length}",
                   style:
-                      TextStyle(color: profileHeaderSubtitiles, fontSize: 17),
+                      TextStyle(color: colorGreyTint, fontSize: 17),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -881,12 +881,12 @@ class _ProfileState extends State<Profile> {
                   width: 20,
                   padding: EdgeInsets.only(right: 2),
                   child: SvgPicture.asset("images/high-five.svg",
-                      color: profileHeaderSubtitiles),
+                      color: colorGreyTint),
                 ),
                 Text(
                   "${widget.user.socialStanding}",
                   style:
-                      TextStyle(color: profileHeaderSubtitiles, fontSize: 17),
+                      TextStyle(color: colorGreyTint, fontSize: 17),
                 ),
               ],
             ),
@@ -973,9 +973,9 @@ class _ProfileState extends State<Profile> {
                 widget.currentUser.id == widget.user.id
                     ? "My Profile"
                     : "Profile",
-                widget.currentUser.lollarAmount.toString(),
+                widget.currentUser.lollarAmount,
                 widget.currentUser.photoUrl,
-                widget.currentUser.socialStanding.toString(),
+                widget.currentUser.socialStanding,
                 widget.user.id == curUser.id ? false : true),
             body: ModalProgressHUD(
               inAsyncCall: isLoading,
