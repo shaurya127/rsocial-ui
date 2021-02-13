@@ -12,13 +12,12 @@ import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/Widgets/error.dart';
 import 'package:rsocial2/Widgets/selectButton.dart';
 import 'package:rsocial2/auth.dart';
-import 'file:///D:/Flutter/rsocial_ui/lib/contants/config.dart';
+import 'package:rsocial2/contants/config.dart';
 import '../Widgets/request_tile.dart';
 import '../contants/constants.dart';
 import '../model/user.dart';
 import 'bottom_nav_bar.dart';
 import 'login_page.dart';
-import 'file:///D:/Flutter/rsocial_ui/lib/model/connection.dart';
 import 'package:http/http.dart' as http;
 
 class Search_Page extends StatefulWidget {
