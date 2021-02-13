@@ -17,10 +17,9 @@ import 'create_account_page.dart';
 import '../Widgets/nav_drawer_tile.dart';
 
 class Nav_Drawer extends StatefulWidget {
-  User currentUser;
   String photoUrl;
 
-  Nav_Drawer({this.currentUser, this.photoUrl});
+  Nav_Drawer({this.photoUrl});
 
   @override
   _Nav_DrawerState createState() => _Nav_DrawerState();
@@ -97,17 +96,17 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                             borderRadius: BorderRadius.circular(30),
                             image: DecorationImage(
                                 fit: BoxFit.cover,
-                                image: curUser.photoUrl != ""
-                                    ? NetworkImage(curUser.photoUrl)
-                                    : AssetImage("images/avatar.jpg"))),
+                                image: curUser!=null ? ( curUser.photoUrl !="" ?NetworkImage(curUser.photoUrl) : AssetImage("images/avatar.jpg")):
+                                (curUser.photoUrl !="" ? NetworkImage(pp): AssetImage("images/avatar.jpg"))
+                                )),
                       ),
                     ),
                     title: Text(
-                      widget.currentUser != null
-                          ? widget.currentUser.fname +
+                      curUser != null
+                          ? curUser.fname +
                               " " +
-                              widget.currentUser.lname
-                          : "",
+                              curUser.lname
+                          : "$fn $ln",
                       style: TextStyle(
                         fontFamily: 'Lato',
                         fontWeight: FontWeight.bold,
@@ -128,7 +127,7 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                     ),
                   ),
                   trailing: Text(
-                    curUser != null ? formatNumber(curUser.lollarAmount) : "",
+                    curUser != null ? formatNumber(curUser.lollarAmount) : formatNumber(yA),
                     style: TextStyle(color: Colors.grey, fontSize: 16),
                   ),
                 ),
@@ -149,7 +148,8 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                         color: nameCol.withOpacity(0.4),
                       ),
                     ),
-                    trailing: Text("${curUser.connection.length}",
+                    trailing: Text(
+                        curUser!=null ?"${curUser.connection.length}" : tc.toString(),
                         style: TextStyle(color: Colors.grey, fontSize: 16))),
                 Nav_Drawer_Tile(
                     title: kNavDrawerProfile,
@@ -159,9 +159,9 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                           context,
                           MaterialPageRoute(
                               builder: (context) => Profile(
-                                    currentUser: widget.currentUser,
+                                    currentUser: curUser,
                                     photoUrl: widget.photoUrl,
-                                    user: widget.currentUser,
+                                    user: curUser,
                                   )));
                     },
                     icon: SvgPicture.asset(

@@ -40,7 +40,7 @@ class Post {
     var frnd = json['InvestedWith'];
     final diff = DateTime.now().difference(DateTime.parse(json['PostedOn']));
     final txt = timeago.format(DateTime.now().subtract(diff), locale: locale);
-    print(txt);
+    //print(txt);
     //print("frnd is $frnd with type ${json['StoryType']}");
 
     List<User> investedWith = [];
