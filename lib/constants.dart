@@ -25,6 +25,12 @@ const nameCol = Color(0xff263238);
 const postIcons = Colors.grey;
 const colorProfitPositive = Color(0xff37B44B);
 const colorProfitNegative = Colors.red;
+const colorRcashPositive = Color(0xffEDF7EF);
+const colorRcashNegative = Color(0xffFAEAEA);
+const colorAmountPositive = Color(0xff37B44B);
+const colorAmountNegative = Color(0xffD60E0E);
+const colorShadow = Color(0xff00001F);
+const colorProfileBio = Color(0xff263238);
 
 const kBioPageTitle = "Describe yourself";
 const kBioPageSubtitle = "What makes you special ?";

@@ -817,20 +817,32 @@ class _ProfileState extends State<Profile> {
                     "${widget.user.email}",
                     style: TextStyle(
                       fontFamily: "Lato",
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontSize: 15,
                       color: colorGreyTint,
                     ),
                   )
                 : SizedBox.shrink(),
             SizedBox(
-              height: 15,
+              height: 3,
+            ),
+            widget.user.mobile != null
+                ? Text(
+                    widget.user.mobile,
+                    style: TextStyle(
+                      fontFamily: "Lato",
+                      fontSize: 15,
+                      color: colorGreyTint,
+                    ),
+                  )
+                : SizedBox.shrink(),
+            SizedBox(
+              height: 12,
             ),
             Row(
               children: <Widget>[
                 Container(
-                  height: 20,
-                  width: 20,
+                  height: 15,
+                  width: 15,
                   //padding: EdgeInsets.only(right: 2),
                   child: SvgPicture.asset(
                     "images/yollar_Icon.svg",
@@ -839,8 +851,11 @@ class _ProfileState extends State<Profile> {
                 ),
                 Text(
                   formatNumber(widget.user.lollarAmount),
-                  style:
-                      TextStyle(color: colorGreyTint, fontSize: 17),
+
+                  style: TextStyle(
+                      color: colorGreyTint,
+                      fontSize: 15,
+                      fontFamily: 'Lato'),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -851,8 +866,8 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
                 Container(
-                  height: 20,
-                  width: 20,
+                  height: 15,
+                  width: 15,
                   padding: EdgeInsets.only(right: 2),
                   child: SvgPicture.asset(
                     "images/social-standing.svg",
@@ -860,13 +875,12 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
                 Text(
-                  widget.user.connection.length !=
-                              widget.user.connectionCount &&
-                          widget.user.connectionCount != null
-                      ? "${widget.user.connectionCount}"
-                      : "${widget.user.connection.length}",
-                  style:
-                      TextStyle(color: colorGreyTint, fontSize: 17),
+
+                  "${widget.user.socialStanding}",
+                  style: TextStyle(
+                      color: colorGreyTint,
+                      fontSize: 15,
+                      fontFamily: 'Lato'),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -877,34 +891,29 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
                 Container(
-                  height: 20,
-                  width: 20,
+                  height: 15,
+                  width: 15,
                   padding: EdgeInsets.only(right: 2),
                   child: SvgPicture.asset("images/high-five.svg",
                       color: colorGreyTint),
                 ),
                 Text(
-                  "${widget.user.socialStanding}",
-                  style:
-                      TextStyle(color: colorGreyTint, fontSize: 17),
+
+                  widget.user.connection.length !=
+                              widget.user.connectionCount &&
+                          widget.user.connectionCount != null
+                      ? "${widget.user.connectionCount}"
+                      : "${widget.user.connection.length}",
+                  style: TextStyle(
+                      color: colorGreyTint,
+                      fontSize: 15,
+                      fontFamily: 'Lato'),
                 ),
               ],
             ),
             SizedBox(
-              height: 15,
+              height: 12,
             ),
-            widget.user.mobile != null
-                ? Text(
-                    widget.user.mobile != null
-                        ? widget.user.mobile
-                        : "mobile field is null",
-                    style: TextStyle(
-                      fontFamily: "Lato",
-                      fontSize: 18,
-                      color: colorGreyTint,
-                    ),
-                  )
-                : SizedBox.shrink(),
             widget.user.id == curUser.id && isEditable
                 ? TextField(
                     onChanged: (value) {
@@ -931,8 +940,8 @@ class _ProfileState extends State<Profile> {
                     bioController.text,
                     style: TextStyle(
                       fontFamily: "Lato",
-                      fontSize: 16,
-                      color: colorHintText,
+                      fontSize: 13,
+                      color: colorProfileBio,
                     ),
                   ),
             SizedBox(
