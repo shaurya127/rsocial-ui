@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 
-import '../connection.dart';
+import '../model/connection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';

@@ -32,8 +32,11 @@ import 'file:///D:/Flutter/rsocial_ui/lib/contants/constants.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
-import '../connection.dart';
+import '../model/connection.dart';
+
+import '../main.dart';
 import '../model/post.dart';
+
 import 'create_account_page.dart';
 import 'display_post.dart';
 import 'login_page.dart';
@@ -43,6 +46,13 @@ final googleSignIn = GoogleSignIn();
 final fblogin = FacebookLogin();
 User curUser;
 PackageInfo packageInfo;
+int yA;
+int ss;
+int tc;
+String fn;
+String ln;
+String pp;
+//SharedPreferences prefs;
 
 class BottomNavBar extends StatefulWidget {
   User currentUser;
@@ -66,7 +76,7 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   final authInstance = FirebaseAuth.instance;
   final _authInstance = FirebaseAuth.instance;
-  bool isLoading = true;
+  bool isLoading = false;
   String photourl;
   //User curUser;
   bool isFailedUserPost = false;
@@ -91,9 +101,9 @@ class _BottomNavBarState extends State<BottomNavBar>
   createNgetUser() async {
     var url = userEndPoint + 'create';
     var user = await FirebaseAuth.instance.currentUser();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     photourl = user.photoUrl;
     var token = await user.getIdToken();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     String inviteId = prefs.getString('inviteSenderId');
     if (inviteId != null || inviteSenderId != null)
       widget.currentUser.inviteSenderId =
@@ -124,7 +134,14 @@ class _BottomNavBarState extends State<BottomNavBar>
         // log('Response body: ${response.body}');
         var res = json.decode(response.body);
         prefs.remove('inviteSenderId');
-
+        prefs.setString('FName', widget.currentUser.fname);
+        prefs.setString('LName', widget.currentUser.lname);
+        prefs.setInt('socialStanding', widget.currentUser.socialStanding);
+        prefs.setInt('yollarAmount', widget.currentUser.lollarAmount);
+        prefs.setString(
+            'totalConnections', widget.currentUser.connectionCount.toString());
+        prefs.setString('profilePhoto', widget.currentUser.photoUrl);
+        //prefs.setString('currentUserLName',widget.currentUser.lname);
         var resBody = json.decode(res['body']);
 
         var id = resBody['message']['id'];
@@ -313,9 +330,9 @@ class _BottomNavBarState extends State<BottomNavBar>
   }
 
   Future<User> getUser() async {
+    print("get user started");
     var user = await FirebaseAuth.instance.currentUser();
     var token = await user.getIdToken();
-
     // print(token);
     // print("This is my email");
     // print(user.email);
@@ -379,6 +396,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       }
 
       curUser = User.fromJson(msg);
+      saveData();
       //print("my send requests are ${curUser.sentPendingConnection.length}");
       // if(inviteSenderId!=null)
       //   addConnection(inviteSenderId);
@@ -418,11 +436,33 @@ class _BottomNavBarState extends State<BottomNavBar>
     }
   }
 
+  saveData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    print("get user finished");
+    prefs.setString('FName', curUser.fname);
+    prefs.setString('LName', curUser.lname);
+    prefs.setInt('socialStanding', curUser.socialStanding);
+    prefs.setInt('yollarAmount', curUser.lollarAmount);
+    prefs.setInt('totalConnections', curUser.connectionCount);
+    prefs.setString('profilePhoto', curUser.photoUrl);
+  }
+
+  getData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    yA = prefs.getInt('yollarAmount');
+    ss = prefs.getInt('socialStanding');
+    tc = prefs.getInt('totalConnections');
+    fn = prefs.getString('FName');
+    ln = prefs.getString('LName');
+    pp = prefs.getString('profilePhoto');
+    print(ss);
+  }
+
   Future<void> getUserPosts() async {
     print("getUserPostFired");
     setState(() {
       isLoadingPost = true;
-      isLoading = false;
+      //isLoading = false;
     });
     FirebaseUser user;
     var id;
@@ -469,7 +509,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       //print("msg id ${msg}");
       List<Post> posts = [];
       for (int i = 0; i < msg.length; i++) {
-        //print("msg $i is ${msg[i]}");
+        print("msg $i is ${msg[i]}");
         Post post;
         if (msg[i]['StoryType'] == "Investment")
           post = Post.fromJsonI(msg[i]);
@@ -493,9 +533,9 @@ class _BottomNavBarState extends State<BottomNavBar>
   }
 
   getAllUsers() async {
-    setState(() {
-      isLoading = true;
-    });
+    // setState(() {
+    //   isLoading = true;
+    // });
     //print("==========Inside get all users ===================");
     var user;
     var id;
@@ -572,6 +612,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   @override
   void initState() {
     super.initState();
+    getData();
     getPackageInfo();
 
     if (widget.isNewUser) {
@@ -580,9 +621,10 @@ class _BottomNavBarState extends State<BottomNavBar>
       });
       createNgetUserAwait();
     } else {
+      getUserPosts();
       getUserAwait();
       getAllUsers();
-      getUserPosts();
+
       if (postId == null) initDynamicLinks();
     }
   }
@@ -704,75 +746,127 @@ class _BottomNavBarState extends State<BottomNavBar>
                   showLogout: true,
                 )),
               )
-            : isLoading || curUser == null
-                ? Scaffold(
-                    backgroundColor: Colors.white,
-                    body: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  )
+            : yA == null ||
+                    ss == null ||
+                    fn == null ||
+                    ln == null ||
+                    tc == null ||
+                    pp == null
+                ? curUser == null || isLoading
+                    ? Scaffold(
+                        backgroundColor: Colors.white,
+                        body: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    : (postId == null
+                        ? Scaffold(
+                            appBar: customAppBar(
+                                context,
+                                "",
+                                // curUser != null
+                                //     ? curUser.lollarAmount.toString()
+                                //     :
+                                yA,
+                                //curUser != null ? curUser.photoUrl :
+                                pp,
+                                // curUser != null
+                                //     ? curUser.socialStanding.toString()
+                                //     :
+                                ss),
+                            drawer: Nav_Drawer(
+                              photoUrl:
+                                  //     curUser.photoUrl != null ? curUser.photoUrl :
+                                  "",
+                            ),
+                            body: _screens[_currentIndex],
+                            bottomNavigationBar: BottomNavigationBar(
+                              currentIndex: _currentIndex,
+                              onTap: (index) =>
+                                  setState(() => _currentIndex = index),
+                              type: BottomNavigationBarType.fixed,
+                              backgroundColor: Colors.white,
+                              showSelectedLabels: true,
+                              showUnselectedLabels: true,
+                              unselectedItemColor:
+                                  colorUnselectedBottomNav.withOpacity(0.5),
+                              elevation: 5,
+                              items: [
+                                Icons.home,
+                                Icons.search,
+                                Icons.add_circle_outline,
+                                Icons.notifications,
+                                Icons.account_balance_wallet
+                                // FaIcon(FontAwesomeIcons.plus),
+                                // FaIcon(FontAwesomeIcons.bell),
+                                // FaIcon(FontAwesomeIcons.wallet),
+                              ]
+                                  .asMap()
+                                  .map(
+                                    (key, value) => MapEntry(
+                                      key,
+                                      BottomNavigationBarItem(
+                                        title: Text(
+                                          _labels[key],
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: _currentIndex == key
+                                                ? colorButton
+                                                : colorUnselectedBottomNav
+                                                    .withOpacity(0.5),
+                                            fontFamily: "Lato",
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        icon: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 0, horizontal: 16),
+                                          decoration: BoxDecoration(
+                                            color: Colors.transparent,
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                          child: Icon(
+                                            value,
+                                            color: _currentIndex == key
+                                                ? colorButton
+                                                : colorUnselectedBottomNav
+                                                    .withOpacity(0.5),
+                                            size: 24,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .values
+                                  .toList(),
+                            ),
+                          )
+                        : DisplayPost(
+                            postId: postId,
+                          ))
                 : (postId == null
                     ? Scaffold(
                         appBar: customAppBar(
                             context,
                             "",
-                            curUser != null
-                                ? curUser.lollarAmount.toString()
-                                : "",
-                            curUser != null ? curUser.photoUrl : "",
-                            curUser != null
-                                ? curUser.socialStanding.toString()
-                                : ""),
-
-                        drawer: Nav_Drawer(
-                          currentUser: curUser,
-                          photoUrl:
-                              curUser.photoUrl != null ? curUser.photoUrl : "",
-                        ),
-                        // AppBar(
-                        //   backgroundColor: colorGreenTint,
-                        //   leading: Padding(
-                        //     padding: const EdgeInsets.only(left: 13, top: 2),
-                        //     child: Stack(
-                        //       children: <Widget>[
-                        //         Container(
-                        //           height: 60,
-                        //           width: 60,
-                        //           decoration: BoxDecoration(
-                        //               image: DecorationImage(
-                        //                   image: AssetImage("images/circle1.png")),
-                        //               shape: BoxShape.circle),
-                        //         ),
-                        //         Positioned(
-                        //           left: 23,
-                        //           top: 30,
-                        //           child: Container(
-                        //             height: 21,
-                        //             width: 21,
-                        //             decoration: BoxDecoration(
-                        //                 border: Border.all(color: Colors.grey),
-                        //                 shape: BoxShape.circle,
-                        //                 color: Colors.white),
-                        //             child: Center(
-                        //               child: FaIcon(
-                        //                 FontAwesomeIcons.bars,
-                        //                 color: colorGreenTint,
-                        //                 size: 15,
-                        //               ),
-                        //             ),
-                        //           ),
-                        //         )
-                        //       ],
-                        //     ),
-                        //   ),
-                        // ),
-                        body:
-                            // isLoading || curUser == null
-                            //     ? Center(
-                            //         child: CircularProgressIndicator(),
-                            //       )
+                            // curUser != null
+                            //     ? curUser.lollarAmount.toString()
                             //     :
-                            _screens[_currentIndex],
+                            yA,
+                            //curUser != null ? curUser.photoUrl :
+                            pp,
+                            // curUser != null
+                            //     ? curUser.socialStanding.toString()
+                            //     :
+                            ss),
+                        drawer: Nav_Drawer(
+                          //currentUser: curUser,
+                          photoUrl:
+                              //     curUser.photoUrl != null ? curUser.photoUrl :
+                              "",
+                        ),
+                        body: _screens[_currentIndex],
                         bottomNavigationBar: BottomNavigationBar(
                           currentIndex: _currentIndex,
                           onTap: (index) =>

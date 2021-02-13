@@ -99,9 +99,9 @@ class _Refer_and_EarnState extends State<Refer_and_Earn> {
       appBar: customAppBar(
         context,
         "Refer & earn",
-        curUser.lollarAmount.toString(),
+        curUser.lollarAmount,
         curUser.photoUrl,
-        curUser.socialStanding.toString(),
+        curUser.socialStanding,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,

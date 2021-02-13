@@ -8,8 +8,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rsocial2/functions.dart';
 import '../model/user.dart';
 
-AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
-    String socialStanding,
+AppBar customAppBar(context, String title, int lollarAmount, String photoUrl,
+    int socialStanding,
     [bool canShowProfile = true]) {
   showProfile(BuildContext context, User user, String photourl) {
     Navigator.push(
@@ -23,7 +23,8 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
       ),
     );
   }
-
+  // print("---------------");
+  // print(socialStanding);
   return AppBar(
     backgroundColor: colorButton,
     iconTheme: IconThemeData(color: Colors.white),
@@ -41,8 +42,8 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
             SizedBox(
               width: 1,
             ),
-            Text(
-              formatNumber(curUser.lollarAmount),
+            Text(curUser==null ?
+              formatNumber(lollarAmount) : formatNumber(yA),
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -60,8 +61,8 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
             SizedBox(
               width: 1,
             ),
-            Text(
-              formatNumber(curUser.socialStanding),
+            Text(curUser==null ?
+              formatNumber(socialStanding) : formatNumber(ss),
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -82,9 +83,8 @@ AppBar customAppBar(context, String title, String lollarAmount, String photoUrl,
             width: 40,
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: curUser.photoUrl != ""
-                        ? NetworkImage(curUser.photoUrl)
-                        : AssetImage("images/avatar.jpg"),
+                    image: curUser!=null ? ( curUser.photoUrl !="" ?NetworkImage(curUser.photoUrl) : AssetImage("images/avatar.jpg")):
+                    (photoUrl==null? NetworkImage(photoUrl): AssetImage("images/avatar.jpg")),
                     fit: BoxFit.cover),
                 shape: BoxShape.circle),
           ),

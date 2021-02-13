@@ -18,7 +18,7 @@ import '../contants/constants.dart';
 import '../model/user.dart';
 import 'bottom_nav_bar.dart';
 import 'login_page.dart';
-import 'package:rsocial2/connection.dart';
+import 'file:///D:/Flutter/rsocial_ui/lib/model/connection.dart';
 import 'package:http/http.dart' as http;
 
 class Search_Page extends StatefulWidget {

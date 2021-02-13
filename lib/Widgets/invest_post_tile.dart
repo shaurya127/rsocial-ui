@@ -447,7 +447,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                                           style: TextStyle(
                                             fontFamily: "Lato",
                                             fontSize: 12,
-                                            color: subtitile,
+                                            color: colorGreyTint,
                                           ),
                                         ),
                                       ),
@@ -507,7 +507,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                                     style: TextStyle(
                                       fontFamily: "Lato",
                                       fontSize: 12,
-                                      color: subtitile,
+                                      color: colorGreyTint,
                                     ),
                                   ),
                             SizedBox(
@@ -546,7 +546,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                             //fontWeight: FontWeight.bold,
                             fontFamily: "Lato",
                             fontSize: 12,
-                            color: subtitile,
+                            color: colorGreyTint,
                           ),
                         ),
                       ],
@@ -614,7 +614,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                                 style: TextStyle(
                                   fontFamily: "Lato",
                                   fontSize: 12,
-                                  color: subtitile,
+                                  color: colorGreyTint,
                                 ),
                               ),
                             ),

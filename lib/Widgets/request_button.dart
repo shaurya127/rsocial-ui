@@ -7,7 +7,7 @@ import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/login_page.dart';
 
 import '../contants/config.dart';
-import '../connection.dart';
+import '../model/connection.dart';
 import 'package:http/http.dart' as http;
 
 import '../contants/constants.dart';

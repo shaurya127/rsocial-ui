@@ -15,8 +15,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/display_post.dart';
 import 'package:rsocial2/functions.dart';
-import '../auth.dart';
-import '../my_flutter_app_icons.dart';
+
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/invested_with.dart';
 import 'package:rsocial2/Screens/login_page.dart';
@@ -82,6 +81,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   AudioCache audioCache;
   int reactionSizeIncrease = 3;
   bool _isCreatingLink = false;
+  List<String> popupMenuItems = ['Reactions', 'View post'];
 
   getReactions() {
     print(rxn);
@@ -521,7 +521,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                 //fontWeight: FontWeight.bold,
                                 fontFamily: "Lato",
                                 fontSize: 12,
-                                color: subtitile,
+                                color: colorGreyTint,
                               ),
                             ),
                           )
@@ -583,7 +583,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                                   style: TextStyle(
                                                     fontFamily: "Lato",
                                                     fontSize: 12,
-                                                    color: subtitile,
+                                                    color: colorGreyTint,
                                                   ),
                                                 ),
                                               ),
@@ -600,7 +600,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                             style: TextStyle(
                                               fontFamily: "Lato",
                                               fontSize: 12,
-                                              color: subtitile,
+                                              color: colorGreyTint,
                                             ),
                                           ),
                                     SizedBox(
@@ -615,7 +615,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                     //fontWeight: FontWeight.bold,
                                     fontFamily: "Lato",
                                     fontSize: 12,
-                                    color: subtitile,
+                                    color: colorGreyTint,
                                   ),
                                 ),
                               ],
@@ -689,7 +689,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   style: TextStyle(
                                     fontFamily: "Lato",
                                     fontSize: 12,
-                                    color: subtitile,
+                                    color: colorGreyTint,
                                   ),
                                 ),
                               ),
@@ -826,39 +826,49 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                       //     ),
                       //   ),
                       //SizedBox(width: 14,),
-                      GestureDetector(
-// <<<<<<< HEAD
-//                         onTap: () {
-//                           buildReactionTile();
-//                           Navigator.push(
-//                               context,
-//                               PageTransition(
-//                                   // settings: RouteSettings(
-//                                   //     name: "Login_Page"),
-//                                   type: PageTransitionType.fade,
-//                                   child: Reaction_Info(
-//                                     like: likes,
-//                                     love: love,
-//                                     hate: hates,
-//                                     whatever: whatevers,
-//                                   )));
-//                         },
-//                         child: SvgPicture.asset("images/rsocial_punch_blue.svg",
-//                             height: 23, fit: BoxFit.cover),
-// =======
-                        onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DisplayPost(
-                                      postId: widget.userPost.id,
-                                    ))),
-                        child: Icon(
+                      PopupMenuButton(
+                        icon: Icon(
                           Icons.more_vert,
-                          color: colorUnselectedBottomNav,
                           size: 30,
+                          color: colorGreyTint,
                         ),
-//>>>>>>> master
-                      ),
+                        itemBuilder: (_) => <PopupMenuItem<String>>[
+                          new PopupMenuItem<String>(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
+                                            // settings: RouteSettings(
+                                            //     name: "Login_Page"),
+                                            type: PageTransitionType.fade,
+                                            child: DisplayPost(
+                                              postId: widget.userPost.id,
+                                            )));
+                                  },
+                                  child: new Text('View post'))),
+                          new PopupMenuItem<String>(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    buildReactionTile();
+                                    Navigator.pop(context);
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
+                                            // settings: RouteSettings(
+                                            //     name: "Login_Page"),
+                                            type: PageTransitionType.fade,
+                                            child: Reaction_Info(
+                                              like: likes,
+                                              love: love,
+                                              hate: hates,
+                                              whatever: whatevers,
+                                            )));
+                                  },
+                                  child: new Text('Reactions'))),
+                        ],
+                      )
                     ],
                   ),
                 ],

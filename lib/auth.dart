@@ -17,9 +17,11 @@ import 'Screens/display_post.dart';
 import 'Screens/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-User currentUser;
-String postId;
-String inviteSenderId;
+import 'main.dart';
+
+// User currentUser;
+// String postId;
+// String inviteSenderId;
 
 class AuthScreen extends StatefulWidget {
   FirebaseAnalytics analytics;
@@ -99,23 +101,6 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget build(BuildContext context) {
     return isAuthenticated == null
         ? Scaffold(body: Center(child: CircularProgressIndicator())
-            // ColorizeAnimatedTextKit(
-            //     onTap: () {
-            //       print("Tap Event");
-            //     },
-            //     text: [
-            //       "Loading",
-            //     ],
-            //     textStyle: TextStyle(fontSize: 50.0, fontFamily: "Horizon"),
-            //     colors: [
-            //       Colors.purple,
-            //       Colors.blue,
-            //       Colors.yellow,
-            //       Colors.red,
-            //     ],
-            //     textAlign: TextAlign.start,
-            //     alignment: AlignmentDirectional.topStart // or Alignment.topLeft
-            //     ),
             )
         : (findingLink
             ? Scaffold(body: Center(child: CircularProgressIndicator()))

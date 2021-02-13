@@ -23,8 +23,7 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/display_post.dart';
-import '../auth.dart';
-import '../my_flutter_app_icons.dart';
+
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/invested_with.dart';
 import 'package:rsocial2/Screens/login_page.dart';
@@ -530,7 +529,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                 //fontWeight: FontWeight.bold,
                                 fontFamily: "Lato",
                                 fontSize: 12,
-                                color: subtitile,
+                                color: colorGreyTint,
                               ),
                             ),
                           )
@@ -591,7 +590,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                                   style: TextStyle(
                                                     fontFamily: "Lato",
                                                     fontSize: 12,
-                                                    color: subtitile,
+                                                    color: colorGreyTint,
                                                   ),
                                                 ),
                                               ),
@@ -608,7 +607,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                             style: TextStyle(
                                               fontFamily: "Lato",
                                               fontSize: 12,
-                                              color: subtitile,
+                                              color: colorGreyTint,
                                             ),
                                           ),
                                     SizedBox(
@@ -622,7 +621,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                     //fontWeight: FontWeight.bold,
                                     fontFamily: "Lato",
                                     fontSize: 12,
-                                    color: subtitile,
+                                    color: colorGreyTint,
                                   ),
                                 ),
                               ],
@@ -696,7 +695,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                   style: TextStyle(
                                     fontFamily: "Lato",
                                     fontSize: 12,
-                                    color: subtitile,
+                                    color: colorGreyTint,
                                   ),
                                 ),
                               ),

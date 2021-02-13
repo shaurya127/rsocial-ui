@@ -4,8 +4,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import '../Widgets/RoundedButton.dart';
+
+import '../main.dart';
 import '../model/user.dart';
 import '../contants/constants.dart';
+
 import 'package:rsocial2/auth.dart';
 import 'login_page.dart';
 import 'otp_page.dart';
