@@ -82,6 +82,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   AudioCache audioCache;
   int reactionSizeIncrease = 3;
   bool _isCreatingLink = false;
+  List<String> popupMenuItems = ['Reactions', 'View post'];
 
   getReactions() {
     print(rxn);
@@ -826,39 +827,42 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                       //     ),
                       //   ),
                       //SizedBox(width: 14,),
-                      GestureDetector(
-// <<<<<<< HEAD
-//                         onTap: () {
-//                           buildReactionTile();
-//                           Navigator.push(
-//                               context,
-//                               PageTransition(
-//                                   // settings: RouteSettings(
-//                                   //     name: "Login_Page"),
-//                                   type: PageTransitionType.fade,
-//                                   child: Reaction_Info(
-//                                     like: likes,
-//                                     love: love,
-//                                     hate: hates,
-//                                     whatever: whatevers,
-//                                   )));
-//                         },
-//                         child: SvgPicture.asset("images/rsocial_punch_blue.svg",
-//                             height: 23, fit: BoxFit.cover),
-// =======
-                        onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DisplayPost(
-                                      postId: widget.userPost.id,
-                                    ))),
-                        child: Icon(
-                          Icons.more_vert,
-                          color: colorUnselectedBottomNav,
-                          size: 30,
-                        ),
-//>>>>>>> master
-                      ),
+                      PopupMenuButton(
+                        icon: Icon(Icons.more_vert,size:30,color: colorGreyTint,),
+                        itemBuilder: (_) => <PopupMenuItem<String>>[
+                          new PopupMenuItem<String>(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
+                                          // settings: RouteSettings(
+                                          //     name: "Login_Page"),
+                                            type: PageTransitionType.fade,
+                                            child: DisplayPost(postId: widget.userPost.id,)));
+                                  }, child: new Text('View post'))),
+                          new PopupMenuItem<String>(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    buildReactionTile();
+                                    Navigator.pop(context);
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
+                                            // settings: RouteSettings(
+                                            //     name: "Login_Page"),
+                                            type: PageTransitionType.fade,
+                                            child: Reaction_Info(
+                                              like: likes,
+                                              love: love,
+                                              hate: hates,
+                                              whatever: whatevers,
+                                            )));
+                                  },
+                                  child: new Text('Reactions'))),
+                        ],
+                      )
                     ],
                   ),
                 ],
