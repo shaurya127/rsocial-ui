@@ -19,9 +19,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'main.dart';
 
-// User currentUser;
-// String postId;
-// String inviteSenderId;
+User currentUser;
+String postId;
+String inviteSenderId;
 
 class AuthScreen extends StatefulWidget {
   FirebaseAnalytics analytics;
