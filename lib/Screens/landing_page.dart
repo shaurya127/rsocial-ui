@@ -11,7 +11,6 @@ import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/contants/constants.dart';
 
-
 import '../model/post.dart';
 import '../model/user.dart';
 import 'bottom_nav_bar.dart';

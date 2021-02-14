@@ -46,6 +46,57 @@
             {
               "client_id": "734731438631-5j41q37gv3jj10h5ssorjhs7ebdhcjdl.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "734731438631-6edkgvtcfa7q4u806pqvq29t85f1t9g0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rsocial2"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:734731438631:android:24fcec6f8cfae2463fdc02",
+        "android_client_info": {
+          "package_name": "com.rsocial"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "734731438631-8alvvugui0iiu4im24178sbraltirs9m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rsocial",
+            "certificate_hash": "0f2ab2bc22699e4ddae69ec5d51a0c4cb48d0330"
+          }
+        },
+        {
+          "client_id": "734731438631-5j41q37gv3jj10h5ssorjhs7ebdhcjdl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqj2ohJ_jy_9FYJWuscicm3VtBpizR4OI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "734731438631-5j41q37gv3jj10h5ssorjhs7ebdhcjdl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "734731438631-6edkgvtcfa7q4u806pqvq29t85f1t9g0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rsocial2"
+              }
             }
           ]
         }

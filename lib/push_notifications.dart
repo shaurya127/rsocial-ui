@@ -5,7 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:rsocial2/Screens/search_page.dart';
+import 'package:rsocial2/contants/constants.dart';
 import 'package:rsocial2/model/push_notification_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'model/user.dart';
@@ -40,8 +43,36 @@ class PushNotificationService {
           //Here you can add the count when you get a notification you can increase the number by one
           FlutterAppBadger.updateBadgeCount(1);
           // UI
-          showSimpleNotification(Container(child: Text(notification.body)),
-              position: NotificationPosition.top, background: Colors.black);
+          showSimpleNotification(
+              Container(
+                  child: Text(
+                notification.title,
+                style: TextStyle(
+                    fontFamily: 'Lato',
+                    color: colorPrimaryBlue,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
+              )),
+              position: NotificationPosition.top,
+              background: Colors.white,
+              autoDismiss: false,
+              slideDismiss: true,
+              leading: Container(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.only(right: 18.0, top: 8, bottom: 8),
+                  child: SvgPicture.asset(
+                    "images/rsocial-logo2.svg",
+                    height: 25,
+                  ),
+                ),
+              ),
+              subtitle: Text(notification.body,
+                  style: TextStyle(
+                    fontFamily: 'Lato',
+                    color: colorPrimaryBlue,
+                    fontSize: 15,
+                  )));
         }
       },
       onLaunch: (Map<String, dynamic> message) async {
@@ -73,8 +104,14 @@ class PushNotificationService {
               body: message['notification']['body'],
               notificationType: message['data']['notification_type']);
 
-          if (notification.notificationType == "newFriend" ||
+          if (notification.notificationType == "friendAccept" ||
               notification.notificationType == "friendRequest") {
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              Navigator.of(navigatorKey.currentContext).push(MaterialPageRoute(
+                builder: (context) => Search_Page(),
+              ));
+            });
+
             final jsonUser = jsonDecode(message['data']['user']);
             var body = jsonUser['body'];
             var body1 = jsonDecode(body);
@@ -82,17 +119,7 @@ class PushNotificationService {
             User user = User.fromJson(msg);
             print(user.fname);
 
-            if (user != null) {
-              SchedulerBinding.instance.addPostFrameCallback((_) {
-                Navigator.of(navigatorKey.currentContext)
-                    .push(MaterialPageRoute(
-                  builder: (context) => Profile(
-                    currentUser: curUser,
-                    user: user,
-                  ),
-                ));
-              });
-            }
+            if (user != null) {}
           }
         }
       },

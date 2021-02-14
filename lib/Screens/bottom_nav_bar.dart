@@ -230,6 +230,15 @@ class _BottomNavBarState extends State<BottomNavBar>
             //print(msg.length);
             //print("msg id ${msg}");
             List<Post> posts = [];
+            if (msg == null) {
+              setState(() {
+                this.posts = posts;
+                isLoading = false;
+                isLoadingPost = false;
+              });
+
+              return;
+            }
             for (int i = 0; i < msg.length; i++) {
               //print("msg $i is ${msg[i]}");
               Post post;
@@ -702,6 +711,7 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   Future<String> getFirebaseMessagingToken() async {
     var token = await _messaging.getToken();
+    print(token);
     return token;
   }
 

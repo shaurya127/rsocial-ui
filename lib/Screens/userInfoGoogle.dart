@@ -1,6 +1,8 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/create_account_page.dart';
 import 'package:rsocial2/Screens/profile_pic.dart';
@@ -34,7 +36,7 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
   final int initialYear = 1900;
 
   // Final year for the date picker
-  final int finalYear = 2025;
+  final int finalYear = 2020;
 
   // This function is used to select date from date picker
   selectDate(BuildContext context) async {
@@ -123,7 +125,10 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                   height: 20,
                 ),
                 Container(
-                  child: Image.asset("images/logo2.png"),
+                  child: SvgPicture.asset(
+                    "images/rsocial-logo2.svg",
+                    height: 50,
+                  ),
                 ),
                 SizedBox(
                   height: 20,
@@ -330,6 +335,13 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                               child: ProfilePicPage(
                                   currentUser: widget.currentUser)));
                     }
+
+                    Fluttertoast.showToast(
+                        msg: "Please fill all the details",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        fontSize: 15);
+
                     return null;
                   },
                   elevation: 0,

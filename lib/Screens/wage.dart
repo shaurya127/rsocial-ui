@@ -887,7 +887,8 @@ class _WageState extends State<Wage> {
                             onChanged: (value) {
                               setState(() {
                                 if (value <= curUser.lollarAmount)
-                                  amount = value.round();
+                                  amount =
+                                      ((value.round() / 1000).round() * 1000);
                               });
                             },
                           ),
@@ -1111,6 +1112,15 @@ class _WageState extends State<Wage> {
                               size: 23,
                             ),
                             onPressed: () {
+                              if (investmentfileList != null &&
+                                  investmentfileList.length >= 5) {
+                                Fluttertoast.showToast(
+                                    msg: "You can upload maximum of 5 photos",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    fontSize: 15);
+                                return;
+                              }
                               handleChooseFromGallery();
                             },
                           ),
@@ -1121,6 +1131,16 @@ class _WageState extends State<Wage> {
                               size: 23,
                             ),
                             onPressed: () {
+                              if (investmentfileList != null &&
+                                  investmentfileList.length >= 5) {
+                                Fluttertoast.showToast(
+                                    msg: "You can upload maximum of 5 photos",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                    fontSize: 15);
+                                return;
+                              }
+
                               handleTakePhoto();
                             },
                           ),
@@ -1323,6 +1343,14 @@ class _WageState extends State<Wage> {
                         size: 23,
                       ),
                       onPressed: () {
+                        if (fileList != null && fileList.length >= 5) {
+                          Fluttertoast.showToast(
+                              msg: "You can upload maximum of 5 photos",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              fontSize: 15);
+                          return;
+                        }
                         handleChooseFromGallery();
                       },
                     ),
@@ -1333,6 +1361,14 @@ class _WageState extends State<Wage> {
                         size: 23,
                       ),
                       onPressed: () {
+                        if (fileList != null && fileList.length >= 5) {
+                          Fluttertoast.showToast(
+                              msg: "You can upload maximum of 5 photos",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              fontSize: 15);
+                          return;
+                        }
                         handleTakePhoto();
                       },
                     ),
