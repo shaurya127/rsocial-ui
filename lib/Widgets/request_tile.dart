@@ -221,10 +221,10 @@ class _Request_TileState extends State<Request_Tile> {
               child: Text(
                 "Reject",
                 style: TextStyle(
-                    fontFamily: "Lato", fontSize: 14, color: Colors.white),
+                    fontFamily: "Lato", fontSize: 14, color: colorPrimaryBlue),
               ),
               decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
                       width: 1, color: Theme.of(context).primaryColor)),
@@ -342,7 +342,7 @@ class _Request_TileState extends State<Request_Tile> {
         ? curUser.userMap[widget.user.id]
         : "add";
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
       child: Column(
         children: <Widget>[
           Row(
@@ -409,31 +409,31 @@ class _Request_TileState extends State<Request_Tile> {
                         "${widget.user.socialStanding}",
                         style: TextStyle(color: Colors.grey),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Container(
-                          width: 1,
-                          height: 10,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Container(
-                        height: 15,
-                        width: 15,
-                        padding: EdgeInsets.only(right: 2),
-                        child: SvgPicture.asset(
-                          "images/high-five.svg",
-                          color: nameCol.withOpacity(0.4),
-                        ),
-                      ),
-                      Text(
-                        widget.user.connection.length !=
-                                    widget.user.connectionCount &&
-                                widget.user.connectionCount != null
-                            ? "${widget.user.connectionCount}"
-                            : "${widget.user.connection.length}",
-                        style: TextStyle(color: Colors.grey),
-                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.symmetric(horizontal: 8),
+                      //   child: Container(
+                      //     width: 1,
+                      //     height: 10,
+                      //     color: Colors.grey,
+                      //   ),
+                      // ),
+                      // Container(
+                      //   height: 15,
+                      //   width: 15,
+                      //   padding: EdgeInsets.only(right: 2),
+                      //   child: SvgPicture.asset(
+                      //     "images/high-five.svg",
+                      //     color: nameCol.withOpacity(0.4),
+                      //   ),
+                      // ),
+                      // Text(
+                      //   widget.user.connection.length !=
+                      //               widget.user.connectionCount &&
+                      //           widget.user.connectionCount != null
+                      //       ? "${widget.user.connectionCount}"
+                      //       : "${widget.user.connection.length}",
+                      //   style: TextStyle(color: Colors.grey),
+                      // ),
                     ],
                   ),
                 ),
