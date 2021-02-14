@@ -164,8 +164,8 @@ class _PlatformPostTileState extends State<PlatformPostTile>
     this.investedWithUser = widget.userPost.investedWithUser;
   }
 
-  showProfile(BuildContext context, User user, String photourl) {
-    Navigator.push(
+  showProfile(BuildContext context, User user, String photourl) async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => Profile(
@@ -175,6 +175,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
         ),
       ),
     );
+    setState(() {});
   }
 
   @override

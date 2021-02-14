@@ -161,8 +161,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     this.investedWithUser = widget.userPost.investedWithUser;
   }
 
-  showProfile(BuildContext context, User user, String photourl) {
-    Navigator.push(
+  showProfile(BuildContext context, User user, String photourl) async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => Profile(
@@ -172,6 +172,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
         ),
       ),
     );
+    setState(() {});
   }
 
   @override
@@ -205,15 +206,23 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     var token = await user.getIdToken();
     //print(jsonEncode(reaction.toJson()));
     //print(token);
-    var response = await http.put(
-      url,
-      encoding: Encoding.getByName("utf-8"),
-      body: jsonEncode(reaction.toJson()),
-      headers: {
-        "Authorization": "Bearer: $token",
-        "Content-Type": "application/json",
-      },
-    );
+    var response;
+    try {
+      response = await http.put(
+        url,
+        encoding: Encoding.getByName("utf-8"),
+        body: jsonEncode(reaction.toJson()),
+        headers: {
+          "Authorization": "Bearer: $token",
+          "Content-Type": "application/json",
+        },
+      );
+    } catch (e) {
+      setState(() {
+        isDisabled = false;
+      });
+    }
+
     print(response.statusCode);
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body);
@@ -564,12 +573,15 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                         ? Row(
                                             children: <Widget>[
                                               GestureDetector(
-                                                onTap: () => showProfile(
-                                                    context,
-                                                    widget.userPost
-                                                        .investedWithUser[0],
-                                                    widget.userPost.user
-                                                        .photoUrl),
+                                                onTap: () {
+                                                  showProfile(
+                                                      context,
+                                                      widget.userPost
+                                                          .investedWithUser[0],
+                                                      widget.userPost.user
+                                                          .photoUrl);
+                                                  setState(() {});
+                                                },
                                                 child: Text(
                                                   "Invested " +
                                                       investAmountFormatting(

@@ -18,6 +18,21 @@ class RcashTile extends StatelessWidget {
   String title;
   String value;
   Widget build(BuildContext context) {
+    if (title == "Investment") {
+      if (curUser.totalActiveInvestmentAmount < 0 ||
+          curUser.totalInvestmentEarningMaturedAmount < 0) {
+        backgroundColor = colorRcashNegative;
+        textColor = colorAmountNegative;
+      }
+    }
+
+    if (title == "Platform Engagement") {
+      if (curUser.totalPlatformInteractionAmount < 0 ||
+          curUser.referralAmount < 0) {
+        backgroundColor = colorRcashNegative;
+        textColor = colorAmountNegative;
+      }
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 7),
       child: Container(
@@ -244,7 +259,8 @@ class RcashTile extends StatelessWidget {
                                         width: 2,
                                       ),
                                       Text(
-                                        user.totalPlatformInteractionAmount.toString(),
+                                        user.totalPlatformInteractionAmount
+                                            .toString(),
                                         style: TextStyle(
                                             fontFamily: 'Lato',
                                             fontWeight: FontWeight.bold,
@@ -278,8 +294,7 @@ class RcashTile extends StatelessWidget {
                                     width: 2,
                                   ),
                                   Text(
-                                    user.totalActiveInvestmentAmount
-                                        .toString(),
+                                    user.totalActiveInvestmentAmount.toString(),
                                     style: TextStyle(
                                         fontFamily: 'Lato',
                                         fontWeight: FontWeight.bold,
