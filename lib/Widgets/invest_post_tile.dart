@@ -157,8 +157,8 @@ class _InvestPostTileState extends State<InvestPostTile>
     this.investedWithUser = widget.userPost.investedWithUser;
   }
 
-  showProfile(BuildContext context, User user, String photourl) {
-    Navigator.push(
+  showProfile(BuildContext context, User user, String photourl) async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => Profile(
@@ -168,6 +168,7 @@ class _InvestPostTileState extends State<InvestPostTile>
         ),
       ),
     );
+    setState(() {});
   }
 
   react(String reactn) async {

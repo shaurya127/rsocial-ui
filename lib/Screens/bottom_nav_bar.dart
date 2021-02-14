@@ -7,6 +7,7 @@ import 'package:package_info/package_info.dart';
 import 'package:rsocial2/Screens/notification_page.dart';
 import 'package:rsocial2/Screens/rcash_screen.dart';
 import 'package:rsocial2/Widgets/error.dart';
+import 'package:rsocial2/contants/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import '../contants/config.dart';
@@ -29,7 +30,6 @@ import 'package:rsocial2/Screens/nav_drawer.dart';
 import 'package:rsocial2/Screens/search_page.dart';
 import 'dart:developer';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
-import 'file:///D:/Flutter/rsocial_ui/lib/contants/constants.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -90,6 +90,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   bool isLoadingPost = false;
   bool isForward = true;
   bool isNewUserFailed = false;
+  User Ruser;
 
   void isPostedCallback() {
     setState(() {
@@ -600,6 +601,74 @@ class _BottomNavBarState extends State<BottomNavBar>
     }
   }
 
+  getRCashDetails() async {
+    var user = await FirebaseAuth.instance.currentUser();
+    var token = await user.getIdToken();
+    DocumentSnapshot doc = await users.document(user.uid).get();
+
+    var id = doc['id'];
+    final url = userEndPoint + "getyollar";
+
+    var response;
+    try {
+      token = await user.getIdToken();
+      //print(token);
+      response = await http.post(url,
+          encoding: Encoding.getByName("utf-8"),
+          headers: {
+            "Authorization": "Bearer $token",
+            "Content-Type": "application/json",
+            //"Accept": "*/*"
+          },
+          body: jsonEncode({"id": id}));
+    } catch (e) {
+      print(e);
+      setState(() {
+        isLoading = false;
+      });
+      return null;
+    }
+    print(response.body);
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      var body = jsonResponse['body'];
+      var body1 = jsonDecode(body);
+      var msg = body1['message'];
+      Ruser = User.fromJson(msg);
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      print(response.statusCode);
+      setState(() {
+        isLoading = false;
+      });
+      var alertBox = AlertDialogBox(
+        title: "Error status: ${response.statusCode}",
+        content: "Server Error",
+        actions: <Widget>[
+          FlatButton(
+            child: Text(
+              "Back",
+              style: TextStyle(
+                color: colorButton,
+                fontFamily: "Lato",
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            onPressed: () {
+              Navigator.pop(
+                context,
+              );
+            },
+          ),
+        ],
+      );
+
+      showDialog(context: (context), builder: (context) => alertBox);
+    }
+  }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -625,6 +694,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       getUserPosts();
       getUserAwait();
       getAllUsers();
+      getRCashDetails();
 
       if (postId == null) initDynamicLinks();
     }
@@ -707,7 +777,7 @@ class _BottomNavBarState extends State<BottomNavBar>
         isPostedCallback: isPostedCallback,
       ),
       NotificationPage(),
-      RcashScreen()
+      RcashScreen(Ruser: Ruser,)
       //BioPage(analytics:widget.analytics,observer:widget.observer,currentUser: currentUser,),
       //ProfilePicPage(currentUser: widget.currentUser,analytics:widget.analytics,observer:widget.observer),
     ];

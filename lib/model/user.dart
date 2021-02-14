@@ -29,7 +29,9 @@ class User {
       this.totalInvestmentEarningActiveAmount,
       this.totalInvestmentEarningMaturedAmount,
       this.totalPlatformEngagementAmount,
-      this.totalWageEarningAmount});
+      this.totalWageEarningAmount,
+      this.totalAvailableYollar,
+      this.totalPlatformInteractionAmount});
 
   final String fname;
   final String lname;
@@ -57,6 +59,8 @@ class User {
   int joiningBonus;
   int referralAmount;
   int totalActiveInvestmentAmount;
+  int totalAvailableYollar;
+  int totalPlatformInteractionAmount;
   //List<String> list= new List();
 
   factory User.fromJson(final json) {
@@ -124,6 +128,8 @@ class User {
             json['TotalInvestmentEarningMaturedAmount'],
         totalPlatformEngagementAmount: json['TotalPlatformEngagementAmount'],
         joiningBonus: json['JoiningBonus'],
+        totalAvailableYollar: json['TotalAvailableYollar'],
+        totalPlatformInteractionAmount: json['TotalPlatformInteractionAmount'],
         referralAmount: json['ReferralAmount']);
   }
 

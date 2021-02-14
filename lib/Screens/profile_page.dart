@@ -26,8 +26,9 @@ import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/Widgets/request_button.dart';
 import 'package:rsocial2/Widgets/selectButton.dart';
 import 'package:rsocial2/auth.dart';
-import 'file:///D:/Flutter/rsocial_ui/lib/contants/constants.dart';
+import 'package:rsocial2/contants/constants.dart';
 import 'package:rsocial2/functions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../model/user.dart';
 
 import '../contants/config.dart';
@@ -66,10 +67,69 @@ class _ProfileState extends State<Profile> {
   bool isPlatformLoading = true;
   bool isUserPostFail = false;
   bool isPlatformPostFail = false;
+  bool isPhotoEditedComplete = false;
   setPostOrientation(String postOrientation) {
     setState(() {
       this.postOrientation = postOrientation;
     });
+  }
+
+  saveData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    print("get user finished");
+    prefs.setString('FName', curUser.fname);
+    prefs.setString('LName', curUser.lname);
+    prefs.setInt('socialStanding', curUser.socialStanding);
+    prefs.setInt('yollarAmount', curUser.lollarAmount);
+    prefs.setInt('totalConnections', curUser.connectionCount);
+    prefs.setString('profilePhoto', curUser.photoUrl);
+  }
+
+  getUser() async {
+    print("get user started");
+    var user = await FirebaseAuth.instance.currentUser();
+    var token;
+
+    var id = curUser.id;
+    final url = userEndPoint + "get";
+
+    var response;
+    try {
+      token = await user.getIdToken();
+
+      response = await http.post(url,
+          encoding: Encoding.getByName("utf-8"),
+          headers: {
+            "Authorization": "Bearer $token",
+            "Content-Type": "application/json",
+            //"Accept": "*/*"
+          },
+          body: jsonEncode({"id": id, "email": user.email}));
+    } catch (e) {
+      return null;
+    }
+    //print("This is my response: $response");
+    print("Get User response");
+    print(response.body);
+    //print(response.statusCode);
+    if (response.statusCode == 200) {
+      final jsonUser = jsonDecode(response.body);
+      var body = jsonUser['body'];
+      var body1 = jsonDecode(body);
+      //print("body is $body");
+      // print(body1);
+      var msg = body1['message'];
+      //print("id is: ${msg['id']}");
+      //print(msg);
+      if (msg == 'User Not Found') {
+        return;
+      }
+
+      curUser = User.fromJson(msg);
+      await saveData();
+    } else {
+      print(response.statusCode);
+    }
   }
 
   String newBio;
@@ -631,7 +691,7 @@ class _ProfileState extends State<Profile> {
                     "Content-Type": "application/json",
                   },
                 );
-
+                isPhotoEditedComplete = true;
                 Fluttertoast.showToast(
                     msg:
                         "Profile pic is updated and changes will be visible soon.",
@@ -666,6 +726,7 @@ class _ProfileState extends State<Profile> {
                   },
                 );
 
+                isPhotoEditedComplete = true;
                 Fluttertoast.showToast(
                     msg:
                         "Profile pic is updated and changes will be visible soon.",
@@ -852,11 +913,8 @@ class _ProfileState extends State<Profile> {
                 ),
                 Text(
                   formatNumber(widget.user.lollarAmount),
-
                   style: TextStyle(
-                      color: colorGreyTint,
-                      fontSize: 15,
-                      fontFamily: 'Lato'),
+                      color: colorGreyTint, fontSize: 15, fontFamily: 'Lato'),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -876,12 +934,9 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
                 Text(
-
                   "${widget.user.socialStanding}",
                   style: TextStyle(
-                      color: colorGreyTint,
-                      fontSize: 15,
-                      fontFamily: 'Lato'),
+                      color: colorGreyTint, fontSize: 15, fontFamily: 'Lato'),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -899,16 +954,13 @@ class _ProfileState extends State<Profile> {
                       color: colorGreyTint),
                 ),
                 Text(
-
                   widget.user.connection.length !=
                               widget.user.connectionCount &&
                           widget.user.connectionCount != null
                       ? "${widget.user.connectionCount}"
                       : "${widget.user.connection.length}",
                   style: TextStyle(
-                      color: colorGreyTint,
-                      fontSize: 15,
-                      fontFamily: 'Lato'),
+                      color: colorGreyTint, fontSize: 15, fontFamily: 'Lato'),
                 ),
               ],
             ),
@@ -966,8 +1018,13 @@ class _ProfileState extends State<Profile> {
         encodedFile = null;
         bioController.text = curUser.bio;
       });
+    } else if (widget.user.id == curUser.id && isPhotoEditedComplete) {
+      //getUser();
+      print("hihi");
+      Navigator.pop(context, "hello world");
     } else {
-      Navigator.pop(context);
+      print("hihi");
+      Navigator.pop(context, "hello world");
     }
   }
 
@@ -1005,7 +1062,7 @@ class _ProfileState extends State<Profile> {
                         children: <Widget>[
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 6),
+                                horizontal: 3, vertical: 6),
                             color: Colors.white,
                             height: 50,
                             child: Row(
@@ -1014,7 +1071,7 @@ class _ProfileState extends State<Profile> {
                                 SelectButton(
                                     onTap: () {
                                       setState(() {
-                                        this.postOrientation  = "wage";
+                                        this.postOrientation = "wage";
                                       });
                                     },
                                     text: "Wage",
@@ -1023,7 +1080,7 @@ class _ProfileState extends State<Profile> {
                                 SelectButton(
                                     onTap: () {
                                       setState(() {
-                                        this.postOrientation  = "invest";
+                                        this.postOrientation = "invest";
                                       });
                                     },
                                     text: "Investment",
@@ -1032,7 +1089,7 @@ class _ProfileState extends State<Profile> {
                                 SelectButton(
                                     onTap: () {
                                       setState(() {
-                                        this.postOrientation  = "platform";
+                                        this.postOrientation = "platform";
                                       });
                                     },
                                     text: "Platform",

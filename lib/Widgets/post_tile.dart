@@ -14,6 +14,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/display_post.dart';
+import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/functions.dart';
 
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
@@ -23,7 +24,6 @@ import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/Screens/reaction_info.dart';
 import 'package:rsocial2/Screens/search_page.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
-import 'file:///D:/Flutter/rsocial_ui/lib/contants/config.dart';
 import '../contants/constants.dart';
 import '../model/post.dart';
 import '../model/reaction_model.dart';
@@ -161,8 +161,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     this.investedWithUser = widget.userPost.investedWithUser;
   }
 
-  showProfile(BuildContext context, User user, String photourl) {
-    Navigator.push(
+  showProfile(BuildContext context, User user, String photourl) async {
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => Profile(
@@ -172,6 +172,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
         ),
       ),
     );
+    setState(() {});
   }
 
   @override
@@ -564,12 +565,15 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                         ? Row(
                                             children: <Widget>[
                                               GestureDetector(
-                                                onTap: () => showProfile(
-                                                    context,
-                                                    widget.userPost
-                                                        .investedWithUser[0],
-                                                    widget.userPost.user
-                                                        .photoUrl),
+                                                onTap: () {
+                                                  showProfile(
+                                                      context,
+                                                      widget.userPost
+                                                          .investedWithUser[0],
+                                                      widget.userPost.user
+                                                          .photoUrl);
+                                                  setState(() {});
+                                                },
                                                 child: Text(
                                                   "Invested " +
                                                       investAmountFormatting(
@@ -906,47 +910,42 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                             borderRadius: BorderRadius.circular(8)),
                         child: isLoading == false
                             ? (widget.userPost.fileUpload.length > 1
-                                ? Swiper(
-                                    loop: false,
-                                    pagination: SwiperPagination(),
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount:
-                                        widget.userPost.fileUpload.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return Stack(
-                                        children: <Widget>[
-                                          InteractiveViewer(
-                                            transformationController:
-                                                transformationController,
-                                            onInteractionEnd: (details) {
-                                              setState(() {
-                                                transformationController
-                                                    .toScene(Offset.zero);
-                                              });
-                                            },
-                                            //boundaryMargin: EdgeInsets.all(20.0),
-                                            minScale: 0.1,
-                                            maxScale: 2,
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                    color: Colors.grey
-                                                        .withOpacity(0.2),
-                                                    image: DecorationImage(
-                                                        image: NetworkImage(
-                                                          fileList[index],
-                                                        ),
-                                                        fit: BoxFit.cover)),
-                                                height: 250,
-                                              ),
-                                            ),
-                                          )
-                                        ],
-                                      );
-                                    })
+                                ? InteractiveViewer(
+                                    transformationController:
+                                        transformationController,
+                                    onInteractionEnd: (details) {
+                                      setState(() {
+                                        transformationController
+                                            .toScene(Offset.zero);
+                                      });
+                                    },
+                                    //boundaryMargin: EdgeInsets.all(20.0),
+                                    minScale: 0.1,
+                                    maxScale: 2,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Swiper(
+                                          loop: false,
+                                          pagination: SwiperPagination(),
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount:
+                                              widget.userPost.fileUpload.length,
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            return Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.2),
+                                                  image: DecorationImage(
+                                                      image: NetworkImage(
+                                                        fileList[index],
+                                                      ),
+                                                      fit: BoxFit.cover)),
+                                              height: 250,
+                                            );
+                                          }),
+                                    ),
+                                  )
                                 : InteractiveViewer(
                                     transformationController:
                                         transformationController,
