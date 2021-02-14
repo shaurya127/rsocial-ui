@@ -525,7 +525,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       //print(posts.length);
       setState(() {
         this.posts = posts;
-        isLoading = false;
+        //isLoading = false;
         isLoadingPost = false;
       });
     } else {
@@ -777,7 +777,9 @@ class _BottomNavBarState extends State<BottomNavBar>
         isPostedCallback: isPostedCallback,
       ),
       NotificationPage(),
-      RcashScreen(Ruser: Ruser,)
+      RcashScreen(
+        Ruser: Ruser,
+      )
       //BioPage(analytics:widget.analytics,observer:widget.observer,currentUser: currentUser,),
       //ProfilePicPage(currentUser: widget.currentUser,analytics:widget.analytics,observer:widget.observer),
     ];

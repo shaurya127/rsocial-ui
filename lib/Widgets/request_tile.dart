@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 
 import '../model/connection.dart';
@@ -43,8 +44,8 @@ class _Request_TileState extends State<Request_Tile> {
   removeConnection(String friendId) async {
     var url = userEndPoint + "removeconnection";
     var user = await FirebaseAuth.instance.currentUser();
-    DocumentSnapshot doc = await users.document(user.uid).get();
-    var uid = doc['id'];
+
+    var uid = curUser.id;
     //print(uid);
     Connection connection = Connection(
       id: uid,
@@ -53,15 +54,27 @@ class _Request_TileState extends State<Request_Tile> {
     var token = await user.getIdToken();
     print(jsonEncode(connection.toJson()));
     //print(token);
-    var response = await http.put(
-      url,
-      encoding: Encoding.getByName("utf-8"),
-      body: jsonEncode(connection.toJson()),
-      headers: {
-        "Authorization": "Bearer: $token",
-        "Content-Type": "application/json",
-      },
-    );
+
+    var response;
+    try {
+      response = await http.put(
+        url,
+        encoding: Encoding.getByName("utf-8"),
+        body: jsonEncode(connection.toJson()),
+        headers: {
+          "Authorization": "Bearer: $token",
+          "Content-Type": "application/json",
+        },
+      );
+    } catch (e) {
+      Fluttertoast.showToast(
+          msg: "Error occurred, check internet connection",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
+      return;
+    }
+
     print(response.statusCode);
     if (response.statusCode == 200) {
       print(response.body);
@@ -82,8 +95,8 @@ class _Request_TileState extends State<Request_Tile> {
   addConnection(String friendId) async {
     var url = userEndPoint + "addconnection";
     var user = await FirebaseAuth.instance.currentUser();
-    DocumentSnapshot doc = await users.document(user.uid).get();
-    var uid = doc['id'];
+
+    var uid = curUser.id;
     //print(uid);
     Connection connection = Connection(
       id: uid,
@@ -92,15 +105,27 @@ class _Request_TileState extends State<Request_Tile> {
     var token = await user.getIdToken();
     print(jsonEncode(connection.toJson()));
     //print(token);
-    var response = await http.put(
-      url,
-      encoding: Encoding.getByName("utf-8"),
-      body: jsonEncode(connection.toJson()),
-      headers: {
-        "Authorization": "Bearer: $token",
-        "Content-Type": "application/json",
-      },
-    );
+    var response;
+
+    try {
+      response = await http.put(
+        url,
+        encoding: Encoding.getByName("utf-8"),
+        body: jsonEncode(connection.toJson()),
+        headers: {
+          "Authorization": "Bearer: $token",
+          "Content-Type": "application/json",
+        },
+      );
+    } catch (e) {
+      Fluttertoast.showToast(
+          msg: "Error occurred, check internet connection",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
+      return;
+    }
+
     print(response.statusCode);
     if (response.statusCode == 200) {
       print(response.body);
@@ -121,8 +146,9 @@ class _Request_TileState extends State<Request_Tile> {
     var url = userEndPoint + "acceptconnection";
 
     var user = await FirebaseAuth.instance.currentUser();
-    DocumentSnapshot doc = await users.document(user.uid).get();
-    var uid = doc['id'];
+
+    var uid = curUser.id;
+
     print(uid);
     Connection connection = Connection(
       id: uid,
@@ -131,15 +157,25 @@ class _Request_TileState extends State<Request_Tile> {
     var token = await user.getIdToken();
     print(jsonEncode(connection.toJson()));
     //print(token);
-    var response = await http.put(
-      url,
-      encoding: Encoding.getByName("utf-8"),
-      body: jsonEncode(connection.toJson()),
-      headers: {
-        "Authorization": "Bearer: $token",
-        "Content-Type": "application/json",
-      },
-    );
+    var response;
+    try {
+      response = await http.put(
+        url,
+        encoding: Encoding.getByName("utf-8"),
+        body: jsonEncode(connection.toJson()),
+        headers: {
+          "Authorization": "Bearer: $token",
+          "Content-Type": "application/json",
+        },
+      );
+    } catch (e) {
+      Fluttertoast.showToast(
+          msg: "Error occurred, check internet connection",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
+      return;
+    }
     print(response.statusCode);
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body);

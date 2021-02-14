@@ -37,12 +37,12 @@ class _RcashScreenState extends State<RcashScreen> {
     super.initState();
     getRCashDetails();
     values = [
-      widget.Ruser.lollarAmount.toString(),
-      widget.Ruser.totalAvailableYollar.toString(),
-      widget.Ruser.totalWageEarningAmount.toString(),
-      widget.Ruser.totalInvestmentEarningActiveAmount.toString(),
-      widget.Ruser.joiningBonus.toString(),
-      widget.Ruser.totalPlatformEngagementAmount.toString()
+      curUser.lollarAmount,
+      curUser.totalAvailableYollar,
+      curUser.totalWageEarningAmount,
+      curUser.totalInvestmentEarningActiveAmount,
+      curUser.joiningBonus,
+      curUser.totalPlatformEngagementAmount
     ];
   }
 
@@ -80,13 +80,30 @@ class _RcashScreenState extends State<RcashScreen> {
       var body1 = jsonDecode(body);
       var msg = body1['message'];
       widget.Ruser = User.fromJson(msg);
+
+      curUser.lollarAmount = widget.Ruser.lollarAmount;
+      curUser.totalAvailableYollar = widget.Ruser.totalAvailableYollar;
+      curUser.totalWageEarningAmount = widget.Ruser.totalWageEarningAmount;
+      curUser.totalInvestmentEarningActiveAmount =
+          widget.Ruser.totalInvestmentEarningActiveAmount;
+      curUser.joiningBonus = widget.Ruser.joiningBonus;
+      curUser.totalPlatformEngagementAmount =
+          widget.Ruser.totalPlatformEngagementAmount;
+      curUser.referralAmount = widget.Ruser.referralAmount;
+      curUser.totalPlatformInteractionAmount =
+          widget.Ruser.totalPlatformInteractionAmount;
+      curUser.totalActiveInvestmentAmount =
+          widget.Ruser.totalActiveInvestmentAmount;
+      curUser.totalInvestmentEarningMaturedAmount =
+          widget.Ruser.totalInvestmentEarningMaturedAmount;
+      setState(() {});
       values = [
-        widget.Ruser.lollarAmount.toString(),
-        widget.Ruser.totalAvailableYollar.toString(),
-        widget.Ruser.totalWageEarningAmount.toString(),
-        widget.Ruser.totalInvestmentEarningActiveAmount.toString(),
-        widget.Ruser.joiningBonus.toString(),
-        widget.Ruser.totalPlatformEngagementAmount.toString()
+        curUser.lollarAmount,
+        curUser.totalAvailableYollar,
+        curUser.totalWageEarningAmount,
+        curUser.totalInvestmentEarningActiveAmount,
+        curUser.joiningBonus,
+        curUser.totalPlatformEngagementAmount
       ];
       //print(this.user.lollarAmount);
       setState(() {
@@ -129,17 +146,10 @@ class _RcashScreenState extends State<RcashScreen> {
       RcashTile tile = RcashTile(
         user: widget.Ruser,
         title: titles[i],
-        value: values[i],
-        textColor: titles[i] == "Investment" ||
-                titles[i] == "Wage" ||
-                titles[i] == "Platform Engagement"
-            ? colorAmountNegative
-            : colorAmountPositive,
-        backgroundColor: titles[i] == "Investment" ||
-                titles[i] == "Wage" ||
-                titles[i] == "Platform Engagement"
-            ? colorRcashNegative
-            : colorRcashPositive,
+        value: values[i].toString(),
+        textColor: values[i] < 0 ? colorAmountNegative : colorAmountPositive,
+        backgroundColor:
+            values[i] < 0 ? colorRcashNegative : colorRcashPositive,
       );
       tiles.add(tile);
     }
