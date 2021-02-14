@@ -206,15 +206,23 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     var token = await user.getIdToken();
     //print(jsonEncode(reaction.toJson()));
     //print(token);
-    var response = await http.put(
-      url,
-      encoding: Encoding.getByName("utf-8"),
-      body: jsonEncode(reaction.toJson()),
-      headers: {
-        "Authorization": "Bearer: $token",
-        "Content-Type": "application/json",
-      },
-    );
+    var response;
+    try {
+      response = await http.put(
+        url,
+        encoding: Encoding.getByName("utf-8"),
+        body: jsonEncode(reaction.toJson()),
+        headers: {
+          "Authorization": "Bearer: $token",
+          "Content-Type": "application/json",
+        },
+      );
+    } catch (e) {
+      setState(() {
+        isDisabled = false;
+      });
+    }
+
     print(response.statusCode);
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body);
