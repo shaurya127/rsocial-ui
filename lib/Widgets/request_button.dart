@@ -156,10 +156,10 @@ class _RequestButtonState extends State<RequestButton> {
               child: Text(
                 "Reject",
                 style: TextStyle(
-                    fontFamily: "Lato", fontSize: 14, color: Colors.white),
+                    fontFamily: "Lato", fontSize: 14, color: colorPrimaryBlue),
               ),
               decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
                       width: 1, color: Theme.of(context).primaryColor)),

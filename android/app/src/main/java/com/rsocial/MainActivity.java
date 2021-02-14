@@ -1,4 +1,4 @@
-package com.example.rsocial2;
+package com.rsocial;
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity;
