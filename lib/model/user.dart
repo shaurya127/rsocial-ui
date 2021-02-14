@@ -106,7 +106,7 @@ class User {
         fname: json['FName'],
         lname: json['LName'],
         email: json['Email'],
-        lollarAmount: json['LollarAmount'],
+        lollarAmount: json['LollarAmount'].floor(),
         socialStanding: json['SocialStanding'],
         bio: json['Bio'],
         gender: json['gender'],
@@ -123,14 +123,16 @@ class User {
         totalActiveInvestmentAmount: json['TotalActiveInvestmentAmount'],
         totalWageEarningAmount: json['TotalWageEarningAmount'],
         totalInvestmentEarningActiveAmount:
-            json['TotalInvestmentEarningActiveAmount'],
+            json['TotalInvestmentEarningActiveAmount'].floor(),
         totalInvestmentEarningMaturedAmount:
-            json['TotalInvestmentEarningMaturedAmount'],
-        totalPlatformEngagementAmount: json['TotalPlatformEngagementAmount'],
-        joiningBonus: json['JoiningBonus'],
-        totalAvailableYollar: json['TotalAvailableYollar'],
-        totalPlatformInteractionAmount: json['TotalPlatformInteractionAmount'],
-        referralAmount: json['ReferralAmount']);
+            json['TotalInvestmentEarningMaturedAmount'].floor(),
+        totalPlatformEngagementAmount:
+            json['TotalPlatformEngagementAmount'].floor(),
+        joiningBonus: json['JoiningBonus'].floor(),
+        totalAvailableYollar: json['TotalAvailableYollar'].floor(),
+        totalPlatformInteractionAmount:
+            json['TotalPlatformInteractionAmount'].floor(),
+        referralAmount: json['ReferralAmount'].floor());
   }
 
   Map<String, dynamic> toJson() => {

@@ -34,6 +34,7 @@ class _ProfilePicPageState extends State<ProfilePicPage> {
   String encodedFile;
 
   handleChooseFromGallery() async {
+    Navigator.pop(context);
     var status = await Permission.storage.status;
 
     if (status.isGranted || status.isUndetermined) {
@@ -119,10 +120,103 @@ class _ProfilePicPageState extends State<ProfilePicPage> {
     }
   }
 
+  handleTakePhoto() async {
+    // File file = await ImagePicker.pickImage(
+    //   source: ImageSource.camera,
+    //   maxHeight: 675,
+    //   maxWidth: 960,
+    // );
+    Navigator.pop(context);
+    var status = await Permission.camera.status;
+
+    if (status.isGranted || status.isUndetermined) {
+      PickedFile pickedFile = await ImagePicker().getImage(
+        source: ImageSource.camera,
+        // maxHeight: 675,
+        // maxWidth: 960,
+      );
+      if (pickedFile != null) {
+        file = File(pickedFile.path);
+        if (file != null) {
+          print("File size");
+          print(file.lengthSync());
+
+          if (file.lengthSync() > 5000000) {
+            print("not allowed");
+            var alertBox = AlertDialogBox(
+              title: 'Error',
+              content: 'Images must be less than 5MB',
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Back'),
+                )
+              ],
+            );
+            showDialog(context: context, builder: (context) => alertBox);
+            return;
+          }
+          this.file = file;
+          final bytes = file.readAsBytesSync();
+
+          this.encodedFile = base64Encode(bytes);
+
+          setState(() {});
+        }
+      }
+    } else {
+      var alertBox = AlertDialogBox(
+        title: "Camera Permission",
+        content: "This app needs camera access to take photos",
+        actions: <Widget>[
+          FlatButton(
+            child: Text("Settings"),
+            onPressed: () {
+              Navigator.pop(context);
+              openAppSettings();
+            },
+          ),
+          FlatButton(
+            child: Text("Deny"),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      );
+      showDialog(context: context, builder: (context) => alertBox);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     FirebaseAnalytics().setCurrentScreen(screenName: "Profile_pic_page");
+  }
+
+  selectImage(parentContext) {
+    return showDialog(
+      context: parentContext,
+      builder: (context) {
+        return SimpleDialog(
+          title: Text("Change Profile Photo"),
+          children: <Widget>[
+            SimpleDialogOption(
+                child: Text("Take photo from Camera"),
+                onPressed: handleTakePhoto),
+            SimpleDialogOption(
+                child: Text("Upload photo from Gallery"),
+                onPressed: handleChooseFromGallery),
+            SimpleDialogOption(
+              child: Text("Cancel"),
+              onPressed: () => Navigator.pop(context),
+            )
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -190,7 +284,7 @@ class _ProfilePicPageState extends State<ProfilePicPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: GestureDetector(
                   onTap: () {
-                    handleChooseFromGallery();
+                    selectImage(context);
                   },
                   child: Container(
                       height: 160,

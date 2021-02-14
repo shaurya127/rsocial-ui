@@ -146,7 +146,7 @@ class _RcashScreenState extends State<RcashScreen> {
       RcashTile tile = RcashTile(
         user: widget.Ruser,
         title: titles[i],
-        value: values[i].toString(),
+        value: values[i],
         textColor: values[i] < 0 ? colorAmountNegative : colorAmountPositive,
         backgroundColor:
             values[i] < 0 ? colorRcashNegative : colorRcashPositive,

@@ -1020,10 +1020,9 @@ class _ProfileState extends State<Profile> {
       });
     } else if (widget.user.id == curUser.id && isPhotoEditedComplete) {
       //getUser();
-      print("hihi");
+
       Navigator.pop(context, "hello world");
     } else {
-      print("hihi");
       Navigator.pop(context, "hello world");
     }
   }

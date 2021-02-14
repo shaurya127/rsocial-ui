@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 
 import '../contants/constants.dart';
+import '../functions.dart';
 import '../model/user.dart';
 
 class RcashTile extends StatelessWidget {
@@ -16,13 +17,12 @@ class RcashTile extends StatelessWidget {
   Color backgroundColor;
   Color textColor;
   String title;
-  String value;
+  int value;
   Widget build(BuildContext context) {
     if (title == "Investment") {
       if (curUser.totalActiveInvestmentAmount < 0 ||
           curUser.totalInvestmentEarningMaturedAmount < 0) {
         backgroundColor = colorRcashNegative;
-        textColor = colorAmountNegative;
       }
     }
 
@@ -67,17 +67,22 @@ class RcashTile extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         SvgPicture.asset("images/yollar.svg",
-                            height: 15, color: textColor),
+                            height: 15,
+                            color: value < 0
+                                ? colorAmountNegative
+                                : colorAmountPositive),
                         SizedBox(
                           width: 2,
                         ),
                         Text(
-                          value,
+                          formatNumber(value),
                           style: TextStyle(
                               fontFamily: 'Lato',
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
-                              color: textColor),
+                              color: value < 0
+                                  ? colorAmountNegative
+                                  : colorAmountPositive),
                         )
                       ],
                     ),
@@ -218,19 +223,32 @@ class RcashTile extends StatelessWidget {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  SvgPicture.asset("images/yollar.svg",
-                                      height: 12, color: colorAmountPositive),
+                                  SvgPicture.asset(
+                                    "images/yollar.svg",
+                                    height: 12,
+                                    color:
+                                        curUser.totalInvestmentEarningMaturedAmount <
+                                                0
+                                            ? colorAmountNegative
+                                            : colorAmountPositive,
+                                  ),
                                   SizedBox(
                                     width: 2,
                                   ),
                                   Text(
-                                    user.totalInvestmentEarningMaturedAmount
-                                        .toString(),
+                                    formatNumber(curUser
+                                        .totalInvestmentEarningMaturedAmount
+                                        .floor()),
                                     style: TextStyle(
-                                        fontFamily: 'Lato',
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                        color: colorAmountPositive),
+                                      fontFamily: 'Lato',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                      color:
+                                          curUser.totalInvestmentEarningMaturedAmount <
+                                                  0
+                                              ? colorAmountNegative
+                                              : colorAmountPositive,
+                                    ),
                                   )
                                 ],
                               ),
@@ -252,20 +270,32 @@ class RcashTile extends StatelessWidget {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      SvgPicture.asset("images/yollar.svg",
-                                          height: 12,
-                                          color: colorAmountPositive),
+                                      SvgPicture.asset(
+                                        "images/yollar.svg",
+                                        height: 12,
+                                        color:
+                                            curUser.totalPlatformInteractionAmount <
+                                                    0
+                                                ? colorAmountNegative
+                                                : colorAmountPositive,
+                                      ),
                                       SizedBox(
                                         width: 2,
                                       ),
                                       Text(
-                                        user.totalPlatformInteractionAmount
-                                            .toString(),
+                                        formatNumber(curUser
+                                            .totalPlatformInteractionAmount
+                                            .floor()),
                                         style: TextStyle(
-                                            fontFamily: 'Lato',
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12,
-                                            color: colorAmountPositive),
+                                          fontFamily: 'Lato',
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                          color:
+                                              curUser.totalPlatformInteractionAmount <
+                                                      0
+                                                  ? colorAmountNegative
+                                                  : colorAmountPositive,
+                                        ),
                                       )
                                     ],
                                   ),
@@ -288,18 +318,31 @@ class RcashTile extends StatelessWidget {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  SvgPicture.asset("images/yollar.svg",
-                                      height: 12, color: textColor),
+                                  SvgPicture.asset(
+                                    "images/yollar.svg",
+                                    height: 12,
+                                    color:
+                                        curUser.totalActiveInvestmentAmount < 0
+                                            ? colorAmountNegative
+                                            : colorAmountPositive,
+                                  ),
                                   SizedBox(
                                     width: 2,
                                   ),
                                   Text(
-                                    user.totalActiveInvestmentAmount.toString(),
+                                    formatNumber(curUser
+                                        .totalActiveInvestmentAmount
+                                        .floor()),
                                     style: TextStyle(
-                                        fontFamily: 'Lato',
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                        color: textColor),
+                                      fontFamily: 'Lato',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                      color:
+                                          curUser.totalActiveInvestmentAmount <
+                                                  0
+                                              ? colorAmountNegative
+                                              : colorAmountPositive,
+                                    ),
                                   )
                                 ],
                               ),
@@ -322,17 +365,23 @@ class RcashTile extends StatelessWidget {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       SvgPicture.asset("images/yollar.svg",
-                                          height: 12, color: textColor),
+                                          height: 12,
+                                          color: curUser.referralAmount < 0
+                                              ? colorAmountNegative
+                                              : colorAmountPositive),
                                       SizedBox(
                                         width: 2,
                                       ),
                                       Text(
-                                        user.referralAmount.toString(),
+                                        formatNumber(
+                                            curUser.referralAmount.floor()),
                                         style: TextStyle(
                                             fontFamily: 'Lato',
                                             fontWeight: FontWeight.bold,
                                             fontSize: 12,
-                                            color: textColor),
+                                            color: curUser.referralAmount < 0
+                                                ? colorAmountNegative
+                                                : colorAmountPositive),
                                       )
                                     ],
                                   ),
