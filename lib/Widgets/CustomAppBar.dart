@@ -42,7 +42,7 @@ AppBar customAppBar(context, String title, int lollarAmount, String photoUrl,
             SizedBox(
               width: 1,
             ),
-            Text(curUser==null ?
+            Text(curUser!=null ?
               formatNumber(lollarAmount) : formatNumber(yA),
               style: TextStyle(
                   color: Colors.white,

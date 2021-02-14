@@ -26,7 +26,7 @@ import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/Widgets/request_button.dart';
 import 'package:rsocial2/Widgets/selectButton.dart';
 import 'package:rsocial2/auth.dart';
-import 'file:///D:/Flutter/rsocial_ui/lib/contants/constants.dart';
+import 'package:rsocial2/contants/constants.dart';
 import 'package:rsocial2/functions.dart';
 import '../model/user.dart';
 
@@ -1005,7 +1005,7 @@ class _ProfileState extends State<Profile> {
                         children: <Widget>[
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 6),
+                                horizontal: 3, vertical: 6),
                             color: Colors.white,
                             height: 50,
                             child: Row(

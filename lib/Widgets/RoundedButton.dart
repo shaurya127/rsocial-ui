@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'file:///D:/Flutter/rsocial_ui/lib/contants/constants.dart';
+import 'package:rsocial2/contants/constants.dart';
 
 class RoundedButton extends StatelessWidget {
   RoundedButton(

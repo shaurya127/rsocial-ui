@@ -17,10 +17,11 @@ import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/RoundedButton.dart';
 import 'package:rsocial2/Widgets/alert_box.dart';
 import 'package:rsocial2/Widgets/selectButton.dart';
-import 'file:///D:/Flutter/rsocial_ui/lib/contants/config.dart';
-import 'file:///D:/Flutter/rsocial_ui/lib/contants/constants.dart';
+
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rsocial2/Screens/investment.dart';
+import 'package:rsocial2/contants/config.dart';
+import 'package:rsocial2/contants/constants.dart';
 import 'package:rsocial2/functions.dart';
 import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';

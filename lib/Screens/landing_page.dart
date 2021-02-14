@@ -8,8 +8,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rsocial2/Widgets/error.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
-import 'file:///D:/Flutter/rsocial_ui/lib/contants/config.dart';
-import 'file:///D:/Flutter/rsocial_ui/lib/contants/constants.dart';
+import 'package:rsocial2/contants/config.dart';
+import 'package:rsocial2/contants/constants.dart';
+
 
 import '../model/post.dart';
 import '../model/user.dart';

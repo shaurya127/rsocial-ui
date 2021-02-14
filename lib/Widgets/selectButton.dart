@@ -16,11 +16,11 @@ class SelectButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
         child: GestureDetector(
           onTap: onTap,
           child: Container(
-            padding: EdgeInsets.symmetric(vertical: 7, horizontal: 18),
+            padding: EdgeInsets.symmetric(vertical: 7, horizontal: 15),
             child: Text(
               text,
               textAlign: TextAlign.center,

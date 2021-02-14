@@ -244,7 +244,7 @@ class RcashTile extends StatelessWidget {
                                         width: 2,
                                       ),
                                       Text(
-                                        "11",
+                                        user.totalPlatformInteractionAmount.toString(),
                                         style: TextStyle(
                                             fontFamily: 'Lato',
                                             fontWeight: FontWeight.bold,
@@ -278,7 +278,7 @@ class RcashTile extends StatelessWidget {
                                     width: 2,
                                   ),
                                   Text(
-                                    user.totalInvestmentEarningActiveAmount
+                                    user.totalActiveInvestmentAmount
                                         .toString(),
                                     style: TextStyle(
                                         fontFamily: 'Lato',
