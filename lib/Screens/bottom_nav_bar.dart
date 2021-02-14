@@ -691,6 +691,8 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   @override
   Widget build(BuildContext context) {
+    print("Build of bottom nav bar worked");
+
     // Screens to be present, will be switched with the help of bottom nav bar
     final List _screens = [
       Landing_Page(

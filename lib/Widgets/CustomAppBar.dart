@@ -23,6 +23,7 @@ AppBar customAppBar(context, String title, int lollarAmount, String photoUrl,
       ),
     );
   }
+
   // print("---------------");
   // print(socialStanding);
   return AppBar(
@@ -42,8 +43,8 @@ AppBar customAppBar(context, String title, int lollarAmount, String photoUrl,
             SizedBox(
               width: 1,
             ),
-            Text(curUser==null ?
-              formatNumber(lollarAmount) : formatNumber(yA),
+            Text(
+              curUser != null ? formatNumber(lollarAmount) : formatNumber(yA),
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -61,8 +62,8 @@ AppBar customAppBar(context, String title, int lollarAmount, String photoUrl,
             SizedBox(
               width: 1,
             ),
-            Text(curUser==null ?
-              formatNumber(socialStanding) : formatNumber(ss),
+            Text(
+              curUser != null ? formatNumber(socialStanding) : formatNumber(ss),
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -83,8 +84,13 @@ AppBar customAppBar(context, String title, int lollarAmount, String photoUrl,
             width: 40,
             decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: curUser!=null ? ( curUser.photoUrl !="" ?NetworkImage(curUser.photoUrl) : AssetImage("images/avatar.jpg")):
-                    (photoUrl==null? NetworkImage(photoUrl): AssetImage("images/avatar.jpg")),
+                    image: curUser != null
+                        ? (curUser.photoUrl != ""
+                            ? NetworkImage(curUser.photoUrl)
+                            : AssetImage("images/avatar.jpg"))
+                        : (photoUrl == null
+                            ? NetworkImage(photoUrl)
+                            : AssetImage("images/avatar.jpg")),
                     fit: BoxFit.cover),
                 shape: BoxShape.circle),
           ),

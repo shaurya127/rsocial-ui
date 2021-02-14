@@ -52,16 +52,18 @@ class _AllConnectionsState extends State<AllConnections> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Connections",
-          style: TextStyle(
-            //fontWeight: FontWeight.bold,
-            fontSize: 18, color: Colors.white,
-          ),
-        ),
-        iconTheme: IconThemeData(color: Colors.white),
-      ),
+      appBar: customAppBar(context, "", curUser.lollarAmount, curUser.photoUrl,
+          curUser.socialStanding),
+      // AppBar(
+      //   title: Text(
+      //     "Connections",
+      //     style: TextStyle(
+      //       //fontWeight: FontWeight.bold,
+      //       fontSize: 18, color: Colors.white,
+      //     ),
+      //   ),
+      //   iconTheme: IconThemeData(color: Colors.white),
+      // ),
       body: buildSuggestedTab(),
     );
   }
