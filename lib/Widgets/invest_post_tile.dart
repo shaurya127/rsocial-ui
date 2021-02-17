@@ -779,7 +779,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                       style: TextStyle(
                         fontSize: 16,
                         fontFamily: "Lato",
-                        color: postDesc,
+                        color: colorUnselectedBottomNav ,
                       ),
                     )
                     /*Text(
@@ -790,7 +790,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                 softWrap: true,
                 style: GoogleFonts.lato(
                   fontSize:15,
-                  color: postDesc,
+                  color: colorUnselectedBottomNav ,
                 ),
                 //textAlign: TextAlign.left,
               ),*/
@@ -946,7 +946,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                                   style: TextStyle(
                                     fontFamily: "Lato",
                                     fontSize: 10,
-                                    color: postDesc,
+                                    color: colorUnselectedBottomNav ,
                                   ),
                                 )
                               ],
@@ -1004,7 +1004,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                                     style: TextStyle(
                                       fontFamily: "Lato",
                                       fontSize: 10,
-                                      color: postDesc,
+                                      color: colorUnselectedBottomNav ,
                                     ),
                                   )
                                 ],
@@ -1043,7 +1043,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                                   style: TextStyle(
                                     fontFamily: "Lato",
                                     fontSize: 10,
-                                    color: postDesc,
+                                    color: colorUnselectedBottomNav ,
                                   ),
                                 )
                               ],
@@ -1091,7 +1091,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                                     style: TextStyle(
                                       fontFamily: "Lato",
                                       fontSize: 10,
-                                      color: postDesc,
+                                      color: colorUnselectedBottomNav ,
                                     ),
                                   )
                                 ],
@@ -1127,7 +1127,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                                   style: TextStyle(
                                     fontFamily: "Lato",
                                     fontSize: 10,
-                                    color: postDesc,
+                                    color: colorUnselectedBottomNav ,
                                   ),
                                 )
                               ],
@@ -1178,7 +1178,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                                     style: TextStyle(
                                       fontFamily: "Lato",
                                       fontSize: 10,
-                                      color: postDesc,
+                                      color: colorUnselectedBottomNav ,
                                     ),
                                   )
                                 ],
@@ -1219,7 +1219,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                                   style: TextStyle(
                                     fontFamily: "Lato",
                                     fontSize: 10,
-                                    color: postDesc,
+                                    color: colorUnselectedBottomNav ,
                                   ),
                                 )
                               ],
@@ -1272,7 +1272,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                                     style: TextStyle(
                                       fontFamily: "Lato",
                                       fontSize: 10,
-                                      color: postDesc,
+                                      color: colorUnselectedBottomNav ,
                                     ),
                                   )
                                 ],
@@ -1303,7 +1303,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                         style: TextStyle(
                           fontFamily: "Lato",
                           fontSize: 10,
-                          color: postDesc,
+                          color: colorUnselectedBottomNav ,
                         ),
                       ),
                     )

@@ -57,6 +57,7 @@ dependencies:
   overlay_support:
   animated_splash_screen:
   flutter_app_badger: ^1.1.2
+  provider:
 dev_dependencies:
   flutter_test:
     sdk: flutter

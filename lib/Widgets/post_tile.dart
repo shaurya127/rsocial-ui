@@ -14,6 +14,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/display_post.dart';
+import 'package:rsocial2/Screens/landing_page.dart';
 import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/functions.dart';
 
@@ -42,7 +43,8 @@ class Post_Tile extends StatefulWidget {
   Post userPost;
   var photoUrl;
   User curUser;
-  Post_Tile({@required this.curUser, this.userPost, this.photoUrl});
+  final VoidCallback onPressDelete;
+  Post_Tile({@required this.curUser, this.userPost, this.photoUrl, this.onPressDelete});
   @override
   _Post_TileState createState() => _Post_TileState();
 }
@@ -81,7 +83,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   AudioCache audioCache;
   int reactionSizeIncrease = 3;
   bool _isCreatingLink = false;
-  List<String> popupMenuItems = ['Reactions', 'View post'];
+  bool isDeleting = false;
 
   getReactions() {
     print(rxn);
@@ -465,6 +467,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
         chooserTitle: 'Share this post with');
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     final transformationController = TransformationController();
@@ -697,7 +701,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                               Container(
                                 //transform: Matrix4.translationValues(-38, 0.0, 0.0),
                                 child: Text(
-                                  "Profit",
+                                  "Gain",
                                   style: TextStyle(
                                     fontFamily: "Lato",
                                     fontSize: 12,
@@ -844,8 +848,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                           size: 30,
                           color: colorGreyTint,
                         ),
-                        itemBuilder: (_) => <PopupMenuItem<String>>[
-                          new PopupMenuItem<String>(
+                        itemBuilder: (_) => <PopupMenuItem>[
+                          new PopupMenuItem(
                               child: GestureDetector(
                                   onTap: () {
                                     Navigator.pop(context);
@@ -860,7 +864,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                             )));
                                   },
                                   child: new Text('View post'))),
-                          new PopupMenuItem<String>(
+                          new PopupMenuItem(
                               child: GestureDetector(
                                   onTap: () {
                                     buildReactionTile();
@@ -879,6 +883,11 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                             )));
                                   },
                                   child: new Text('Reactions'))),
+                          if(widget.userPost.user.id==curUser.id)
+                          new PopupMenuItem(
+                              child: GestureDetector(
+                                  onTap: widget.onPressDelete,
+                                  child: new Text('Delete')))
                         ],
                       )
                     ],
@@ -903,7 +912,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                       style: TextStyle(
                         fontSize: 16,
                         fontFamily: "Lato",
-                        color: postDesc,
+                        color: colorUnselectedBottomNav ,
                       ),
                     )),
             widget.userPost.fileUpload.length != 0
@@ -1034,7 +1043,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                     style: TextStyle(
                                       fontFamily: "Lato",
                                       fontSize: 10,
-                                      color: postDesc,
+                                      color: colorUnselectedBottomNav ,
                                     ),
                                   )
                                 ],
@@ -1092,7 +1101,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                       style: TextStyle(
                                         fontFamily: "Lato",
                                         fontSize: 10,
-                                        color: postDesc,
+                                        color: colorUnselectedBottomNav ,
                                       ),
                                     )
                                   ],
@@ -1131,7 +1140,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                     style: TextStyle(
                                       fontFamily: "Lato",
                                       fontSize: 10,
-                                      color: postDesc,
+                                      color: colorUnselectedBottomNav ,
                                     ),
                                   )
                                 ],
@@ -1179,7 +1188,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                       style: TextStyle(
                                         fontFamily: "Lato",
                                         fontSize: 10,
-                                        color: postDesc,
+                                        color: colorUnselectedBottomNav ,
                                       ),
                                     )
                                   ],
@@ -1217,7 +1226,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                     style: TextStyle(
                                       fontFamily: "Lato",
                                       fontSize: 10,
-                                      color: postDesc,
+                                      color: colorUnselectedBottomNav ,
                                     ),
                                   )
                                 ],
@@ -1268,7 +1277,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                       style: TextStyle(
                                         fontFamily: "Lato",
                                         fontSize: 10,
-                                        color: postDesc,
+                                        color: colorUnselectedBottomNav ,
                                       ),
                                     )
                                   ],
@@ -1311,7 +1320,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                     style: TextStyle(
                                       fontFamily: "Lato",
                                       fontSize: 10,
-                                      color: postDesc,
+                                      color: colorUnselectedBottomNav ,
                                     ),
                                   )
                                 ],
@@ -1364,7 +1373,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                       style: TextStyle(
                                         fontFamily: "Lato",
                                         fontSize: 10,
-                                        color: postDesc,
+                                        color: colorUnselectedBottomNav ,
                                       ),
                                     )
                                   ],
@@ -1408,7 +1417,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                             style: TextStyle(
                               fontFamily: "Lato",
                               fontSize: 10,
-                              color: postDesc,
+                              color: colorUnselectedBottomNav ,
                             ),
                           ),
                         )
@@ -1424,3 +1433,178 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     );
   }
 }
+
+// class ReactionButton extends StatefulWidget {
+//   String reactionType;
+//   Function ontap;
+//   String imageSelected;
+//   Animation reactionAnimation;
+//   Map<String, int> counter;
+//   String imageNotSelected;
+//   String currentReaction;
+//   int reactionCount;
+//   Post userPost;
+//   ReactionButton({this.reactionType,this.ontap,this.imageSelected,
+//     this.imageNotSelected,this.currentReaction,this.reactionCount,
+//   this.reactionAnimation,this.counter,this.userPost});
+//   @override
+//   _ReactionButtonState createState() => _ReactionButtonState();
+// }
+//
+// class _ReactionButtonState extends State<ReactionButton> with TickerProviderStateMixin{
+//   int reactionSizeIncrease = 3;
+//   AnimationController animationController;
+//   AudioPlayer audioPlayer;
+//   AudioCache audioCache;
+//
+//   react() async {
+//     setState(() {
+//       audioCache.play("click.mp3");
+//       String prvrxn = widget.currentReaction;
+//       widget.currentReaction = widget.reactionType;
+//       widget.counter[prvrxn]--;
+//       widget.counter[widget.currentReaction]++;
+//       //print(widget.userPost.profit);
+//       m[widget.userPost.id] = {widget.currentReaction: widget.counter[widget.currentReaction]};
+//       //print("updating mp");
+//       mp[widget.userPost.id] = widget.counter;
+//       prft[widget.userPost.id] = widget.userPost.profit;
+//     });
+//     var url = storyEndPoint + 'react';
+//     var user = await FirebaseAuth.instance.currentUser();
+//     //print(uid);
+//     Reaction reaction = Reaction(
+//         id: curUser.id, storyId: widget.userPost.id, reactionType: widget.currentReaction);
+//     var token = await user.getIdToken();
+//     var response;
+//     try {
+//       response = await http.put(
+//         url,
+//         encoding: Encoding.getByName("utf-8"),
+//         body: jsonEncode(reaction.toJson()),
+//         headers: {
+//           "Authorization": "Bearer: $token",
+//           "Content-Type": "application/json",
+//         },
+//       );
+//     } catch (e) {
+//       setState(() {
+//         //isDisabled = false;
+//       });
+//     }
+//
+//     print(response.statusCode);
+//     if (response.statusCode == 200) {
+//       final jsonUser = jsonDecode(response.body);
+//       var body = jsonUser['body'];
+//       var body1 = jsonDecode(body);
+//       print("body is $body");
+//
+//       //print(body1);
+//       var msg = body1['message'];
+//       setState(() {
+//         prft[widget.userPost.id] = msg["PresentValue"].toString();
+//       });
+//
+//       // if (widget.userPost.storyType == 'Wage')
+//       //   widget.userPost = Post.fromJsonW(msg);
+//       // else
+//       //   widget.userPost = Post.fromJsonI(msg);
+//
+//       // getReactions();
+//
+//       // });
+//       setState(() {});
+//     }
+//     //print("hello hello");
+//     // setState(() {
+//     //   isDisabled = false;
+//     // });
+//   }
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     audioPlayer = new AudioPlayer();
+//     audioCache = new AudioCache(fixedPlayer: audioPlayer);
+//     animationController =
+//         AnimationController(duration: Duration(milliseconds: 400), vsync: this);
+//     widget.reactionAnimation = CurvedAnimation(
+//         parent: animationController,
+//         curve: Curves.easeIn,
+//         reverseCurve: Curves.easeIn);
+//   }
+//
+//   @override
+//   void dispose() {
+//     animationController.dispose();
+//     super.dispose();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       children: [
+//         GestureDetector(
+//           onTap: (){
+//             widget.ontap;
+//             if (widget.userPost.user.id != curUser.id) {
+//               animationController.forward();
+//               animationController.addListener(() {
+//                   setState(() {});
+//                 });
+//               animationController.addStatusListener((status) {
+//                   if (status == AnimationStatus.completed) {
+//                     animationController.reverse();
+//                     animationController.addListener(() {
+//                       setState(() {});
+//                     });
+//                   }
+//                 });
+//               // if (widget.currentReaction == widget.reactionType) {
+//               //   react('noreact');
+//               // } else {
+//                 react();
+//               //}
+//             } else
+//               Fluttertoast.showToast(
+//                   msg: "You cannot react on your own post",
+//                   toastLength: Toast.LENGTH_SHORT,
+//                   gravity: ToastGravity.BOTTOM,
+//                   fontSize: 15);
+//           },
+//           child: Column(
+//             children: <Widget>[
+//               Container(
+//                   height: 23 +
+//                       reactionSizeIncrease *
+//                           widget.reactionAnimation.value,
+//                   width: 23 +
+//                       reactionSizeIncrease *
+//                           widget.reactionAnimation.value,
+//                   child: widget.currentReaction == widget.reactionType
+//                       ? SvgPicture.asset(
+//                       widget.imageSelected)
+//                       : SvgPicture.asset(
+//                       widget.imageNotSelected)),
+//               SizedBox(
+//                 height: 4 -
+//                     reactionSizeIncrease *
+//                         widget.reactionAnimation.value,
+//               ),
+//               Text(
+//                 widget.reactionCount.toString(),
+//                 style: TextStyle(
+//                   fontFamily: "Lato",
+//                   fontSize: 10,
+//                   color: colorUnselectedBottomNav ,
+//                 ),
+//               )
+//             ],
+//           ),
+//         ),
+//
+//       ],
+//     );
+//   }
+// }
