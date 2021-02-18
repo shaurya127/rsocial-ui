@@ -1035,14 +1035,7 @@ class _ProfileState extends State<Profile> {
         child: Scaffold(
             // Here app bar to be updated
             appBar: customAppBar(
-                context,
-                widget.currentUser.id == widget.user.id
-                    ? "My Profile"
-                    : "Profile",
-                widget.currentUser.lollarAmount,
-                widget.currentUser.photoUrl,
-                widget.currentUser.socialStanding,
-                widget.user.id == curUser.id ? false : true),
+                context, widget.user.id == curUser.id ? false : true),
             body: ModalProgressHUD(
               inAsyncCall: isLoading,
               child: NestedScrollView(
