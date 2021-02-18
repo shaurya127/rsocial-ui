@@ -77,6 +77,8 @@ const kProfilePagePlatformTab = "Platform Interaction";
 const kProfilePicText = "Pick a Profile Picture";
 const kProfilePicSubtext = "Have a favourite selfie? Upload it now.";
 
+const kPostTileGain = "Gain";
+
 const kReactionInfoAppBarTitle = "People Who Reacted";
 
 const kInputField = InputDecoration(

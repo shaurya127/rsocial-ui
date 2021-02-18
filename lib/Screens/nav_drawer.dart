@@ -12,6 +12,7 @@ import 'package:rsocial2/Widgets/alert_box.dart';
 import 'package:rsocial2/auth.dart';
 import '../authLogic.dart';
 import '../contants/constants.dart';
+import '../functions.dart';
 import '../model/user.dart';
 import 'create_account_page.dart';
 import '../Widgets/nav_drawer_tile.dart';
@@ -26,28 +27,28 @@ class Nav_Drawer extends StatefulWidget {
 }
 
 class _Nav_DrawerState extends State<Nav_Drawer> {
-  String formatNumber(int a) {
-    String res = a.toString();
-
-    if (a < 10000) return res;
-
-    int num = res.length;
-
-    // res = (a/1000).floor().toString() + "," + (a%1000).toString();
-
-    if (num % 2 == 0) {
-      for (int i = 1; i < num; i = i + 2) {
-        res = res.substring(0, i) + "," + res.substring(i);
-        i++;
-      }
-    } else {
-      for (int i = 2; i < num; i = i + 2) {
-        res = res.substring(0, i) + "," + res.substring(i);
-        i++;
-      }
-    }
-    return res;
-  }
+  // String formatNumber(int a) {
+  //   String res = a.toString();
+  //
+  //   if (a < 10000) return res;
+  //
+  //   int num = res.length;
+  //
+  //   // res = (a/1000).floor().toString() + "," + (a%1000).toString();
+  //
+  //   if (num % 2 == 0) {
+  //     for (int i = 1; i < num; i = i + 2) {
+  //       res = res.substring(0, i) + "," + res.substring(i);
+  //       i++;
+  //     }
+  //   } else {
+  //     for (int i = 2; i < num; i = i + 2) {
+  //       res = res.substring(0, i) + "," + res.substring(i);
+  //       i++;
+  //     }
+  //   }
+  //   return res;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -68,8 +69,12 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                 Container(
                   height: 60,
                   width: MediaQuery.of(context).size.width,
-                  child: SvgPicture.asset(
-                    "images/rsocial-text.svg",
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: SvgPicture.asset(
+                      "images/rsocial-logo.svg",
+                      height: 15,
+                    ),
                   ),
                   // decoration: BoxDecoration(
                   //     image: DecorationImage(
@@ -96,16 +101,18 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                             borderRadius: BorderRadius.circular(30),
                             image: DecorationImage(
                                 fit: BoxFit.cover,
-                                image: curUser!=null ? ( curUser.photoUrl !="" ?NetworkImage(curUser.photoUrl) : AssetImage("images/avatar.jpg")):
-                                (curUser.photoUrl !="" ? NetworkImage(pp): AssetImage("images/avatar.jpg"))
-                                )),
+                                image: curUser != null
+                                    ? (curUser.photoUrl != ""
+                                        ? NetworkImage(curUser.photoUrl)
+                                        : AssetImage("images/avatar.jpg"))
+                                    : (curUser.photoUrl != ""
+                                        ? NetworkImage(pp)
+                                        : AssetImage("images/avatar.jpg")))),
                       ),
                     ),
                     title: Text(
                       curUser != null
-                          ? curUser.fname +
-                              " " +
-                              curUser.lname
+                          ? curUser.fname + " " + curUser.lname
                           : "$fn $ln",
                       style: TextStyle(
                         fontFamily: 'Lato',
@@ -127,7 +134,9 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                     ),
                   ),
                   trailing: Text(
-                    curUser != null ? formatNumber(curUser.lollarAmount) : formatNumber(yA),
+                    curUser != null
+                        ? formatNumber(curUser.lollarAmount)
+                        : formatNumber(yA),
                     style: TextStyle(color: Colors.grey, fontSize: 16),
                   ),
                 ),
@@ -151,7 +160,9 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                       ),
                     ),
                     trailing: Text(
-                        curUser!=null ?"${curUser.connection.length}" : tc.toString(),
+                        curUser != null
+                            ? "${curUser.connection.length}"
+                            : tc.toString(),
                         style: TextStyle(color: Colors.grey, fontSize: 16))),
                 Nav_Drawer_Tile(
                     title: kNavDrawerProfile,

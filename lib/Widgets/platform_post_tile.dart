@@ -692,7 +692,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                               Container(
                                 //transform: Matrix4.translationValues(-38, 0.0, 0.0),
                                 child: Text(
-                                  "Profit",
+                                  kPostTileGain,
                                   style: TextStyle(
                                     fontFamily: "Lato",
                                     fontSize: 12,

@@ -11,12 +11,14 @@ import 'package:flutter_share/flutter_share.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rsocial2/Screens/display_post.dart';
 import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/functions.dart';
-
+import 'package:path/path.dart' as p;
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/invested_with.dart';
 import 'package:rsocial2/Screens/login_page.dart';
@@ -49,6 +51,8 @@ class Post_Tile extends StatefulWidget {
 
 class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   List<String> fileList = [];
+  List<File> downloadedFileList = [];
+  Directory dir;
   bool isLoading = true;
   List<User> loved = [];
   List<User> liked = [];
@@ -111,11 +115,15 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     }
   }
 
-  convertStringToFile() {
+  convertStringToFile() async {
     for (int i = 0; i < widget.userPost.fileUpload.length; i++) {
-      //print("hehe");
       fileList.add(widget.userPost.fileUpload[i]);
+
+      print(fileList[i]);
+      // downloadedFileList
+      //     .add(await file("${widget.userPost.id}_" + i.toString() + ".jpg"));
     }
+    print("download list: " + downloadedFileList.length.toString());
     //print(fileList.length);
     setState(() {
       isLoading = false;
@@ -159,6 +167,13 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
 
   getInvestedWithUser() {
     this.investedWithUser = widget.userPost.investedWithUser;
+  }
+
+  Future<File> file(String filename) async {
+    if (dir == null) dir = await getApplicationDocumentsDirectory();
+    print(dir);
+    String pathName = p.join(dir.path, filename);
+    return File(pathName);
   }
 
   showProfile(BuildContext context, User user, String photourl) async {
@@ -697,7 +712,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                               Container(
                                 //transform: Matrix4.translationValues(-38, 0.0, 0.0),
                                 child: Text(
-                                  "Profit",
+                                  kPostTileGain,
                                   style: TextStyle(
                                     fontFamily: "Lato",
                                     fontSize: 12,
