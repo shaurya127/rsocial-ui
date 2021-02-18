@@ -19,12 +19,11 @@ import 'package:http/http.dart' as http;
 
 class Landing_Page extends StatefulWidget {
   User curUser;
-  List<Post> posts;
   bool isLoading;
   bool isErrorLoadingPost;
 
   Landing_Page(
-      {this.curUser, this.posts, this.isLoading, this.isErrorLoadingPost});
+      {this.curUser,this.isLoading, this.isErrorLoadingPost});
   @override
   _Landing_PageState createState() => _Landing_PageState();
 }
@@ -33,7 +32,6 @@ class _Landing_PageState extends State<Landing_Page> {
   final key = GlobalKey<AnimatedListState>();
   var photourl;
   //List<Post> posts = [];
-  List<Post_Tile> postTiles = [];
   bool isLoading = false;
   bool isPostLoadFail = false;
   int length;
@@ -99,7 +97,7 @@ class _Landing_PageState extends State<Landing_Page> {
       }
       //print(posts.length);
       setState(() {
-        widget.posts = posts;
+        postsGlobal = posts.reversed.toList();
         widget.isLoading = false;
       });
     } else {
@@ -113,7 +111,7 @@ class _Landing_PageState extends State<Landing_Page> {
     setState(() {
       widget.isLoading = true;
     });
-    if (widget.posts.isEmpty) {
+    if (postsGlobal.isEmpty) {
       setState(() {
         widget.isLoading = false;
       });
@@ -140,7 +138,7 @@ class _Landing_PageState extends State<Landing_Page> {
         ),
       ));
     } else {
-      length = widget.posts.length;
+      length = postsGlobal.length;
       // List<Post_Tile> postTiles = [];
       // //print(posts.length);
       // for (int i = 0; i < widget.posts.length; i++) {
@@ -153,7 +151,7 @@ class _Landing_PageState extends State<Landing_Page> {
       setState(() {
         widget.isLoading = false;
       });
-      widget.posts = widget.posts.reversed.toList();
+      //postsGlobal = postsGlobal.reversed.toList();
       return Column(
         children: [
           Expanded(
@@ -163,7 +161,7 @@ class _Landing_PageState extends State<Landing_Page> {
                 itemBuilder: (context,index,animation)=>Post_Tile(
                     curUser: widget.curUser,
                     onPressDelete: ()=>deletePost(index),
-                    userPost: widget.posts[index],
+                    userPost: postsGlobal[index],
                     photoUrl: photourl),
               ) ),
         ],
@@ -177,6 +175,7 @@ class _Landing_PageState extends State<Landing_Page> {
     var token = await user.getIdToken();
 
     var response;
+    Navigator.pop(context);
 
     response = await http.post(
       url,
@@ -185,21 +184,26 @@ class _Landing_PageState extends State<Landing_Page> {
         "Authorization": "Bearer $token",
         "Content-Type": "application/json",
       },
-      body: jsonEncode({"id": curUser.id, "StoryId": widget.posts[index].id}
+      body: jsonEncode({"id": curUser.id, "StoryId": postsGlobal[index].id}
       ),);
 
     print(response.statusCode);
     if (response.statusCode == 200) {
+      // print("post length 1 id ${postsGlobal.length}");
+      // print("post length 1 id ${postsGlobal[0].user.fname}");
       key.currentState.removeItem(
         index,
             (context, animation) => slideIt(context,index,animation),
         duration: const Duration(milliseconds: 500)
       );
-      final item = widget.posts.removeAt(index);
-      setState(() {
-        length = widget.posts.length;
-      });
-      Navigator.pop(context);
+      // print("post length 2 id ${postsGlobal.length}");
+      // // final item = postsGlobal.removeAt(index);
+      // print("post length 3 id ${postsGlobal.length}");
+      // print("post length 3 id ${postsGlobal[0].user.fname}");
+      // print("post length 3 id ${postsGlobal[1].user.fname}");
+      // setState(() {
+      // });
+      //buildPosts();
       getUserPosts();
     }
     else
@@ -210,8 +214,9 @@ class _Landing_PageState extends State<Landing_Page> {
     // });
   }
 
-  Widget slideIt(BuildContext context, int index, animation) {
-    var item = widget.posts[index];
+  slideIt(BuildContext context, int index, animation) {
+    var item = postsGlobal.removeAt(index);
+    print("in slide it ${item.user.fname}");
     return SlideTransition(
       position: Tween<Offset>(
         begin: const Offset(-1, 0),

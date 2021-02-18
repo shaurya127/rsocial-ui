@@ -48,6 +48,7 @@ final googleSignIn = GoogleSignIn();
 final fblogin = FacebookLogin();
 User curUser;
 PackageInfo packageInfo;
+List<Post> postsGlobal = [];
 int yA;
 int ss;
 int tc;
@@ -84,7 +85,6 @@ class _BottomNavBarState extends State<BottomNavBar>
   bool isFailedUserPost = false;
   bool isFailedGetAllUser = false;
   bool isFailedGetUser = false;
-  List<Post> posts = [];
   List<User> allUsers = [];
   bool isPosted = false;
   int _currentIndex = 0;
@@ -233,7 +233,7 @@ class _BottomNavBarState extends State<BottomNavBar>
             List<Post> posts = [];
             if (msg == null) {
               setState(() {
-                this.posts = posts;
+                postsGlobal = posts;
                 isLoading = false;
                 isLoadingPost = false;
               });
@@ -254,7 +254,7 @@ class _BottomNavBarState extends State<BottomNavBar>
             }
             //print(posts.length);
             setState(() {
-              this.posts = posts;
+              postsGlobal = posts;
               isLoading = false;
               isLoadingPost = false;
             });
@@ -534,7 +534,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       }
       //print(posts.length);
       setState(() {
-        this.posts = posts;
+        postsGlobal = posts.reversed.toList();
         //isLoading = false;
         isLoadingPost = false;
       });
@@ -734,7 +734,6 @@ class _BottomNavBarState extends State<BottomNavBar>
     final List _screens = [
       Landing_Page(
         curUser: curUser,
-        posts: posts,
         isLoading: isLoadingPost,
         isErrorLoadingPost: isFailedUserPost,
       ),
