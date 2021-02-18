@@ -936,63 +936,107 @@ class _BottomNavBarState extends State<BottomNavBar>
                                 (key, value) => MapEntry(
                                   key,
                                   BottomNavigationBarItem(
-                                    title: Text(
-                                      _labels[key],
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: _currentIndex == key
-                                            ? colorButton
-                                            : colorUnselectedBottomNav
-                                                .withOpacity(0.5),
-                                        fontFamily: "Lato",
-                                        fontWeight: FontWeight.bold,
+                                      title: Text(
+                                        _labels[key],
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: _currentIndex == key
+                                              ? colorButton
+                                              : colorUnselectedBottomNav
+                                                  .withOpacity(0.5),
+                                          fontFamily: "Lato",
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                    icon: key == 1
-                                        ? Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 2, bottom: 2.5),
-                                            child: SvgPicture.asset(
-                                              "images/high-five.svg",
-                                              color: _currentIndex != key
-                                                  ? colorUnselectedBottomNav
-                                                      .withOpacity(0.5)
-                                                  : colorPrimaryBlue,
-                                              height: 19,
-                                            ),
-                                          )
-                                        : key == 4
-                                            ? Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 2, bottom: 3.5),
-                                                child: SvgPicture.asset(
-                                                  "images/yollar.svg",
-                                                  color: _currentIndex != key
-                                                      ? colorUnselectedBottomNav
-                                                          .withOpacity(0.5)
-                                                      : colorPrimaryBlue,
-                                                  height: 19,
-                                                ),
-                                              )
-                                            : Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 0,
-                                                    horizontal: 16),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.transparent,
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                ),
-                                                child: Icon(
-                                                  value,
-                                                  color: _currentIndex == key
-                                                      ? colorButton
-                                                      : colorUnselectedBottomNav
-                                                          .withOpacity(0.5),
-                                                  size: 24,
-                                                ),
+                                      icon: key == 1
+                                          ? Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 2, bottom: 2.5),
+                                              child: SvgPicture.asset(
+                                                "images/high-five.svg",
+                                                color: _currentIndex != key
+                                                    ? colorUnselectedBottomNav
+                                                        .withOpacity(0.5)
+                                                    : colorPrimaryBlue,
+                                                height: 19,
                                               ),
-                                  ),
+                                            )
+                                          : key == 4
+                                              ? Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 2, bottom: 3.5),
+                                                  child: SvgPicture.asset(
+                                                    "images/yollar_outline.svg",
+                                                    color: _currentIndex != key
+                                                        ? colorUnselectedBottomNav
+                                                            .withOpacity(0.5)
+                                                        : colorPrimaryBlue,
+                                                    height: 19,
+                                                  ),
+                                                )
+                                              : key == 0
+                                                  ? Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 1,
+                                                              bottom: 2.5),
+                                                      child: SvgPicture.asset(
+                                                        "images/Home.svg",
+                                                        color: _currentIndex !=
+                                                                key
+                                                            ? colorUnselectedBottomNav
+                                                                .withOpacity(
+                                                                    0.5)
+                                                            : colorPrimaryBlue,
+                                                        height: 19,
+                                                      ),
+                                                    )
+                                                  : key == 3
+                                                      ? Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  top: 2,
+                                                                  bottom: 3.5),
+                                                          child:
+                                                              SvgPicture.asset(
+                                                            "images/Notification.svg",
+                                                            color: _currentIndex !=
+                                                                    key
+                                                                ? colorUnselectedBottomNav
+                                                                    .withOpacity(
+                                                                        0.5)
+                                                                : colorPrimaryBlue,
+                                                            height: 19,
+                                                          ),
+                                                        )
+                                                      : Container(
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                                  vertical: 0,
+                                                                  horizontal:
+                                                                      16),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Colors
+                                                                .transparent,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20),
+                                                          ),
+                                                          child: Icon(
+                                                            value,
+                                                            color: _currentIndex ==
+                                                                    key
+                                                                ? colorButton
+                                                                : colorUnselectedBottomNav
+                                                                    .withOpacity(
+                                                                        0.5),
+                                                            size: 24,
+                                                          ),
+                                                        )),
                                 ),
                               )
                               .values

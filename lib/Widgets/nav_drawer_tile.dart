@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rsocial2/contants/constants.dart';
 
 class Nav_Drawer_Tile extends StatelessWidget {
   Function f;
@@ -24,7 +25,7 @@ class Nav_Drawer_Tile extends StatelessWidget {
                 style: TextStyle(
                   fontFamily: 'Lato',
                   fontSize: 16,
-                  color: Color(0xff7F7F7F),
+                  color: colorGreyTint,
                 ),
               ),
             ),

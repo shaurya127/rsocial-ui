@@ -11,14 +11,16 @@ import 'package:flutter_share/flutter_share.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rsocial2/Screens/display_post.dart';
 import 'package:rsocial2/Screens/landing_page.dart';
 import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/deep_links.dart';
 import 'package:rsocial2/functions.dart';
-
+import 'package:path/path.dart' as p;
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/invested_with.dart';
 import 'package:rsocial2/Screens/login_page.dart';
@@ -33,8 +35,6 @@ import '../read_more.dart';
 import '../model/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info/package_info.dart';
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 import 'disabled_reaction_button.dart';
 
@@ -58,6 +58,8 @@ class Post_Tile extends StatefulWidget {
 
 class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   List<String> fileList = [];
+  List<File> downloadedFileList = [];
+  Directory dir;
   bool isLoading = true;
   List<User> loved = [];
   List<User> liked = [];
@@ -86,8 +88,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   Animation lovedAnimation;
   Animation likedAnimation;
   Animation whateverAnimation;
-  AudioPlayer audioPlayer;
-  AudioCache audioCache;
+  // AudioPlayer audioPlayer;
+  // AudioCache audioCache;
   int reactionSizeIncrease = 3;
   bool _isCreatingLink = false;
   bool isDeleting = false;
@@ -120,11 +122,15 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     }
   }
 
-  convertStringToFile() {
+  convertStringToFile() async {
     for (int i = 0; i < widget.userPost.fileUpload.length; i++) {
-      //print("hehe");
       fileList.add(widget.userPost.fileUpload[i]);
+
+      print(fileList[i]);
+      // downloadedFileList
+      //     .add(await file("${widget.userPost.id}_" + i.toString() + ".jpg"));
     }
+    print("download list: " + downloadedFileList.length.toString());
     //print(fileList.length);
     setState(() {
       isLoading = false;
@@ -134,8 +140,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    audioPlayer = new AudioPlayer();
-    audioCache = new AudioCache(fixedPlayer: audioPlayer);
+    // audioPlayer = new AudioPlayer();
+    // audioCache = new AudioCache(fixedPlayer: audioPlayer);
     lovedController =
         AnimationController(duration: Duration(milliseconds: 400), vsync: this);
     lovedAnimation = CurvedAnimation(
@@ -170,6 +176,13 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     this.investedWithUser = widget.userPost.investedWithUser;
   }
 
+  Future<File> file(String filename) async {
+    if (dir == null) dir = await getApplicationDocumentsDirectory();
+    print(dir);
+    String pathName = p.join(dir.path, filename);
+    return File(pathName);
+  }
+
   showProfile(BuildContext context, User user, String photourl) async {
     await Navigator.push(
       context,
@@ -196,7 +209,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   react(String reactn) async {
     setState(() {
       isDisabled = true;
-      audioCache.play("click.mp3");
+      // audioCache.play("click.mp3");
       String prvrxn = rxn;
       rxn = reactn;
       counter[prvrxn]--;
@@ -401,14 +414,14 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     return;
   }
 
-  Future<Uri> makeLink(String type,Post post) async {
+  Future<Uri> makeLink(String type, Post post) async {
     Uri uri;
     setState(() {
-      _isCreatingLink=true;
+      _isCreatingLink = true;
     });
     uri = await createDynamicLink(type, post);
     setState(() {
-      _isCreatingLink=false;
+      _isCreatingLink = false;
     });
     return uri;
   }
@@ -653,7 +666,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                               Container(
                                 //transform: Matrix4.translationValues(-38, 0.0, 0.0),
                                 child: Text(
-                                  "Gain",
+                                  kPostTileGain,
                                   style: TextStyle(
                                     fontFamily: "Lato",
                                     fontSize: 12,
@@ -957,17 +970,16 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                       children: <Widget>[
                         isDisabled
                             ? DisabledReactionButton(
-                          reactionAnimation: lovedAnimation,
-                          reactionType: 'loved',
-                          curReaction: rxn,
-                          selectedImage: "images/thumb_blue.svg",
-                          unSelectedImage: "images/rsocial_thumb_outline.svg",
-                          counter: counter['liked'],
-                        )
+                                reactionAnimation: lovedAnimation,
+                                reactionType: 'loved',
+                                curReaction: rxn,
+                                selectedImage: "images/thumb_blue.svg",
+                                unSelectedImage:
+                                    "images/rsocial_thumb_outline.svg",
+                                counter: counter['liked'],
+                              )
                             : GestureDetector(
-                                onTap: () => {
-                                  reaction('loved')
-                                },
+                                onTap: () => {reaction('loved')},
                                 child: Column(
                                   children: <Widget>[
                                     Container(
@@ -1010,17 +1022,17 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                         ),
                         isDisabled
                             ? DisabledReactionButton(
-                          reactionAnimation: likedAnimation,
-                          reactionType: 'liked',
-                          curReaction: rxn,
-                          selectedImage: "images/rsocial_thumbUp_blue.svg",
-                          unSelectedImage: "images/rsocial_thumbUp_outline.svg",
-                          counter: counter['liked'],
-                        )
+                                reactionAnimation: likedAnimation,
+                                reactionType: 'liked',
+                                curReaction: rxn,
+                                selectedImage:
+                                    "images/rsocial_thumbUp_blue.svg",
+                                unSelectedImage:
+                                    "images/rsocial_thumbUp_outline.svg",
+                                counter: counter['liked'],
+                              )
                             : GestureDetector(
-                                onTap: () => {
-                                  reaction('liked')
-                                },
+                                onTap: () => {reaction('liked')},
                                 child: Column(
                                   children: <Widget>[
                                     Container(
@@ -1063,17 +1075,17 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                         ),
                         isDisabled
                             ? DisabledReactionButton(
-                          reactionAnimation: whateverAnimation,
-                          reactionType: 'whatever',
-                          curReaction: rxn,
-                          selectedImage: "images/rsocial_thumbDown_blue.svg",
-                          unSelectedImage: "images/rsocial_thumbDown_outline.svg",
-                          counter: counter['whatever'],
-                        )
-                        : GestureDetector(
-                                onTap: () => {
-                                  reaction('whatever')
-                                },
+                                reactionAnimation: whateverAnimation,
+                                reactionType: 'whatever',
+                                curReaction: rxn,
+                                selectedImage:
+                                    "images/rsocial_thumbDown_blue.svg",
+                                unSelectedImage:
+                                    "images/rsocial_thumbDown_outline.svg",
+                                counter: counter['whatever'],
+                              )
+                            : GestureDetector(
+                                onTap: () => {reaction('whatever')},
                                 child: Column(
                                   children: <Widget>[
                                     Container(
@@ -1113,17 +1125,16 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                         ),
                         isDisabled
                             ? DisabledReactionButton(
-                          reactionAnimation: hatedAnimation,
-                          reactionType: 'hated',
-                          curReaction: rxn,
-                          selectedImage: "images/rsocial_punch_blue.svg",
-                          unSelectedImage: "images/rsocial_punch_outline.svg",
-                          counter: counter['hated'],
-                        )
+                                reactionAnimation: hatedAnimation,
+                                reactionType: 'hated',
+                                curReaction: rxn,
+                                selectedImage: "images/rsocial_punch_blue.svg",
+                                unSelectedImage:
+                                    "images/rsocial_punch_outline.svg",
+                                counter: counter['hated'],
+                              )
                             : GestureDetector(
-                                onTap: () => {
-                                  reaction('hated')
-                                },
+                                onTap: () => {reaction('hated')},
                                 child: Column(
                                   children: <Widget>[
                                     Container(
@@ -1170,7 +1181,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                   GestureDetector(
                     onTap: !_isCreatingLink
                         ? () async {
-                            final Uri uri = await makeLink('postid', widget.userPost);
+                            final Uri uri =
+                                await makeLink('postid', widget.userPost);
                             String sender = uri.queryParameters['postid'];
                             print("link is: $uri \n sent by: $sender");
 
@@ -1211,8 +1223,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     );
   }
 }
-
-
 
 // class ReactionButton extends StatefulWidget {
 //   String reactionType;
