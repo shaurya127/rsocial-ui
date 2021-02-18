@@ -7,6 +7,7 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:rsocial2/deep_links.dart';
 import 'model/user.dart';
 
 import 'Screens/bottom_nav_bar.dart';
@@ -57,41 +58,14 @@ class _AuthScreenState extends State<AuthScreen> {
     // TODO: implement initState
     super.initState();
     isUserAuthenticated();
-    initDynamicLinks();
+    checkForDynamicLinks();
   }
 
-  void initDynamicLinks() async {
+  void checkForDynamicLinks() async {
     setState(() {
       findingLink = true;
     });
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    //final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
-    //final Uri deepLink = data?.link;
-
-    FirebaseDynamicLinks.instance.onLink(
-        onSuccess: (PendingDynamicLinkData dynamicLink) async {
-      final Uri deepLink = dynamicLink?.link;
-      if (deepLink != null) {
-        print(
-            "the postid is:${deepLink.queryParameters['postid']}"); // <- prints 'abc'
-        postId = deepLink.queryParameters['postid'];
-        inviteSenderId = deepLink.queryParameters['sender'];
-        prefs.setString('inviteSenderId', inviteSenderId);
-      }
-    }, onError: (OnLinkErrorException e) async {
-      print('onLinkError');
-      print(e.message);
-    });
-
-    final PendingDynamicLinkData data =
-        await FirebaseDynamicLinks.instance.getInitialLink();
-    final Uri deepLink = data?.link;
-
-    if (deepLink != null) {
-      postId = deepLink.queryParameters['postid'];
-      inviteSenderId = deepLink.queryParameters['sender'];
-    }
-
+    initDynamicLinks();
     setState(() {
       findingLink = false;
     });

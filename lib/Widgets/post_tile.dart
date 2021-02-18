@@ -14,7 +14,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/display_post.dart';
+import 'package:rsocial2/Screens/landing_page.dart';
 import 'package:rsocial2/contants/config.dart';
+import 'package:rsocial2/deep_links.dart';
 import 'package:rsocial2/functions.dart';
 
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
@@ -34,6 +36,8 @@ import 'package:package_info/package_info.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 
+import 'disabled_reaction_button.dart';
+
 Map<String, Map<String, int>> m = new Map();
 Map<String, Map<String, int>> mp = new Map();
 Map<String, String> prft = new Map();
@@ -42,7 +46,12 @@ class Post_Tile extends StatefulWidget {
   Post userPost;
   var photoUrl;
   User curUser;
-  Post_Tile({@required this.curUser, this.userPost, this.photoUrl});
+  final VoidCallback onPressDelete;
+  Post_Tile(
+      {@required this.curUser,
+      this.userPost,
+      this.photoUrl,
+      this.onPressDelete});
   @override
   _Post_TileState createState() => _Post_TileState();
 }
@@ -81,7 +90,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   AudioCache audioCache;
   int reactionSizeIncrease = 3;
   bool _isCreatingLink = false;
-  List<String> popupMenuItems = ['Reactions', 'View post'];
+  bool isDeleting = false;
 
   getReactions() {
     print(rxn);
@@ -392,69 +401,16 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     return;
   }
 
-  Future<Uri> createDynamicLink() async {
-    var queryParameters = {
-      'postid': widget.userPost.id.toString(),
-    };
-
-    //Uri link =Uri.http('flutters.page.link', 'invites', queryParameters);
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  Future<Uri> makeLink(String type,Post post) async {
+    Uri uri;
     setState(() {
-      _isCreatingLink = true;
+      _isCreatingLink=true;
     });
-
-    final DynamicLinkParameters parameters = DynamicLinkParameters(
-        // This should match firebase but without the username query param
-        uriPrefix: 'https://rsocial.page.link',
-        // This can be whatever you want for the uri, https://yourapp.com/groupinvite?username=$userName
-        link: Uri.parse(
-            'https://rsocial.page.link/posts?postid=${widget.userPost.id}&'),
-        androidParameters: AndroidParameters(
-          packageName: packageInfo.packageName,
-          minimumVersion: 0,
-        ),
-
-        // dynamicLinkParametersOptions: DynamicLinkParametersOptions(
-        //   shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short,
-        // ),
-
-        iosParameters: IosParameters(
-          bundleId: packageInfo.packageName,
-          minimumVersion: '0',
-          appStoreId: '123456789',
-        ),
-        googleAnalyticsParameters: GoogleAnalyticsParameters(
-          campaign: 'example-promo',
-          medium: 'social',
-          source: 'orkut',
-        ),
-        itunesConnectAnalyticsParameters: ItunesConnectAnalyticsParameters(
-          providerToken: '123456',
-          campaignToken: 'example-promo',
-        ),
-        socialMetaTagParameters: SocialMetaTagParameters(
-            title: '${widget.userPost.user.fname} on RSocial',
-            // description: event.post?.excerpt,
-            imageUrl: widget.userPost.fileUpload.isNotEmpty
-                ? Uri.parse(widget.userPost.fileUpload[0])
-                : Uri.parse(widget.userPost.user.photoUrl)),
-        navigationInfoParameters:
-            NavigationInfoParameters(forcedRedirectEnabled: true));
-
-    final link = await parameters.buildUrl();
-    final ShortDynamicLink shortenedLink =
-        await DynamicLinkParameters.shortenUrl(
-      link,
-      DynamicLinkParametersOptions(
-          shortDynamicLinkPathLength: ShortDynamicLinkPathLength.unguessable),
-    );
+    uri = await createDynamicLink(type, post);
     setState(() {
-      //_linkMessage = url;
-      //print(link.queryParameters['sender']);
-      _isCreatingLink = false;
+      _isCreatingLink=false;
     });
-    //print(shortenedLink.shortUrl.queryParameters['postid']);
-    return shortenedLink.shortUrl;
+    return uri;
   }
 
   Future<void> share(Uri uri) async {
@@ -697,7 +653,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                               Container(
                                 //transform: Matrix4.translationValues(-38, 0.0, 0.0),
                                 child: Text(
-                                  "Profit",
+                                  "Gain",
                                   style: TextStyle(
                                     fontFamily: "Lato",
                                     fontSize: 12,
@@ -844,8 +800,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                           size: 30,
                           color: colorGreyTint,
                         ),
-                        itemBuilder: (_) => <PopupMenuItem<String>>[
-                          new PopupMenuItem<String>(
+                        itemBuilder: (_) => <PopupMenuItem>[
+                          new PopupMenuItem(
                               child: GestureDetector(
                                   onTap: () {
                                     Navigator.pop(context);
@@ -860,7 +816,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                             )));
                                   },
                                   child: new Text('View post'))),
-                          new PopupMenuItem<String>(
+                          new PopupMenuItem(
                               child: GestureDetector(
                                   onTap: () {
                                     buildReactionTile();
@@ -879,6 +835,11 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                             )));
                                   },
                                   child: new Text('Reactions'))),
+                          if (widget.userPost.user.id == curUser.id)
+                            new PopupMenuItem(
+                                child: GestureDetector(
+                                    onTap: widget.onPressDelete,
+                                    child: new Text('Delete')))
                         ],
                       )
                     ],
@@ -903,7 +864,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                       style: TextStyle(
                         fontSize: 16,
                         fontFamily: "Lato",
-                        color: postDesc,
+                        color: colorUnselectedBottomNav,
                       ),
                     )),
             widget.userPost.fileUpload.length != 0
@@ -995,65 +956,17 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                     child: Row(
                       children: <Widget>[
                         isDisabled
-                            ? Column(
-                                children: <Widget>[
-                                  Container(
-                                    height: 23 +
-                                        reactionSizeIncrease *
-                                            lovedAnimation.value,
-                                    width: 23 +
-                                        reactionSizeIncrease *
-                                            lovedAnimation.value,
-                                    // child: Icon(
-                                    //   MyFlutterApp.rsocial_logo_thumb_upside,
-                                    //   color: rxn == "loved"
-                                    //       ? colorPrimaryBlue
-                                    //       : postIcons,
-                                    //   size: 30,
-                                    // ),
-                                    child: rxn == "loved"
-                                        ? SvgPicture.asset(
-                                            "images/thumb_blue.svg",
-                                            // color: rxn == "loved"
-                                            //     ? colorPrimaryBlue
-                                            //     : postIcons,
-                                            height: 40,
-                                          )
-                                        : SvgPicture.asset(
-                                            "images/rsocial_thumb_outline.svg",
-                                            height: 40,
-                                          ),
-                                  ),
-                                  SizedBox(
-                                    height: 4 -
-                                        reactionSizeIncrease *
-                                            lovedAnimation.value,
-                                  ),
-                                  Text(
-                                    counter['loved'].toString(),
-                                    style: TextStyle(
-                                      fontFamily: "Lato",
-                                      fontSize: 10,
-                                      color: postDesc,
-                                    ),
-                                  )
-                                ],
-                              )
+                            ? DisabledReactionButton(
+                          reactionAnimation: lovedAnimation,
+                          reactionType: 'loved',
+                          curReaction: rxn,
+                          selectedImage: "images/thumb_blue.svg",
+                          unSelectedImage: "images/rsocial_thumb_outline.svg",
+                          counter: counter['liked'],
+                        )
                             : GestureDetector(
                                 onTap: () => {
                                   reaction('loved')
-                                  // widget.userPost.user.id != widget.curUser.id
-                                  //     ?
-                                  // //     ? Fluttertoast.showToast(
-                                  // //         msg: "You cannot react on your own post!",
-                                  // //         toastLength: Toast.LENGTH_SHORT,
-                                  // //         gravity: ToastGravity.BOTTOM,
-                                  // //         fontSize: 15)
-                                  // //     :
-                                  // (rxn == 'loved'
-                                  //     ? {react("noreact"), counter['loved']--}
-                                  //     : {react("loved"), counter['loved']++})
-                                  //     : print("not allowed")
                                 },
                                 child: Column(
                                   children: <Widget>[
@@ -1064,14 +977,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                       width: 23 +
                                           reactionSizeIncrease *
                                               lovedAnimation.value,
-
-                                      // child: Icon(
-                                      //   MyFlutterApp.rsocial_logo_thumb_upside,
-                                      //   color: rxn == "loved"
-                                      //       ? colorPrimaryBlue
-                                      //       : postIcons,
-                                      //   size: 35,
-                                      // ),
                                       child: rxn == "loved"
                                           ? SvgPicture.asset(
                                               "images/thumb_blue.svg",
@@ -1092,7 +997,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                       style: TextStyle(
                                         fontFamily: "Lato",
                                         fontSize: 10,
-                                        color: postDesc,
+                                        color: colorUnselectedBottomNav,
                                       ),
                                     )
                                   ],
@@ -1104,53 +1009,17 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                               likedAnimation.value * reactionSizeIncrease / 2,
                         ),
                         isDisabled
-                            ? Column(
-                                children: <Widget>[
-                                  Container(
-                                    height: 23 +
-                                        reactionSizeIncrease *
-                                            likedAnimation.value,
-                                    width: 23 +
-                                        reactionSizeIncrease *
-                                            likedAnimation.value,
-                                    child: rxn == "liked"
-                                        ? SvgPicture.asset(
-                                            "images/rsocial_thumbUp_blue.svg",
-                                          )
-                                        : SvgPicture.asset(
-                                            "images/rsocial_thumbUp_outline.svg"),
-                                  ),
-                                  //Icon(Icons.thumb_up,size: 30,color:postIcons),
-                                  SizedBox(
-                                    height: 4 -
-                                        reactionSizeIncrease *
-                                            likedAnimation.value,
-                                  ),
-                                  Text(
-                                    counter['liked'].toString(),
-                                    style: TextStyle(
-                                      fontFamily: "Lato",
-                                      fontSize: 10,
-                                      color: postDesc,
-                                    ),
-                                  )
-                                ],
-                              )
+                            ? DisabledReactionButton(
+                          reactionAnimation: likedAnimation,
+                          reactionType: 'liked',
+                          curReaction: rxn,
+                          selectedImage: "images/rsocial_thumbUp_blue.svg",
+                          unSelectedImage: "images/rsocial_thumbUp_outline.svg",
+                          counter: counter['liked'],
+                        )
                             : GestureDetector(
                                 onTap: () => {
                                   reaction('liked')
-                                  // widget.userPost.user.id != widget.curUser.id
-                                  //     ?
-                                  // //     ? Fluttertoast.showToast(
-                                  // //         msg: "You cannot react on your own post!",
-                                  // //         toastLength: Toast.LENGTH_SHORT,
-                                  // //         gravity: ToastGravity.BOTTOM,
-                                  // //         fontSize: 15)
-                                  // //     :
-                                  // (rxn == 'liked'
-                                  //     ? {react("noreact"), counter['liked']--}
-                                  //     : {react("liked"), counter['liked']++})
-                                  //     : print("not allowed")
                                 },
                                 child: Column(
                                   children: <Widget>[
@@ -1179,7 +1048,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                       style: TextStyle(
                                         fontFamily: "Lato",
                                         fontSize: 10,
-                                        color: postDesc,
+                                        color: colorUnselectedBottomNav,
                                       ),
                                     )
                                   ],
@@ -1193,56 +1062,17 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   2,
                         ),
                         isDisabled
-                            ? Column(
-                                children: <Widget>[
-                                  Container(
-                                      height: 23 +
-                                          reactionSizeIncrease *
-                                              whateverAnimation.value,
-                                      width: 23 +
-                                          reactionSizeIncrease *
-                                              whateverAnimation.value,
-                                      child: rxn == "whatever"
-                                          ? SvgPicture.asset(
-                                              "images/rsocial_thumbDown_blue.svg")
-                                          : SvgPicture.asset(
-                                              "images/rsocial_thumbDown_outline.svg")),
-                                  SizedBox(
-                                    height: 4 -
-                                        reactionSizeIncrease *
-                                            whateverAnimation.value,
-                                  ),
-                                  Text(
-                                    counter['whatever'].toString(),
-                                    style: TextStyle(
-                                      fontFamily: "Lato",
-                                      fontSize: 10,
-                                      color: postDesc,
-                                    ),
-                                  )
-                                ],
-                              )
-                            : GestureDetector(
+                            ? DisabledReactionButton(
+                          reactionAnimation: whateverAnimation,
+                          reactionType: 'whatever',
+                          curReaction: rxn,
+                          selectedImage: "images/rsocial_thumbDown_blue.svg",
+                          unSelectedImage: "images/rsocial_thumbDown_outline.svg",
+                          counter: counter['whatever'],
+                        )
+                        : GestureDetector(
                                 onTap: () => {
                                   reaction('whatever')
-                                  // widget.userPost.user.id != widget.curUser.id
-                                  //     ?
-                                  // //     ? Fluttertoast.showToast(
-                                  // //         msg: "You cannot react on your own post!",
-                                  // //         toastLength: Toast.LENGTH_SHORT,
-                                  // //         gravity: ToastGravity.BOTTOM,
-                                  // //         fontSize: 15)
-                                  // //     :
-                                  // (rxn == 'whatever'
-                                  //     ? {
-                                  //   react("noreact"),
-                                  //   counter['whatever']--
-                                  // }
-                                  //     : {
-                                  //   react("whatever"),
-                                  //   counter['whatever']++
-                                  // })
-                                  //     : print("not allowed")
                                 },
                                 child: Column(
                                   children: <Widget>[
@@ -1268,7 +1098,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                       style: TextStyle(
                                         fontFamily: "Lato",
                                         fontSize: 10,
-                                        color: postDesc,
+                                        color: colorUnselectedBottomNav,
                                       ),
                                     )
                                   ],
@@ -1282,58 +1112,17 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   2,
                         ),
                         isDisabled
-                            ? Column(
-                                children: <Widget>[
-                                  Container(
-                                    height: 23 +
-                                        reactionSizeIncrease *
-                                            hatedAnimation.value,
-                                    width: 23 +
-                                        reactionSizeIncrease *
-                                            hatedAnimation.value,
-                                    child: rxn == "hated"
-                                        ? SvgPicture.asset(
-                                            "images/rsocial_punch_blue.svg",
-                                            fit: BoxFit.cover,
-                                          )
-                                        : SvgPicture.asset(
-                                            "images/rsocial_punch_outline.svg",
-                                            fit: BoxFit.cover,
-                                          ),
-                                  ),
-                                  SizedBox(
-                                    height: 4 -
-                                        reactionSizeIncrease *
-                                            hatedAnimation.value,
-                                  ),
-                                  Text(
-                                    counter['hated'].toString(),
-                                    style: TextStyle(
-                                      fontFamily: "Lato",
-                                      fontSize: 10,
-                                      color: postDesc,
-                                    ),
-                                  )
-                                ],
-                              )
+                            ? DisabledReactionButton(
+                          reactionAnimation: hatedAnimation,
+                          reactionType: 'hated',
+                          curReaction: rxn,
+                          selectedImage: "images/rsocial_punch_blue.svg",
+                          unSelectedImage: "images/rsocial_punch_outline.svg",
+                          counter: counter['hated'],
+                        )
                             : GestureDetector(
                                 onTap: () => {
                                   reaction('hated')
-                                  // rxn == 'hated'
-                                  //     ? reaction('noreact')
-                                  //     : reaction('hated')
-                                  // widget.userPost.user.id != widget.curUser.id
-                                  //     ?
-                                  // //     ? Fluttertoast.showToast(
-                                  // //         msg: "You cannot react on your own post!",
-                                  // //         toastLength: Toast.LENGTH_SHORT,
-                                  // //         gravity: ToastGravity.BOTTOM,
-                                  // //         fontSize: 15)
-                                  // //     :
-                                  // (rxn == 'hated'
-                                  //     ? {react("noreact"), counter['hated']--}
-                                  //     : {react("hated"), counter['hated']++})
-                                  //     : print("not allowed")
                                 },
                                 child: Column(
                                   children: <Widget>[
@@ -1364,7 +1153,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                       style: TextStyle(
                                         fontFamily: "Lato",
                                         fontSize: 10,
-                                        color: postDesc,
+                                        color: colorUnselectedBottomNav,
                                       ),
                                     )
                                   ],
@@ -1381,11 +1170,9 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                   GestureDetector(
                     onTap: !_isCreatingLink
                         ? () async {
-                            final Uri uri = await createDynamicLink();
-                            //final Uri uri=_linkMessage;
+                            final Uri uri = await makeLink('postid', widget.userPost);
                             String sender = uri.queryParameters['postid'];
                             print("link is: $uri \n sent by: $sender");
-                            //initDynamicLinks();
 
                             final RenderBox box = context.findRenderObject();
                             share(uri);
@@ -1408,7 +1195,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                             style: TextStyle(
                               fontFamily: "Lato",
                               fontSize: 10,
-                              color: postDesc,
+                              color: colorUnselectedBottomNav,
                             ),
                           ),
                         )
@@ -1424,3 +1211,180 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     );
   }
 }
+
+
+
+// class ReactionButton extends StatefulWidget {
+//   String reactionType;
+//   Function ontap;
+//   String imageSelected;
+//   Animation reactionAnimation;
+//   Map<String, int> counter;
+//   String imageNotSelected;
+//   String currentReaction;
+//   int reactionCount;
+//   Post userPost;
+//   ReactionButton({this.reactionType,this.ontap,this.imageSelected,
+//     this.imageNotSelected,this.currentReaction,this.reactionCount,
+//   this.reactionAnimation,this.counter,this.userPost});
+//   @override
+//   _ReactionButtonState createState() => _ReactionButtonState();
+// }
+//
+// class _ReactionButtonState extends State<ReactionButton> with TickerProviderStateMixin{
+//   int reactionSizeIncrease = 3;
+//   AnimationController animationController;
+//   AudioPlayer audioPlayer;
+//   AudioCache audioCache;
+//
+//   react() async {
+//     setState(() {
+//       audioCache.play("click.mp3");
+//       String prvrxn = widget.currentReaction;
+//       widget.currentReaction = widget.reactionType;
+//       widget.counter[prvrxn]--;
+//       widget.counter[widget.currentReaction]++;
+//       //print(widget.userPost.profit);
+//       m[widget.userPost.id] = {widget.currentReaction: widget.counter[widget.currentReaction]};
+//       //print("updating mp");
+//       mp[widget.userPost.id] = widget.counter;
+//       prft[widget.userPost.id] = widget.userPost.profit;
+//     });
+//     var url = storyEndPoint + 'react';
+//     var user = await FirebaseAuth.instance.currentUser();
+//     //print(uid);
+//     Reaction reaction = Reaction(
+//         id: curUser.id, storyId: widget.userPost.id, reactionType: widget.currentReaction);
+//     var token = await user.getIdToken();
+//     var response;
+//     try {
+//       response = await http.put(
+//         url,
+//         encoding: Encoding.getByName("utf-8"),
+//         body: jsonEncode(reaction.toJson()),
+//         headers: {
+//           "Authorization": "Bearer: $token",
+//           "Content-Type": "application/json",
+//         },
+//       );
+//     } catch (e) {
+//       setState(() {
+//         //isDisabled = false;
+//       });
+//     }
+//
+//     print(response.statusCode);
+//     if (response.statusCode == 200) {
+//       final jsonUser = jsonDecode(response.body);
+//       var body = jsonUser['body'];
+//       var body1 = jsonDecode(body);
+//       print("body is $body");
+//
+//       //print(body1);
+//       var msg = body1['message'];
+//       setState(() {
+//         prft[widget.userPost.id] = msg["PresentValue"].toString();
+//       });
+//
+//       // if (widget.userPost.storyType == 'Wage')
+//       //   widget.userPost = Post.fromJsonW(msg);
+//       // else
+//       //   widget.userPost = Post.fromJsonI(msg);
+//
+//       // getReactions();
+//
+//       // });
+//       setState(() {});
+//     }
+//     //print("hello hello");
+//     // setState(() {
+//     //   isDisabled = false;
+//     // });
+//   }
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     audioPlayer = new AudioPlayer();
+//     audioCache = new AudioCache(fixedPlayer: audioPlayer);
+//     animationController =
+//         AnimationController(duration: Duration(milliseconds: 400), vsync: this);
+//     widget.reactionAnimation = CurvedAnimation(
+//         parent: animationController,
+//         curve: Curves.easeIn,
+//         reverseCurve: Curves.easeIn);
+//   }
+//
+//   @override
+//   void dispose() {
+//     animationController.dispose();
+//     super.dispose();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       children: [
+//         GestureDetector(
+//           onTap: (){
+//             widget.ontap;
+//             if (widget.userPost.user.id != curUser.id) {
+//               animationController.forward();
+//               animationController.addListener(() {
+//                   setState(() {});
+//                 });
+//               animationController.addStatusListener((status) {
+//                   if (status == AnimationStatus.completed) {
+//                     animationController.reverse();
+//                     animationController.addListener(() {
+//                       setState(() {});
+//                     });
+//                   }
+//                 });
+//               // if (widget.currentReaction == widget.reactionType) {
+//               //   react('noreact');
+//               // } else {
+//                 react();
+//               //}
+//             } else
+//               Fluttertoast.showToast(
+//                   msg: "You cannot react on your own post",
+//                   toastLength: Toast.LENGTH_SHORT,
+//                   gravity: ToastGravity.BOTTOM,
+//                   fontSize: 15);
+//           },
+//           child: Column(
+//             children: <Widget>[
+//               Container(
+//                   height: 23 +
+//                       reactionSizeIncrease *
+//                           widget.reactionAnimation.value,
+//                   width: 23 +
+//                       reactionSizeIncrease *
+//                           widget.reactionAnimation.value,
+//                   child: widget.currentReaction == widget.reactionType
+//                       ? SvgPicture.asset(
+//                       widget.imageSelected)
+//                       : SvgPicture.asset(
+//                       widget.imageNotSelected)),
+//               SizedBox(
+//                 height: 4 -
+//                     reactionSizeIncrease *
+//                         widget.reactionAnimation.value,
+//               ),
+//               Text(
+//                 widget.reactionCount.toString(),
+//                 style: TextStyle(
+//                   fontFamily: "Lato",
+//                   fontSize: 10,
+//                   color: colorUnselectedBottomNav ,
+//                 ),
+//               )
+//             ],
+//           ),
+//         ),
+//
+//       ],
+//     );
+//   }
+// }

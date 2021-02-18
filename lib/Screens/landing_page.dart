@@ -30,11 +30,13 @@ class Landing_Page extends StatefulWidget {
 }
 
 class _Landing_PageState extends State<Landing_Page> {
+  final key = GlobalKey<AnimatedListState>();
   var photourl;
   //List<Post> posts = [];
   List<Post_Tile> postTiles = [];
   bool isLoading = false;
   bool isPostLoadFail = false;
+  int length;
 
   @override
   void initState() {
@@ -138,23 +140,90 @@ class _Landing_PageState extends State<Landing_Page> {
         ),
       ));
     } else {
-      List<Post_Tile> postTiles = [];
-      //print(posts.length);
-      for (int i = 0; i < widget.posts.length; i++) {
-        Post_Tile tile = Post_Tile(
-            curUser: widget.curUser,
-            userPost: widget.posts[i],
-            photoUrl: photourl);
-        postTiles.add(tile);
-      }
+      length = widget.posts.length;
+      // List<Post_Tile> postTiles = [];
+      // //print(posts.length);
+      // for (int i = 0; i < widget.posts.length; i++) {
+      //   Post_Tile tile = Post_Tile(
+      //       curUser: widget.curUser,
+      //       userPost: widget.posts[i],
+      //       photoUrl: photourl);
+      //   postTiles.add(tile);
+      // }
       setState(() {
-        this.postTiles = postTiles;
         widget.isLoading = false;
       });
-      return ListView(
-        children: postTiles.reversed.toList(),
+      widget.posts = widget.posts.reversed.toList();
+      return Column(
+        children: [
+          Expanded(
+              child:AnimatedList(
+                key: key,
+                initialItemCount: length,
+                itemBuilder: (context,index,animation)=>Post_Tile(
+                    curUser: widget.curUser,
+                    onPressDelete: ()=>deletePost(index),
+                    userPost: widget.posts[index],
+                    photoUrl: photourl),
+              ) ),
+        ],
       );
     }
+  }
+
+  void deletePost(int index) async {
+    var url = storyEndPoint + 'delete';
+    var user = await FirebaseAuth.instance.currentUser();
+    var token = await user.getIdToken();
+
+    var response;
+
+    response = await http.post(
+      url,
+      encoding: Encoding.getByName("utf-8"),
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode({"id": curUser.id, "StoryId": widget.posts[index].id}
+      ),);
+
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      key.currentState.removeItem(
+        index,
+            (context, animation) => slideIt(context,index,animation),
+        duration: const Duration(milliseconds: 500)
+      );
+      final item = widget.posts.removeAt(index);
+      setState(() {
+        length = widget.posts.length;
+      });
+      Navigator.pop(context);
+      getUserPosts();
+    }
+    else
+      print("error!!");
+    //print("hello hello");
+    // setState(() {
+    //   isDisabled = false;
+    // });
+  }
+
+  Widget slideIt(BuildContext context, int index, animation) {
+    var item = widget.posts[index];
+    return SlideTransition(
+      position: Tween<Offset>(
+        begin: const Offset(-1, 0),
+        end: Offset(0, 0),
+      ).animate(animation),
+      child: Post_Tile(
+        curUser: curUser,
+        photoUrl: "",
+        onPressDelete: ()=> deletePost(index),
+        userPost: item,
+      )
+    );
   }
 
   @override

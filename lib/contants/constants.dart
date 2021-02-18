@@ -20,7 +20,6 @@ const facebookTextColor = Color(0xff285296);
 const rsocialTextColor = Color(0xff4DBAE6);
 const googleButtonColor = Color(0xffF5E8EA);
 const facebookButtonColor = Color(0xffE6EAF4);
-const postDesc = Color(0xff707070);
 const nameCol = Color(0xff263238);
 const postIcons = Colors.grey;
 const colorProfitPositive = Color(0xff37B44B);
