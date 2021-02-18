@@ -24,6 +24,7 @@ import 'package:rsocial2/Screens/wage.dart';
 import 'package:rsocial2/Widgets/alert_box.dart';
 import 'package:rsocial2/auth.dart';
 import 'package:rsocial2/authLogic.dart';
+import '../deep_links.dart';
 import '../model/user.dart';
 import 'package:rsocial2/Screens/landing_page.dart';
 import 'package:rsocial2/Screens/nav_drawer.dart';
@@ -721,50 +722,6 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   getUserAwait() async {
     await getUser();
-  }
-
-  void initDynamicLinks() async {
-    // setState(() {
-    //   findingLink=true;
-    // });
-    //final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
-    //final Uri deepLink = data?.link;
-
-    FirebaseDynamicLinks.instance.onLink(
-        onSuccess: (PendingDynamicLinkData dynamicLink) async {
-      final Uri deepLink = dynamicLink?.link;
-      if (deepLink != null) {
-        //print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
-        //postId = deepLink.queryParameters['postid'];
-        if (deepLink.queryParameters['postid'] != null)
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      DisplayPost(postId: deepLink.queryParameters['postid'])));
-      }
-    }, onError: (OnLinkErrorException e) async {
-      print('onLinkError');
-      print(e.message);
-    });
-
-    final PendingDynamicLinkData data =
-        await FirebaseDynamicLinks.instance.getInitialLink();
-    final Uri deepLink = data?.link;
-
-    if (deepLink != null) {
-      //postId = deepLink.queryParameters['postid'];
-      if (deepLink.queryParameters['postid'] != null)
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    DisplayPost(postId: deepLink.queryParameters['postid'])));
-    }
-
-    // setState(() {
-    //   findingLink=false;
-    // });
   }
 
   final List<String> _labels = ["Ticker", "Bonds", "Slip", "Gong", "Yollar"];

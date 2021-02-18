@@ -101,38 +101,57 @@ class User {
     }
 
     return User(
-        id: json['id'],
-        photoUrl: json['ProfilePic'],
-        fname: json['FName'],
-        lname: json['LName'],
-        email: json['Email'],
-        lollarAmount: json['LollarAmount'].floor(),
-        socialStanding: json['SocialStanding'],
-        bio: json['Bio'],
-        gender: json['gender'],
-        reactionType: json["reaction_type"],
-        dob: json['dob'],
-        connection: json["Connection"] == null ? [] : frnds,
-        pendingConnection: json["PendingConnection"] == null ? [] : pending,
-        sentPendingConnection:
-            json["SentPendingConnection"] == null ? [] : outgoing,
-        receivedPendingConnection:
-            json["ReceivedPendingConnection"] == null ? [] : incoming,
-        userMap: map,
-        connectionCount: json['NumConnection'],
-        totalActiveInvestmentAmount: json['TotalActiveInvestmentAmount'],
-        totalWageEarningAmount: json['TotalWageEarningAmount'],
-        totalInvestmentEarningActiveAmount:
-            json['TotalInvestmentEarningActiveAmount'].floor(),
-        totalInvestmentEarningMaturedAmount:
-            json['TotalInvestmentEarningMaturedAmount'].floor(),
-        totalPlatformEngagementAmount:
-            json['TotalPlatformEngagementAmount'].floor(),
-        joiningBonus: json['JoiningBonus'].floor(),
-        totalAvailableYollar: json['TotalAvailableYollar'].floor(),
-        totalPlatformInteractionAmount:
-            json['TotalPlatformInteractionAmount'].floor(),
-        referralAmount: json['ReferralAmount'].floor());
+      id: json['id'],
+      photoUrl: json['ProfilePic'],
+      fname: json['FName'],
+      lname: json['LName'],
+      email: json['Email'],
+      lollarAmount: json['LollarAmount'] != null
+          ? json['LollarAmount'].floor()
+          : json['LollarAmount'],
+      socialStanding: json['SocialStanding'],
+      bio: json['Bio'],
+      gender: json['gender'],
+      reactionType: json["reaction_type"],
+      dob: json['dob'],
+      connection: json["Connection"] == null ? [] : frnds,
+      pendingConnection: json["PendingConnection"] == null ? [] : pending,
+      sentPendingConnection:
+          json["SentPendingConnection"] == null ? [] : outgoing,
+      receivedPendingConnection:
+          json["ReceivedPendingConnection"] == null ? [] : incoming,
+      userMap: map,
+      connectionCount: json['NumConnection'],
+      totalActiveInvestmentAmount: json['TotalActiveInvestmentAmount'] != null
+          ? json['TotalActiveInvestmentAmount'].floor()
+          : json['TotalActiveInvestmentAmount'],
+      totalWageEarningAmount: json['TotalWageEarningAmount'],
+      totalInvestmentEarningActiveAmount:
+          json['TotalInvestmentEarningActiveAmount'] != null
+              ? json['TotalInvestmentEarningActiveAmount'].floor()
+              : json['TotalInvestmentEarningActiveAmount'],
+      totalInvestmentEarningMaturedAmount:
+          json['TotalInvestmentEarningMaturedAmount'] != null
+              ? json['TotalInvestmentEarningMaturedAmount'].floor()
+              : json['TotalInvestmentEarningMaturedAmount'],
+      totalPlatformEngagementAmount:
+          json['TotalPlatformEngagementAmount'] != null
+              ? json['TotalPlatformEngagementAmount'].floor()
+              : json['TotalPlatformEngagementAmount'],
+      joiningBonus: json['JoiningBonus'] != null
+          ? json['JoiningBonus'].floor()
+          : json['JoiningBonus'],
+      totalAvailableYollar: json['TotalAvailableYollar'] != null
+          ? json['TotalAvailableYollar'].floor()
+          : json['TotalAvailableYollar'],
+      totalPlatformInteractionAmount:
+          json['TotalPlatformInteractionAmount'] != null
+              ? json['TotalPlatformInteractionAmount'].floor()
+              : json['TotalInvestmentEarningActiveAmount'],
+      referralAmount: json['ReferralAmount'] != null
+          ? json['ReferralAmount'].floor()
+          : json['ReferralAmount'],
+    );
   }
 
   Map<String, dynamic> toJson() => {

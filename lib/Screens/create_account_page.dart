@@ -12,6 +12,7 @@ import 'package:rsocial2/main.dart';
 
 import '../auth.dart';
 import '../contants/constants.dart';
+import '../deep_links.dart';
 import 'choose_register.dart';
 import 'login_page.dart';
 
@@ -21,49 +22,22 @@ class CreateAccount extends StatefulWidget {
 }
 
 class _CreateAccountState extends State<CreateAccount> {
+  bool findingLink = false;
   @override
   void initState() {
     super.initState();
-    initDynamicLinks();
+    checkForDynamicLinks();
     FirebaseAnalytics().setCurrentScreen(screenName: "Create_Acc");
   }
 
-  void initDynamicLinks() async {
-    // setState(() {
-    //   findingLink=true;
-    // });
-    //final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
-    //final Uri deepLink = data?.link;
-
-    FirebaseDynamicLinks.instance.onLink(
-        onSuccess: (PendingDynamicLinkData dynamicLink) async {
-      final Uri deepLink = dynamicLink?.link;
-      if (deepLink != null) {
-        print(
-            "the postid is:${deepLink.queryParameters['postid']}"); // <- prints 'abc'
-        postId = deepLink.queryParameters['postid'];
-        inviteSenderId = deepLink.queryParameters['sender'];
-        print("the postid is:${deepLink.queryParameters['sender']}");
-        //Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
-      }
-    }, onError: (OnLinkErrorException e) async {
-      print('onLinkError');
-      print(e.message);
+  void checkForDynamicLinks() async {
+    setState(() {
+      findingLink = true;
     });
-
-    final PendingDynamicLinkData data =
-        await FirebaseDynamicLinks.instance.getInitialLink();
-    final Uri deepLink = data?.link;
-
-    if (deepLink != null) {
-      postId = deepLink.queryParameters['postid'];
-      inviteSenderId = deepLink.queryParameters['sender'];
-      //Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
-    }
-
-    // setState(() {
-    //   findingLink=false;
-    // });
+    initDynamicLinks();
+    setState(() {
+      findingLink = false;
+    });
   }
 
   @override

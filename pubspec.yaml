@@ -52,15 +52,11 @@ dependencies:
   uuid: ^2.0.0
   sembast:
   timeago: ^2.0.29
-  audioplayers:
   fluttertoast:
   overlay_support:
   animated_splash_screen:
   flutter_app_badger: ^1.1.2
-
-
-
-
+  provider:
 
 dev_dependencies:
   flutter_test:
