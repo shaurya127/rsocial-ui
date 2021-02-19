@@ -47,13 +47,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 final googleSignIn = GoogleSignIn();
 final fblogin = FacebookLogin();
 User curUser;
+User savedUser;
 PackageInfo packageInfo;
-int yA;
-int ss;
-int tc;
-String fn;
-String ln;
-String pp;
+List<Post> postsGlobal = [];
 //SharedPreferences prefs;
 
 class BottomNavBar extends StatefulWidget {
@@ -80,11 +76,9 @@ class _BottomNavBarState extends State<BottomNavBar>
   final _authInstance = FirebaseAuth.instance;
   bool isLoading = false;
   String photourl;
-  //User curUser;
   bool isFailedUserPost = false;
   bool isFailedGetAllUser = false;
   bool isFailedGetUser = false;
-  List<Post> posts = [];
   List<User> allUsers = [];
   bool isPosted = false;
   int _currentIndex = 0;
@@ -136,15 +130,16 @@ class _BottomNavBarState extends State<BottomNavBar>
         // print('Response body: ${response.body}');
         // log('Response body: ${response.body}');
         var res = json.decode(response.body);
+
         prefs.remove('inviteSenderId');
-        prefs.setString('FName', widget.currentUser.fname);
-        prefs.setString('LName', widget.currentUser.lname);
-        prefs.setInt('socialStanding', widget.currentUser.socialStanding);
-        prefs.setInt('yollarAmount', widget.currentUser.lollarAmount);
-        prefs.setString(
-            'totalConnections', widget.currentUser.connectionCount.toString());
-        prefs.setString('profilePhoto', widget.currentUser.photoUrl);
-        //prefs.setString('currentUserLName',widget.currentUser.lname);
+        // prefs.setString('FName', widget.currentUser.fname);
+        // prefs.setString('LName', widget.currentUser.lname);
+        // prefs.setInt('socialStanding', widget.currentUser.socialStanding);
+        // prefs.setInt('yollarAmount', widget.currentUser.lollarAmount);
+        // prefs.setString(
+        //     'totalConnections', widget.currentUser.connectionCount.toString());
+        // prefs.setString('profilePhoto', widget.currentUser.photoUrl);
+
         var resBody = json.decode(res['body']);
 
         var id = resBody['message']['id'];
@@ -180,6 +175,8 @@ class _BottomNavBarState extends State<BottomNavBar>
           //print("id is: ${msg['id']}");
           //print(msg);
           curUser = User.fromJson(msg);
+          saveData();
+          getData();
           //print("haha");
           //print(curUser);
           // setState(() {
@@ -233,7 +230,7 @@ class _BottomNavBarState extends State<BottomNavBar>
             List<Post> posts = [];
             if (msg == null) {
               setState(() {
-                this.posts = posts;
+                postsGlobal = posts;
                 isLoading = false;
                 isLoadingPost = false;
               });
@@ -254,7 +251,7 @@ class _BottomNavBarState extends State<BottomNavBar>
             }
             //print(posts.length);
             setState(() {
-              this.posts = posts;
+              postsGlobal = posts;
               isLoading = false;
               isLoadingPost = false;
             });
@@ -341,7 +338,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     }
   }
 
-  Future<User> getUser() async {
+  getUser() async {
     print("get user started");
     var user = await FirebaseAuth.instance.currentUser();
     var token = await user.getIdToken();
@@ -461,13 +458,14 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   getData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    yA = prefs.getInt('yollarAmount');
-    ss = prefs.getInt('socialStanding');
-    tc = prefs.getInt('totalConnections');
-    fn = prefs.getString('FName');
-    ln = prefs.getString('LName');
-    pp = prefs.getString('profilePhoto');
-    print(ss);
+    savedUser = User(
+      photoUrl: prefs.getString('profilePhoto'),
+      lollarAmount: prefs.getInt('yollarAmount'),
+      connectionCount: prefs.getInt('totalConnections'),
+      fname: prefs.getString('FName'),
+      lname: prefs.getString('LName'),
+      socialStanding: prefs.getInt('socialStanding'),
+    );
   }
 
   Future<void> getUserPosts() async {
@@ -492,7 +490,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     }
     //var id = curUser.id;
 
-    final url = storyEndPoint + "${id}/all";
+    final url = storyEndPoint + "$id/all";
     var token = await user.getIdToken();
 
     var response;
@@ -534,7 +532,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       }
       //print(posts.length);
       setState(() {
-        this.posts = posts;
+        postsGlobal = posts.reversed.toList();
         //isLoading = false;
         isLoadingPost = false;
       });
@@ -692,15 +690,15 @@ class _BottomNavBarState extends State<BottomNavBar>
   @override
   void initState() {
     super.initState();
-    getData();
     getPackageInfo();
-
+    getData();
     if (widget.isNewUser) {
       setState(() {
         isLoading = true;
       });
       createNgetUserAwait();
     } else {
+
       getUserPosts();
       getUserAwait();
       getAllUsers();
@@ -734,7 +732,6 @@ class _BottomNavBarState extends State<BottomNavBar>
     final List _screens = [
       Landing_Page(
         curUser: curUser,
-        posts: posts,
         isLoading: isLoadingPost,
         isErrorLoadingPost: isFailedUserPost,
       ),
@@ -788,12 +785,7 @@ class _BottomNavBarState extends State<BottomNavBar>
                   showLogout: true,
                 )),
               )
-            : yA == null ||
-                    ss == null ||
-                    fn == null ||
-                    ln == null ||
-                    tc == null ||
-                    pp == null
+            : savedUser == null
                 ? curUser == null || isLoading
                     ? Scaffold(
                         backgroundColor: Colors.white,
@@ -803,24 +795,8 @@ class _BottomNavBarState extends State<BottomNavBar>
                       )
                     : (postId == null
                         ? Scaffold(
-                            appBar: customAppBar(
-                                context,
-                                "",
-                                // curUser != null
-                                //     ? curUser.lollarAmount.toString()
-                                //     :
-                                yA,
-                                //curUser != null ? curUser.photoUrl :
-                                pp,
-                                // curUser != null
-                                //     ? curUser.socialStanding.toString()
-                                //     :
-                                ss),
-                            drawer: Nav_Drawer(
-                              photoUrl:
-                                  //     curUser.photoUrl != null ? curUser.photoUrl :
-                                  "",
-                            ),
+                            appBar: customAppBar(context),
+                            drawer: Nav_Drawer(),
                             body: _screens[_currentIndex],
                             bottomNavigationBar: BottomNavigationBar(
                               currentIndex: _currentIndex,
@@ -889,25 +865,8 @@ class _BottomNavBarState extends State<BottomNavBar>
                           ))
                 : (postId == null
                     ? Scaffold(
-                        appBar: customAppBar(
-                            context,
-                            "",
-                            // curUser != null
-                            //     ? curUser.lollarAmount.toString()
-                            //     :
-                            yA,
-                            //curUser != null ? curUser.photoUrl :
-                            pp,
-                            // curUser != null
-                            //     ? curUser.socialStanding.toString()
-                            //     :
-                            ss),
-                        drawer: Nav_Drawer(
-                          //currentUser: curUser,
-                          photoUrl:
-                              //     curUser.photoUrl != null ? curUser.photoUrl :
-                              "",
-                        ),
+                        appBar: customAppBar(context),
+                        drawer: Nav_Drawer(),
                         body: _screens[_currentIndex],
                         bottomNavigationBar: BottomNavigationBar(
                           currentIndex: _currentIndex,

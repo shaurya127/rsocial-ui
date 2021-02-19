@@ -110,13 +110,7 @@ class _Refer_and_EarnState extends State<Refer_and_Earn> {
   Widget build(BuildContext context) {
     return Scaffold(
       // App bar to be updated
-      appBar: customAppBar(
-        context,
-        "Refer & earn",
-        curUser.lollarAmount,
-        curUser.photoUrl,
-        curUser.socialStanding,
-      ),
+      appBar: customAppBar(context,),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

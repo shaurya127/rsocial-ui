@@ -969,14 +969,49 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                     child: Row(
                       children: <Widget>[
                         isDisabled
-                            ? DisabledReactionButton(
-                                reactionAnimation: lovedAnimation,
-                                reactionType: 'loved',
-                                curReaction: rxn,
-                                selectedImage: "images/thumb_blue.svg",
-                                unSelectedImage:
-                                    "images/rsocial_thumb_outline.svg",
-                                counter: counter['liked'],
+                            ? Column(
+                                children: <Widget>[
+                                  Container(
+                                    height: 23 +
+                                        reactionSizeIncrease *
+                                            lovedAnimation.value,
+                                    width: 23 +
+                                        reactionSizeIncrease *
+                                            lovedAnimation.value,
+                                    // child: Icon(
+                                    //   MyFlutterApp.rsocial_logo_thumb_upside,
+                                    //   color: rxn == "loved"
+                                    //       ? colorPrimaryBlue
+                                    //       : postIcons,
+                                    //   size: 30,
+                                    // ),
+                                    child: rxn == "loved"
+                                        ? SvgPicture.asset(
+                                            "images/thumb_blue.svg",
+                                            // color: rxn == "loved"
+                                            //     ? colorPrimaryBlue
+                                            //     : postIcons,
+                                            height: 40,
+                                          )
+                                        : SvgPicture.asset(
+                                            "images/rsocial_thumb_outline.svg",
+                                            height: 40,
+                                          ),
+                                  ),
+                                  SizedBox(
+                                    height: 4 -
+                                        reactionSizeIncrease *
+                                            lovedAnimation.value,
+                                  ),
+                                  Text(
+                                    counter['loved'].toString(),
+                                    style: TextStyle(
+                                      fontFamily: "Lato",
+                                      fontSize: 10,
+                                      color: colorUnselectedBottomNav,
+                                    ),
+                                  )
+                                ],
                               )
                             : GestureDetector(
                                 onTap: () => {reaction('loved')},
@@ -1021,15 +1056,37 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                               likedAnimation.value * reactionSizeIncrease / 2,
                         ),
                         isDisabled
-                            ? DisabledReactionButton(
-                                reactionAnimation: likedAnimation,
-                                reactionType: 'liked',
-                                curReaction: rxn,
-                                selectedImage:
-                                    "images/rsocial_thumbUp_blue.svg",
-                                unSelectedImage:
-                                    "images/rsocial_thumbUp_outline.svg",
-                                counter: counter['liked'],
+                            ? Column(
+                                children: <Widget>[
+                                  Container(
+                                    height: 23 +
+                                        reactionSizeIncrease *
+                                            likedAnimation.value,
+                                    width: 23 +
+                                        reactionSizeIncrease *
+                                            likedAnimation.value,
+                                    child: rxn == "liked"
+                                        ? SvgPicture.asset(
+                                            "images/rsocial_thumbUp_blue.svg",
+                                          )
+                                        : SvgPicture.asset(
+                                            "images/rsocial_thumbUp_outline.svg"),
+                                  ),
+                                  //Icon(Icons.thumb_up,size: 30,color:postIcons),
+                                  SizedBox(
+                                    height: 4 -
+                                        reactionSizeIncrease *
+                                            likedAnimation.value,
+                                  ),
+                                  Text(
+                                    counter['liked'].toString(),
+                                    style: TextStyle(
+                                      fontFamily: "Lato",
+                                      fontSize: 10,
+                                      color: colorUnselectedBottomNav,
+                                    ),
+                                  )
+                                ],
                               )
                             : GestureDetector(
                                 onTap: () => {reaction('liked')},
@@ -1074,15 +1131,34 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   2,
                         ),
                         isDisabled
-                            ? DisabledReactionButton(
-                                reactionAnimation: whateverAnimation,
-                                reactionType: 'whatever',
-                                curReaction: rxn,
-                                selectedImage:
-                                    "images/rsocial_thumbDown_blue.svg",
-                                unSelectedImage:
-                                    "images/rsocial_thumbDown_outline.svg",
-                                counter: counter['whatever'],
+                            ? Column(
+                                children: <Widget>[
+                                  Container(
+                                      height: 23 +
+                                          reactionSizeIncrease *
+                                              whateverAnimation.value,
+                                      width: 23 +
+                                          reactionSizeIncrease *
+                                              whateverAnimation.value,
+                                      child: rxn == "whatever"
+                                          ? SvgPicture.asset(
+                                              "images/rsocial_thumbDown_blue.svg")
+                                          : SvgPicture.asset(
+                                              "images/rsocial_thumbDown_outline.svg")),
+                                  SizedBox(
+                                    height: 4 -
+                                        reactionSizeIncrease *
+                                            whateverAnimation.value,
+                                  ),
+                                  Text(
+                                    counter['whatever'].toString(),
+                                    style: TextStyle(
+                                      fontFamily: "Lato",
+                                      fontSize: 10,
+                                      color: colorUnselectedBottomNav,
+                                    ),
+                                  )
+                                ],
                               )
                             : GestureDetector(
                                 onTap: () => {reaction('whatever')},
@@ -1124,14 +1200,39 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   2,
                         ),
                         isDisabled
-                            ? DisabledReactionButton(
-                                reactionAnimation: hatedAnimation,
-                                reactionType: 'hated',
-                                curReaction: rxn,
-                                selectedImage: "images/rsocial_punch_blue.svg",
-                                unSelectedImage:
-                                    "images/rsocial_punch_outline.svg",
-                                counter: counter['hated'],
+                            ? Column(
+                                children: <Widget>[
+                                  Container(
+                                    height: 23 +
+                                        reactionSizeIncrease *
+                                            hatedAnimation.value,
+                                    width: 23 +
+                                        reactionSizeIncrease *
+                                            hatedAnimation.value,
+                                    child: rxn == "hated"
+                                        ? SvgPicture.asset(
+                                            "images/rsocial_punch_blue.svg",
+                                            fit: BoxFit.cover,
+                                          )
+                                        : SvgPicture.asset(
+                                            "images/rsocial_punch_outline.svg",
+                                            fit: BoxFit.cover,
+                                          ),
+                                  ),
+                                  SizedBox(
+                                    height: 4 -
+                                        reactionSizeIncrease *
+                                            hatedAnimation.value,
+                                  ),
+                                  Text(
+                                    counter['hated'].toString(),
+                                    style: TextStyle(
+                                      fontFamily: "Lato",
+                                      fontSize: 10,
+                                      color: colorUnselectedBottomNav,
+                                    ),
+                                  )
+                                ],
                               )
                             : GestureDetector(
                                 onTap: () => {reaction('hated')},
