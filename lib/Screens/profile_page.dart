@@ -35,6 +35,8 @@ import '../contants/config.dart';
 import '../model/post.dart';
 
 class Profile extends StatefulWidget {
+  Function reactionCallback;
+
   @override
   _ProfileState createState() => _ProfileState();
   User currentUser;
@@ -44,11 +46,7 @@ class Profile extends StatefulWidget {
   String previousWidget;
   Function callBack;
   String text;
-  Profile({
-    this.currentUser,
-    this.photoUrl,
-    this.user,
-  });
+  Profile({this.currentUser, this.photoUrl, this.user, this.reactionCallback});
 }
 
 class _ProfileState extends State<Profile> {
@@ -1007,6 +1005,10 @@ class _ProfileState extends State<Profile> {
     return list;
   }
 
+  reactionCallback() {
+    if (widget.reactionCallback != null) widget.reactionCallback();
+  }
+
   // onBackPressed() {
   //   widget.investingWithPageCallback();
   // }
@@ -1035,14 +1037,7 @@ class _ProfileState extends State<Profile> {
         child: Scaffold(
             // Here app bar to be updated
             appBar: customAppBar(
-                context,
-                widget.currentUser.id == widget.user.id
-                    ? "My Profile"
-                    : "Profile",
-                widget.currentUser.lollarAmount,
-                widget.currentUser.photoUrl,
-                widget.currentUser.socialStanding,
-                widget.user.id == curUser.id ? false : true),
+                context, widget.user.id == curUser.id ? false : true),
             body: ModalProgressHUD(
               inAsyncCall: isLoading,
               child: NestedScrollView(

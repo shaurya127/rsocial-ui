@@ -18,38 +18,11 @@ import 'create_account_page.dart';
 import '../Widgets/nav_drawer_tile.dart';
 
 class Nav_Drawer extends StatefulWidget {
-  String photoUrl;
-
-  Nav_Drawer({this.photoUrl});
-
   @override
   _Nav_DrawerState createState() => _Nav_DrawerState();
 }
 
 class _Nav_DrawerState extends State<Nav_Drawer> {
-  // String formatNumber(int a) {
-  //   String res = a.toString();
-  //
-  //   if (a < 10000) return res;
-  //
-  //   int num = res.length;
-  //
-  //   // res = (a/1000).floor().toString() + "," + (a%1000).toString();
-  //
-  //   if (num % 2 == 0) {
-  //     for (int i = 1; i < num; i = i + 2) {
-  //       res = res.substring(0, i) + "," + res.substring(i);
-  //       i++;
-  //     }
-  //   } else {
-  //     for (int i = 2; i < num; i = i + 2) {
-  //       res = res.substring(0, i) + "," + res.substring(i);
-  //       i++;
-  //     }
-  //   }
-  //   return res;
-  // }
-
   @override
   Widget build(BuildContext context) {
     //print(widget.currentUser);
@@ -105,15 +78,15 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                                     ? (curUser.photoUrl != ""
                                         ? NetworkImage(curUser.photoUrl)
                                         : AssetImage("images/avatar.jpg"))
-                                    : (curUser.photoUrl != ""
-                                        ? NetworkImage(pp)
+                                    : (savedUser.photoUrl != ""
+                                        ? NetworkImage(savedUser.photoUrl)
                                         : AssetImage("images/avatar.jpg")))),
                       ),
                     ),
                     title: Text(
                       curUser != null
                           ? curUser.fname + " " + curUser.lname
-                          : "$fn $ln",
+                          : "${savedUser.fname} ${savedUser.lname}",
                       style: TextStyle(
                         fontFamily: 'Lato',
                         fontWeight: FontWeight.bold,
@@ -136,7 +109,7 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                   trailing: Text(
                     curUser != null
                         ? formatNumber(curUser.lollarAmount)
-                        : formatNumber(yA),
+                        : formatNumber(savedUser.lollarAmount),
                     style: TextStyle(color: Colors.grey, fontSize: 16),
                   ),
                 ),
@@ -162,7 +135,7 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                     trailing: Text(
                         curUser != null
                             ? "${curUser.connection.length}"
-                            : tc.toString(),
+                            : savedUser.connectionCount.toString(),
                         style: TextStyle(color: Colors.grey, fontSize: 16))),
                 Nav_Drawer_Tile(
                     title: kNavDrawerProfile,
@@ -173,7 +146,6 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                           MaterialPageRoute(
                               builder: (context) => Profile(
                                     currentUser: curUser,
-                                    photoUrl: widget.photoUrl,
                                     user: curUser,
                                   )));
                     },

@@ -15,7 +15,8 @@ import 'package:http/http.dart' as http;
 
 class RcashScreen extends StatefulWidget {
   User Ruser;
-  RcashScreen({this.Ruser});
+  RcashScreen({this.Ruser, this.reactionCallback});
+  Function reactionCallback;
   @override
   _RcashScreenState createState() => _RcashScreenState();
 }
@@ -68,9 +69,7 @@ class _RcashScreenState extends State<RcashScreen> {
           body: jsonEncode({"id": id}));
     } catch (e) {
       print(e);
-      setState(() {
-        isLoading = false;
-      });
+
       return null;
     }
     print(response.body);
@@ -106,37 +105,7 @@ class _RcashScreenState extends State<RcashScreen> {
         curUser.totalPlatformEngagementAmount
       ];
       //print(this.user.lollarAmount);
-      setState(() {
-        isLoading = false;
-      });
-    } else {
-      print(response.statusCode);
-      setState(() {
-        isLoading = false;
-      });
-      var alertBox = AlertDialogBox(
-        title: "Error status: ${response.statusCode}",
-        content: "Server Error",
-        actions: <Widget>[
-          FlatButton(
-            child: Text(
-              "Back",
-              style: TextStyle(
-                color: colorButton,
-                fontFamily: "Lato",
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            onPressed: () {
-              Navigator.pop(
-                context,
-              );
-            },
-          ),
-        ],
-      );
-
-      showDialog(context: (context), builder: (context) => alertBox);
+      if (widget.reactionCallback != null) widget.reactionCallback();
     }
   }
 

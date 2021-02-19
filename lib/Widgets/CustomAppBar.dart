@@ -10,15 +10,9 @@ import '../model/user.dart';
 
 class customAppBar extends StatefulWidget implements PreferredSizeWidget {
   BuildContext context;
-  String title;
-  int lollarAmount;
-  String photoUrl;
-  int socialStanding;
   bool canShowProfile;
 
-  customAppBar(this.context, this.title, this.lollarAmount, this.photoUrl,
-      this.socialStanding,
-      [this.canShowProfile = true]);
+  customAppBar(this.context, [this.canShowProfile = true]);
 
   @override
   _customAppBarState createState() => _customAppBarState();
@@ -66,7 +60,7 @@ class _customAppBarState extends State<customAppBar> {
               Text(
                 curUser != null
                     ? formatNumber(curUser.lollarAmount)
-                    : formatNumber(yA),
+                    : formatNumber(savedUser.lollarAmount),
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -87,7 +81,7 @@ class _customAppBarState extends State<customAppBar> {
               Text(
                 curUser != null
                     ? formatNumber(curUser.socialStanding)
-                    : formatNumber(ss),
+                    : formatNumber(savedUser.socialStanding),
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -112,8 +106,8 @@ class _customAppBarState extends State<customAppBar> {
                           ? (curUser.photoUrl != ""
                               ? NetworkImage(curUser.photoUrl)
                               : AssetImage("images/avatar.jpg"))
-                          : (widget.photoUrl == null
-                              ? NetworkImage(widget.photoUrl)
+                          : (savedUser.photoUrl !=""
+                              ? NetworkImage(savedUser.photoUrl)
                               : AssetImage("images/avatar.jpg")),
                       fit: BoxFit.cover),
                   shape: BoxShape.circle),

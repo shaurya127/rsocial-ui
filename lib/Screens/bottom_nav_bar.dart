@@ -50,13 +50,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 final googleSignIn = GoogleSignIn();
 final fblogin = FacebookLogin();
 User curUser;
+User savedUser;
 PackageInfo packageInfo;
-int yA;
-int ss;
-int tc;
-String fn;
-String ln;
-String pp;
+List<Post> postsGlobal = [];
 //SharedPreferences prefs;
 
 class BottomNavBar extends StatefulWidget {
@@ -83,11 +79,9 @@ class _BottomNavBarState extends State<BottomNavBar>
   final _authInstance = FirebaseAuth.instance;
   bool isLoading = false;
   String photourl;
-  //User curUser;
   bool isFailedUserPost = false;
   bool isFailedGetAllUser = false;
   bool isFailedGetUser = false;
-  List<Post> posts = [];
   List<User> allUsers = [];
   bool isPosted = false;
   int _currentIndex = 0;
@@ -96,7 +90,8 @@ class _BottomNavBarState extends State<BottomNavBar>
   bool isNewUserFailed = false;
   User Ruser;
 
-  reactionCallback() {
+  reactionCallback() async {
+    await getRCashDetails();
     setState(() {});
   }
 
@@ -143,15 +138,16 @@ class _BottomNavBarState extends State<BottomNavBar>
         // print('Response body: ${response.body}');
         // log('Response body: ${response.body}');
         var res = json.decode(response.body);
+
         prefs.remove('inviteSenderId');
-        prefs.setString('FName', widget.currentUser.fname);
-        prefs.setString('LName', widget.currentUser.lname);
-        prefs.setInt('socialStanding', widget.currentUser.socialStanding);
-        prefs.setInt('yollarAmount', widget.currentUser.lollarAmount);
-        prefs.setString(
-            'totalConnections', widget.currentUser.connectionCount.toString());
-        prefs.setString('profilePhoto', widget.currentUser.photoUrl);
-        //prefs.setString('currentUserLName',widget.currentUser.lname);
+        // prefs.setString('FName', widget.currentUser.fname);
+        // prefs.setString('LName', widget.currentUser.lname);
+        // prefs.setInt('socialStanding', widget.currentUser.socialStanding);
+        // prefs.setInt('yollarAmount', widget.currentUser.lollarAmount);
+        // prefs.setString(
+        //     'totalConnections', widget.currentUser.connectionCount.toString());
+        // prefs.setString('profilePhoto', widget.currentUser.photoUrl);
+
         var resBody = json.decode(res['body']);
 
         var id = resBody['message']['id'];
@@ -187,6 +183,8 @@ class _BottomNavBarState extends State<BottomNavBar>
           //print("id is: ${msg['id']}");
           //print(msg);
           curUser = User.fromJson(msg);
+          saveData();
+          getData();
           //print("haha");
           //print(curUser);
           // setState(() {
@@ -240,7 +238,7 @@ class _BottomNavBarState extends State<BottomNavBar>
             List<Post> posts = [];
             if (msg == null) {
               setState(() {
-                this.posts = posts;
+                postsGlobal = posts;
                 isLoading = false;
                 isLoadingPost = false;
               });
@@ -261,7 +259,7 @@ class _BottomNavBarState extends State<BottomNavBar>
             }
             //print(posts.length);
             setState(() {
-              this.posts = posts;
+              postsGlobal = posts;
               isLoading = false;
               isLoadingPost = false;
             });
@@ -348,7 +346,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     }
   }
 
-  Future<User> getUser() async {
+  getUser() async {
     print("get user started");
     var user = await FirebaseAuth.instance.currentUser();
     var token = await user.getIdToken();
@@ -468,13 +466,14 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   getData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    yA = prefs.getInt('yollarAmount');
-    ss = prefs.getInt('socialStanding');
-    tc = prefs.getInt('totalConnections');
-    fn = prefs.getString('FName');
-    ln = prefs.getString('LName');
-    pp = prefs.getString('profilePhoto');
-    print(ss);
+    savedUser = User(
+      photoUrl: prefs.getString('profilePhoto'),
+      lollarAmount: prefs.getInt('yollarAmount'),
+      connectionCount: prefs.getInt('totalConnections'),
+      fname: prefs.getString('FName'),
+      lname: prefs.getString('LName'),
+      socialStanding: prefs.getInt('socialStanding'),
+    );
   }
 
   Future<void> getUserPosts() async {
@@ -499,7 +498,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     }
     //var id = curUser.id;
 
-    final url = storyEndPoint + "${id}/all";
+    final url = storyEndPoint + "$id/all";
     var token = await user.getIdToken();
 
     var response;
@@ -525,10 +524,9 @@ class _BottomNavBarState extends State<BottomNavBar>
       //print(body1);
       var msg = body1['message'];
       //print(msg.length);
-      //print("msg id ${msg}");
+
       List<Post> posts = [];
       for (int i = 0; i < msg.length; i++) {
-        print("msg $i is ${msg[i]}");
         Post post;
         if (msg[i]['StoryType'] == "Investment")
           post = Post.fromJsonI(msg[i]);
@@ -539,9 +537,29 @@ class _BottomNavBarState extends State<BottomNavBar>
           posts.add(post);
         }
       }
+      print("msg is ${msg[msg.length - 2]}");
+
+      print("dkfhsdkljsdfjklsdfjklsdfjklsdfjkldsf");
+      for (int i = 0; i < posts.reversed.toList()[0].reactedBy.length; i++) {
+        User user = posts.reversed.toList()[0].reactedBy[i];
+        String rt = user.reactionType;
+
+        if (user.id == curUser.id) {
+          print(user.reactionType);
+        }
+      }
+      print("============================");
+      for (int i = 0; i < posts.reversed.toList()[1].reactedBy.length; i++) {
+        User user = posts.reversed.toList()[1].reactedBy[i];
+        String rt = user.reactionType;
+
+        if (user.id == curUser.id) {
+          print(user.reactionType);
+        }
+      }
       //print(posts.length);
       setState(() {
-        this.posts = posts;
+        postsGlobal = posts.reversed.toList();
         //isLoading = false;
         isLoadingPost = false;
       });
@@ -640,9 +658,7 @@ class _BottomNavBarState extends State<BottomNavBar>
           body: jsonEncode({"id": id}));
     } catch (e) {
       print(e);
-      setState(() {
-        isLoading = false;
-      });
+
       return null;
     }
     print(response.body);
@@ -652,37 +668,21 @@ class _BottomNavBarState extends State<BottomNavBar>
       var body1 = jsonDecode(body);
       var msg = body1['message'];
       Ruser = User.fromJson(msg);
-      setState(() {
-        isLoading = false;
-      });
-    } else {
-      print(response.statusCode);
-      setState(() {
-        isLoading = false;
-      });
-      var alertBox = AlertDialogBox(
-        title: "Error status: ${response.statusCode}",
-        content: "Server Error",
-        actions: <Widget>[
-          FlatButton(
-            child: Text(
-              "Back",
-              style: TextStyle(
-                color: colorButton,
-                fontFamily: "Lato",
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            onPressed: () {
-              Navigator.pop(
-                context,
-              );
-            },
-          ),
-        ],
-      );
 
-      showDialog(context: (context), builder: (context) => alertBox);
+      curUser.lollarAmount = Ruser.lollarAmount;
+      curUser.totalAvailableYollar = Ruser.totalAvailableYollar;
+      curUser.totalWageEarningAmount = Ruser.totalWageEarningAmount;
+      curUser.totalInvestmentEarningActiveAmount =
+          Ruser.totalInvestmentEarningActiveAmount;
+      curUser.joiningBonus = Ruser.joiningBonus;
+      curUser.totalPlatformEngagementAmount =
+          Ruser.totalPlatformEngagementAmount;
+      curUser.referralAmount = Ruser.referralAmount;
+      curUser.totalPlatformInteractionAmount =
+          Ruser.totalPlatformInteractionAmount;
+      curUser.totalActiveInvestmentAmount = Ruser.totalActiveInvestmentAmount;
+      curUser.totalInvestmentEarningMaturedAmount =
+          Ruser.totalInvestmentEarningMaturedAmount;
     }
   }
 
@@ -699,9 +699,8 @@ class _BottomNavBarState extends State<BottomNavBar>
   @override
   void initState() {
     super.initState();
-    getData();
     getPackageInfo();
-
+    getData();
     if (widget.isNewUser) {
       setState(() {
         isLoading = true;
@@ -743,10 +742,10 @@ class _BottomNavBarState extends State<BottomNavBar>
     final List _screens = [
       Landing_Page(
           curUser: curUser,
-          posts: posts,
           isLoading: isLoadingPost,
           isErrorLoadingPost: isFailedUserPost,
           reactionCallback: reactionCallback),
+
       Search_Page(allusers: allUsers),
       Wage(
         currentUser: curUser,
@@ -755,6 +754,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       NotificationPage(),
       RcashScreen(
         Ruser: Ruser,
+        reactionCallback: reactionCallback,
       )
       //BioPage(analytics:widget.analytics,observer:widget.observer,currentUser: currentUser,),
       //ProfilePicPage(currentUser: widget.currentUser,analytics:widget.analytics,observer:widget.observer),
@@ -797,12 +797,7 @@ class _BottomNavBarState extends State<BottomNavBar>
                   showLogout: true,
                 )),
               )
-            : yA == null ||
-                    ss == null ||
-                    fn == null ||
-                    ln == null ||
-                    tc == null ||
-                    pp == null
+            : savedUser == null
                 ? curUser == null || isLoading
                     ? Scaffold(
                         backgroundColor: Colors.white,
@@ -812,24 +807,8 @@ class _BottomNavBarState extends State<BottomNavBar>
                       )
                     : (postId == null
                         ? Scaffold(
-                            appBar: customAppBar(
-                                context,
-                                "",
-                                // curUser != null
-                                //     ? curUser.lollarAmount.toString()
-                                //     :
-                                yA,
-                                //curUser != null ? curUser.photoUrl :
-                                pp,
-                                // curUser != null
-                                //     ? curUser.socialStanding.toString()
-                                //     :
-                                ss),
-                            drawer: Nav_Drawer(
-                              photoUrl:
-                                  //     curUser.photoUrl != null ? curUser.photoUrl :
-                                  "",
-                            ),
+                            appBar: customAppBar(context),
+                            drawer: Nav_Drawer(),
                             body: _screens[_currentIndex],
                             bottomNavigationBar: BottomNavigationBar(
                               currentIndex: _currentIndex,
@@ -898,25 +877,8 @@ class _BottomNavBarState extends State<BottomNavBar>
                           ))
                 : (postId == null
                     ? Scaffold(
-                        appBar: customAppBar(
-                            context,
-                            "",
-                            // curUser != null
-                            //     ? curUser.lollarAmount.toString()
-                            //     :
-                            yA,
-                            //curUser != null ? curUser.photoUrl :
-                            pp,
-                            // curUser != null
-                            //     ? curUser.socialStanding.toString()
-                            //     :
-                            ss),
-                        drawer: Nav_Drawer(
-                          //currentUser: curUser,
-                          photoUrl:
-                              //     curUser.photoUrl != null ? curUser.photoUrl :
-                              "",
-                        ),
+                        appBar: customAppBar(context),
+                        drawer: Nav_Drawer(),
                         body: _screens[_currentIndex],
                         bottomNavigationBar: BottomNavigationBar(
                           currentIndex: _currentIndex,

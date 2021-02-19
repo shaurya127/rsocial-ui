@@ -52,8 +52,7 @@ class _AllConnectionsState extends State<AllConnections> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppBar(context, "", curUser.lollarAmount, curUser.photoUrl,
-          curUser.socialStanding),
+      appBar: customAppBar(context),
       // AppBar(
       //   title: Text(
       //     "Connections",

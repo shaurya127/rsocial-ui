@@ -44,7 +44,12 @@ class PlatformPostTile extends StatefulWidget {
   Post userPost;
   var photoUrl;
   User curUser;
-  PlatformPostTile({@required this.curUser, this.userPost, this.photoUrl});
+  Function reactionCallback;
+  PlatformPostTile(
+      {@required this.curUser,
+      this.userPost,
+      this.photoUrl,
+      this.reactionCallback});
   @override
   _PlatformPostTileState createState() => _PlatformPostTileState();
 }
@@ -245,6 +250,8 @@ class _PlatformPostTileState extends State<PlatformPostTile>
       // prft[widget.userPost.id] = widget.userPost.profit;
       //});
       // });
+      if (widget.reactionCallback != null) widget.reactionCallback();
+
       setState(() {});
     }
     print("hello hello");
