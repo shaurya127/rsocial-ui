@@ -4,9 +4,12 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:package_info/package_info.dart';
+import 'package:provider/provider.dart';
 import 'package:rsocial2/Screens/notification_page.dart';
 import 'package:rsocial2/Screens/rcash_screen.dart';
+import 'package:rsocial2/Widgets/disabled_reaction_button.dart';
 import 'package:rsocial2/Widgets/error.dart';
+import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/contants/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -86,6 +89,11 @@ class _BottomNavBarState extends State<BottomNavBar>
   bool isForward = true;
   bool isNewUserFailed = false;
   User Ruser;
+
+  reactionCallback() async {
+    await getRCashDetails();
+    setState(() {});
+  }
 
   void isPostedCallback() {
     setState(() {
@@ -516,10 +524,9 @@ class _BottomNavBarState extends State<BottomNavBar>
       //print(body1);
       var msg = body1['message'];
       //print(msg.length);
-      //print("msg id ${msg}");
+
       List<Post> posts = [];
       for (int i = 0; i < msg.length; i++) {
-        print("msg $i is ${msg[i]}");
         Post post;
         if (msg[i]['StoryType'] == "Investment")
           post = Post.fromJsonI(msg[i]);
@@ -528,6 +535,26 @@ class _BottomNavBarState extends State<BottomNavBar>
         if (post != null) {
           //print(post.investedWithUser);
           posts.add(post);
+        }
+      }
+      print("msg is ${msg[msg.length - 2]}");
+
+      print("dkfhsdkljsdfjklsdfjklsdfjklsdfjkldsf");
+      for (int i = 0; i < posts.reversed.toList()[0].reactedBy.length; i++) {
+        User user = posts.reversed.toList()[0].reactedBy[i];
+        String rt = user.reactionType;
+
+        if (user.id == curUser.id) {
+          print(user.reactionType);
+        }
+      }
+      print("============================");
+      for (int i = 0; i < posts.reversed.toList()[1].reactedBy.length; i++) {
+        User user = posts.reversed.toList()[1].reactedBy[i];
+        String rt = user.reactionType;
+
+        if (user.id == curUser.id) {
+          print(user.reactionType);
         }
       }
       //print(posts.length);
@@ -631,9 +658,7 @@ class _BottomNavBarState extends State<BottomNavBar>
           body: jsonEncode({"id": id}));
     } catch (e) {
       print(e);
-      setState(() {
-        isLoading = false;
-      });
+
       return null;
     }
     print(response.body);
@@ -643,37 +668,21 @@ class _BottomNavBarState extends State<BottomNavBar>
       var body1 = jsonDecode(body);
       var msg = body1['message'];
       Ruser = User.fromJson(msg);
-      setState(() {
-        isLoading = false;
-      });
-    } else {
-      print(response.statusCode);
-      setState(() {
-        isLoading = false;
-      });
-      var alertBox = AlertDialogBox(
-        title: "Error status: ${response.statusCode}",
-        content: "Server Error",
-        actions: <Widget>[
-          FlatButton(
-            child: Text(
-              "Back",
-              style: TextStyle(
-                color: colorButton,
-                fontFamily: "Lato",
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            onPressed: () {
-              Navigator.pop(
-                context,
-              );
-            },
-          ),
-        ],
-      );
 
-      showDialog(context: (context), builder: (context) => alertBox);
+      curUser.lollarAmount = Ruser.lollarAmount;
+      curUser.totalAvailableYollar = Ruser.totalAvailableYollar;
+      curUser.totalWageEarningAmount = Ruser.totalWageEarningAmount;
+      curUser.totalInvestmentEarningActiveAmount =
+          Ruser.totalInvestmentEarningActiveAmount;
+      curUser.joiningBonus = Ruser.joiningBonus;
+      curUser.totalPlatformEngagementAmount =
+          Ruser.totalPlatformEngagementAmount;
+      curUser.referralAmount = Ruser.referralAmount;
+      curUser.totalPlatformInteractionAmount =
+          Ruser.totalPlatformInteractionAmount;
+      curUser.totalActiveInvestmentAmount = Ruser.totalActiveInvestmentAmount;
+      curUser.totalInvestmentEarningMaturedAmount =
+          Ruser.totalInvestmentEarningMaturedAmount;
     }
   }
 
@@ -698,7 +707,6 @@ class _BottomNavBarState extends State<BottomNavBar>
       });
       createNgetUserAwait();
     } else {
-
       getUserPosts();
       getUserAwait();
       getAllUsers();
@@ -726,15 +734,18 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   @override
   Widget build(BuildContext context) {
+    print("fsjklfsjklsdklsdjklsdfkljsdfjklsdfjklsdfjklsdfjkljklsdff");
+    // Provider.of<Post_Tile>(context);
     print("Build of bottom nav bar worked");
 
     // Screens to be present, will be switched with the help of bottom nav bar
     final List _screens = [
       Landing_Page(
-        curUser: curUser,
-        isLoading: isLoadingPost,
-        isErrorLoadingPost: isFailedUserPost,
-      ),
+          curUser: curUser,
+          isLoading: isLoadingPost,
+          isErrorLoadingPost: isFailedUserPost,
+          reactionCallback: reactionCallback),
+
       Search_Page(allusers: allUsers),
       Wage(
         currentUser: curUser,
@@ -743,6 +754,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       NotificationPage(),
       RcashScreen(
         Ruser: Ruser,
+        reactionCallback: reactionCallback,
       )
       //BioPage(analytics:widget.analytics,observer:widget.observer,currentUser: currentUser,),
       //ProfilePicPage(currentUser: widget.currentUser,analytics:widget.analytics,observer:widget.observer),

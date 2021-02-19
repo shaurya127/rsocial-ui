@@ -35,6 +35,8 @@ import '../contants/config.dart';
 import '../model/post.dart';
 
 class Profile extends StatefulWidget {
+  Function reactionCallback;
+
   @override
   _ProfileState createState() => _ProfileState();
   User currentUser;
@@ -44,11 +46,7 @@ class Profile extends StatefulWidget {
   String previousWidget;
   Function callBack;
   String text;
-  Profile({
-    this.currentUser,
-    this.photoUrl,
-    this.user,
-  });
+  Profile({this.currentUser, this.photoUrl, this.user, this.reactionCallback});
 }
 
 class _ProfileState extends State<Profile> {
@@ -1005,6 +1003,10 @@ class _ProfileState extends State<Profile> {
       ),
     ];
     return list;
+  }
+
+  reactionCallback() {
+    if (widget.reactionCallback != null) widget.reactionCallback();
   }
 
   // onBackPressed() {

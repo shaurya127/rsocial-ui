@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
@@ -46,12 +47,14 @@ class Post_Tile extends StatefulWidget {
   Post userPost;
   var photoUrl;
   User curUser;
+  Function reactionCallback;
   final VoidCallback onPressDelete;
   Post_Tile(
       {@required this.curUser,
       this.userPost,
       this.photoUrl,
-      this.onPressDelete});
+      this.onPressDelete,
+      this.reactionCallback});
   @override
   _Post_TileState createState() => _Post_TileState();
 }
@@ -222,7 +225,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     });
     var url = storyEndPoint + 'react';
     var user = await FirebaseAuth.instance.currentUser();
-    //print(uid);
+
     Reaction reaction = Reaction(
         id: curUser.id, storyId: widget.userPost.id, reactionType: reactn);
     var token = await user.getIdToken();
@@ -264,6 +267,10 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
       //   widget.userPost = Post.fromJsonI(msg);
 
       getReactions();
+      //curUser.lollarAmount = 123334;
+      if (widget.reactionCallback != null) widget.reactionCallback();
+      print(
+          "Hello heloo sdfhsdklfhsdlkfjsdklfsdjfklsdjfklsdfjskdlfjdsklfjsdflkjcf");
 
       // });
       setState(() {});
@@ -921,6 +928,9 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                                   image: DecorationImage(
                                                       image: NetworkImage(
                                                         fileList[index],
+                                                        // errorWidget: (context,
+                                                        //         url, error) =>
+                                                        //     Icon(Icons.error),
                                                       ),
                                                       fit: BoxFit.cover)),
                                               height: 250,

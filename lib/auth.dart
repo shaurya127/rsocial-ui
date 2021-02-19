@@ -7,7 +7,10 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:provider/provider.dart';
+import 'package:rsocial2/Widgets/disabled_reaction_button.dart';
 import 'package:rsocial2/deep_links.dart';
+import 'Widgets/post_tile.dart';
 import 'model/user.dart';
 
 import 'Screens/bottom_nav_bar.dart';
@@ -74,8 +77,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return isAuthenticated == null
-        ? Scaffold(body: Center(child: CircularProgressIndicator())
-            )
+        ? Scaffold(body: Center(child: CircularProgressIndicator()))
         : (findingLink
             ? Scaffold(body: Center(child: CircularProgressIndicator()))
             : (isAuthenticated

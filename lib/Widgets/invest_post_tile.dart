@@ -39,7 +39,12 @@ class InvestPostTile extends StatefulWidget {
   Post userPost;
   var photoUrl;
   User curUser;
-  InvestPostTile({@required this.curUser, this.userPost, this.photoUrl});
+  Function reactionCallback;
+  InvestPostTile(
+      {@required this.curUser,
+      this.userPost,
+      this.photoUrl,
+      this.reactionCallback});
   @override
   _InvestPostTileState createState() => _InvestPostTileState();
 }
@@ -213,6 +218,9 @@ class _InvestPostTileState extends State<InvestPostTile>
       setState(() {
         prft[widget.userPost.id] = msg["PresentValue"].toString();
       });
+
+      if (widget.reactionCallback != null) widget.reactionCallback();
+
       // if (widget.userPost.storyType == 'Wage')
       //   widget.userPost = Post.fromJsonW(msg);
       // else

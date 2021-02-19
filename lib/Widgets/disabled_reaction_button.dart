@@ -12,11 +12,11 @@ class DisabledReactionButton extends StatelessWidget {
   final int counter;
   DisabledReactionButton(
       {this.reactionAnimation,
-        this.reactionType,
-        this.curReaction,
-        this.selectedImage,
-        this.unSelectedImage,
-        this.counter});
+      this.reactionType,
+      this.curReaction,
+      this.selectedImage,
+      this.unSelectedImage,
+      this.counter});
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -26,13 +26,13 @@ class DisabledReactionButton extends StatelessWidget {
           width: 23 + reactionSizeIncrease * reactionAnimation.value,
           child: curReaction == reactionType
               ? SvgPicture.asset(
-            selectedImage,
-            fit: BoxFit.cover,
-          )
+                  selectedImage,
+                  fit: BoxFit.cover,
+                )
               : SvgPicture.asset(
-            unSelectedImage,
-            fit: BoxFit.cover,
-          ),
+                  unSelectedImage,
+                  fit: BoxFit.cover,
+                ),
         ),
         SizedBox(
           height: 4 - reactionSizeIncrease * reactionAnimation.value,

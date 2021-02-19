@@ -6,6 +6,7 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/error.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/contants/config.dart';
@@ -21,9 +22,13 @@ class Landing_Page extends StatefulWidget {
   User curUser;
   bool isLoading;
   bool isErrorLoadingPost;
-
+  Function reactionCallback;
   Landing_Page(
-      {this.curUser,this.isLoading, this.isErrorLoadingPost});
+      {this.curUser,
+      this.isLoading,
+      this.isErrorLoadingPost,
+      this.reactionCallback});
+
   @override
   _Landing_PageState createState() => _Landing_PageState();
 }
@@ -155,15 +160,16 @@ class _Landing_PageState extends State<Landing_Page> {
       return Column(
         children: [
           Expanded(
-              child:AnimatedList(
-                key: key,
-                initialItemCount: length,
-                itemBuilder: (context,index,animation)=>Post_Tile(
-                    curUser: widget.curUser,
-                    onPressDelete: ()=>deletePost(index),
-                    userPost: postsGlobal[index],
-                    photoUrl: photourl),
-              ) ),
+              child: AnimatedList(
+            key: key,
+            initialItemCount: length,
+            itemBuilder: (context, index, animation) => Post_Tile(
+                curUser: widget.curUser,
+                onPressDelete: () => deletePost(index),
+                userPost: postsGlobal[index],
+                photoUrl: photourl,
+                reactionCallback: reactionCallback),
+          )),
         ],
       );
     }
@@ -184,18 +190,16 @@ class _Landing_PageState extends State<Landing_Page> {
         "Authorization": "Bearer $token",
         "Content-Type": "application/json",
       },
-      body: jsonEncode({"id": curUser.id, "StoryId": postsGlobal[index].id}
-      ),);
+      body: jsonEncode({"id": curUser.id, "StoryId": postsGlobal[index].id}),
+    );
 
     print(response.statusCode);
     if (response.statusCode == 200) {
       // print("post length 1 id ${postsGlobal.length}");
       // print("post length 1 id ${postsGlobal[0].user.fname}");
       key.currentState.removeItem(
-        index,
-            (context, animation) => slideIt(context,index,animation),
-        duration: const Duration(milliseconds: 500)
-      );
+          index, (context, animation) => slideIt(context, index, animation),
+          duration: const Duration(milliseconds: 500));
       // print("post length 2 id ${postsGlobal.length}");
       // // final item = postsGlobal.removeAt(index);
       // print("post length 3 id ${postsGlobal.length}");
@@ -204,9 +208,9 @@ class _Landing_PageState extends State<Landing_Page> {
       // setState(() {
       // });
       //buildPosts();
+
       getUserPosts();
-    }
-    else
+    } else
       print("error!!");
     //print("hello hello");
     // setState(() {
@@ -214,21 +218,25 @@ class _Landing_PageState extends State<Landing_Page> {
     // });
   }
 
+  reactionCallback() {
+    if (widget.reactionCallback != null) widget.reactionCallback();
+  }
+
   slideIt(BuildContext context, int index, animation) {
     var item = postsGlobal.removeAt(index);
     print("in slide it ${item.user.fname}");
+
     return SlideTransition(
-      position: Tween<Offset>(
-        begin: const Offset(-1, 0),
-        end: Offset(0, 0),
-      ).animate(animation),
-      child: Post_Tile(
-        curUser: curUser,
-        photoUrl: "",
-        onPressDelete: ()=> deletePost(index),
-        userPost: item,
-      )
-    );
+        position: Tween<Offset>(
+          begin: const Offset(-1, 0),
+          end: Offset(0, 0),
+        ).animate(animation),
+        child: Post_Tile(
+          curUser: curUser,
+          photoUrl: "",
+          onPressDelete: () => deletePost(index),
+          userPost: item,
+        ));
   }
 
   @override
