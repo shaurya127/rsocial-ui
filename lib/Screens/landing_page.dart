@@ -6,6 +6,7 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/error.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/contants/config.dart';
@@ -22,9 +23,13 @@ class Landing_Page extends StatefulWidget {
   List<Post> posts;
   bool isLoading;
   bool isErrorLoadingPost;
-
+  Function reactionCallback;
   Landing_Page(
-      {this.curUser, this.posts, this.isLoading, this.isErrorLoadingPost});
+      {this.curUser,
+      this.posts,
+      this.isLoading,
+      this.isErrorLoadingPost,
+      this.reactionCallback});
   @override
   _Landing_PageState createState() => _Landing_PageState();
 }
@@ -157,15 +162,16 @@ class _Landing_PageState extends State<Landing_Page> {
       return Column(
         children: [
           Expanded(
-              child:AnimatedList(
-                key: key,
-                initialItemCount: length,
-                itemBuilder: (context,index,animation)=>Post_Tile(
-                    curUser: widget.curUser,
-                    onPressDelete: ()=>deletePost(index),
-                    userPost: widget.posts[index],
-                    photoUrl: photourl),
-              ) ),
+              child: AnimatedList(
+            key: key,
+            initialItemCount: length,
+            itemBuilder: (context, index, animation) => Post_Tile(
+                curUser: widget.curUser,
+                onPressDelete: () => deletePost(index),
+                userPost: widget.posts[index],
+                photoUrl: photourl,
+                reactionCallback: reactionCallback),
+          )),
         ],
       );
     }
@@ -185,24 +191,21 @@ class _Landing_PageState extends State<Landing_Page> {
         "Authorization": "Bearer $token",
         "Content-Type": "application/json",
       },
-      body: jsonEncode({"id": curUser.id, "StoryId": widget.posts[index].id}
-      ),);
+      body: jsonEncode({"id": curUser.id, "StoryId": widget.posts[index].id}),
+    );
 
     print(response.statusCode);
     if (response.statusCode == 200) {
       key.currentState.removeItem(
-        index,
-            (context, animation) => slideIt(context,index,animation),
-        duration: const Duration(milliseconds: 500)
-      );
+          index, (context, animation) => slideIt(context, index, animation),
+          duration: const Duration(milliseconds: 500));
       final item = widget.posts.removeAt(index);
       setState(() {
         length = widget.posts.length;
       });
       Navigator.pop(context);
       getUserPosts();
-    }
-    else
+    } else
       print("error!!");
     //print("hello hello");
     // setState(() {
@@ -210,20 +213,23 @@ class _Landing_PageState extends State<Landing_Page> {
     // });
   }
 
+  reactionCallback() {
+    widget.reactionCallback();
+  }
+
   Widget slideIt(BuildContext context, int index, animation) {
     var item = widget.posts[index];
     return SlideTransition(
-      position: Tween<Offset>(
-        begin: const Offset(-1, 0),
-        end: Offset(0, 0),
-      ).animate(animation),
-      child: Post_Tile(
-        curUser: curUser,
-        photoUrl: "",
-        onPressDelete: ()=> deletePost(index),
-        userPost: item,
-      )
-    );
+        position: Tween<Offset>(
+          begin: const Offset(-1, 0),
+          end: Offset(0, 0),
+        ).animate(animation),
+        child: Post_Tile(
+          curUser: curUser,
+          photoUrl: "",
+          onPressDelete: () => deletePost(index),
+          userPost: item,
+        ));
   }
 
   @override

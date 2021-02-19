@@ -57,6 +57,7 @@ dependencies:
   animated_splash_screen:
   flutter_app_badger: ^1.1.2
   provider:
+  cached_network_image: ^2.5.0
 
 dev_dependencies:
   flutter_test:

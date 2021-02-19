@@ -4,9 +4,12 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:package_info/package_info.dart';
+import 'package:provider/provider.dart';
 import 'package:rsocial2/Screens/notification_page.dart';
 import 'package:rsocial2/Screens/rcash_screen.dart';
+import 'package:rsocial2/Widgets/disabled_reaction_button.dart';
 import 'package:rsocial2/Widgets/error.dart';
+import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/contants/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -92,6 +95,10 @@ class _BottomNavBarState extends State<BottomNavBar>
   bool isForward = true;
   bool isNewUserFailed = false;
   User Ruser;
+
+  reactionCallback() {
+    setState(() {});
+  }
 
   void isPostedCallback() {
     setState(() {
@@ -728,16 +735,18 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   @override
   Widget build(BuildContext context) {
+    print("fsjklfsjklsdklsdjklsdfkljsdfjklsdfjklsdfjklsdfjkljklsdff");
+    // Provider.of<Post_Tile>(context);
     print("Build of bottom nav bar worked");
 
     // Screens to be present, will be switched with the help of bottom nav bar
     final List _screens = [
       Landing_Page(
-        curUser: curUser,
-        posts: posts,
-        isLoading: isLoadingPost,
-        isErrorLoadingPost: isFailedUserPost,
-      ),
+          curUser: curUser,
+          posts: posts,
+          isLoading: isLoadingPost,
+          isErrorLoadingPost: isFailedUserPost,
+          reactionCallback: reactionCallback),
       Search_Page(allusers: allUsers),
       Wage(
         currentUser: curUser,

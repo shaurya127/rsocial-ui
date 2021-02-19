@@ -2,6 +2,7 @@ import 'dart:convert';
 
 // import 'package:audioplayers/audio_cache.dart';
 // import 'package:audioplayers/audioplayers.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
@@ -888,7 +889,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                       style: TextStyle(
                         fontSize: 16,
                         fontFamily: "Lato",
-                        color: colorUnselectedBottomNav ,
+                        color: colorUnselectedBottomNav,
                       ),
                     )),
             widget.userPost.fileUpload.length != 0
@@ -1043,7 +1044,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                     style: TextStyle(
                                       fontFamily: "Lato",
                                       fontSize: 10,
-                                      color: colorUnselectedBottomNav ,
+                                      color: colorUnselectedBottomNav,
                                     ),
                                   )
                                 ],
@@ -1101,7 +1102,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                       style: TextStyle(
                                         fontFamily: "Lato",
                                         fontSize: 10,
-                                        color: colorUnselectedBottomNav ,
+                                        color: colorUnselectedBottomNav,
                                       ),
                                     )
                                   ],
@@ -1140,7 +1141,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                     style: TextStyle(
                                       fontFamily: "Lato",
                                       fontSize: 10,
-                                      color: colorUnselectedBottomNav ,
+                                      color: colorUnselectedBottomNav,
                                     ),
                                   )
                                 ],
@@ -1188,7 +1189,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                       style: TextStyle(
                                         fontFamily: "Lato",
                                         fontSize: 10,
-                                        color: colorUnselectedBottomNav ,
+                                        color: colorUnselectedBottomNav,
                                       ),
                                     )
                                   ],
@@ -1226,7 +1227,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                     style: TextStyle(
                                       fontFamily: "Lato",
                                       fontSize: 10,
-                                      color: colorUnselectedBottomNav ,
+                                      color: colorUnselectedBottomNav,
                                     ),
                                   )
                                 ],
@@ -1277,7 +1278,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                       style: TextStyle(
                                         fontFamily: "Lato",
                                         fontSize: 10,
-                                        color: colorUnselectedBottomNav ,
+                                        color: colorUnselectedBottomNav,
                                       ),
                                     )
                                   ],
@@ -1320,7 +1321,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                     style: TextStyle(
                                       fontFamily: "Lato",
                                       fontSize: 10,
-                                      color: colorUnselectedBottomNav ,
+                                      color: colorUnselectedBottomNav,
                                     ),
                                   )
                                 ],
@@ -1373,7 +1374,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                       style: TextStyle(
                                         fontFamily: "Lato",
                                         fontSize: 10,
-                                        color: colorUnselectedBottomNav ,
+                                        color: colorUnselectedBottomNav,
                                       ),
                                     )
                                   ],
@@ -1417,7 +1418,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                             style: TextStyle(
                               fontFamily: "Lato",
                               fontSize: 10,
-                              color: colorUnselectedBottomNav ,
+                              color: colorUnselectedBottomNav,
                             ),
                           ),
                         )
