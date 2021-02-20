@@ -51,7 +51,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   String postOrientation = "wage";
-  bool isLoading = false;
+  bool isLoading = true;
   List<Post> postsW = [];
   List<Post> postsI = [];
   List<InvestPostTile> InvestTiles = [];
@@ -66,12 +66,8 @@ class _ProfileState extends State<Profile> {
   bool isUserPostFail = false;
   bool isPlatformPostFail = false;
   bool isPhotoEditedComplete = false;
+  bool isLoadingPosts = false;
   final key = GlobalKey<AnimatedListState>();
-  setPostOrientation(String postOrientation) {
-    setState(() {
-      this.postOrientation = postOrientation;
-    });
-  }
 
   saveData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -86,6 +82,9 @@ class _ProfileState extends State<Profile> {
 
   getUser() async {
     print("get user started");
+    setState(() {
+      isLoading=true;
+    });
     var user = await FirebaseAuth.instance.currentUser();
     var token;
 
@@ -103,7 +102,7 @@ class _ProfileState extends State<Profile> {
             "Content-Type": "application/json",
             //"Accept": "*/*"
           },
-          body: jsonEncode({"id": id, "email": user.email}));
+          body: jsonEncode({"id": widget.user.id, "email": curUser.email}));
     } catch (e) {
       return null;
     }
@@ -124,8 +123,12 @@ class _ProfileState extends State<Profile> {
         return;
       }
 
-      curUser = User.fromJson(msg);
-      await saveData();
+      widget.user = User.fromJson(msg);
+      if(widget.user.id==curUser.id)
+        await saveData();
+      setState(() {
+        isLoading=false;
+      });
     } else {
       print(response.statusCode);
     }
@@ -136,12 +139,11 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-
+    getUser();
     getUserPosts();
     getPlatformPosts();
-    print("init fired");
     isEditable = false;
-    isLoading = false;
+    //isLoading = false;
     bioController.text =
         widget.user.bio != null ? widget.user.bio : "here comes the bio";
   }
@@ -309,7 +311,7 @@ class _ProfileState extends State<Profile> {
 
   getUserPosts() async {
     setState(() {
-      widget.isLoading = true;
+      isLoadingPosts = true;
     });
     print("get user post fired");
     var user = await FirebaseAuth.instance.currentUser();
@@ -362,7 +364,7 @@ class _ProfileState extends State<Profile> {
       // buildInvestPosts();
       // buildWagePosts();
       setState(() {
-        widget.isLoading = false;
+        isLoadingPosts = false;
       });
       setState(() { });
     } else {
@@ -388,7 +390,7 @@ class _ProfileState extends State<Profile> {
             "Content-Type": "application/json",
           },
           body: jsonEncode({
-            "id": widget.user.id,
+            "id": widget.user.id, "start_token":0
           }));
     } catch (e) {
       setState(() {
@@ -403,7 +405,7 @@ class _ProfileState extends State<Profile> {
 
       //print("body is $body");
       //print(body1);
-      var msg = body1['message'];
+      var msg = body1['message']['stories'];
       print("Platform Posts");
       print(msg);
       for (int i = 0; i < msg.length; i++) {
@@ -451,7 +453,7 @@ class _ProfileState extends State<Profile> {
       );
     } else {
       setState(() {
-        widget.isLoading = true;
+        isLoadingPosts = true;
       });
       //print(posts.length);
       for (int i = 0; i < postsW.length; i++) {
@@ -465,7 +467,7 @@ class _ProfileState extends State<Profile> {
         WageTiles.add(tile);
       }
       setState(() {
-        widget.isLoading = false;
+        isLoadingPosts = false;
       });
       print("build wage post ended");
       return ListView(
@@ -503,7 +505,7 @@ class _ProfileState extends State<Profile> {
       );
     } else {
       setState(() {
-        widget.isLoading = true;
+        isLoadingPosts = true;
       });
       //print(posts.length);
       for (int i = 0; i < postsI.length; i++) {
@@ -519,7 +521,7 @@ class _ProfileState extends State<Profile> {
         InvestTiles.add(tile);
       }
       setState(() {
-        widget.isLoading = false;
+        isLoadingPosts = false;
       });
       print("build invest post ended");
       return ListView(
@@ -812,13 +814,8 @@ class _ProfileState extends State<Profile> {
   }
 
   List<Widget> buildHeader(BuildContext context) {
-    // if (isLoading) bioController.text = newBio;
-    // print("hello hello");
-    // print(curUser.photoUrl);
-    // print(curUser.id == widget.user.id);
-    // print(widget.user.photoUrl);
     newBio = bioController.text;
-    List<Widget> list = [
+    List<Widget> list =  isLoading ? [Center(child: CircularProgressIndicator(),)]:[
       Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -1011,9 +1008,6 @@ class _ProfileState extends State<Profile> {
     if (widget.reactionCallback != null) widget.reactionCallback();
   }
 
-  // onBackPressed() {
-  //   widget.investingWithPageCallback();
-  // }
   Future<bool> back() async {
     if (isEditable) {
       setState(() {
@@ -1252,7 +1246,7 @@ class _ProfileState extends State<Profile> {
                             ),
                           ),
                           Expanded(
-                              child: widget.isLoading
+                              child: isLoadingPosts
                                   ? Center(
                                       child: CircularProgressIndicator(),
                                     )

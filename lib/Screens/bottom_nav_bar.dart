@@ -89,6 +89,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   bool isForward = true;
   bool isNewUserFailed = false;
   User Ruser;
+  bool storiesLeft= true;
 
   reactionCallback() async {
     await getRCashDetails();
@@ -100,7 +101,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       _currentIndex = 0;
     });
 
-    getUserPosts();
+    getAllPosts();
   }
 
   createNgetUser() async {
@@ -476,98 +477,97 @@ class _BottomNavBarState extends State<BottomNavBar>
     );
   }
 
-  Future<void> getUserPosts() async {
-    print("getUserPostFired");
-    setState(() {
-      isLoadingPost = true;
-      //isLoading = false;
-    });
-    FirebaseUser user;
-    var id;
-    try {
-      user = await FirebaseAuth.instance.currentUser();
-      photourl = user.photoUrl;
-      //print(user);
-      DocumentSnapshot doc = await users.document(user.uid).get();
-      if (doc == null) print("error from get user post");
-      id = doc['id'];
-    } catch (e) {
-      setState(() {
-        isFailedUserPost = true;
-      });
-    }
-    //var id = curUser.id;
-
-    final url = storyEndPoint + "$id/all";
-    var token = await user.getIdToken();
-
-    var response;
-    try {
-      response = await http.get(url, headers: {
-        "Authorization": "Bearer $token",
-        "Content-Type": "application/json",
-      });
-    } catch (e) {
-      setState(() {
-        isFailedUserPost = true;
-      });
-      return;
-    }
-    //print("body is ${response.body}");
-    //print(response.statusCode);
-    //print("User posts $response");
-    if (response.statusCode == 200) {
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      //print("body is $body");
-      //print(body1);
-      var msg = body1['message'];
-      //print(msg.length);
-
-      List<Post> posts = [];
-      for (int i = 0; i < msg.length; i++) {
-        Post post;
-        if (msg[i]['StoryType'] == "Investment")
-          post = Post.fromJsonI(msg[i]);
-        else
-          post = Post.fromJsonW(msg[i]);
-        if (post != null) {
-          //print(post.investedWithUser);
-          posts.add(post);
+  getAllPosts() async{
+    int start=0,i=0;
+    while(storiesLeft)
+      {
+        print("getUserPostFired");
+        setState(() {
+          isLoadingPost = true;
+          //isLoading = false;
+        });
+        FirebaseUser user;
+        var id;
+        try {
+          user = await FirebaseAuth.instance.currentUser();
+          photourl = user.photoUrl;
+          //print(user);
+          DocumentSnapshot doc = await users.document(user.uid).get();
+          if (doc == null) print("error from get user post");
+          id = doc['id'];
+        } catch (e) {
+          setState(() {
+            isFailedUserPost = true;
+          });
         }
-      }
-      print("msg is ${msg[msg.length - 2]}");
+        //var id = curUser.id;
 
-      print("dkfhsdkljsdfjklsdfjklsdfjklsdfjkldsf");
-      for (int i = 0; i < posts.reversed.toList()[0].reactedBy.length; i++) {
-        User user = posts.reversed.toList()[0].reactedBy[i];
-        String rt = user.reactionType;
+        final url = storyEndPoint + "all";
+        var token = await user.getIdToken();
 
-        if (user.id == curUser.id) {
-          print(user.reactionType);
+        var response;
+        try {
+          response = await http.post(
+              url,
+              encoding: Encoding.getByName("utf-8"),
+              body: jsonEncode({"id": id, "start_token":start}),
+              headers: {
+                "Authorization": "Bearer $token",
+                "Content-Type": "application/json",
+              });
+        } catch (e) {
+          setState(() {
+            isFailedUserPost = true;
+          });
+          return true;
         }
-      }
-      print("============================");
-      for (int i = 0; i < posts.reversed.toList()[1].reactedBy.length; i++) {
-        User user = posts.reversed.toList()[1].reactedBy[i];
-        String rt = user.reactionType;
+        //print("body is ${response.body}");
+        print(response.statusCode);
+        print("User posts $response");
+        if (response.statusCode == 200) {
+          final jsonUser = jsonDecode(response.body);
+          var body = jsonUser['body'];
+          var body1 = jsonDecode(body);
+          //print("body is $body");
+          //print(body1);
+          var msg = body1['message']['stories'];
+          //print(msg.length);
+          List<Post> posts = [];
+          if(msg!=[])
+          {
+            for (int i = 0; i < msg.length; i++) {
+              Post post;
+              if (msg[i]['StoryType'] == "Investment")
+                post = Post.fromJsonI(msg[i]);
+              else
+                post = Post.fromJsonW(msg[i]);
+              if (post != null) {
+                //print(post.investedWithUser);
+                posts.add(post);
+              }
+            }
+          }
+          setState(() {
+            postsGlobal.addAll(posts);
+            //isLoading = false;
+            isLoadingPost = false;
+            print("number of stories left $storiesLeft , message id ${body1['message']['still_left']}");
+            storiesLeft  = body1['message']['still_left'];
+            print("number of stories after call $storiesLeft");
+            print("number of stories left $storiesLeft , message id ${body1['message']['still_left']}");
+          });
 
-        if (user.id == curUser.id) {
-          print(user.reactionType);
+        } else {
+          print(response.statusCode);
+          throw Exception();
         }
+        start=start+10;
       }
-      //print(posts.length);
-      setState(() {
-        postsGlobal = posts.reversed.toList();
-        //isLoading = false;
-        isLoadingPost = false;
-      });
-    } else {
-      print(response.statusCode);
-      throw Exception();
-    }
   }
+
+  // getUserPosts(int start) async {
+  //
+  // }
 
   getAllUsers() async {
     // setState(() {
@@ -707,7 +707,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       });
       createNgetUserAwait();
     } else {
-      getUserPosts();
+      getAllPosts();
       getUserAwait();
       getAllUsers();
       getRCashDetails();
@@ -791,7 +791,7 @@ class _BottomNavBarState extends State<BottomNavBar>
                       isFailedUserPost = false;
                     });
                     getUserAwait();
-                    getUserPosts();
+                    getAllPosts();
                     getAllUsers();
                   },
                   showLogout: true,
