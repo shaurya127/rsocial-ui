@@ -66,6 +66,7 @@ class _ProfileState extends State<Profile> {
   bool isUserPostFail = false;
   bool isPlatformPostFail = false;
   bool isPhotoEditedComplete = false;
+  final key = GlobalKey<AnimatedListState>();
   setPostOrientation(String postOrientation) {
     setState(() {
       this.postOrientation = postOrientation;
@@ -456,6 +457,7 @@ class _ProfileState extends State<Profile> {
         print("wage reaction");
         print(postsW[i].reactedBy.length);
         Post_Tile tile = Post_Tile(
+          onPressDelete:()=>deletePost(i,"wage"),
             curUser: widget.currentUser,
             userPost: postsW[i],
             photoUrl: curUser.id == widget.user.id
@@ -509,6 +511,7 @@ class _ProfileState extends State<Profile> {
         print("Invest reaction");
         print(postsI[i].reactedBy.length);
         InvestPostTile tile = InvestPostTile(
+          onPressDelete: ()=>deletePost(i,"invest"),
             curUser: widget.currentUser,
             userPost: postsI[i],
             photoUrl: curUser.id == widget.user.id
@@ -1028,6 +1031,52 @@ class _ProfileState extends State<Profile> {
       Navigator.pop(context, "hello world");
     }
   }
+
+  void deletePost(int index,String type) async {
+    var url = storyEndPoint + 'delete';
+    var user = await FirebaseAuth.instance.currentUser();
+    var token = await user.getIdToken();
+
+    var response;
+    Navigator.pop(context);
+
+    response = await http.post(
+      url,
+      encoding: Encoding.getByName("utf-8"),
+      headers: {
+        "Authorization": "Bearer $token",
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode({"id": curUser.id, "StoryId": postsGlobal[index].id}),
+    );
+
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      if(type=="invest")
+        InvestTiles.removeAt(index);
+      else if(type=='wage')
+        WageTiles.removeAt(index);
+      getUserPosts();
+    } else
+      print("error!!");
+  }
+
+  // slideIt(BuildContext context, int index, animation) {
+  //   var item = postsGlobal.removeAt(index);
+  //   print("in slide it ${item.user.fname}");
+  //
+  //   return SlideTransition(
+  //       position: Tween<Offset>(
+  //         begin: const Offset(-1, 0),
+  //         end: Offset(0, 0),
+  //       ).animate(animation),
+  //       child: Post_Tile(
+  //         curUser: curUser,
+  //         photoUrl: "",
+  //         onPressDelete: () => deletePost(index,),
+  //         userPost: item,
+  //       ));
+  // }
 
   @override
   Widget build(BuildContext context) {

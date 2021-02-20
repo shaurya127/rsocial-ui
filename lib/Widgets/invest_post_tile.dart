@@ -16,6 +16,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
+import 'package:rsocial2/Screens/display_post.dart';
 import 'package:rsocial2/Screens/invested_with.dart';
 
 import 'package:rsocial2/Screens/login_page.dart';
@@ -40,11 +41,12 @@ class InvestPostTile extends StatefulWidget {
   var photoUrl;
   User curUser;
   Function reactionCallback;
+  final VoidCallback onPressDelete;
   InvestPostTile(
       {@required this.curUser,
       this.userPost,
       this.photoUrl,
-      this.reactionCallback});
+      this.reactionCallback,this.onPressDelete});
   @override
   _InvestPostTileState createState() => _InvestPostTileState();
 }
@@ -760,11 +762,54 @@ class _InvestPostTileState extends State<InvestPostTile>
                     //     ),
                     //   ),
                     //SizedBox(width: 14,),
-                    Icon(
-                      Icons.more_vert,
-                      color: colorUnselectedBottomNav,
-                      size: 30,
-                    ),
+                    PopupMenuButton(
+                      icon: Icon(
+                        Icons.more_vert,
+                        size: 30,
+                        color: colorGreyTint,
+                      ),
+                      itemBuilder: (_) => <PopupMenuItem>[
+                        new PopupMenuItem(
+                            child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                        // settings: RouteSettings(
+                                        //     name: "Login_Page"),
+                                          type: PageTransitionType.fade,
+                                          child: DisplayPost(
+                                            postId: widget.userPost.id,
+                                          )));
+                                },
+                                child: new Text('View post'))),
+                        new PopupMenuItem(
+                            child: GestureDetector(
+                                onTap: () {
+                                  buildReactionTile();
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                        // settings: RouteSettings(
+                                        //     name: "Login_Page"),
+                                          type: PageTransitionType.fade,
+                                          child: Reaction_Info(
+                                            like: likes,
+                                            love: love,
+                                            hate: hates,
+                                            whatever: whatevers,
+                                          )));
+                                },
+                                child: new Text('Reactions'))),
+                        if (widget.userPost.user.id == curUser.id)
+                          new PopupMenuItem(
+                              child: GestureDetector(
+                                  onTap: widget.onPressDelete,
+                                  child: new Text('Delete')))
+                      ],
+                    )
                   ],
                 ),
               ],

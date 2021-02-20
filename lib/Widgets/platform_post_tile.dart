@@ -841,39 +841,49 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                       //     ),
                       //   ),
                       //SizedBox(width: 14,),
-                      GestureDetector(
-// <<<<<<< HEAD
-//                         onTap: () {
-//                           buildReactionTile();
-//                           Navigator.push(
-//                               context,
-//                               PageTransition(
-//                                   // settings: RouteSettings(
-//                                   //     name: "Login_Page"),
-//                                   type: PageTransitionType.fade,
-//                                   child: Reaction_Info(
-//                                     like: likes,
-//                                     love: love,
-//                                     hate: hates,
-//                                     whatever: whatevers,
-//                                   )));
-//                         },
-//                         child: SvgPicture.asset("images/rsocial_punch_blue.svg",
-//                             height: 23, fit: BoxFit.cover),
-// =======
-                        onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DisplayPost(
-                                      postId: widget.userPost.id,
-                                    ))),
-                        child: Icon(
+                      PopupMenuButton(
+                        icon: Icon(
                           Icons.more_vert,
-                          color: colorUnselectedBottomNav,
                           size: 30,
+                          color: colorGreyTint,
                         ),
-//>>>>>>> master
-                      ),
+                        itemBuilder: (_) => <PopupMenuItem>[
+                          new PopupMenuItem(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
+                                          // settings: RouteSettings(
+                                          //     name: "Login_Page"),
+                                            type: PageTransitionType.fade,
+                                            child: DisplayPost(
+                                              postId: widget.userPost.id,
+                                            )));
+                                  },
+                                  child: new Text('View post'))),
+                          new PopupMenuItem(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    buildReactionTile();
+                                    Navigator.pop(context);
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
+                                          // settings: RouteSettings(
+                                          //     name: "Login_Page"),
+                                            type: PageTransitionType.fade,
+                                            child: Reaction_Info(
+                                              like: likes,
+                                              love: love,
+                                              hate: hates,
+                                              whatever: whatevers,
+                                            )));
+                                  },
+                                  child: new Text('Reactions'))),
+                        ],
+                      )
                     ],
                   ),
                 ],
