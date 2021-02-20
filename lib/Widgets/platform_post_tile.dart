@@ -875,10 +875,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                           //     name: "Login_Page"),
                                             type: PageTransitionType.fade,
                                             child: Reaction_Info(
-                                              like: likes,
-                                              love: love,
-                                              hate: hates,
-                                              whatever: whatevers,
+                                              postId: widget.userPost.id,
                                             )));
                                   },
                                   child: new Text('Reactions'))),

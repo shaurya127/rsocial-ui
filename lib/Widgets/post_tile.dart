@@ -99,23 +99,23 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
 
   getReactions() {
     print(rxn);
-    loved = [];
-    liked = [];
-    whatever = [];
-    hated = [];
+    // loved = [];
+    // liked = [];
+    // whatever = [];
+    // hated = [];
     counter = {'loved': 0, 'liked': 0, 'whatever': 0, 'hated': 0, 'noreact': 0};
     //bool inLoop=true;
     for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
       User user = widget.userPost.reactedBy[i];
       String rt = user.reactionType;
-      if (rt == 'loved')
-        loved.add(user);
-      else if (rt == 'liked')
-        liked.add(user);
-      else if (rt == 'hated')
-        hated.add(user);
-      else
-        whatever.add(user);
+      // if (rt == 'loved')
+      //   loved.add(user);
+      // else if (rt == 'liked')
+      //   liked.add(user);
+      // else if (rt == 'hated')
+      //   hated.add(user);
+      // else
+      //   whatever.add(user);
 
       counter[rt]++;
 
@@ -839,7 +839,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                           new PopupMenuItem(
                               child: GestureDetector(
                                   onTap: () {
-                                    buildReactionTile();
+                                    //buildReactionTile();
                                     Navigator.pop(context);
                                     Navigator.push(
                                         context,
@@ -848,10 +848,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                             //     name: "Login_Page"),
                                             type: PageTransitionType.fade,
                                             child: Reaction_Info(
-                                              like: likes,
-                                              love: love,
-                                              hate: hates,
-                                              whatever: whatevers,
+                                              postId: widget.userPost.id,
                                             )));
                                   },
                                   child: new Text('Reactions'))),
