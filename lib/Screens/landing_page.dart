@@ -6,6 +6,7 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/error.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
@@ -211,11 +212,11 @@ class _Landing_PageState extends State<Landing_Page> {
 
       getUserPosts();
     } else
-      print("error!!");
-    //print("hello hello");
-    // setState(() {
-    //   isDisabled = false;
-    // });
+      Fluttertoast.showToast(
+          msg: "Error deleting post please try again later",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
   }
 
   reactionCallback() {

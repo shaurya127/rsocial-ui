@@ -364,6 +364,7 @@ class _ProfileState extends State<Profile> {
       setState(() {
         widget.isLoading = false;
       });
+      setState(() { });
     } else {
       print(response.statusCode);
       throw Exception();
@@ -454,8 +455,6 @@ class _ProfileState extends State<Profile> {
       });
       //print(posts.length);
       for (int i = 0; i < postsW.length; i++) {
-        print("wage reaction");
-        print(postsW[i].reactedBy.length);
         Post_Tile tile = Post_Tile(
           onPressDelete:()=>deletePost(i,"wage"),
             curUser: widget.currentUser,
@@ -1053,12 +1052,24 @@ class _ProfileState extends State<Profile> {
     print(response.statusCode);
     if (response.statusCode == 200) {
       if(type=="invest")
-        InvestTiles.removeAt(index);
+        {
+          setState(() {
+            postsI.removeAt(index);
+          });
+        }
       else if(type=='wage')
-        WageTiles.removeAt(index);
+        {
+          setState(() {
+            postsW.removeAt(index);
+          });
+        }
       getUserPosts();
     } else
-      print("error!!");
+      Fluttertoast.showToast(
+          msg: "Error deleting post please try again later",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
   }
 
   // slideIt(BuildContext context, int index, animation) {
