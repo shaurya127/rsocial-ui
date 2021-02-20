@@ -11,7 +11,7 @@
 // import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 // import 'package:rsocial2/Screens/login_page.dart';
 //
-// import 'package:rsocial2/Screens/wage.dart';
+// import 'package:rsocial2/Screens/createPost.dart';
 // import 'package:rsocial2/Widgets/CustomAppBar.dart';
 // import 'package:rsocial2/Widgets/RoundedButton.dart';
 // import 'package:rsocial2/Widgets/alert_box.dart';

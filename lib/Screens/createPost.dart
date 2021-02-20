@@ -28,6 +28,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:path_provider/path_provider.dart';
+import '../helper.dart';
 import '../model/post.dart';
 import '../model/user.dart';
 import 'investment.dart';
@@ -364,17 +365,23 @@ class _WageState extends State<Wage> {
     }
 
     if (investmentstoryText != null || investmentfileList.isNotEmpty) {
+      // Show Modal Progress hud
       setState(() {
         isloading = true;
       });
-      var url = storyEndPoint + "createinvestment";
-      var user = await FirebaseAuth.instance.currentUser();
+
+      // Get the current Firebase user
+      var user = await authFirebase.currentUser();
+      // Get the user token
+      var token = await user.getIdToken();
+
       var uid = curUser.id;
 
       for (int i = 0; i < selectedList.length; i++) {
         idSelectedList.add(selectedList[i].id);
       }
 
+      // Create Investment Post
       Post post = Post(
           id: uid,
           storyText: investmentstoryText.trim(),
@@ -382,22 +389,15 @@ class _WageState extends State<Wage> {
           investedAmount: investmentAmount,
           duration: isOne ? 1 : 7,
           fileUpload: list);
-      var token = await user.getIdToken();
-      print(jsonEncode(post.toJsonInvest()));
-      //print(token);
 
-      var response;
-      try {
-        response = await http.post(
-          url,
-          encoding: Encoding.getByName("utf-8"),
-          body: jsonEncode(post.toJsonInvest()),
-          headers: {
-            "Authorization": "Bearer: $token",
-            "Content-Type": "application/json",
-          },
-        );
-      } catch (e) {
+      // Awaiting for post Response
+      var response = await postFunc(
+          url: storyEndPoint + "createinvestment",
+          token: token,
+          body: jsonEncode(post.toJsonInvest()));
+
+      // Response is null if some exception occurred while posting, for eg - Lost internet connection
+      if (response == null) {
         setState(() {
           isloading = false;
         });
@@ -409,12 +409,11 @@ class _WageState extends State<Wage> {
         return;
       }
 
-      print(response.statusCode);
-      print(response.reasonPhrase);
-
       if (response.statusCode == 200) {
         print('Response body is: ${response.body}');
         investmentTextController.clear();
+
+        // After successful response restore defaults
         setState(() {
           amount = 1000;
           investmentfileList.clear();
@@ -424,6 +423,7 @@ class _WageState extends State<Wage> {
           selectedList.clear();
         });
 
+        // Remove all the cached images
         if (imageCacheIds.length != 0) {
           for (String i in imageCacheIds) {
             try {
@@ -432,7 +432,10 @@ class _WageState extends State<Wage> {
           }
         }
 
+        // Move to the Landing Page
         widget.isPostedCallback();
+
+        // Show User that story has been successfully posted
         Fluttertoast.showToast(
             msg: "Uploaded investment story!",
             toastLength: Toast.LENGTH_SHORT,
@@ -440,6 +443,13 @@ class _WageState extends State<Wage> {
             fontSize: 15);
       } else {
         print(response.statusCode);
+
+        Fluttertoast.showToast(
+            msg: "Some error occurred",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            fontSize: 15);
+
         setState(() {
           isloading = false;
         });
@@ -454,7 +464,7 @@ class _WageState extends State<Wage> {
     getFriends();
   }
 
-  createPost(String storyText, List<String> list) async {
+  createWagePost(String storyText, List<String> list) async {
     if (storyText == null || storyText.isEmpty) {
       Fluttertoast.showToast(
           msg: "Please enter text and upload pic",
@@ -464,84 +474,78 @@ class _WageState extends State<Wage> {
       return;
     }
 
-    if (storyText != null) {
+    // Show Modal Progress hud
+    setState(() {
+      isloading = true;
+    });
+
+    var user = await authFirebase.currentUser();
+    var token = await user.getIdToken();
+
+    var uid = curUser.id;
+
+    // Creating Post
+    Post post = Post(id: uid, storyText: storyText, fileUpload: list);
+
+    // Awaiting for post Response
+    var response = await postFunc(
+        url: storyEndPoint + "createwage",
+        token: token,
+        body: jsonEncode(post.toJsonWage()));
+
+    // Response is null if some exception occurred while posting, for eg - Lost internet connection
+    if (response == null) {
       setState(() {
-        isloading = true;
-      });
-      var url = storyEndPoint + "createwage";
-      var user = await FirebaseAuth.instance.currentUser();
-      // DocumentSnapshot doc = await users.document(user.uid).get();
-      // if (doc == null) {
-      //   print("Doc is null in create Post in wage.dart");
-      //   throw Exception();
-      // }
-      // var uid = doc['id'];
-      //print(uid);
-      var uid = curUser.id;
-      print(storyText);
-      print("Post starts");
-      Post post = Post(id: uid, storyText: storyText, fileUpload: list);
-      var token = await user.getIdToken();
-      print(jsonEncode(post.toJsonWage()));
-      print(token);
-
-      var response;
-      try {
-        response = await http.post(
-          url,
-          encoding: Encoding.getByName("utf-8"),
-          body: jsonEncode(post.toJsonWage()),
-          headers: {
-            "Authorization": "Bearer: $token",
-            "Content-Type": "application/json",
-          },
-        );
-      } catch (e) {
-        setState(() {
-          isloading = false;
-        });
-        Fluttertoast.showToast(
-            msg: "Error occurred, please check Internet connection.",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            fontSize: 15);
-        return;
-      }
-
-      print(response.statusCode);
-
-      if (response.statusCode == 200) {
-        print('Response body is: ${response.body}');
-        textController.clear();
-        setState(() {
-          fileList.clear();
-          isloading = false;
-        });
-        Fluttertoast.showToast(
-            msg: "Uploaded wage story!",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            fontSize: 15);
-        if (imageCacheIds.length != 0) {
-          for (String i in imageCacheIds) {
-            try {
-              await File('$path/img_$i.jpg').delete();
-            } catch (e) {}
-          }
-        }
-        widget.isPostedCallback();
-      } else {
-        setState(() {
-          isloading = false;
-        });
-
-        print(response.statusCode);
-      }
-    } else
-      setState(() {
-        print("Empty");
         isloading = false;
       });
+      Fluttertoast.showToast(
+          msg: "Error occurred, please check Internet connection.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
+      return;
+    }
+
+    if (response.statusCode == 200) {
+      print('Response body is: ${response.body}');
+
+      // Restore defaults
+      textController.clear();
+      setState(() {
+        fileList.clear();
+        isloading = false;
+      });
+
+      // Show user that the wage story is successfully posted
+      Fluttertoast.showToast(
+          msg: "Uploaded wage story!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
+
+      // Clear the image caches used for compression
+      if (imageCacheIds.length != 0) {
+        for (String i in imageCacheIds) {
+          try {
+            await File('$path/img_$i.jpg').delete();
+          } catch (e) {}
+        }
+      }
+
+      // Move to landing page
+      widget.isPostedCallback();
+    } else {
+      Fluttertoast.showToast(
+          msg: "Some error occurred",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
+      setState(() {
+        isloading = false;
+      });
+
+      print(response.statusCode);
+    }
   }
 
   Widget buildSuggestions(BuildContext context, String query) {
@@ -611,38 +615,7 @@ class _WageState extends State<Wage> {
   }
 
   void getFriends() async {
-    // var user = await FirebaseAuth.instance.currentUser();
-    // //
-    // // // Getting doc from firebase
-    // DocumentSnapshot doc = await users.document(user.uid).get();
-    // // // Getting id of current user from firebase
-    // var id = doc['id'];
-    // //
-    // final url = userEndPoint + "$id";
-    // //
-    // var token = await user.getIdToken();
-    // //
-    // final response = await http.get(url, headers: {
-    //   "Authorization": "Bearer $token",
-    //   "Content-Type": "application/json",
-    // });
-    // User curUser;
-    // print(response.statusCode);
-    // if (response.statusCode == 200) {
-    //   final jsonUser = jsonDecode(response.body);
-    //   var body = jsonUser['body'];
-    //   var body1 = jsonDecode(body);
-    //   var msg = body1['message'];
-    //   print("These are my connections");
-    //   print(msg);
-    //   curUser = User.fromJson(msg);
-    // }
     this.investmentlist = curUser.connection;
-    // if (connections.isNotEmpty) {
-    //   for (int i = 0; i < connections.length; i++) {
-    //     User user = User.fromJson(connections[i]);
-    //     this.list.add(user);
-    //   }
   }
 
   buildInvestment() {
@@ -680,48 +653,6 @@ class _WageState extends State<Wage> {
         : Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: <Widget>[
-              //     GestureDetector(
-              //       onTap: () {
-              //         return Navigator.pushReplacement(
-              //             context,
-              //             PageTransition(
-              //                 type: PageTransitionType.leftToRight,
-              //                 child: Wage()));
-              //       },
-              //       child: Container(
-              //         child: SvgPicture.asset(
-              //           "images/group2773.svg",
-              //           color: colorGreyTint.withOpacity(0.3),
-              //         ),
-              //       ),
-              //     ),
-              //     SizedBox(
-              //       width: 18,
-              //     ),
-              //     GestureDetector(
-              //       child: Container(
-              //         child: SvgPicture.asset(
-              //           "images/group2771.svg",
-              //           color: colorPrimaryBlue,
-              //         ),
-              //       ),
-              //     )
-              //   ],
-              // ),
-              // Padding(
-              //   padding: const EdgeInsets.only(top: 11.0),
-              //   child: Text(
-              //     "Create an Investment Story",
-              //     style: TextStyle(
-              //         color: Colors.black,
-              //         fontFamily: "Lato",
-              //         fontWeight: FontWeight.bold,
-              //         fontSize: 15),
-              //   ),
-              //),
               SizedBox(
                 height: 32,
               ),
@@ -1150,7 +1081,6 @@ class _WageState extends State<Wage> {
                   ),
                 ),
               ),
-
               Padding(
                 padding: EdgeInsets.only(top: 60, bottom: 20),
                 child: Row(
@@ -1210,17 +1140,6 @@ class _WageState extends State<Wage> {
   buildWage() {
     return Column(
       children: <Widget>[
-        // Padding(
-        //   padding: const EdgeInsets.only(top: 11.0),
-        //   child: Text(
-        //     "Create a Wage Story",
-        //     style: TextStyle(
-        //         color: Colors.black,
-        //         fontFamily: "Lato",
-        //         fontWeight: FontWeight.bold,
-        //         fontSize: 15),
-        //   ),
-        // ),
         Padding(
           padding: const EdgeInsets.only(left: 25.0, right: 25, top: 32),
           child: Container(
@@ -1416,7 +1335,7 @@ class _WageState extends State<Wage> {
           text: "Time to Brag",
           onPressed: () {
             storytext = textController.text;
-            createPost(storytext.trim(), list);
+            createWagePost(storytext.trim(), list);
           },
         )
       ],

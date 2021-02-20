@@ -21,9 +21,9 @@ import 'login_page.dart';
 import 'package:http/http.dart' as http;
 
 class Search_Page extends StatefulWidget {
-  List<User> allusers;
-
-  Search_Page({this.allusers});
+  // List<User> allusers;
+  //
+  // Search_Page({this.allusers});
 
   @override
   _Search_PageState createState() => _Search_PageState();
@@ -42,6 +42,8 @@ class _Search_PageState extends State<Search_Page>
   String searchQuery = "";
   String photourl = "";
   bool isGetUserFail = false;
+  bool isFailedGetAllUser = false;
+  bool isLoadingSearch = false;
 
   //User curUser;
   @override
@@ -136,79 +138,82 @@ class _Search_PageState extends State<Search_Page>
     }
   }
 
-  // getAllUsers() async {
-  //   // setState(() {
-  //   //   isLoading = true;
-  //   // });
-  //   //print("==========Inside get all users ===================");
-  //   var user;
-  //   var id;
-  //   try {
-  //     user = await FirebaseAuth.instance.currentUser();
-  //
-  //     DocumentSnapshot doc = await users.document(user.uid).get();
-  //     id = doc['id'];
-  //
-  //     if (doc['token'] == null) {
-  //       var messagingToken = await getFirebaseMessagingToken();
-  //       await users.document(user.uid).updateData({"token": messagingToken});
-  //     }
-  //
-  //     //var id = curUser.id;
-  //   } catch (e) {
-  //     setState(() {
-  //       isFailedGetAllUser = true;
-  //     });
-  //   }
-  //   final url = userEndPoint + "all";
-  //
-  //   var token = await user.getIdToken();
-  //   //print(token);
-  //
-  //   final response = await http.post(url,
-  //       headers: {
-  //         "Authorization": "Bearer $token",
-  //         "Content-Type": "application/json"
-  //       },
-  //       body: jsonEncode({"id": id, "email": user.email}));
-  //
-  //   //print(response.statusCode);
-  //   if (response.statusCode == 200) {
-  //     final jsonUser = jsonDecode(response.body);
-  //     var body = jsonUser['body'];
-  //     var body1 = jsonDecode(body);
-  //     var msg = body1['message'];
-  //     //print(msg);
-  //     //print("length is ${msg.length}")
-  //     for (int i = 0; i < msg.length; i++) {
-  //       // print(msg[i]['PendingConnection']);
-  //
-  //       if (msg[i]['id'] == id) {
-  //         continue;
-  //       }
-  //
-  //       User user = User.fromJson(msg[i]);
-  //
-  //       allUsers.add(user);
-  //     }
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //     // print("all the users");
-  //     // print(allUsers.length);
-  //     return allUsers;
-  //   } else {
-  //     print(response.statusCode);
-  //     throw Exception();
-  //   }
-  // }
+  Future<void> getAllUsers() async {
+    setState(() {
+      isLoadingSearch = true;
+    });
+    //print("==========Inside get all users ===================");
+    var user;
+    var id;
+    var response;
+    try {
+      user = await FirebaseAuth.instance.currentUser();
+
+      DocumentSnapshot doc = await users.document(user.uid).get();
+      id = doc['id'];
+
+      // if (doc['token'] == null) {
+      //   var messagingToken = await getFirebaseMessagingToken();
+      //   await users.document(user.uid).updateData({"token": messagingToken});
+      // }
+
+      //var id = curUser.id;
+
+      final url = userEndPoint + "all";
+
+      var token = await user.getIdToken();
+      //print(token);
+
+      response = await http.post(url,
+          headers: {
+            "Authorization": "Bearer $token",
+            "Content-Type": "application/json"
+          },
+          body: jsonEncode({"id": id, "email": user.email}));
+    } catch (e) {
+      setState(() {
+        isFailedGetAllUser = true;
+        isLoadingSearch = false;
+      });
+    }
+
+    //print(response.statusCode);
+    if (response.statusCode == 200) {
+      final jsonUser = jsonDecode(response.body);
+      var body = jsonUser['body'];
+      var body1 = jsonDecode(body);
+      var msg = body1['message'];
+      //print(msg);
+      //print("length is ${msg.length}")
+      for (int i = 0; i < msg.length; i++) {
+        // print(msg[i]['PendingConnection']);
+
+        if (msg[i]['id'] == id) {
+          continue;
+        }
+
+        User user = User.fromJson(msg[i]);
+
+        allUsers.add(user);
+      }
+      setState(() {
+        isLoadingSearch = false;
+      });
+      // print("all the users");
+      // print(allUsers.length);
+      return allUsers;
+    } else {
+      print(response.statusCode);
+      throw Exception();
+    }
+  }
 
   Widget buildSuggestions(BuildContext context, String query) {
     // show when someone searches for something
 
-    suggestionList = query == null || query.isEmpty || widget.allusers.isEmpty
+    suggestionList = query == null || query.isEmpty || allUsers.isEmpty
         ? []
-        : widget.allusers
+        : allUsers
             .where((p) => (p.fname + " " + p.lname)
                 .contains(RegExp(query, caseSensitive: false)))
             .toList();
@@ -224,58 +229,58 @@ class _Search_PageState extends State<Search_Page>
         : SizedBox.shrink();
   }
 
-  Future<void> getAllConnections() async {
-    setState(() {
-      isLoading = true;
-    });
-    //print("==========Inside get all connection ===================");
-    var user = await FirebaseAuth.instance.currentUser();
-    //
-    // DocumentSnapshot doc = await users.document(user.uid).get();
-    // var id = doc['id'];
-    var id = curUser.id;
-    final url = userEndPoint + "all";
-
-    var token = await user.getIdToken();
-    //print(token);
-
-    final response = await http.post(url,
-        headers: {
-          "Authorization": "Bearer $token",
-          "Content-Type": "application/json",
-        },
-        body: jsonEncode({"id": id, "email": user.email}));
-
-    //print(response.statusCode);
-    if (response.statusCode == 200) {
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      var msg = body1['message'];
-
-      //print("length is ${msg.length}")
-      for (int i = 0; i < msg.length; i++) {
-        // print(msg[i]['PendingConnection']);
-
-        if (msg[i]['id'] == id) {
-          curUser = User.fromJson(msg[i]);
-          continue;
-        }
-
-        User user = User.fromJson(msg[i]);
-
-        allUsers.add(user);
-      }
-      setState(() {
-        widget.allusers = allUsers;
-        isLoading = false;
-      });
-      //return allUsers;
-    } else {
-      print(response.statusCode);
-      throw Exception();
-    }
-  }
+  // Future<void> getAllConnections() async {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+  //   //print("==========Inside get all connection ===================");
+  //   var user = await FirebaseAuth.instance.currentUser();
+  //   //
+  //   // DocumentSnapshot doc = await users.document(user.uid).get();
+  //   // var id = doc['id'];
+  //   var id = curUser.id;
+  //   final url = userEndPoint + "all";
+  //
+  //   var token = await user.getIdToken();
+  //   //print(token);
+  //
+  //   final response = await http.post(url,
+  //       headers: {
+  //         "Authorization": "Bearer $token",
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: jsonEncode({"id": id, "email": user.email}));
+  //
+  //   //print(response.statusCode);
+  //   if (response.statusCode == 200) {
+  //     final jsonUser = jsonDecode(response.body);
+  //     var body = jsonUser['body'];
+  //     var body1 = jsonDecode(body);
+  //     var msg = body1['message'];
+  //
+  //     //print("length is ${msg.length}")
+  //     for (int i = 0; i < msg.length; i++) {
+  //       // print(msg[i]['PendingConnection']);
+  //
+  //       if (msg[i]['id'] == id) {
+  //         curUser = User.fromJson(msg[i]);
+  //         continue;
+  //       }
+  //
+  //       User user = User.fromJson(msg[i]);
+  //
+  //       allUsers.add(user);
+  //     }
+  //     setState(() {
+  //       widget.allusers = allUsers;
+  //       isLoading = false;
+  //     });
+  //     //return allUsers;
+  //   } else {
+  //     print(response.statusCode);
+  //     throw Exception();
+  //   }
+  // }
 
   buildSearchTab() {
     //sentPendingConnections = curUser.sentPendingConnection;
@@ -437,14 +442,24 @@ class _Search_PageState extends State<Search_Page>
                   child: buildSuggestedTab(),
                 );
     else if (Orientation == "search")
-      return isLoading
+      return isLoadingSearch
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : RefreshIndicator(
-              onRefresh: getAllConnections,
-              child: buildSearchTab(),
-            );
+          : isFailedGetAllUser
+              ? ErrWidget(
+                  tryAgainOnPressed: () {
+                    setState(() {
+                      isFailedGetAllUser = false;
+                      isLoadingSearch = true;
+                    });
+                    getUser();
+                  },
+                )
+              : RefreshIndicator(
+                  onRefresh: getAllUsers,
+                  child: buildSearchTab(),
+                );
   }
 
   @override
@@ -482,6 +497,8 @@ class _Search_PageState extends State<Search_Page>
                       onTap: () {
                         setState(() {
                           this.Orientation = "search";
+                          getAllUsers();
+                          isLoadingSearch = true;
                         });
                       },
                       text: "Search",
