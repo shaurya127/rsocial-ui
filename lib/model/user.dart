@@ -121,7 +121,8 @@ class User {
       receivedPendingConnection:
           json["ReceivedPendingConnection"] == null ? [] : incoming,
       userMap: map,
-      connectionCount: json['NumConnection'],
+      connectionCount: 0,
+      //json['NumConnection']==[] ? 0 : json['NumConnection'],
       totalActiveInvestmentAmount: json['TotalActiveInvestmentAmount'] != null
           ? json['TotalActiveInvestmentAmount'].floor()
           : json['TotalActiveInvestmentAmount'],
