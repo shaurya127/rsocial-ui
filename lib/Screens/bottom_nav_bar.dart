@@ -11,6 +11,7 @@ import 'package:rsocial2/Widgets/disabled_reaction_button.dart';
 import 'package:rsocial2/Widgets/error.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/contants/constants.dart';
+import 'package:rsocial2/helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import '../contants/config.dart';
@@ -23,7 +24,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/bio_page.dart';
 import 'package:rsocial2/Screens/profile_pic.dart';
-import 'package:rsocial2/Screens/wage.dart';
+import 'package:rsocial2/Screens/createPost.dart';
 import 'package:rsocial2/Widgets/alert_box.dart';
 import 'package:rsocial2/auth.dart';
 import 'package:rsocial2/authLogic.dart';
@@ -49,6 +50,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 final googleSignIn = GoogleSignIn();
 final fblogin = FacebookLogin();
+var authFirebase = FirebaseAuth.instance;
 User curUser;
 User savedUser;
 PackageInfo packageInfo;
@@ -71,25 +73,19 @@ class BottomNavBar extends StatefulWidget {
 
 class _BottomNavBarState extends State<BottomNavBar>
     with SingleTickerProviderStateMixin {
-  // This is our animation controller
-
-  FirebaseMessaging _messaging = FirebaseMessaging();
-
-  final authInstance = FirebaseAuth.instance;
-  final _authInstance = FirebaseAuth.instance;
   bool isLoading = false;
   String photourl;
   bool isFailedUserPost = false;
   bool isFailedGetAllUser = false;
   bool isFailedGetUser = false;
-  List<User> allUsers = [];
+
   bool isPosted = false;
   int _currentIndex = 0;
   bool isLoadingPost = false;
   bool isForward = true;
   bool isNewUserFailed = false;
   User Ruser;
-  bool storiesLeft= true;
+  bool storiesLeft = true;
 
   reactionCallback() async {
     await getRCashDetails();
@@ -152,13 +148,13 @@ class _BottomNavBarState extends State<BottomNavBar>
         var resBody = json.decode(res['body']);
 
         var id = resBody['message']['id'];
-        var messagingToken = await getFirebaseMessagingToken();
+        // var messagingToken = await getFirebaseMessagingToken();
         //print(widget.sign_in_mode);
 
         var responseGet;
         try {
-          await users.document(user.uid).setData(
-              {"id": resBody['message']['id'], "token": messagingToken});
+          // await users.document(user.uid).setData(
+          //     {"id": resBody['message']['id'], "token": messagingToken});
 
           final url = userEndPoint + "get";
 
@@ -269,151 +265,127 @@ class _BottomNavBarState extends State<BottomNavBar>
             throw Exception();
           }
 
-          final urlAll = userEndPoint + "all";
+          //   final urlAll = userEndPoint + "all";
+          //
+          //   //var token = await user.getIdToken();
+          //   //print(token);
+          //   var responseAll;
+          //   try {
+          //     responseAll = await http.post(urlAll,
+          //         headers: {
+          //           "Authorization": "Bearer $token",
+          //           "Content-Type": "application/json"
+          //         },
+          //         body: jsonEncode({"id": id, "email": user.email}));
+          //   } catch (e) {
+          //     setState(() {
+          //       isLoading = false;
+          //       isLoadingPost = false;
+          //       isFailedGetAllUser = true;
+          //     });
+          //     return;
+          //   }
+          //
+          //   //print(response.statusCode);
+          //   if (responseAll.statusCode == 200) {
+          //     final jsonUser = jsonDecode(responseAll.body);
+          //     var body = jsonUser['body'];
+          //     var body1 = jsonDecode(body);
+          //     var msg = body1['message'];
+          //     //print(msg);
+          //     //print("length is ${msg.length}")
+          //     for (int i = 0; i < msg.length; i++) {
+          //       // print(msg[i]['PendingConnection']);
+          //
+          //       if (msg[i]['id'] == id) {
+          //         continue;
+          //       }
+          //
+          //       User user = User.fromJson(msg[i]);
+          //
+          //       //allUsers.add(user);
+          //     }
+          //     setState(() {
+          //       isLoading = false;
+          //     });
+          //     // print("all the users");
+          //     // print(allUsers.length);
+          //     //return allUsers;
+          //   } else {
+          //     print(response.statusCode);
+          //     throw Exception();
+          //   }
+          // } else {
+          //   print(response.statusCode);
+          //   throw Exception();
+          // }
 
-          //var token = await user.getIdToken();
-          //print(token);
-          var responseAll;
-          try {
-            responseAll = await http.post(urlAll,
-                headers: {
-                  "Authorization": "Bearer $token",
-                  "Content-Type": "application/json"
-                },
-                body: jsonEncode({"id": id, "email": user.email}));
-          } catch (e) {
-            setState(() {
-              isLoading = false;
-              isLoadingPost = false;
-              isFailedGetAllUser = true;
-            });
-            return;
-          }
-
-          //print(response.statusCode);
-          if (responseAll.statusCode == 200) {
-            final jsonUser = jsonDecode(responseAll.body);
-            var body = jsonUser['body'];
-            var body1 = jsonDecode(body);
-            var msg = body1['message'];
-            //print(msg);
-            //print("length is ${msg.length}")
-            for (int i = 0; i < msg.length; i++) {
-              // print(msg[i]['PendingConnection']);
-
-              if (msg[i]['id'] == id) {
-                continue;
-              }
-
-              User user = User.fromJson(msg[i]);
-
-              allUsers.add(user);
-            }
-            setState(() {
-              isLoading = false;
-            });
-            // print("all the users");
-            // print(allUsers.length);
-            return allUsers;
-          } else {
-            print(response.statusCode);
-            throw Exception();
-          }
-        } else {
-          print(response.statusCode);
-          throw Exception();
+          // if (widget.sign_in_mode == "RSocial_sign_in") {
+          //   FirebaseAnalytics().setUserId(uid);
+          //   FirebaseAnalytics().logEvent(name: "Signed_in_with", parameters: {
+          //     "mode": widget.sign_in_mode,
+          //     'phone_number': phn,
+          //     'uid': uid,
+          //     'id': resMessage.toString(),
+          //   });
+          // } else {
+          //   FirebaseAnalytics().setUserId(uid);
+          //   FirebaseAnalytics().logEvent(name: "Signed_in_with", parameters: {
+          //     "mode": widget.sign_in_mode,
+          //     'email': email,
+          //     'uid': uid,
+          //     'id': resMessage.toString(),
+          //   });
+          // }
         }
-
-        // if (widget.sign_in_mode == "RSocial_sign_in") {
-        //   FirebaseAnalytics().setUserId(uid);
-        //   FirebaseAnalytics().logEvent(name: "Signed_in_with", parameters: {
-        //     "mode": widget.sign_in_mode,
-        //     'phone_number': phn,
-        //     'uid': uid,
-        //     'id': resMessage.toString(),
-        //   });
-        // } else {
-        //   FirebaseAnalytics().setUserId(uid);
-        //   FirebaseAnalytics().logEvent(name: "Signed_in_with", parameters: {
-        //     "mode": widget.sign_in_mode,
-        //     'email': email,
-        //     'uid': uid,
-        //     'id': resMessage.toString(),
-        //   });
-        // }
+      } else {
+        logout(context);
       }
-    } else {
-      logout(context);
     }
   }
 
   getUser() async {
     print("get user started");
-    var user = await FirebaseAuth.instance.currentUser();
+    var user = await authFirebase.currentUser();
     var token = await user.getIdToken();
-    // print(token);
-    // print("This is my email");
-    // print(user.email);
+
     DocumentSnapshot doc = await users.document(user.uid).get();
-    //print("This is the doc");
-    //print(doc.data);
 
     if (doc.data == null) {
-      await _authInstance.signOut();
+      await authFirebase.signOut();
       return Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (BuildContext context) => CreateAccount()),
           (Route<dynamic> route) => false);
     }
 
     var id = doc['id'];
-    final url = userEndPoint + "get";
-    //print(url);
-    //var user = await FirebaseAuth.instance.currentUser();
-    //print("this user id is ${user.uid}");
-    var response;
-    try {
-      token = await user.getIdToken();
-      print(token);
-      // print(id);
-      // print(user.email);
-      // print("blalb");
-      response = await http.post(url,
-          encoding: Encoding.getByName("utf-8"),
-          headers: {
-            "Authorization": "Bearer $token",
-            "Content-Type": "application/json",
-            //"Accept": "*/*"
-          },
-          body: jsonEncode({"id": id, "email": user.email}));
-    } catch (e) {
-      print(e);
+
+    var response = await postFunc(
+        url: userEndPoint + "get",
+        token: token,
+        body: jsonEncode({"id": id, "email": user.email}));
+
+    if (response == null) {
       setState(() {
         isLoading = false;
         isFailedGetUser = true;
       });
       return null;
     }
-    //print("This is my response: $response");
-    print("Get User response");
-    print(response.body);
-    //print(response.statusCode);
+
     if (response.statusCode == 200) {
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      //print("body is $body");
-      // print(body1);
-      var msg = body1['message'];
-      //print("id is: ${msg['id']}");
-      //print(msg);
-      if (msg == 'User Not Found') {
+      var responseMessage =
+          jsonDecode((jsonDecode(response.body))['body'])['message'];
+
+      if (responseMessage == 'User Not Found') {
         setState(() {
           isLoading = false;
           isFailedGetUser = true;
         });
+        return null;
       }
 
-      curUser = User.fromJson(msg);
+      curUser = User.fromJson(responseMessage);
       saveData();
       //print("my send requests are ${curUser.sentPendingConnection.length}");
       // if(inviteSenderId!=null)
@@ -477,197 +449,99 @@ class _BottomNavBarState extends State<BottomNavBar>
     );
   }
 
-  getAllPosts() async{
-    int start=0,i=0;
-    while(storiesLeft)
-      {
-        print("getUserPostFired");
+  getAllPosts() async {
+    int start = 0, i = 0;
+    while (storiesLeft) {
+      print("getUserPostFired");
+      setState(() {
+        isLoadingPost = true;
+        //isLoading = false;
+      });
+      FirebaseUser user;
+      var id;
+      try {
+        user = await authFirebase.currentUser();
+        DocumentSnapshot doc = await users.document(user.uid).get();
+        if (doc == null) print("error from get user post");
+        id = doc['id'];
+      } catch (e) {
         setState(() {
-          isLoadingPost = true;
-          //isLoading = false;
+          isFailedUserPost = true;
         });
-        FirebaseUser user;
-        var id;
-        try {
-          user = await FirebaseAuth.instance.currentUser();
-          photourl = user.photoUrl;
-          //print(user);
-          DocumentSnapshot doc = await users.document(user.uid).get();
-          if (doc == null) print("error from get user post");
-          id = doc['id'];
-        } catch (e) {
-          setState(() {
-            isFailedUserPost = true;
-          });
-        }
-        //var id = curUser.id;
+      }
 
-        final url = storyEndPoint + "all";
-        var token = await user.getIdToken();
+      var token = await user.getIdToken();
 
-        var response;
-        try {
-          response = await http.post(
-              url,
-              encoding: Encoding.getByName("utf-8"),
-              body: jsonEncode({"id": id, "start_token":start}),
-              headers: {
-                "Authorization": "Bearer $token",
-                "Content-Type": "application/json",
-              });
-        } catch (e) {
-          setState(() {
-            isFailedUserPost = true;
-          });
-          return true;
-        }
-        //print("body is ${response.body}");
-        print(response.statusCode);
-        print("User posts $response");
-        if (response.statusCode == 200) {
-          final jsonUser = jsonDecode(response.body);
-          var body = jsonUser['body'];
-          var body1 = jsonDecode(body);
-          //print("body is $body");
-          //print(body1);
-          var msg = body1['message']['stories'];
-          //print(msg.length);
-          List<Post> posts = [];
-          if(msg!=[])
-          {
-            for (int i = 0; i < msg.length; i++) {
-              Post post;
-              if (msg[i]['StoryType'] == "Investment")
-                post = Post.fromJsonI(msg[i]);
-              else
-                post = Post.fromJsonW(msg[i]);
-              if (post != null) {
-                //print(post.investedWithUser);
-                posts.add(post);
-              }
+      var response = await postFunc(
+          url: storyEndPoint + "all",
+          token: token,
+          body: jsonEncode({"id": id, "start_token": start}));
+
+      if (response == null) {
+        setState(() {
+          isFailedUserPost = true;
+        });
+        return true;
+      }
+
+      if (response.statusCode == 200) {
+        var responseMessage =
+            jsonDecode((jsonDecode(response.body))['body'])['message'];
+
+        var responseStories = responseMessage['stories'];
+        var storiesStillLeft = responseMessage['still_left'];
+
+        List<Post> posts = [];
+        if (responseMessage != []) {
+          for (int i = 0; i < responseStories.length; i++) {
+            Post post;
+            if (responseStories[i]['StoryType'] == "Investment")
+              post = Post.fromJsonI(responseStories[i]);
+            else
+              post = Post.fromJsonW(responseStories[i]);
+            if (post != null) {
+              //print(post.investedWithUser);
+              posts.add(post);
             }
           }
-          setState(() {
-            postsGlobal.addAll(posts);
-            //isLoading = false;
-            isLoadingPost = false;
-            print("number of stories left $storiesLeft , message id ${body1['message']['still_left']}");
-            storiesLeft  = body1['message']['still_left'];
-            print("number of stories after call $storiesLeft");
-            print("number of stories left $storiesLeft , message id ${body1['message']['still_left']}");
-          });
-
-        } else {
-          print(response.statusCode);
-          throw Exception();
         }
-        start=start+10;
+        setState(() {
+          postsGlobal.addAll(posts);
+          //isLoading = false;
+          isLoadingPost = false;
+          print(
+              "number of stories left $storiesLeft , message id $storiesStillLeft");
+          storiesLeft = storiesStillLeft;
+          print("number of stories after call $storiesLeft");
+          print(
+              "number of stories left $storiesLeft , message id $storiesStillLeft");
+        });
+      } else {
+        print(response.statusCode);
+        throw Exception();
       }
-  }
-
-  // getUserPosts(int start) async {
-  //
-  // }
-
-  getAllUsers() async {
-    // setState(() {
-    //   isLoading = true;
-    // });
-    //print("==========Inside get all users ===================");
-    var user;
-    var id;
-    try {
-      user = await FirebaseAuth.instance.currentUser();
-
-      DocumentSnapshot doc = await users.document(user.uid).get();
-      id = doc['id'];
-
-      if (doc['token'] == null) {
-        var messagingToken = await getFirebaseMessagingToken();
-        await users.document(user.uid).updateData({"token": messagingToken});
-      }
-
-      //var id = curUser.id;
-    } catch (e) {
-      setState(() {
-        isFailedGetAllUser = true;
-      });
-    }
-    final url = userEndPoint + "all";
-
-    var token = await user.getIdToken();
-    //print(token);
-
-    final response = await http.post(url,
-        headers: {
-          "Authorization": "Bearer $token",
-          "Content-Type": "application/json"
-        },
-        body: jsonEncode({"id": id, "email": user.email}));
-
-    //print(response.statusCode);
-    if (response.statusCode == 200) {
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      var msg = body1['message'];
-      //print(msg);
-      //print("length is ${msg.length}")
-      for (int i = 0; i < msg.length; i++) {
-        // print(msg[i]['PendingConnection']);
-
-        if (msg[i]['id'] == id) {
-          continue;
-        }
-
-        User user = User.fromJson(msg[i]);
-
-        allUsers.add(user);
-      }
-      setState(() {
-        isLoading = false;
-      });
-      // print("all the users");
-      // print(allUsers.length);
-      return allUsers;
-    } else {
-      print(response.statusCode);
-      throw Exception();
+      start = start + 10;
     }
   }
 
   getRCashDetails() async {
-    var user = await FirebaseAuth.instance.currentUser();
+    var user = await authFirebase.currentUser();
     var token = await user.getIdToken();
-    DocumentSnapshot doc = await users.document(user.uid).get();
+    var id = curUser.id;
 
-    var id = doc['id'];
-    final url = userEndPoint + "getyollar";
+    var response = await postFunc(
+        url: userEndPoint + "getyollar",
+        token: token,
+        body: jsonEncode({"id": id}));
 
-    var response;
-    try {
-      token = await user.getIdToken();
-      //print(token);
-      response = await http.post(url,
-          encoding: Encoding.getByName("utf-8"),
-          headers: {
-            "Authorization": "Bearer $token",
-            "Content-Type": "application/json",
-            //"Accept": "*/*"
-          },
-          body: jsonEncode({"id": id}));
-    } catch (e) {
-      print(e);
-
+    if (response == null) {
       return null;
     }
-    print(response.body);
+
     if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      var body = jsonResponse['body'];
-      var body1 = jsonDecode(body);
-      var msg = body1['message'];
-      Ruser = User.fromJson(msg);
+      var responseMessage =
+          jsonDecode((jsonDecode(response.body))['body'])['message'];
+      Ruser = User.fromJson(responseMessage);
 
       curUser.lollarAmount = Ruser.lollarAmount;
       curUser.totalAvailableYollar = Ruser.totalAvailableYollar;
@@ -701,6 +575,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     super.initState();
     getPackageInfo();
     getData();
+
     if (widget.isNewUser) {
       setState(() {
         isLoading = true;
@@ -709,18 +584,18 @@ class _BottomNavBarState extends State<BottomNavBar>
     } else {
       getAllPosts();
       getUserAwait();
-      getAllUsers();
-      getRCashDetails();
+      //  getAllUsers();
+      //getRCashDetails();
 
       if (postId == null) initDynamicLinks();
     }
   }
 
-  Future<String> getFirebaseMessagingToken() async {
-    var token = await _messaging.getToken();
-    print(token);
-    return token;
-  }
+  // Future<String> getFirebaseMessagingToken() async {
+  //   var token = await _messaging.getToken();
+  //   print(token);
+  //   return token;
+  // }
 
   createNgetUserAwait() async {
     await createNgetUser();
@@ -734,7 +609,6 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   @override
   Widget build(BuildContext context) {
-    print("fsjklfsjklsdklsdjklsdfkljsdfjklsdfjklsdfjklsdfjkljklsdff");
     // Provider.of<Post_Tile>(context);
     print("Build of bottom nav bar worked");
 
@@ -746,7 +620,7 @@ class _BottomNavBarState extends State<BottomNavBar>
           isErrorLoadingPost: isFailedUserPost,
           reactionCallback: reactionCallback),
 
-      Search_Page(allusers: allUsers),
+      Search_Page(),
       Wage(
         currentUser: curUser,
         isPostedCallback: isPostedCallback,
@@ -792,7 +666,7 @@ class _BottomNavBarState extends State<BottomNavBar>
                     });
                     getUserAwait();
                     getAllPosts();
-                    getAllUsers();
+                    //getAllUsers();
                   },
                   showLogout: true,
                 )),
