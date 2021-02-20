@@ -82,7 +82,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   bool isFailedUserPost = false;
   bool isFailedGetAllUser = false;
   bool isFailedGetUser = false;
-  List<User> allUsers = [];
+
   bool isPosted = false;
   int _currentIndex = 0;
   bool isLoadingPost = false;
@@ -306,14 +306,14 @@ class _BottomNavBarState extends State<BottomNavBar>
 
               User user = User.fromJson(msg[i]);
 
-              allUsers.add(user);
+              //allUsers.add(user);
             }
             setState(() {
               isLoading = false;
             });
             // print("all the users");
             // print(allUsers.length);
-            return allUsers;
+            //return allUsers;
           } else {
             print(response.statusCode);
             throw Exception();
@@ -569,73 +569,6 @@ class _BottomNavBarState extends State<BottomNavBar>
     }
   }
 
-  getAllUsers() async {
-    // setState(() {
-    //   isLoading = true;
-    // });
-    //print("==========Inside get all users ===================");
-    var user;
-    var id;
-    try {
-      user = await FirebaseAuth.instance.currentUser();
-
-      DocumentSnapshot doc = await users.document(user.uid).get();
-      id = doc['id'];
-
-      if (doc['token'] == null) {
-        var messagingToken = await getFirebaseMessagingToken();
-        await users.document(user.uid).updateData({"token": messagingToken});
-      }
-
-      //var id = curUser.id;
-    } catch (e) {
-      setState(() {
-        isFailedGetAllUser = true;
-      });
-    }
-    final url = userEndPoint + "all";
-
-    var token = await user.getIdToken();
-    //print(token);
-
-    final response = await http.post(url,
-        headers: {
-          "Authorization": "Bearer $token",
-          "Content-Type": "application/json"
-        },
-        body: jsonEncode({"id": id, "email": user.email}));
-
-    //print(response.statusCode);
-    if (response.statusCode == 200) {
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      var msg = body1['message'];
-      //print(msg);
-      //print("length is ${msg.length}")
-      for (int i = 0; i < msg.length; i++) {
-        // print(msg[i]['PendingConnection']);
-
-        if (msg[i]['id'] == id) {
-          continue;
-        }
-
-        User user = User.fromJson(msg[i]);
-
-        allUsers.add(user);
-      }
-      setState(() {
-        isLoading = false;
-      });
-      // print("all the users");
-      // print(allUsers.length);
-      return allUsers;
-    } else {
-      print(response.statusCode);
-      throw Exception();
-    }
-  }
-
   getRCashDetails() async {
     var user = await FirebaseAuth.instance.currentUser();
     var token = await user.getIdToken();
@@ -734,7 +667,6 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   @override
   Widget build(BuildContext context) {
-    print("fsjklfsjklsdklsdjklsdfkljsdfjklsdfjklsdfjklsdfjkljklsdff");
     // Provider.of<Post_Tile>(context);
     print("Build of bottom nav bar worked");
 
@@ -746,7 +678,7 @@ class _BottomNavBarState extends State<BottomNavBar>
           isErrorLoadingPost: isFailedUserPost,
           reactionCallback: reactionCallback),
 
-      Search_Page(allusers: allUsers),
+      Search_Page(),
       Wage(
         currentUser: curUser,
         isPostedCallback: isPostedCallback,
