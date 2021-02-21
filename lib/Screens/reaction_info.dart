@@ -17,8 +17,9 @@ import 'bottom_nav_bar.dart';
 
 class Reaction_Info extends StatefulWidget {
   String postId;
+  Map<String, int> counter;
 
-  Reaction_Info({this.postId});
+  Reaction_Info({this.postId,this.counter});
   @override
   _Reaction_InfoState createState() => _Reaction_InfoState();
 }
@@ -262,7 +263,7 @@ class _Reaction_InfoState extends State<Reaction_Info>
                             SizedBox(
                               width: 5,
                             ),
-                            Text(love.length.toString(),
+                            Text(widget.counter['loved'].toString(),
                               style: TextStyle(
                                 fontFamily: "Lato",
                                 fontSize: 15,
@@ -282,7 +283,7 @@ class _Reaction_InfoState extends State<Reaction_Info>
                           SizedBox(
                             width: 5,
                           ),
-                          Text(likes.length.toString(),
+                          Text(widget.counter['liked'].toString(),
                             style: TextStyle(
                               fontFamily: "Lato",
                               fontSize: 15,
@@ -303,7 +304,7 @@ class _Reaction_InfoState extends State<Reaction_Info>
                             width: 5,
                           ),
                           Text(
-                            whatevers.length.toString(),
+                            widget.counter['whatever'].toString(),
                             style: TextStyle(
                               fontFamily: "Lato",
                               fontSize: 15,
@@ -324,7 +325,7 @@ class _Reaction_InfoState extends State<Reaction_Info>
                             width: 5,
                           ),
                           Text(
-                            hates.length.toString(),
+                            widget.counter['hated'].toString(),
                             style: TextStyle(
                               fontFamily: "Lato",
                               fontSize: 15,

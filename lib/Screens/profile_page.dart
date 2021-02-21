@@ -51,7 +51,8 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   String postOrientation = "wage";
-  bool isLoading = true;
+  bool isLoading = false;
+  bool isLoadingUser = true;
   List<Post> postsW = [];
   List<Post> postsI = [];
   List<InvestPostTile> InvestTiles = [];
@@ -83,7 +84,7 @@ class _ProfileState extends State<Profile> {
   getUser() async {
     print("get user started");
     setState(() {
-      isLoading=true;
+      isLoadingUser=true;
     });
     var user = await FirebaseAuth.instance.currentUser();
     var token;
@@ -127,7 +128,7 @@ class _ProfileState extends State<Profile> {
       if(widget.user.id==curUser.id)
         await saveData();
       setState(() {
-        isLoading=false;
+        isLoadingUser=false;
       });
     } else {
       print(response.statusCode);
@@ -815,7 +816,10 @@ class _ProfileState extends State<Profile> {
 
   List<Widget> buildHeader(BuildContext context) {
     newBio = bioController.text;
-    List<Widget> list =  isLoading ? [Center(child: CircularProgressIndicator(),)]:[
+    List<Widget> list =  isLoadingUser ? [Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Center(child: CircularProgressIndicator(),),
+    )]:[
       Padding(
         padding: const EdgeInsets.all(24),
         child: Column(

@@ -54,7 +54,7 @@ var authFirebase = FirebaseAuth.instance;
 User curUser;
 User savedUser;
 PackageInfo packageInfo;
-List<Post> postsGlobal = [];
+List postsGlobal = [];
 bool storiesStillLeft;
 //SharedPreferences prefs;
 
@@ -209,7 +209,7 @@ class _BottomNavBarState extends State<BottomNavBar>
           }
 
           try {
-            final url = storyEndPoint + "${id}/all";
+            final url = storyEndPoint + "$id/all";
             var token = await user.getIdToken();
             final response = await http.get(url, headers: {
               "Authorization": "Bearer $token",
@@ -626,6 +626,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     _screens = [
       Landing_Page(
           curUser: curUser,
+          hasNoPosts: postsGlobal.length == 0 ? true : false,
           isLoading: isLoadingPost,
           isErrorLoadingPost: isFailedUserPost,
           reactionCallback: reactionCallback),
