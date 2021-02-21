@@ -182,7 +182,7 @@ class _Landing_PageState extends State<Landing_Page> {
                   if (index == postsGlobal.length) {
                     if(storiesStillLeft==true && postsGlobal.length!=0)
                     return Padding(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Center(child: CircularProgressIndicator()),
                     );
                     else
