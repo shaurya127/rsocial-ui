@@ -23,13 +23,15 @@ import 'package:http/http.dart' as http;
 class Landing_Page extends StatefulWidget {
   User curUser;
   bool isLoading;
+  bool hasNoPosts;
   bool isErrorLoadingPost;
   Function reactionCallback;
   Landing_Page(
       {this.curUser,
       this.isLoading,
       this.isErrorLoadingPost,
-      this.reactionCallback});
+      this.reactionCallback,
+      this.hasNoPosts});
 
   @override
   _Landing_PageState createState() => _Landing_PageState();
@@ -38,26 +40,35 @@ class Landing_Page extends StatefulWidget {
 class _Landing_PageState extends State<Landing_Page> {
   final key = GlobalKey<AnimatedListState>();
   var photourl;
+  ScrollController _scrollController = ScrollController();
   //List<Post> posts = [];
   bool isLoading = false;
   bool isPostLoadFail = false;
   int length;
   bool isFailedUserPost = false;
+  int page=0;
 
   @override
   void initState() {
     super.initState();
     FirebaseAnalytics().setCurrentScreen(screenName: "Landing_Page");
     if (widget.isErrorLoadingPost) isPostLoadFail = true;
-    //getUserPosts();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        if(storiesStillLeft) {
+          setState(() {
+            page = page + 10;
+          });
+          print("i was called with $page and $storiesStillLeft");
+          getUserPosts();
+        }
+      }
+    });
   }
 
   Future<void> getUserPosts() async {
     print("getUserPostFired");
-    setState(() {
-      isLoading = true;
-      //isLoading = false;
-    });
     FirebaseUser user;
     var id;
     try {
@@ -76,7 +87,7 @@ class _Landing_PageState extends State<Landing_Page> {
     var response = await postFunc(
         url: storyEndPoint + "all",
         token: token,
-        body: jsonEncode({"id": id, "start_token": 0}));
+        body: jsonEncode({"id": id, "start_token": page}));
 
     if (response == null) {
       setState(() {
@@ -108,12 +119,8 @@ class _Landing_PageState extends State<Landing_Page> {
       }
       setState(() {
         postsGlobal.addAll(posts);
-        //isLoading = false;
-        isLoading = false;
-
-
         storiesStillLeft = storiesLeft;
-
+        print("now setting stories left to $storiesLeft and $storiesStillLeft");
       });
     } else {
       print(response.statusCode);
@@ -127,7 +134,7 @@ class _Landing_PageState extends State<Landing_Page> {
     setState(() {
       widget.isLoading = true;
     });
-    if (postsGlobal.isEmpty) {
+    if (widget.hasNoPosts) {
       setState(() {
         widget.isLoading = false;
       });
@@ -154,7 +161,6 @@ class _Landing_PageState extends State<Landing_Page> {
         ),
       ));
     } else {
-      length = postsGlobal.length;
       // List<Post_Tile> postTiles = [];
       // //print(posts.length);
       // for (int i = 0; i < widget.posts.length; i++) {
@@ -167,23 +173,66 @@ class _Landing_PageState extends State<Landing_Page> {
       setState(() {
         widget.isLoading = false;
       });
-      //postsGlobal = postsGlobal.reversed.toList();
       return Column(
         children: [
           Expanded(
-              child: AnimatedList(
-            key: key,
-            initialItemCount: length,
-            itemBuilder: (context, index, animation) => Post_Tile(
-                curUser: curUser,
-                onPressDelete: () => deletePost(index),
-                userPost: postsGlobal[index],
-                photoUrl: photourl,
-                reactionCallback: reactionCallback),
-          )),
+              child: ListView.builder(
+                itemCount: postsGlobal.length + 1, // Add one more item for progress indicator
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == postsGlobal.length) {
+                    if(storiesStillLeft==true && postsGlobal.length!=0)
+                    return Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                    else
+                      return SizedBox();
+                  } else {
+                    return new Post_Tile(
+                              curUser: curUser,
+                              onPressDelete: () => deletePost(index),
+                              userPost: postsGlobal[index],
+                              photoUrl: photourl,
+                              reactionCallback: reactionCallback);
+                  }
+                },
+                controller: _scrollController,
+              ),
+
+          //     AnimatedList(
+          //   key: key,
+          //   initialItemCount: length,
+          //   itemBuilder: (context, index, animation) => Post_Tile(
+          //       curUser: curUser,
+          //       onPressDelete: () => deletePost(index),
+          //       userPost: postsGlobal[index],
+          //       photoUrl: photourl,
+          //       reactionCallback: reactionCallback),
+          // )
+          ),
         ],
       );
     }
+  }
+
+  Future<void> getPostOnRefresh()  async{
+    setState(() {
+      page=0;
+      postsGlobal.clear();
+    });
+    return getUserPosts();
+  }
+
+  getPostOnDelete()  async{
+    setState(() {
+      page=0;
+      widget.isLoading=true;
+      postsGlobal.clear();
+    });
+    getUserPosts();
+    setState(() {
+      widget.isLoading = false;
+    });
   }
 
   void deletePost(int index) async {
@@ -208,19 +257,18 @@ class _Landing_PageState extends State<Landing_Page> {
     if (response.statusCode == 200) {
       // print("post length 1 id ${postsGlobal.length}");
       // print("post length 1 id ${postsGlobal[0].user.fname}");
-      key.currentState.removeItem(
-          index, (context, animation) => slideIt(context, index, animation),
-          duration: const Duration(milliseconds: 500));
+      // key.currentState.removeItem(
+      //     index, (context, animation) => slideIt(context, index, animation),
+      //     duration: const Duration(milliseconds: 500));
       // print("post length 2 id ${postsGlobal.length}");
-      // // final item = postsGlobal.removeAt(index);
+      final item = postsGlobal.removeAt(index);
       // print("post length 3 id ${postsGlobal.length}");
       // print("post length 3 id ${postsGlobal[0].user.fname}");
       // print("post length 3 id ${postsGlobal[1].user.fname}");
       // setState(() {
       // });
       //buildPosts();
-
-      getUserPosts();
+      getPostOnRefresh();
     } else
       Fluttertoast.showToast(
           msg: "Error deleting post please try again later",
@@ -269,6 +317,7 @@ class _Landing_PageState extends State<Landing_Page> {
                     child: CircularProgressIndicator(),
                   )
                 : RefreshIndicator(
-                    onRefresh: getUserPosts, child: buildPosts())));
+                    onRefresh: getPostOnRefresh
+                    , child: buildPosts())));
   }
 }
