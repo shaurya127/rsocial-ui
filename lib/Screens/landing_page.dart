@@ -158,20 +158,15 @@ class _Landing_PageState extends State<Landing_Page> {
         widget.isLoading = false;
       });
       //postsGlobal = postsGlobal.reversed.toList();
-      return Column(
-        children: [
-          Expanded(
-              child: AnimatedList(
-            key: key,
-            initialItemCount: length,
-            itemBuilder: (context, index, animation) => Post_Tile(
-                curUser: widget.curUser,
-                onPressDelete: () => deletePost(index),
-                userPost: postsGlobal[index],
-                photoUrl: photourl,
-                reactionCallback: reactionCallback),
-          )),
-        ],
+      return AnimatedList(
+        key: key,
+        initialItemCount: length,
+        itemBuilder: (context, index, animation) => Post_Tile(
+            curUser: widget.curUser,
+            onPressDelete: () => deletePost(index),
+            userPost: postsGlobal[index],
+            photoUrl: photourl,
+            reactionCallback: reactionCallback),
       );
     }
   }

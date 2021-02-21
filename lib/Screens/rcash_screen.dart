@@ -10,6 +10,7 @@ import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/contants/constants.dart';
 import 'package:rsocial2/model/user.dart';
 
+import '../helper.dart';
 import 'login_page.dart';
 import 'package:http/http.dart' as http;
 
@@ -48,37 +49,22 @@ class _RcashScreenState extends State<RcashScreen> {
   }
 
   Future<void> getRCashDetails() async {
-    var user = await FirebaseAuth.instance.currentUser();
+    var user = await authFirebase.currentUser();
     var token = await user.getIdToken();
-    DocumentSnapshot doc = await users.document(user.uid).get();
+    var id = curUser.id;
 
-    var id = doc['id'];
-    final url = userEndPoint + "getyollar";
+    var response = await postFunc(
+        url: userEndPoint + "getyollar",
+        token: token,
+        body: jsonEncode({"id": id}));
 
-    var response;
-    try {
-      token = await user.getIdToken();
-      //print(token);
-      response = await http.post(url,
-          encoding: Encoding.getByName("utf-8"),
-          headers: {
-            "Authorization": "Bearer $token",
-            "Content-Type": "application/json",
-            //"Accept": "*/*"
-          },
-          body: jsonEncode({"id": id}));
-    } catch (e) {
-      print(e);
-
+    if (response == null) {
       return null;
     }
-    print(response.body);
     if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      var body = jsonResponse['body'];
-      var body1 = jsonDecode(body);
-      var msg = body1['message'];
-      widget.Ruser = User.fromJson(msg);
+      var responseMessage =
+          jsonDecode((jsonDecode(response.body))['body'])['message'];
+      widget.Ruser = User.fromJson(responseMessage);
 
       curUser.lollarAmount = widget.Ruser.lollarAmount;
       curUser.totalAvailableYollar = widget.Ruser.totalAvailableYollar;
