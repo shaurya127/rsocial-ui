@@ -46,7 +46,7 @@ class _Landing_PageState extends State<Landing_Page> {
   bool isPostLoadFail = false;
   int length;
   bool isFailedUserPost = false;
-  int page=0;
+  int page = 0;
 
   @override
   void initState() {
@@ -56,7 +56,7 @@ class _Landing_PageState extends State<Landing_Page> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        if(storiesStillLeft) {
+        if (storiesStillLeft) {
           setState(() {
             page = page + 10;
           });
@@ -98,7 +98,7 @@ class _Landing_PageState extends State<Landing_Page> {
 
     if (response.statusCode == 200) {
       var responseMessage =
-      jsonDecode((jsonDecode(response.body))['body'])['message'];
+          jsonDecode((jsonDecode(response.body))['body'])['message'];
 
       var responseStories = responseMessage['stories'];
       var storiesLeft = responseMessage['still_left'];
@@ -119,8 +119,15 @@ class _Landing_PageState extends State<Landing_Page> {
       }
       setState(() {
         postsGlobal.addAll(posts);
+// <<<<<<< HEAD
+//         //isLoading = false;
+//         isLoading = false;
+//
+//         storiesStillLeft = storiesLeft;
+// =======
         storiesStillLeft = storiesLeft;
         print("now setting stories left to $storiesLeft and $storiesStillLeft");
+//>>>>>>> 291fa7219baff9e2b641b3cd6dd063a505e187d5
       });
     } else {
       print(response.statusCode);
@@ -173,60 +180,62 @@ class _Landing_PageState extends State<Landing_Page> {
       setState(() {
         widget.isLoading = false;
       });
+
       return Column(
         children: [
           Expanded(
-              child: ListView.builder(
-                itemCount: postsGlobal.length + 1, // Add one more item for progress indicator
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == postsGlobal.length) {
-                    if(storiesStillLeft==true && postsGlobal.length!=0)
+            child: ListView.builder(
+              itemCount: postsGlobal.length +
+                  1, // Add one more item for progress indicator
+              itemBuilder: (BuildContext context, int index) {
+                if (index == postsGlobal.length) {
+                  if (storiesStillLeft == true && postsGlobal.length != 0)
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Center(child: CircularProgressIndicator()),
                     );
-                    else
-                      return SizedBox();
-                  } else {
-                    return new Post_Tile(
-                              curUser: curUser,
-                              onPressDelete: () => deletePost(index),
-                              userPost: postsGlobal[index],
-                              photoUrl: photourl,
-                              reactionCallback: reactionCallback);
-                  }
-                },
-                controller: _scrollController,
-              ),
+                  else
+                    return SizedBox();
+                } else {
+                  return new Post_Tile(
+                      curUser: curUser,
+                      onPressDelete: () => deletePost(index),
+                      userPost: postsGlobal[index],
+                      photoUrl: photourl,
+                      reactionCallback: reactionCallback);
+                }
+              },
+              controller: _scrollController,
+            ),
 
-          //     AnimatedList(
-          //   key: key,
-          //   initialItemCount: length,
-          //   itemBuilder: (context, index, animation) => Post_Tile(
-          //       curUser: curUser,
-          //       onPressDelete: () => deletePost(index),
-          //       userPost: postsGlobal[index],
-          //       photoUrl: photourl,
-          //       reactionCallback: reactionCallback),
-          // )
+            //     AnimatedList(
+            //   key: key,
+            //   initialItemCount: length,
+            //   itemBuilder: (context, index, animation) => Post_Tile(
+            //       curUser: curUser,
+            //       onPressDelete: () => deletePost(index),
+            //       userPost: postsGlobal[index],
+            //       photoUrl: photourl,
+            //       reactionCallback: reactionCallback),
+            // )
           ),
         ],
       );
     }
   }
 
-  Future<void> getPostOnRefresh()  async{
+  Future<void> getPostOnRefresh() async {
     setState(() {
-      page=0;
+      page = 0;
       postsGlobal.clear();
     });
     return getUserPosts();
   }
 
-  getPostOnDelete()  async{
+  getPostOnDelete() async {
     setState(() {
-      page=0;
-      widget.isLoading=true;
+      page = 0;
+      widget.isLoading = true;
       postsGlobal.clear();
     });
     getUserPosts();
@@ -317,7 +326,6 @@ class _Landing_PageState extends State<Landing_Page> {
                     child: CircularProgressIndicator(),
                   )
                 : RefreshIndicator(
-                    onRefresh: getPostOnRefresh
-                    , child: buildPosts())));
+                    onRefresh: getPostOnRefresh, child: buildPosts())));
   }
 }
