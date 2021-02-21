@@ -819,7 +819,7 @@ class _WageState extends State<Wage> {
                               setState(() {
                                 if (value <= curUser.lollarAmount)
                                   amount =
-                                      ((value.round() / 1000).round() * 1000);
+                                      ((value.round() / 1000).floor() * 1000);
                               });
                             },
                           ),

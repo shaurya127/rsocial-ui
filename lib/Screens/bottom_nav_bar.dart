@@ -79,6 +79,9 @@ class _BottomNavBarState extends State<BottomNavBar>
   bool isFailedUserPost = false;
   bool isFailedGetAllUser = false;
   bool isFailedGetUser = false;
+
+  List _screens;
+
   bool isPosted = false;
   int _currentIndex = 0;
   bool isLoadingPost = false;
@@ -206,7 +209,7 @@ class _BottomNavBarState extends State<BottomNavBar>
           }
 
           try {
-            final url = storyEndPoint + "${id}/all";
+            final url = storyEndPoint + "$id/all";
             var token = await user.getIdToken();
             final response = await http.get(url, headers: {
               "Authorization": "Bearer $token",
@@ -384,15 +387,16 @@ class _BottomNavBarState extends State<BottomNavBar>
         });
         return null;
       }
-
+      print("CurUser returned");
       curUser = User.fromJson(responseMessage);
       saveData();
       //print("my send requests are ${curUser.sentPendingConnection.length}");
       // if(inviteSenderId!=null)
       //   addConnection(inviteSenderId);
-      setState(() {
-        isLoading = false;
-      });
+      // setState(() {
+      //   isLoading = false;
+      // });
+
       return curUser;
     } else {
       print(response.statusCode);
@@ -449,10 +453,14 @@ class _BottomNavBarState extends State<BottomNavBar>
       lname: prefs.getString('LName'),
       socialStanding: prefs.getInt('socialStanding'),
     );
+
     setState(() {});
   }
 
   getAllPosts() async {
+    int start = 0, i = 0;
+    // while (storiesLeft) {
+
     print("getUserPostFired");
     setState(() {
       isLoadingPost = true;
@@ -476,7 +484,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     var response = await postFunc(
         url: storyEndPoint + "all",
         token: token,
-        body: jsonEncode({"id": id, "start_token": 0}));
+        body: jsonEncode({"id": id, "start_token": start}));
 
     if (response == null) {
       setState(() {
@@ -490,6 +498,7 @@ class _BottomNavBarState extends State<BottomNavBar>
           jsonDecode((jsonDecode(response.body))['body'])['message'];
 
       var responseStories = responseMessage['stories'];
+
       storiesStillLeft = responseMessage['still_left'];
 
       List<Post> posts = [];
@@ -521,6 +530,8 @@ class _BottomNavBarState extends State<BottomNavBar>
       print(response.statusCode);
       throw Exception();
     }
+    //  start = start + 10;
+    //}
   }
 
   getRCashDetails() async {
@@ -612,10 +623,10 @@ class _BottomNavBarState extends State<BottomNavBar>
     print("Build of bottom nav bar worked");
 
     // Screens to be present, will be switched with the help of bottom nav bar
-    final List _screens = [
+    _screens = [
       Landing_Page(
           curUser: curUser,
-          hasNoPosts: postsGlobal.length==0 ? true : false,
+          hasNoPosts: postsGlobal.length == 0 ? true : false,
           isLoading: isLoadingPost,
           isErrorLoadingPost: isFailedUserPost,
           reactionCallback: reactionCallback),
@@ -633,7 +644,11 @@ class _BottomNavBarState extends State<BottomNavBar>
       //BioPage(analytics:widget.analytics,observer:widget.observer,currentUser: currentUser,),
       //ProfilePicPage(currentUser: widget.currentUser,analytics:widget.analytics,observer:widget.observer),
     ];
+    print("This is my savedUser");
+    print(savedUser);
 
+    print("This is my current User");
+    print(curUser);
     return isNewUserFailed
         ? Scaffold(
             backgroundColor: Colors.white,
@@ -652,7 +667,7 @@ class _BottomNavBarState extends State<BottomNavBar>
               showLogout: true,
             )),
           )
-        : isFailedGetAllUser || isFailedUserPost
+        : isFailedUserPost
             ? Scaffold(
                 backgroundColor: Colors.white,
                 body: Center(
@@ -749,56 +764,239 @@ class _BottomNavBarState extends State<BottomNavBar>
                         : DisplayPost(
                             postId: postId,
                           ))
-                : (postId == null
-                    ? Scaffold(
-                        appBar: customAppBar(context),
-                        drawer: Nav_Drawer(),
-                        body: _screens[_currentIndex],
-                        bottomNavigationBar: BottomNavigationBar(
-                          currentIndex: _currentIndex,
-                          onTap: (index) =>
-                              setState(() => _currentIndex = index),
-                          type: BottomNavigationBarType.fixed,
-                          backgroundColor: Colors.white,
-                          showSelectedLabels: true,
-                          showUnselectedLabels: true,
-                          unselectedItemColor:
-                              colorUnselectedBottomNav.withOpacity(0.5),
-                          elevation: 5,
-                          items: [
-                            Icons.home,
-                            Icons.search,
-                            Icons.add_circle_outline,
-                            Icons.notifications,
-                            Icons.account_balance_wallet,
+                : buildLoadedPage();
+    // (postId == null
+    //     ? Scaffold(
+    //   appBar: customAppBar(context),
+    //   drawer: Nav_Drawer(),
+    //   body: _screens[_currentIndex],
+    //   bottomNavigationBar: BottomNavigationBar(
+    //     currentIndex: _currentIndex,
+    //     onTap: (index) =>
+    //         setState(() => _currentIndex = index),
+    //     type: BottomNavigationBarType.fixed,
+    //     backgroundColor: Colors.white,
+    //     showSelectedLabels: true,
+    //     showUnselectedLabels: true,
+    //     unselectedItemColor:
+    //     colorUnselectedBottomNav.withOpacity(0.5),
+    //     elevation: 5,
+    //     items: [
+    //       Icons.home,
+    //       Icons.search,
+    //       Icons.add_circle_outline,
+    //       Icons.notifications,
+    //       Icons.account_balance_wallet,
+    //
+    //       // FaIcon(FontAwesomeIcons.plus),
+    //       // FaIcon(FontAwesomeIcons.bell),
+    //       // FaIcon(FontAwesomeIcons.wallet),
+    //     ]
+    //         .asMap()
+    //         .map(
+    //           (key, value) =>
+    //           MapEntry(
+    //             key,
+    //             BottomNavigationBarItem(
+    //                 title: Text(
+    //                   _labels[key],
+    //                   style: TextStyle(
+    //                     fontSize: 12,
+    //                     color: _currentIndex == key
+    //                         ? colorButton
+    //                         : colorUnselectedBottomNav
+    //                         .withOpacity(0.5),
+    //                     fontFamily: "Lato",
+    //                     fontWeight: FontWeight.bold,
+    //                   ),
+    //                 ),
+    //                 icon: key == 1
+    //                     ? Padding(
+    //                   padding: const EdgeInsets.only(
+    //                       top: 2, bottom: 2.5),
+    //                   child: SvgPicture.asset(
+    //                     "images/high-five.svg",
+    //                     color: _currentIndex != key
+    //                         ? colorUnselectedBottomNav
+    //                         .withOpacity(0.5)
+    //                         : colorPrimaryBlue,
+    //                     height: 19,
+    //                   ),
+    //                 )
+    //                     : key == 4
+    //                     ? Padding(
+    //                   padding:
+    //                   const EdgeInsets.only(
+    //                       top: 2, bottom: 3.5),
+    //                   child: SvgPicture.asset(
+    //                     "images/yollar_outline.svg",
+    //                     color: _currentIndex != key
+    //                         ? colorUnselectedBottomNav
+    //                         .withOpacity(0.5)
+    //                         : colorPrimaryBlue,
+    //                     height: 19,
+    //                   ),
+    //                 )
+    //                     : key == 0
+    //                     ? Padding(
+    //                   padding:
+    //                   const EdgeInsets.only(
+    //                       top: 1,
+    //                       bottom: 2.5),
+    //                   child: SvgPicture.asset(
+    //                     "images/Home.svg",
+    //                     color: _currentIndex !=
+    //                         key
+    //                         ? colorUnselectedBottomNav
+    //                         .withOpacity(
+    //                         0.5)
+    //                         : colorPrimaryBlue,
+    //                     height: 19,
+    //                   ),
+    //                 )
+    //                     : key == 3
+    //                     ? Padding(
+    //                   padding:
+    //                   const EdgeInsets
+    //                       .only(
+    //                       top: 2,
+    //                       bottom: 3.5),
+    //                   child:
+    //                   SvgPicture.asset(
+    //                     "images/Notification.svg",
+    //                     color: _currentIndex !=
+    //                         key
+    //                         ? colorUnselectedBottomNav
+    //                         .withOpacity(
+    //                         0.5)
+    //                         : colorPrimaryBlue,
+    //                     height: 19,
+    //                   ),
+    //                 )
+    //                     : Container(
+    //                   padding: EdgeInsets
+    //                       .symmetric(
+    //                       vertical: 0,
+    //                       horizontal:
+    //                       16),
+    //                   decoration:
+    //                   BoxDecoration(
+    //                     color: Colors
+    //                         .transparent,
+    //                     borderRadius:
+    //                     BorderRadius
+    //                         .circular(
+    //                         20),
+    //                   ),
+    //                   child: Icon(
+    //                     value,
+    //                     color: _currentIndex ==
+    //                         key
+    //                         ? colorButton
+    //                         : colorUnselectedBottomNav
+    //                         .withOpacity(
+    //                         0.5),
+    //                     size: 24,
+    //                   ),
+    //                 )),
+    //           ),
+    //     )
+    //         .values
+    //         .toList(),
+    //   ),
+    // )
+    //     : DisplayPost(
+    //   postId: postId,
+    // ));
+  }
 
-                            // FaIcon(FontAwesomeIcons.plus),
-                            // FaIcon(FontAwesomeIcons.bell),
-                            // FaIcon(FontAwesomeIcons.wallet),
-                          ]
-                              .asMap()
-                              .map(
-                                (key, value) => MapEntry(
-                                  key,
-                                  BottomNavigationBarItem(
-                                      title: Text(
-                                        _labels[key],
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: _currentIndex == key
-                                              ? colorButton
-                                              : colorUnselectedBottomNav
-                                                  .withOpacity(0.5),
-                                          fontFamily: "Lato",
-                                          fontWeight: FontWeight.bold,
-                                        ),
+  buildLoadedPage() {
+    return postId == null
+        ? Scaffold(
+            appBar: customAppBar(context),
+            drawer: Nav_Drawer(),
+            body: _screens[_currentIndex],
+            bottomNavigationBar: BottomNavigationBar(
+              currentIndex: _currentIndex,
+              onTap: (index) => setState(() => _currentIndex = index),
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: Colors.white,
+              showSelectedLabels: true,
+              showUnselectedLabels: true,
+              unselectedItemColor: colorUnselectedBottomNav.withOpacity(0.5),
+              elevation: 5,
+              items: [
+                Icons.home,
+                Icons.search,
+                Icons.add_circle_outline,
+                Icons.notifications,
+                Icons.account_balance_wallet,
+
+                // FaIcon(FontAwesomeIcons.plus),
+                // FaIcon(FontAwesomeIcons.bell),
+                // FaIcon(FontAwesomeIcons.wallet),
+              ]
+                  .asMap()
+                  .map(
+                    (key, value) => MapEntry(
+                      key,
+                      BottomNavigationBarItem(
+                          title: Text(
+                            _labels[key],
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: _currentIndex == key
+                                  ? colorButton
+                                  : colorUnselectedBottomNav.withOpacity(0.5),
+                              fontFamily: "Lato",
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          icon: key == 1
+                              ? Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 2, bottom: 2.5),
+                                  child: SvgPicture.asset(
+                                    "images/high-five.svg",
+                                    color: _currentIndex != key
+                                        ? colorUnselectedBottomNav
+                                            .withOpacity(0.5)
+                                        : colorPrimaryBlue,
+                                    height: 19,
+                                  ),
+                                )
+                              : key == 4
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 2, bottom: 3.5),
+                                      child: SvgPicture.asset(
+                                        "images/yollar_outline.svg",
+                                        color: _currentIndex != key
+                                            ? colorUnselectedBottomNav
+                                                .withOpacity(0.5)
+                                            : colorPrimaryBlue,
+                                        height: 19,
                                       ),
-                                      icon: key == 1
+                                    )
+                                  : key == 0
+                                      ? Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 1, bottom: 2.5),
+                                          child: SvgPicture.asset(
+                                            "images/Home.svg",
+                                            color: _currentIndex != key
+                                                ? colorUnselectedBottomNav
+                                                    .withOpacity(0.5)
+                                                : colorPrimaryBlue,
+                                            height: 19,
+                                          ),
+                                        )
+                                      : key == 3
                                           ? Padding(
                                               padding: const EdgeInsets.only(
-                                                  top: 2, bottom: 2.5),
+                                                  top: 2, bottom: 3.5),
                                               child: SvgPicture.asset(
-                                                "images/high-five.svg",
+                                                "images/Notification.svg",
                                                 color: _currentIndex != key
                                                     ? colorUnselectedBottomNav
                                                         .withOpacity(0.5)
@@ -806,90 +1004,31 @@ class _BottomNavBarState extends State<BottomNavBar>
                                                 height: 19,
                                               ),
                                             )
-                                          : key == 4
-                                              ? Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 2, bottom: 3.5),
-                                                  child: SvgPicture.asset(
-                                                    "images/yollar_outline.svg",
-                                                    color: _currentIndex != key
-                                                        ? colorUnselectedBottomNav
-                                                            .withOpacity(0.5)
-                                                        : colorPrimaryBlue,
-                                                    height: 19,
-                                                  ),
-                                                )
-                                              : key == 0
-                                                  ? Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 1,
-                                                              bottom: 2.5),
-                                                      child: SvgPicture.asset(
-                                                        "images/Home.svg",
-                                                        color: _currentIndex !=
-                                                                key
-                                                            ? colorUnselectedBottomNav
-                                                                .withOpacity(
-                                                                    0.5)
-                                                            : colorPrimaryBlue,
-                                                        height: 19,
-                                                      ),
-                                                    )
-                                                  : key == 3
-                                                      ? Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .only(
-                                                                  top: 2,
-                                                                  bottom: 3.5),
-                                                          child:
-                                                              SvgPicture.asset(
-                                                            "images/Notification.svg",
-                                                            color: _currentIndex !=
-                                                                    key
-                                                                ? colorUnselectedBottomNav
-                                                                    .withOpacity(
-                                                                        0.5)
-                                                                : colorPrimaryBlue,
-                                                            height: 19,
-                                                          ),
-                                                        )
-                                                      : Container(
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                                  vertical: 0,
-                                                                  horizontal:
-                                                                      16),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors
-                                                                .transparent,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        20),
-                                                          ),
-                                                          child: Icon(
-                                                            value,
-                                                            color: _currentIndex ==
-                                                                    key
-                                                                ? colorButton
-                                                                : colorUnselectedBottomNav
-                                                                    .withOpacity(
-                                                                        0.5),
-                                                            size: 24,
-                                                          ),
-                                                        )),
-                                ),
-                              )
-                              .values
-                              .toList(),
-                        ),
-                      )
-                    : DisplayPost(
-                        postId: postId,
-                      ));
+                                          : Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 0, horizontal: 16),
+                                              decoration: BoxDecoration(
+                                                color: Colors.transparent,
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                              child: Icon(
+                                                value,
+                                                color: _currentIndex == key
+                                                    ? colorButton
+                                                    : colorUnselectedBottomNav
+                                                        .withOpacity(0.5),
+                                                size: 24,
+                                              ),
+                                            )),
+                    ),
+                  )
+                  .values
+                  .toList(),
+            ),
+          )
+        : DisplayPost(
+            postId: postId,
+          );
   }
 }
