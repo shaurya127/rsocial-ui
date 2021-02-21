@@ -55,6 +55,7 @@ User curUser;
 User savedUser;
 PackageInfo packageInfo;
 List<Post> postsGlobal = [];
+bool storiesStillLeft;
 //SharedPreferences prefs;
 
 class BottomNavBar extends StatefulWidget {
@@ -78,7 +79,9 @@ class _BottomNavBarState extends State<BottomNavBar>
   bool isFailedUserPost = false;
   bool isFailedGetAllUser = false;
   bool isFailedGetUser = false;
+
   List _screens;
+
   bool isPosted = false;
   int _currentIndex = 0;
   bool isLoadingPost = false;
@@ -430,6 +433,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   saveData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     print("get user finished");
+    prefs.setString('id', curUser.id);
     prefs.setString('FName', curUser.fname);
     prefs.setString('LName', curUser.lname);
     prefs.setInt('socialStanding', curUser.socialStanding);
@@ -441,6 +445,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   getData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     savedUser = User(
+      id: prefs.getString('id'),
       photoUrl: prefs.getString('profilePhoto'),
       lollarAmount: prefs.getInt('yollarAmount'),
       connectionCount: prefs.getInt('totalConnections'),
@@ -455,6 +460,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   getAllPosts() async {
     int start = 0, i = 0;
     // while (storiesLeft) {
+
     print("getUserPostFired");
     setState(() {
       isLoadingPost = true;
@@ -492,7 +498,8 @@ class _BottomNavBarState extends State<BottomNavBar>
           jsonDecode((jsonDecode(response.body))['body'])['message'];
 
       var responseStories = responseMessage['stories'];
-      var storiesStillLeft = responseMessage['still_left'];
+
+      storiesStillLeft = responseMessage['still_left'];
 
       List<Post> posts = [];
       if (responseMessage != []) {
@@ -640,7 +647,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     print(savedUser);
 
     print("This is my current User");
-    print(currentUser);
+    print(curUser);
     return isNewUserFailed
         ? Scaffold(
             backgroundColor: Colors.white,
