@@ -13,6 +13,7 @@ import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/contants/constants.dart';
 
+import '../helper.dart';
 import '../model/post.dart';
 import '../model/user.dart';
 import 'bottom_nav_bar.dart';
@@ -41,6 +42,7 @@ class _Landing_PageState extends State<Landing_Page> {
   bool isLoading = false;
   bool isPostLoadFail = false;
   int length;
+  bool isFailedUserPost = false;
 
   @override
   void initState() {
@@ -51,60 +53,66 @@ class _Landing_PageState extends State<Landing_Page> {
   }
 
   Future<void> getUserPosts() async {
+    print("getUserPostFired");
     setState(() {
-      widget.isLoading = true;
+      isLoading = true;
+      //isLoading = false;
     });
-    var user = await FirebaseAuth.instance.currentUser();
-    photourl = user.photoUrl;
-
-    var id = curUser.id;
-    final url = storyEndPoint + "$id/all";
-    var token = await user.getIdToken();
-    var response;
+    FirebaseUser user;
+    var id;
     try {
-      response = await http.get(
-        url,
-        headers: {
-          "Authorization": "Bearer $token",
-          "Content-Type": "application/json",
-        },
-      );
+      user = await authFirebase.currentUser();
+      DocumentSnapshot doc = await users.document(user.uid).get();
+      if (doc == null) print("error from get user post");
+      id = doc['id'];
     } catch (e) {
       setState(() {
-        widget.isLoading = false;
-        isPostLoadFail = true;
+        isFailedUserPost = true;
       });
-      return;
     }
-    print("body is ${response.body}");
-    //print(response.statusCode);
+
+    var token = await user.getIdToken();
+
+    var response = await postFunc(
+        url: storyEndPoint + "all",
+        token: token,
+        body: jsonEncode({"id": id, "start_token": 0}));
+
+    if (response == null) {
+      setState(() {
+        isFailedUserPost = true;
+      });
+      return true;
+    }
 
     if (response.statusCode == 200) {
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      //print("body is $body");
-      //print(body1);
-      var msg = body1['message'];
-      //print(msg.length);
-      //print("msg id ${msg}");
+      var responseMessage =
+      jsonDecode((jsonDecode(response.body))['body'])['message'];
+
+      var responseStories = responseMessage['stories'];
+      var storiesLeft = responseMessage['still_left'];
+
       List<Post> posts = [];
-      for (int i = 0; i < msg.length; i++) {
-        //print("msg $i is ${msg[i]}");
-        Post post;
-        if (msg[i]['StoryType'] == "Investment")
-          post = Post.fromJsonI(msg[i]);
-        else
-          post = Post.fromJsonW(msg[i]);
-        if (post != null) {
-          //print(post.investedWithUser);
-          posts.add(post);
+      if (responseMessage != []) {
+        for (int i = 0; i < responseStories.length; i++) {
+          Post post;
+          if (responseStories[i]['StoryType'] == "Investment")
+            post = Post.fromJsonI(responseStories[i]);
+          else
+            post = Post.fromJsonW(responseStories[i]);
+          if (post != null) {
+            //print(post.investedWithUser);
+            posts.add(post);
+          }
         }
       }
-      //print(posts.length);
       setState(() {
-        postsGlobal = posts.reversed.toList();
-        widget.isLoading = false;
+        postsGlobal.addAll(posts);
+        //isLoading = false;
+        isLoading = false;
+
+        storiesStillLeft = storiesLeft;
+
       });
     } else {
       print(response.statusCode);
@@ -114,6 +122,7 @@ class _Landing_PageState extends State<Landing_Page> {
 
   buildPosts() {
     print("build started");
+    print(postsGlobal.length);
     setState(() {
       widget.isLoading = true;
     });
@@ -165,7 +174,7 @@ class _Landing_PageState extends State<Landing_Page> {
             key: key,
             initialItemCount: length,
             itemBuilder: (context, index, animation) => Post_Tile(
-                curUser: widget.curUser,
+                curUser: curUser,
                 onPressDelete: () => deletePost(index),
                 userPost: postsGlobal[index],
                 photoUrl: photourl,

@@ -119,7 +119,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
 
       counter[rt]++;
 
-      if (user.id == widget.curUser.id) {
+      if (user.id == (curUser!=null ? curUser.id : savedUser.id)) {
         this.rxn = user.reactionType;
       }
     }
@@ -191,7 +191,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
       context,
       MaterialPageRoute(
         builder: (context) => Profile(
-          currentUser: widget.curUser,
+          currentUser: curUser,
           photoUrl: photourl,
           user: user,
         ),
@@ -227,7 +227,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     var user = await FirebaseAuth.instance.currentUser();
 
     Reaction reaction = Reaction(
-        id: curUser.id, storyId: widget.userPost.id, reactionType: reactn);
+        id: (curUser!=null ? (curUser!=null ? curUser.id : savedUser.id) : savedUser.id), storyId: widget.userPost.id, reactionType: reactn);
     var token = await user.getIdToken();
     //print(jsonEncode(reaction.toJson()));
     //print(token);
@@ -344,7 +344,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   }
 
   reaction(String reaction) {
-    if (widget.userPost.user.id != widget.curUser.id) {
+    if (widget.userPost.user.id != (curUser!=null ? curUser.id : savedUser.id)) {
       if (reaction == 'loved') {
         lovedController.forward();
         lovedController.addListener(() {
@@ -852,7 +852,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                             )));
                                   },
                                   child: new Text('Reactions'))),
-                          if (widget.userPost.user.id == curUser.id)
+                          if (widget.userPost.user.id == (curUser!=null ? curUser.id : savedUser.id))
                             new PopupMenuItem(
                                 child: GestureDetector(
                                     onTap: widget.onPressDelete,

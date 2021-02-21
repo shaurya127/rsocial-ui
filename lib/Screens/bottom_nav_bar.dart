@@ -55,6 +55,7 @@ User curUser;
 User savedUser;
 PackageInfo packageInfo;
 List<Post> postsGlobal = [];
+bool storiesStillLeft;
 //SharedPreferences prefs;
 
 class BottomNavBar extends StatefulWidget {
@@ -447,80 +448,77 @@ class _BottomNavBarState extends State<BottomNavBar>
       lname: prefs.getString('LName'),
       socialStanding: prefs.getInt('socialStanding'),
     );
+    setState(() {});
   }
 
   getAllPosts() async {
-    int start = 0, i = 0;
-    while (storiesLeft) {
-      print("getUserPostFired");
+    print("getUserPostFired");
+    setState(() {
+      isLoadingPost = true;
+      //isLoading = false;
+    });
+    FirebaseUser user;
+    var id;
+    try {
+      user = await authFirebase.currentUser();
+      DocumentSnapshot doc = await users.document(user.uid).get();
+      if (doc == null) print("error from get user post");
+      id = doc['id'];
+    } catch (e) {
       setState(() {
-        isLoadingPost = true;
-        //isLoading = false;
+        isFailedUserPost = true;
       });
-      FirebaseUser user;
-      var id;
-      try {
-        user = await authFirebase.currentUser();
-        DocumentSnapshot doc = await users.document(user.uid).get();
-        if (doc == null) print("error from get user post");
-        id = doc['id'];
-      } catch (e) {
-        setState(() {
-          isFailedUserPost = true;
-        });
-      }
+    }
 
-      var token = await user.getIdToken();
+    var token = await user.getIdToken();
 
-      var response = await postFunc(
-          url: storyEndPoint + "all",
-          token: token,
-          body: jsonEncode({"id": id, "start_token": start}));
+    var response = await postFunc(
+        url: storyEndPoint + "all",
+        token: token,
+        body: jsonEncode({"id": id, "start_token": 0}));
 
-      if (response == null) {
-        setState(() {
-          isFailedUserPost = true;
-        });
-        return true;
-      }
+    if (response == null) {
+      setState(() {
+        isFailedUserPost = true;
+      });
+      return true;
+    }
 
-      if (response.statusCode == 200) {
-        var responseMessage =
-            jsonDecode((jsonDecode(response.body))['body'])['message'];
+    if (response.statusCode == 200) {
+      var responseMessage =
+          jsonDecode((jsonDecode(response.body))['body'])['message'];
 
-        var responseStories = responseMessage['stories'];
-        var storiesStillLeft = responseMessage['still_left'];
+      var responseStories = responseMessage['stories'];
+      storiesStillLeft = responseMessage['still_left'];
 
-        List<Post> posts = [];
-        if (responseMessage != []) {
-          for (int i = 0; i < responseStories.length; i++) {
-            Post post;
-            if (responseStories[i]['StoryType'] == "Investment")
-              post = Post.fromJsonI(responseStories[i]);
-            else
-              post = Post.fromJsonW(responseStories[i]);
-            if (post != null) {
-              //print(post.investedWithUser);
-              posts.add(post);
-            }
+      List<Post> posts = [];
+      if (responseMessage != []) {
+        for (int i = 0; i < responseStories.length; i++) {
+          Post post;
+          if (responseStories[i]['StoryType'] == "Investment")
+            post = Post.fromJsonI(responseStories[i]);
+          else
+            post = Post.fromJsonW(responseStories[i]);
+          if (post != null) {
+            //print(post.investedWithUser);
+            posts.add(post);
           }
         }
-        setState(() {
-          postsGlobal.addAll(posts);
-          //isLoading = false;
-          isLoadingPost = false;
-          print(
-              "number of stories left $storiesLeft , message id $storiesStillLeft");
-          storiesLeft = storiesStillLeft;
-          print("number of stories after call $storiesLeft");
-          print(
-              "number of stories left $storiesLeft , message id $storiesStillLeft");
-        });
-      } else {
-        print(response.statusCode);
-        throw Exception();
       }
-      start = start + 10;
+      setState(() {
+        postsGlobal.addAll(posts);
+        //isLoading = false;
+        isLoadingPost = false;
+        print(
+            "number of stories left $storiesLeft , message id $storiesStillLeft");
+        storiesLeft = storiesStillLeft;
+        print("number of stories after call $storiesLeft");
+        print(
+            "number of stories left $storiesLeft , message id $storiesStillLeft");
+      });
+    } else {
+      print(response.statusCode);
+      throw Exception();
     }
   }
 
