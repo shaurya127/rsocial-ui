@@ -54,7 +54,7 @@ var authFirebase = FirebaseAuth.instance;
 User curUser;
 User savedUser;
 PackageInfo packageInfo;
-List<Post> postsGlobal = [];
+List postsGlobal = [];
 bool storiesStillLeft;
 //SharedPreferences prefs;
 
@@ -429,6 +429,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   saveData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     print("get user finished");
+    prefs.setString('id', curUser.id);
     prefs.setString('FName', curUser.fname);
     prefs.setString('LName', curUser.lname);
     prefs.setInt('socialStanding', curUser.socialStanding);
@@ -440,6 +441,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   getData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     savedUser = User(
+      id: prefs.getString('id'),
       photoUrl: prefs.getString('profilePhoto'),
       lollarAmount: prefs.getInt('yollarAmount'),
       connectionCount: prefs.getInt('totalConnections'),
@@ -613,6 +615,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     final List _screens = [
       Landing_Page(
           curUser: curUser,
+          hasNoPosts: postsGlobal.length==0 ? true : false,
           isLoading: isLoadingPost,
           isErrorLoadingPost: isFailedUserPost,
           reactionCallback: reactionCallback),
