@@ -111,6 +111,7 @@ class _Landing_PageState extends State<Landing_Page> {
         //isLoading = false;
         isLoading = false;
 
+
         storiesStillLeft = storiesLeft;
 
       });

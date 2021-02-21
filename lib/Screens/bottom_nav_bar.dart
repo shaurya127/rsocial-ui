@@ -79,7 +79,6 @@ class _BottomNavBarState extends State<BottomNavBar>
   bool isFailedUserPost = false;
   bool isFailedGetAllUser = false;
   bool isFailedGetUser = false;
-
   bool isPosted = false;
   int _currentIndex = 0;
   bool isLoadingPost = false;

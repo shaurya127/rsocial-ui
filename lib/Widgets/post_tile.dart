@@ -108,15 +108,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
       User user = widget.userPost.reactedBy[i];
       String rt = user.reactionType;
-      // if (rt == 'loved')
-      //   loved.add(user);
-      // else if (rt == 'liked')
-      //   liked.add(user);
-      // else if (rt == 'hated')
-      //   hated.add(user);
-      // else
-      //   whatever.add(user);
-
       counter[rt]++;
 
       if (user.id == (curUser!=null ? curUser.id : savedUser.id)) {
@@ -279,68 +270,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     setState(() {
       isDisabled = false;
     });
-  }
-
-  buildReactionTile() {
-    likes = [];
-    love = [];
-    hates = [];
-    whatevers = [];
-    for (int i = 0; i < counter['loved']; i++) {
-      Request_Tile tile = Request_Tile(
-        //request: recievedpending ? true : false,
-        text: curUser.userMap.containsKey(loved[i].id)
-            ? curUser.userMap[loved[i].id]
-            : "add",
-        //accepted: aconnection,
-        user: loved[i],
-        //photourl: loved[i].photoUrl,
-        //curUser: widget.curUser,
-      );
-      love.add(tile);
-    }
-
-    for (int i = 0; i < counter['liked']; i++) {
-      Request_Tile tile = Request_Tile(
-        //request: recievedpending ? true : false,
-        text: curUser.userMap.containsKey(liked[i].id)
-            ? curUser.userMap[liked[i].id]
-            : "add",
-        //accepted: aconnection ,
-        user: liked[i],
-        // photourl: liked[i].photoUrl,
-        //curUser: widget.curUser,
-      );
-      likes.add(tile);
-    }
-
-    for (int i = 0; i < counter['hated']; i++) {
-      Request_Tile tile = Request_Tile(
-        //request: recievedpending ? true : false,
-        text: curUser.userMap.containsKey(hated[i].id)
-            ? curUser.userMap[hated[i].id]
-            : "add",
-        //accepted: aconnection ,
-        user: hated[i],
-        //photourl: hated[i].photoUrl,
-        //curUser: widget.curUser,
-      );
-      hates.add(tile);
-    }
-
-    for (int i = 0; i < counter['whatever']; i++) {
-      Request_Tile tile = Request_Tile(
-        //request: recievedpending ? true : false,
-        text: curUser.userMap.containsKey(whatever[i].id)
-            ? curUser.userMap[whatever[i].id]
-            : "add",
-        //accepted: aconnection ? true : false,
-        user: whatever[i],
-        //photourl: whatever[i].photoUrl,
-        //curUser: widget.curUser,
-      );
-      whatevers.add(tile);
-    }
   }
 
   reaction(String reaction) {
