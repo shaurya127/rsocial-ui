@@ -500,7 +500,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(top: 5, bottom: 10),
+              padding: EdgeInsets.only(top: 5, bottom: 7),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -586,21 +586,38 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                                         .investedWithUser[0],
                                                     widget.userPost.user
                                                         .photoUrl),
-                                                child: Text(
-                                                  "Invested " +
-                                                      investAmountFormatting(
-                                                          double.parse(widget
-                                                                  .userPost
-                                                                  .investedAmount)
-                                                              .floor()) +
-                                                      " with ${widget.userPost.investedWithUser[0].fname}",
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    fontFamily: "Lato",
-                                                    fontSize: 12,
-                                                    color: colorGreyTint,
-                                                  ),
+                                                child: Row(
+                                                  children: [
+                                                    Text(
+                                                      "Invested " +
+                                                          investAmountFormatting(
+                                                              double.parse(widget
+                                                                      .userPost
+                                                                      .investedAmount)
+                                                                  .floor()) +
+                                                          " with ",
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                        fontFamily: "Lato",
+                                                        fontSize: 12,
+                                                        color: colorGreyTint,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      "${widget.userPost.investedWithUser[0].fname}",
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                          fontFamily: "Lato",
+                                                          fontSize: 12,
+                                                          color:
+                                                              colorPrimaryBlue,
+                                                          decoration:
+                                                              TextDecoration
+                                                                  .underline),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             ],
@@ -855,8 +872,8 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                     Navigator.push(
                                         context,
                                         PageTransition(
-                                          // settings: RouteSettings(
-                                          //     name: "Login_Page"),
+                                            // settings: RouteSettings(
+                                            //     name: "Login_Page"),
                                             type: PageTransitionType.fade,
                                             child: DisplayPost(
                                               postId: widget.userPost.id,
@@ -871,8 +888,8 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                                     Navigator.push(
                                         context,
                                         PageTransition(
-                                          // settings: RouteSettings(
-                                          //     name: "Login_Page"),
+                                            // settings: RouteSettings(
+                                            //     name: "Login_Page"),
                                             type: PageTransitionType.fade,
                                             child: Reaction_Info(
                                               postId: widget.userPost.id,
@@ -892,7 +909,7 @@ class _PlatformPostTileState extends State<PlatformPostTile>
                   )
                 : Padding(
                     padding: const EdgeInsets.only(
-                        top: 5, bottom: 3, left: 3, right: 3),
+                        top: 0, bottom: 3, left: 3, right: 3),
                     child: Read_More(
                       "${widget.userPost.storyText}",
                       trimLines: 2,

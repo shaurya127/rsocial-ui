@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
@@ -104,7 +103,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
       String rt = user.reactionType;
       counter[rt]++;
 
-      if (user.id == (curUser!=null ? curUser.id : savedUser.id)) {
+      if (user.id == (curUser != null ? curUser.id : savedUser.id)) {
         this.rxn = user.reactionType;
       }
     }
@@ -212,7 +211,11 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     var user = await FirebaseAuth.instance.currentUser();
 
     Reaction reaction = Reaction(
-        id: (curUser!=null ? (curUser!=null ? curUser.id : savedUser.id) : savedUser.id), storyId: widget.userPost.id, reactionType: reactn);
+        id: (curUser != null
+            ? (curUser != null ? curUser.id : savedUser.id)
+            : savedUser.id),
+        storyId: widget.userPost.id,
+        reactionType: reactn);
     var token = await user.getIdToken();
     //print(jsonEncode(reaction.toJson()));
     //print(token);
@@ -267,7 +270,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   }
 
   reaction(String reaction) {
-    if (widget.userPost.user.id != (curUser!=null ? curUser.id : savedUser.id)) {
+    if (widget.userPost.user.id !=
+        (curUser != null ? curUser.id : savedUser.id)) {
       if (reaction == 'loved') {
         lovedController.forward();
         lovedController.addListener(() {
@@ -390,7 +394,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(top: 5, bottom: 10),
+              padding: EdgeInsets.only(top: 5, bottom: 7),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -481,21 +485,38 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                                           .photoUrl);
                                                   setState(() {});
                                                 },
-                                                child: Text(
-                                                  "Invested " +
-                                                      investAmountFormatting(
-                                                          double.parse(widget
-                                                                  .userPost
-                                                                  .investedAmount)
-                                                              .floor()) +
-                                                      " with ${widget.userPost.investedWithUser[0].fname}",
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    fontFamily: "Lato",
-                                                    fontSize: 12,
-                                                    color: colorGreyTint,
-                                                  ),
+                                                child: Row(
+                                                  children: [
+                                                    Text(
+                                                      "Invested " +
+                                                          investAmountFormatting(
+                                                              double.parse(widget
+                                                                      .userPost
+                                                                      .investedAmount)
+                                                                  .floor()) +
+                                                          " with ",
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                        fontFamily: "Lato",
+                                                        fontSize: 12,
+                                                        color: colorGreyTint,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      "${widget.userPost.investedWithUser[0].fname}",
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                          fontFamily: "Lato",
+                                                          fontSize: 12,
+                                                          color:
+                                                              colorPrimaryBlue,
+                                                          decoration:
+                                                              TextDecoration
+                                                                  .underline),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             ],
@@ -776,7 +797,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                             )));
                                   },
                                   child: new Text('Reactions'))),
-                          if (widget.userPost.user.id == (curUser!=null ? curUser.id : savedUser.id))
+                          if (widget.userPost.user.id ==
+                              (curUser != null ? curUser.id : savedUser.id))
                             new PopupMenuItem(
                                 child: GestureDetector(
                                     onTap: widget.onPressDelete,
@@ -794,7 +816,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                   )
                 : Padding(
                     padding: const EdgeInsets.only(
-                        top: 5, bottom: 3, left: 3, right: 3),
+                        top: 0, bottom: 3, left: 3, right: 3),
                     child: Read_More(
                       "${widget.userPost.storyText}",
                       trimLines: 2,

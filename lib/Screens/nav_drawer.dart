@@ -102,7 +102,7 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                     height: 23,
                     width: 23,
                     child: SvgPicture.asset(
-                      "images/yollar_Icon.svg",
+                      "images/yollar_outline.svg",
                       color: nameCol.withOpacity(0.4),
                     ),
                   ),
