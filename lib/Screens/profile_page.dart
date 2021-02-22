@@ -68,7 +68,10 @@ class _ProfileState extends State<Profile> {
   bool isPlatformPostFail = false;
   bool isPhotoEditedComplete = false;
   bool isLoadingPosts = false;
+  ScrollController _scrollController = ScrollController();
   final key = GlobalKey<AnimatedListState>();
+  int page=0;
+  bool platformStoriesStillLeft = true;
 
   saveData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -142,11 +145,23 @@ class _ProfileState extends State<Profile> {
     super.initState();
     getUser();
     getUserPosts();
-    getPlatformPosts();
+    getPlatformPostsInitial();
     isEditable = false;
     //isLoading = false;
     bioController.text =
         widget.user.bio != null ? widget.user.bio : "here comes the bio";
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        if(platformStoriesStillLeft) {
+          setState(() {
+            page = page + 10;
+          });
+          print("i was called with $page and $platformStoriesStillLeft");
+          getPlatformPosts();
+        }
+      }
+    });
   }
 
   handleTakePhoto() async {
@@ -375,9 +390,6 @@ class _ProfileState extends State<Profile> {
   }
 
   getPlatformPosts() async {
-    setState(() {
-      isPlatformLoading = true;
-    });
 
     var user = await FirebaseAuth.instance.currentUser();
     final url = storyEndPoint + 'platformactivity';
@@ -391,7 +403,7 @@ class _ProfileState extends State<Profile> {
             "Content-Type": "application/json",
           },
           body: jsonEncode({
-            "id": widget.user.id, "start_token":0
+            "id": widget.user.id, "start_token":page
           }));
     } catch (e) {
       setState(() {
@@ -406,7 +418,9 @@ class _ProfileState extends State<Profile> {
 
       //print("body is $body");
       //print(body1);
+      List<Post> list = [];
       var msg = body1['message']['stories'];
+      var platformStoriesLeft = body1['message']['still_left'];
       print("Platform Posts");
       print(msg);
       for (int i = 0; i < msg.length; i++) {
@@ -416,13 +430,24 @@ class _ProfileState extends State<Profile> {
         else
           post = Post.fromJsonW(msg[i]);
         if (post != null) {
-          platformPost.add(post);
+          list.add(post);
         }
       }
       setState(() {
-        isPlatformLoading = false;
+        platformPost.addAll(list);
+        platformStoriesStillLeft = platformStoriesLeft;
       });
     }
+  }
+
+  getPlatformPostsInitial() async{
+    setState(() {
+      isPlatformLoading = true;
+    });
+    getPlatformPosts();
+    setState(() {
+      isPlatformLoading = false;
+    });
   }
 
   buildWagePosts() {
@@ -531,7 +556,7 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  buildplatformInteraction() {
+  buildPlatformInteraction() {
     platformTiles = [];
     if (platformPost.isEmpty) {
       return Center(
@@ -550,18 +575,33 @@ class _ProfileState extends State<Profile> {
         ),
       );
     } else {
-      for (int i = 0; i < platformPost.length; i++) {
-        PlatformPostTile tile = PlatformPostTile(
-            curUser: widget.currentUser,
-            userPost: platformPost[i],
-            photoUrl: curUser.id == widget.user.id
-                ? curUser.photoUrl
-                : widget.user.photoUrl);
-        platformTiles.add(tile);
-      }
-
-      return ListView(
-        children: platformTiles,
+      return Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: platformPost.length + 1, // Add one more item for progress indicator
+              itemBuilder: (BuildContext context, int index) {
+                if (index == platformPost.length) {
+                  if(platformStoriesStillLeft==true && platformPost.length!=0)
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  else
+                    return SizedBox();
+                } else {
+                  return new Post_Tile(
+                      curUser: curUser,
+                      onPressDelete: () => deletePost(index,""),
+                      userPost: platformPost[index],
+                      photoUrl: "",
+                      reactionCallback: reactionCallback);
+                }
+              },
+              controller: _scrollController,
+            ),
+          ),
+        ],
       );
     }
   }
@@ -818,7 +858,7 @@ class _ProfileState extends State<Profile> {
     newBio = bioController.text;
     List<Widget> list =  isLoadingUser ? [Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Center(child: CircularProgressIndicator(),),
+      child: SizedBox(),
     )]:[
       Padding(
         padding: const EdgeInsets.all(24),
@@ -1287,7 +1327,7 @@ class _ProfileState extends State<Profile> {
                                                           },
                                                           showLogout: false,
                                                         )
-                                                      : buildplatformInteraction())))),
+                                                      : buildPlatformInteraction())))),
                         ],
                       ),
               ),
