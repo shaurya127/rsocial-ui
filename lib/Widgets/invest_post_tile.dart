@@ -46,7 +46,8 @@ class InvestPostTile extends StatefulWidget {
       {@required this.curUser,
       this.userPost,
       this.photoUrl,
-      this.reactionCallback,this.onPressDelete});
+      this.reactionCallback,
+      this.onPressDelete});
   @override
   _InvestPostTileState createState() => _InvestPostTileState();
 }
@@ -446,19 +447,34 @@ class _InvestPostTileState extends State<InvestPostTile>
                                             context,
                                             widget.userPost.investedWithUser[0],
                                             widget.userPost.user.photoUrl),
-                                        child: Text(
-                                          "Invested " +
-                                              investAmountFormatting(
-                                                  double.parse(widget.userPost
-                                                          .investedAmount)
-                                                      .floor()) +
-                                              " with ${widget.userPost.investedWithUser[0].fname}",
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontFamily: "Lato",
-                                            fontSize: 12,
-                                            color: colorGreyTint,
-                                          ),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              "Invested " +
+                                                  investAmountFormatting(
+                                                      double.parse(widget
+                                                              .userPost
+                                                              .investedAmount)
+                                                          .floor()) +
+                                                  " with ",
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontFamily: "Lato",
+                                                fontSize: 12,
+                                                color: colorGreyTint,
+                                              ),
+                                            ),
+                                            Text(
+                                              "${widget.userPost.investedWithUser[0].fname}",
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  fontFamily: "Lato",
+                                                  fontSize: 12,
+                                                  color: colorPrimaryBlue,
+                                                  decoration:
+                                                      TextDecoration.underline),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                       // GestureDetector(
@@ -776,8 +792,8 @@ class _InvestPostTileState extends State<InvestPostTile>
                                   Navigator.push(
                                       context,
                                       PageTransition(
-                                        // settings: RouteSettings(
-                                        //     name: "Login_Page"),
+                                          // settings: RouteSettings(
+                                          //     name: "Login_Page"),
                                           type: PageTransitionType.fade,
                                           child: DisplayPost(
                                             postId: widget.userPost.id,
@@ -792,11 +808,11 @@ class _InvestPostTileState extends State<InvestPostTile>
                                   Navigator.push(
                                       context,
                                       PageTransition(
-                                        // settings: RouteSettings(
-                                        //     name: "Login_Page"),
+                                          // settings: RouteSettings(
+                                          //     name: "Login_Page"),
                                           type: PageTransitionType.fade,
                                           child: Reaction_Info(
-                                              postId: widget.userPost.id,
+                                            postId: widget.userPost.id,
                                           )));
                                 },
                                 child: new Text('Reactions'))),
@@ -817,7 +833,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                   )
                 : Padding(
                     padding: const EdgeInsets.only(
-                        top: 12, bottom: 3, left: 3, right: 3),
+                        top: 7, bottom: 3, left: 3, right: 3),
                     child: Read_More(
                       "${widget.userPost.storyText}",
                       trimLines: 2,

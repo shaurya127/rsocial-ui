@@ -827,94 +827,94 @@ class _WageState extends State<Wage> {
                       ),
                     )
                   : SizedBox.shrink(),
-              SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "Duration",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          fontFamily: "Lato",
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700),
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              isOne = true;
-                            });
-                          },
-                          child: Container(
-                            width: 60,
-                            decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(8)),
-                                color: isOne
-                                    ? colorPrimaryBlue
-                                    : colorGreyTint.withOpacity(0.3)),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Center(
-                                child: Text(
-                                  "1 day",
-                                  style: TextStyle(
-                                      color:
-                                          isOne ? Colors.white : Colors.black,
-                                      fontSize: 12,
-                                      fontFamily: "Lato"),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              isOne = false;
-                            });
-                          },
-                          child: Container(
-                            width: 60,
-                            decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(8)),
-                                color: isOne
-                                    ? colorGreyTint.withOpacity(0.3)
-                                    : colorPrimaryBlue),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Center(
-                                child: Text(
-                                  "7 days",
-                                  style: TextStyle(
-                                      color:
-                                          !isOne ? Colors.white : Colors.black,
-                                      fontSize: 12,
-                                      fontFamily: "Lato"),
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    )
-                  ],
-                ),
-              ),
+              // SizedBox(
+              //   height: 20,
+              // ),
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(horizontal: 24),
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: <Widget>[
+              //       Text(
+              //         "Duration",
+              //         textAlign: TextAlign.left,
+              //         style: TextStyle(
+              //             fontFamily: "Lato",
+              //             fontSize: 14,
+              //             fontWeight: FontWeight.w700),
+              //       ),
+              //       SizedBox(
+              //         height: 12,
+              //       ),
+              //       Row(
+              //         mainAxisAlignment: MainAxisAlignment.center,
+              //         children: <Widget>[
+              //           GestureDetector(
+              //             onTap: () {
+              //               setState(() {
+              //                 isOne = true;
+              //               });
+              //             },
+              //             child: Container(
+              //               width: 60,
+              //               decoration: BoxDecoration(
+              //                   borderRadius:
+              //                       BorderRadius.all(Radius.circular(8)),
+              //                   color: isOne
+              //                       ? colorPrimaryBlue
+              //                       : colorGreyTint.withOpacity(0.3)),
+              //               child: Padding(
+              //                 padding: const EdgeInsets.all(8.0),
+              //                 child: Center(
+              //                   child: Text(
+              //                     "1 day",
+              //                     style: TextStyle(
+              //                         color:
+              //                             isOne ? Colors.white : Colors.black,
+              //                         fontSize: 12,
+              //                         fontFamily: "Lato"),
+              //                   ),
+              //                 ),
+              //               ),
+              //             ),
+              //           ),
+              //           SizedBox(
+              //             width: 20,
+              //           ),
+              //           GestureDetector(
+              //             onTap: () {
+              //               setState(() {
+              //                 isOne = false;
+              //               });
+              //             },
+              //             child: Container(
+              //               width: 60,
+              //               decoration: BoxDecoration(
+              //                   borderRadius:
+              //                       BorderRadius.all(Radius.circular(8)),
+              //                   color: isOne
+              //                       ? colorGreyTint.withOpacity(0.3)
+              //                       : colorPrimaryBlue),
+              //               child: Padding(
+              //                 padding: const EdgeInsets.all(8.0),
+              //                 child: Center(
+              //                   child: Text(
+              //                     "7 days",
+              //                     style: TextStyle(
+              //                         color:
+              //                             !isOne ? Colors.white : Colors.black,
+              //                         fontSize: 12,
+              //                         fontFamily: "Lato"),
+              //                   ),
+              //                 ),
+              //               ),
+              //             ),
+              //           )
+              //         ],
+              //       )
+              //     ],
+              //   ),
+              // ),
               Padding(
                 padding: const EdgeInsets.only(left: 25.0, right: 25, top: 32),
                 child: Container(
@@ -1319,7 +1319,7 @@ class _WageState extends State<Wage> {
                 width: 1,
               ),
               Text(
-                "${curUser.connectionCount}",
+                "${curUser.connection.length}",
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 16,
