@@ -24,6 +24,7 @@ class Landing_Page extends StatefulWidget {
   User curUser;
   bool isLoading;
   bool hasNoPosts;
+  ScrollController scrollController;
   bool isErrorLoadingPost;
   Function reactionCallback;
   Landing_Page(
@@ -31,7 +32,8 @@ class Landing_Page extends StatefulWidget {
       this.isLoading,
       this.isErrorLoadingPost,
       this.reactionCallback,
-      this.hasNoPosts});
+      this.hasNoPosts,
+      this.scrollController});
 
   @override
   _Landing_PageState createState() => _Landing_PageState();
@@ -40,7 +42,7 @@ class Landing_Page extends StatefulWidget {
 class _Landing_PageState extends State<Landing_Page> {
   final key = GlobalKey<AnimatedListState>();
   var photourl;
-  ScrollController _scrollController = ScrollController();
+
   //List<Post> posts = [];
   bool isLoading = false;
   bool isPostLoadFail = false;
@@ -53,9 +55,9 @@ class _Landing_PageState extends State<Landing_Page> {
     super.initState();
     FirebaseAnalytics().setCurrentScreen(screenName: "Landing_Page");
     if (widget.isErrorLoadingPost) isPostLoadFail = true;
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
+    widget.scrollController.addListener(() {
+      if (widget.scrollController.position.pixels ==
+          widget.scrollController.position.maxScrollExtent) {
         if (storiesStillLeft) {
           setState(() {
             page = page + 10;
@@ -205,7 +207,7 @@ class _Landing_PageState extends State<Landing_Page> {
                       reactionCallback: reactionCallback);
                 }
               },
-              controller: _scrollController,
+              controller: widget.scrollController,
             ),
 
             //     AnimatedList(
