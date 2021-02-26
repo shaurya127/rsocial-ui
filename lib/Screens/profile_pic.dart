@@ -1,15 +1,17 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-
+import 'package:image/image.dart' as im;
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rsocial2/Widgets/RoundedButton.dart';
 
@@ -17,6 +19,7 @@ import 'package:rsocial2/Screens/bio_page.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Widgets/alert_box.dart';
 import 'package:rsocial2/auth.dart';
+import 'package:uuid/uuid.dart';
 
 import '../contants/constants.dart';
 import '../model/user.dart';
@@ -32,6 +35,36 @@ class ProfilePicPage extends StatefulWidget {
 class _ProfilePicPageState extends State<ProfilePicPage> {
   File file;
   String encodedFile;
+  String path;
+  Future<File> _cropImage(filePath) async {
+    File croppedImage = await ImageCropper.cropImage(
+      aspectRatio: CropAspectRatio(
+        ratioX: 4,
+        ratioY: 3,
+      ),
+      sourcePath: filePath,
+      maxWidth: 1080,
+      maxHeight: 1080,
+    );
+    if (croppedImage != null) {
+      //setState(() {});
+      return croppedImage;
+    }
+  }
+
+  Future<File> compressImage(File f) async {
+    final tempDir = await getTemporaryDirectory();
+    path = tempDir.path;
+    im.Image imageFile = im.decodeImage(f.readAsBytesSync());
+    String randomId = Uuid().v4();
+    final compressedImageFile = File('$path/img_$randomId.jpg')
+      ..writeAsBytesSync(im.encodeJpg(imageFile,
+          quality: ((5000000 / f.lengthSync()) * 100).floor()));
+
+    // print('$path/img_${Uuid().v4()}.jpg');
+
+    return compressedImageFile;
+  }
 
   handleChooseFromGallery() async {
     Navigator.pop(context);
@@ -43,24 +76,30 @@ class _ProfilePicPageState extends State<ProfilePicPage> {
           source: ImageSource.gallery,
         );
         if (pickedFile != null) {
-          final File file = File(pickedFile.path);
+          File file = await _cropImage(pickedFile.path);
+          //final File file = File(pickedFile.path);
           if (file != null) {
             if (file.lengthSync() > 5000000) {
+              file = await compressImage(file);
+              print("New length =" + file.lengthSync().toString());
+
               print("not allowed");
-              var alertBox = AlertDialogBox(
-                title: 'Error',
-                content: 'Images must be less than 5MB',
-                actions: <Widget>[
-                  FlatButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('Back'),
-                  )
-                ],
-              );
-              showDialog(context: context, builder: (context) => alertBox);
-              return;
+              if (file.lengthSync() > 5000000) {
+                var alertBox = AlertDialogBox(
+                  title: 'Error',
+                  content: 'Image is too large',
+                  actions: <Widget>[
+                    FlatButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Back'),
+                    )
+                  ],
+                );
+                showDialog(context: context, builder: (context) => alertBox);
+                return;
+              }
             }
 
             this.file = file;
@@ -136,27 +175,33 @@ class _ProfilePicPageState extends State<ProfilePicPage> {
         // maxWidth: 960,
       );
       if (pickedFile != null) {
-        file = File(pickedFile.path);
+        file = await _cropImage(pickedFile.path);
+        // file = File(pickedFile.path);
         if (file != null) {
           print("File size");
           print(file.lengthSync());
 
           if (file.lengthSync() > 5000000) {
+            file = await compressImage(file);
+            print("New length =" + file.lengthSync().toString());
+
             print("not allowed");
-            var alertBox = AlertDialogBox(
-              title: 'Error',
-              content: 'Images must be less than 5MB',
-              actions: <Widget>[
-                FlatButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('Back'),
-                )
-              ],
-            );
-            showDialog(context: context, builder: (context) => alertBox);
-            return;
+            if (file.lengthSync() > 5000000) {
+              var alertBox = AlertDialogBox(
+                title: 'Error',
+                content: 'Image is too large',
+                actions: <Widget>[
+                  FlatButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Back'),
+                  )
+                ],
+              );
+              showDialog(context: context, builder: (context) => alertBox);
+              return;
+            }
           }
           this.file = file;
           final bytes = file.readAsBytesSync();

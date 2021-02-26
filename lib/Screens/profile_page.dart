@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-
+import 'package:image/image.dart' as im;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,8 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rsocial2/Screens/all_connections.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
@@ -29,6 +31,7 @@ import 'package:rsocial2/auth.dart';
 import 'package:rsocial2/contants/constants.dart';
 import 'package:rsocial2/functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 import '../model/user.dart';
 
 import '../contants/config.dart';
@@ -44,12 +47,18 @@ class Profile extends StatefulWidget {
   String photoUrl;
   bool isLoading = false;
   String previousWidget;
-  Function callBack;
+
   String text;
-  Profile({this.currentUser, this.photoUrl, this.user, this.reactionCallback});
+  Profile({
+    this.currentUser,
+    this.photoUrl,
+    this.user,
+    this.reactionCallback,
+  });
 }
 
 class _ProfileState extends State<Profile> {
+  String path;
   String postOrientation = "wage";
   bool isLoading = false;
   bool isLoadingUser = true;
@@ -70,7 +79,7 @@ class _ProfileState extends State<Profile> {
   bool isLoadingPosts = false;
   ScrollController _scrollController = ScrollController();
   final key = GlobalKey<AnimatedListState>();
-  int page=0;
+  int page = 0;
   bool platformStoriesStillLeft = true;
 
   saveData() async {
@@ -87,7 +96,7 @@ class _ProfileState extends State<Profile> {
   getUser() async {
     print("get user started");
     setState(() {
-      isLoadingUser=true;
+      isLoadingUser = true;
     });
     var user = await FirebaseAuth.instance.currentUser();
     var token;
@@ -128,10 +137,9 @@ class _ProfileState extends State<Profile> {
       }
 
       widget.user = User.fromJson(msg);
-      if(widget.user.id==curUser.id)
-        await saveData();
+      if (widget.user.id == curUser.id) await saveData();
       setState(() {
-        isLoadingUser=false;
+        isLoadingUser = false;
       });
     } else {
       print(response.statusCode);
@@ -153,7 +161,7 @@ class _ProfileState extends State<Profile> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        if(platformStoriesStillLeft) {
+        if (platformStoriesStillLeft) {
           setState(() {
             page = page + 10;
           });
@@ -180,27 +188,33 @@ class _ProfileState extends State<Profile> {
         // maxWidth: 960,
       );
       if (pickedFile != null) {
-        file = File(pickedFile.path);
+        file = await _cropImage(pickedFile.path);
+        // file = File(pickedFile.path);
         if (file != null) {
           print("File size");
           print(file.lengthSync());
 
           if (file.lengthSync() > 5000000) {
+            file = await compressImage(file);
+            print("New length =" + file.lengthSync().toString());
+
             print("not allowed");
-            var alertBox = AlertDialogBox(
-              title: 'Error',
-              content: 'Images must be less than 5MB',
-              actions: <Widget>[
-                FlatButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('Back'),
-                )
-              ],
-            );
-            showDialog(context: context, builder: (context) => alertBox);
-            return;
+            if (file.lengthSync() > 5000000) {
+              var alertBox = AlertDialogBox(
+                title: 'Error',
+                content: 'Image is too large',
+                actions: <Widget>[
+                  FlatButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Back'),
+                  )
+                ],
+              );
+              showDialog(context: context, builder: (context) => alertBox);
+              return;
+            }
           }
 
           final bytes = file.readAsBytesSync();
@@ -246,26 +260,32 @@ class _ProfileState extends State<Profile> {
           // maxWidth: 960,
         );
         if (pickedFile != null) {
-          file = File(pickedFile.path);
+          file = await _cropImage(pickedFile.path);
+          //file = File(pickedFile.path);
           if (file != null) {
             print("File size");
             print(file.lengthSync());
             if (file.lengthSync() > 5000000) {
+              file = await compressImage(file);
+              print("New length =" + file.lengthSync().toString());
+
               print("not allowed");
-              var alertBox = AlertDialogBox(
-                title: 'Error',
-                content: 'Images must be less than 5MB',
-                actions: <Widget>[
-                  FlatButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('Back'),
-                  )
-                ],
-              );
-              showDialog(context: context, builder: (context) => alertBox);
-              return;
+              if (file.lengthSync() > 5000000) {
+                var alertBox = AlertDialogBox(
+                  title: 'Error',
+                  content: 'Image is too large',
+                  actions: <Widget>[
+                    FlatButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Back'),
+                    )
+                  ],
+                );
+                showDialog(context: context, builder: (context) => alertBox);
+                return;
+              }
             }
             final bytes = file.readAsBytesSync();
             String img64 = base64Encode(bytes);
@@ -382,7 +402,7 @@ class _ProfileState extends State<Profile> {
       setState(() {
         isLoadingPosts = false;
       });
-      setState(() { });
+      setState(() {});
     } else {
       print(response.statusCode);
       throw Exception();
@@ -390,7 +410,6 @@ class _ProfileState extends State<Profile> {
   }
 
   getPlatformPosts() async {
-
     var user = await FirebaseAuth.instance.currentUser();
     final url = storyEndPoint + 'platformactivity';
     var token = await user.getIdToken();
@@ -402,9 +421,7 @@ class _ProfileState extends State<Profile> {
             "Authorization": "Bearer $token",
             "Content-Type": "application/json",
           },
-          body: jsonEncode({
-            "id": widget.user.id, "start_token":page
-          }));
+          body: jsonEncode({"id": widget.user.id, "start_token": page}));
     } catch (e) {
       setState(() {
         isPlatformLoading = false;
@@ -440,7 +457,7 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  getPlatformPostsInitial() async{
+  getPlatformPostsInitial() async {
     setState(() {
       isPlatformLoading = true;
     });
@@ -484,7 +501,7 @@ class _ProfileState extends State<Profile> {
       //print(posts.length);
       for (int i = 0; i < postsW.length; i++) {
         Post_Tile tile = Post_Tile(
-          onPressDelete:()=>deletePost(i,"wage"),
+            onPressDelete: () => deletePost(i, "wage"),
             curUser: widget.currentUser,
             userPost: postsW[i],
             photoUrl: curUser.id == widget.user.id
@@ -538,7 +555,7 @@ class _ProfileState extends State<Profile> {
         print("Invest reaction");
         print(postsI[i].reactedBy.length);
         InvestPostTile tile = InvestPostTile(
-          onPressDelete: ()=>deletePost(i,"invest"),
+            onPressDelete: () => deletePost(i, "invest"),
             curUser: widget.currentUser,
             userPost: postsI[i],
             photoUrl: curUser.id == widget.user.id
@@ -579,10 +596,12 @@ class _ProfileState extends State<Profile> {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: platformPost.length + 1, // Add one more item for progress indicator
+              itemCount: platformPost.length +
+                  1, // Add one more item for progress indicator
               itemBuilder: (BuildContext context, int index) {
                 if (index == platformPost.length) {
-                  if(platformStoriesStillLeft==true && platformPost.length!=0)
+                  if (platformStoriesStillLeft == true &&
+                      platformPost.length != 0)
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Center(child: CircularProgressIndicator()),
@@ -592,7 +611,7 @@ class _ProfileState extends State<Profile> {
                 } else {
                   return new Post_Tile(
                       curUser: curUser,
-                      onPressDelete: () => deletePost(index,""),
+                      onPressDelete: () => deletePost(index, ""),
                       userPost: platformPost[index],
                       photoUrl: "",
                       reactionCallback: reactionCallback);
@@ -856,200 +875,242 @@ class _ProfileState extends State<Profile> {
 
   List<Widget> buildHeader(BuildContext context) {
     newBio = bioController.text;
-    List<Widget> list =  isLoadingUser ? [Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: SizedBox(),
-    )]:[
-      Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                widget.user.id == curUser.id
-                    ? GestureDetector(
-                        onTap: () {
-                          if (isEditable) {
-                            selectImage(context);
-                          }
-                        },
-                        child: CircleAvatar(
-                            radius: 50,
-                            backgroundImage: !isEditable
-                                ? curUser.photoUrl != ''
-                                    ? NetworkImage(curUser.photoUrl)
-                                    : AssetImage('images/avatar.jpg')
-                                : file != null
-                                    ? FileImage(
-                                        file,
-                                      )
-                                    : curUser.photoUrl != ''
-                                        ? NetworkImage(curUser.photoUrl)
-                                        : AssetImage('images/avatar.jpg')),
-                      )
-                    : CircleAvatar(
-                        radius: 50,
-                        backgroundImage: widget.user.photoUrl == ''
-                            ? AssetImage('images/avatar.jpg')
-                            : NetworkImage(widget.user.photoUrl)),
-                widget.currentUser.id == widget.user.id
-                    ? buildEditButton()
-                    : buildButton(),
-              ],
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              "${widget.user.fname}" + " ${widget.user.lname}",
-              style: TextStyle(
-                fontFamily: "Lato",
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                color: colorHintText,
-              ),
-            ),
-            SizedBox(
-              height: 3,
-            ),
-            widget.currentUser.id == widget.user.id
-                ? Text(
-                    "${widget.user.email}",
-                    style: TextStyle(
-                      fontFamily: "Lato",
-                      fontSize: 15,
-                      color: colorGreyTint,
-                    ),
-                  )
-                : SizedBox.shrink(),
-            SizedBox(
-              height: 3,
-            ),
-            widget.user.mobile != null
-                ? Text(
-                    widget.user.mobile,
-                    style: TextStyle(
-                      fontFamily: "Lato",
-                      fontSize: 15,
-                      color: colorGreyTint,
-                    ),
-                  )
-                : SizedBox.shrink(),
-            SizedBox(
-              height: 12,
-            ),
-            Row(
-              children: <Widget>[
-                Container(
-                  height: 15,
-                  width: 15,
-                  //padding: EdgeInsets.only(right: 2),
-                  child: SvgPicture.asset(
-                    "images/yollar_Icon.svg",
-                    color: colorGreyTint,
+    List<Widget> list = isLoadingUser
+        ? [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(),
+            )
+          ]
+        : [
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      widget.user.id == curUser.id
+                          ? GestureDetector(
+                              onTap: () {
+                                if (isEditable) {
+                                  selectImage(context);
+                                }
+                              },
+                              child: CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage: !isEditable
+                                      ? curUser.photoUrl != ''
+                                          ? NetworkImage(curUser.photoUrl)
+                                          : AssetImage('images/avatar.jpg')
+                                      : file != null
+                                          ? FileImage(
+                                              file,
+                                            )
+                                          : curUser.photoUrl != ''
+                                              ? NetworkImage(curUser.photoUrl)
+                                              : AssetImage(
+                                                  'images/avatar.jpg')),
+                            )
+                          : CircleAvatar(
+                              radius: 50,
+                              backgroundImage: widget.user.photoUrl == ''
+                                  ? AssetImage('images/avatar.jpg')
+                                  : NetworkImage(widget.user.photoUrl)),
+                      widget.currentUser.id == widget.user.id
+                          ? buildEditButton()
+                          : buildButton(),
+                    ],
                   ),
-                ),
-                Text(
-                  formatNumber(widget.user.lollarAmount),
-                  style: TextStyle(
-                      color: colorGreyTint, fontSize: 15, fontFamily: 'Lato'),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Container(
-                    width: 1,
-                    height: 15,
-                    color: colorGreyTint,
-                  ),
-                ),
-                Container(
-                  height: 15,
-                  width: 15,
-                  padding: EdgeInsets.only(right: 2),
-                  child: SvgPicture.asset(
-                    "images/social-standing.svg",
-                    color: colorGreyTint,
-                  ),
-                ),
-                Text(
-                  "${widget.user.socialStanding}",
-                  style: TextStyle(
-                      color: colorGreyTint, fontSize: 15, fontFamily: 'Lato'),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Container(
-                    width: 1,
+                  SizedBox(
                     height: 10,
-                    color: Colors.grey,
                   ),
-                ),
-                Container(
-                  height: 15,
-                  width: 15,
-                  padding: EdgeInsets.only(right: 2),
-                  child: SvgPicture.asset("images/high-five.svg",
-                      color: colorGreyTint),
-                ),
-                Text(
-                  widget.user.connection.length !=
-                              widget.user.connectionCount &&
-                          widget.user.connectionCount != null
-                      ? "${widget.user.connectionCount}"
-                      : "${widget.user.connection.length}",
-                  style: TextStyle(
-                      color: colorGreyTint, fontSize: 15, fontFamily: 'Lato'),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 12,
-            ),
-            widget.user.id == curUser.id && isEditable
-                ? TextField(
-                    onChanged: (value) {
-                      newBio = value;
-                      print(newBio);
-                    },
-
-                    minLines: 1,
-                    maxLines: 8,
-                    textDirection: TextDirection.ltr,
-                    controller: bioController,
-                    enabled: isEditable,
-                    //widget.user.bio != null ? widget.user.bio : "here comes the bio",
+                  Text(
+                    "${widget.user.fname}" + " ${widget.user.lname}",
                     style: TextStyle(
                       fontFamily: "Lato",
-                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
                       color: colorHintText,
                     ),
-                    maxLength: 250,
-                    decoration: InputDecoration(
-                        border: InputBorder.none, hintText: 'Enter your bio'),
-                  )
-                : Text(
-                    bioController.text,
-                    style: TextStyle(
-                      fontFamily: "Lato",
-                      fontSize: 13,
-                      color: colorProfileBio,
-                    ),
                   ),
-            SizedBox(
-              height: widget.user.bio != null ? 3 : 0,
+                  SizedBox(
+                    height: 3,
+                  ),
+                  widget.currentUser.id == widget.user.id
+                      ? Text(
+                          "${widget.user.email}",
+                          style: TextStyle(
+                            fontFamily: "Lato",
+                            fontSize: 15,
+                            color: colorGreyTint,
+                          ),
+                        )
+                      : SizedBox.shrink(),
+                  SizedBox(
+                    height: 3,
+                  ),
+                  widget.user.mobile != null
+                      ? Text(
+                          widget.user.mobile,
+                          style: TextStyle(
+                            fontFamily: "Lato",
+                            fontSize: 15,
+                            color: colorGreyTint,
+                          ),
+                        )
+                      : SizedBox.shrink(),
+                  SizedBox(
+                    height: 12,
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        height: 15,
+                        width: 15,
+                        //padding: EdgeInsets.only(right: 2),
+                        child: SvgPicture.asset(
+                          "images/yollar_Icon.svg",
+                          color: colorGreyTint,
+                        ),
+                      ),
+                      Text(
+                        formatNumber(widget.user.lollarAmount),
+                        style: TextStyle(
+                            color: colorGreyTint,
+                            fontSize: 15,
+                            fontFamily: 'Lato'),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Container(
+                          width: 1,
+                          height: 15,
+                          color: colorGreyTint,
+                        ),
+                      ),
+                      Container(
+                        height: 15,
+                        width: 15,
+                        padding: EdgeInsets.only(right: 2),
+                        child: SvgPicture.asset(
+                          "images/social-standing.svg",
+                          color: colorGreyTint,
+                        ),
+                      ),
+                      Text(
+                        "${widget.user.socialStanding}",
+                        style: TextStyle(
+                            color: colorGreyTint,
+                            fontSize: 15,
+                            fontFamily: 'Lato'),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Container(
+                          width: 1,
+                          height: 10,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      Container(
+                        height: 15,
+                        width: 15,
+                        padding: EdgeInsets.only(right: 2),
+                        child: SvgPicture.asset("images/high-five.svg",
+                            color: colorGreyTint),
+                      ),
+                      Text(
+                        widget.user.connection.length !=
+                                    widget.user.connectionCount &&
+                                widget.user.connectionCount != null
+                            ? "${widget.user.connectionCount}"
+                            : "${widget.user.connection.length}",
+                        style: TextStyle(
+                            color: colorGreyTint,
+                            fontSize: 15,
+                            fontFamily: 'Lato'),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 12,
+                  ),
+                  widget.user.id == curUser.id && isEditable
+                      ? TextField(
+                          onChanged: (value) {
+                            newBio = value;
+                            print(newBio);
+                          },
+
+                          minLines: 1,
+                          maxLines: 8,
+                          textDirection: TextDirection.ltr,
+                          controller: bioController,
+                          enabled: isEditable,
+                          //widget.user.bio != null ? widget.user.bio : "here comes the bio",
+                          style: TextStyle(
+                            fontFamily: "Lato",
+                            fontSize: 16,
+                            color: colorHintText,
+                          ),
+                          maxLength: 250,
+                          decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: 'Enter your bio'),
+                        )
+                      : Text(
+                          bioController.text,
+                          style: TextStyle(
+                            fontFamily: "Lato",
+                            fontSize: 13,
+                            color: colorProfileBio,
+                          ),
+                        ),
+                  SizedBox(
+                    height: widget.user.bio != null ? 3 : 0,
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
-    ];
+          ];
     return list;
   }
 
   reactionCallback() {
     if (widget.reactionCallback != null) widget.reactionCallback();
+  }
+
+  Future<File> compressImage(File f) async {
+    final tempDir = await getTemporaryDirectory();
+    path = tempDir.path;
+    im.Image imageFile = im.decodeImage(f.readAsBytesSync());
+    String randomId = Uuid().v4();
+    final compressedImageFile = File('$path/img_$randomId.jpg')
+      ..writeAsBytesSync(im.encodeJpg(imageFile,
+          quality: ((5000000 / f.lengthSync()) * 100).floor()));
+
+    // print('$path/img_${Uuid().v4()}.jpg');
+
+    return compressedImageFile;
+  }
+
+  Future<File> _cropImage(filePath) async {
+    File croppedImage = await ImageCropper.cropImage(
+      aspectRatio: CropAspectRatio(
+        ratioX: 4,
+        ratioY: 3,
+      ),
+      sourcePath: filePath,
+      maxWidth: 1080,
+      maxHeight: 1080,
+    );
+    if (croppedImage != null) {
+      //setState(() {});
+      return croppedImage;
+    }
   }
 
   Future<bool> back() async {
@@ -1061,15 +1122,13 @@ class _ProfileState extends State<Profile> {
         bioController.text = curUser.bio;
       });
     } else if (widget.user.id == curUser.id && isPhotoEditedComplete) {
-      //getUser();
-
       Navigator.pop(context, "hello world");
     } else {
       Navigator.pop(context, "hello world");
     }
   }
 
-  void deletePost(int index,String type) async {
+  void deletePost(int index, String type) async {
     var url = storyEndPoint + 'delete';
     var user = await FirebaseAuth.instance.currentUser();
     var token = await user.getIdToken();
@@ -1089,18 +1148,15 @@ class _ProfileState extends State<Profile> {
 
     print(response.statusCode);
     if (response.statusCode == 200) {
-      if(type=="invest")
-        {
-          setState(() {
-            postsI.removeAt(index);
-          });
-        }
-      else if(type=='wage')
-        {
-          setState(() {
-            postsW.removeAt(index);
-          });
-        }
+      if (type == "invest") {
+        setState(() {
+          postsI.removeAt(index);
+        });
+      } else if (type == 'wage') {
+        setState(() {
+          postsW.removeAt(index);
+        });
+      }
       getUserPosts();
     } else
       Fluttertoast.showToast(

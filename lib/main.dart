@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:animated_splash_screen/animated_splash_screen.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/bio_page.dart';
+import 'package:rsocial2/Screens/profile_pic.dart';
 import 'package:rsocial2/Screens/userInfoGoogle.dart';
 import 'package:rsocial2/auth.dart';
 import 'package:flutter/services.dart';
@@ -96,7 +98,7 @@ class MyApp extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
               backgroundColor: Colors.white,
-              nextScreen:  AuthScreen(analytics: analytics, observer: observer),
+              nextScreen: AuthScreen(analytics: analytics, observer: observer),
               pageTransitionType: PageTransitionType.fade,
             )),
       ),

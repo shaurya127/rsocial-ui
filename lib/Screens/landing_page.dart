@@ -27,6 +27,7 @@ class Landing_Page extends StatefulWidget {
   ScrollController scrollController;
   bool isErrorLoadingPost;
   Function reactionCallback;
+
   Landing_Page(
       {this.curUser,
       this.isLoading,
@@ -52,6 +53,7 @@ class _Landing_PageState extends State<Landing_Page> {
 
   @override
   void initState() {
+    print("Init state of landing page called");
     super.initState();
     FirebaseAnalytics().setCurrentScreen(screenName: "Landing_Page");
     if (widget.isErrorLoadingPost) isPostLoadFail = true;
