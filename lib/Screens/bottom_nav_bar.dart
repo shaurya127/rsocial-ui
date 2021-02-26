@@ -89,6 +89,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   bool isNewUserFailed = false;
   User Ruser;
   bool storiesLeft = true;
+  ScrollController _scrollController = ScrollController();
 
   reactionCallback() async {
     await getRCashDetails();
@@ -629,6 +630,7 @@ class _BottomNavBarState extends State<BottomNavBar>
           hasNoPosts: postsGlobal.length == 0 ? true : false,
           isLoading: isLoadingPost,
           isErrorLoadingPost: isFailedUserPost,
+          scrollController: _scrollController,
           reactionCallback: reactionCallback),
 
       Search_Page(),
@@ -701,8 +703,12 @@ class _BottomNavBarState extends State<BottomNavBar>
                             body: _screens[_currentIndex],
                             bottomNavigationBar: BottomNavigationBar(
                               currentIndex: _currentIndex,
-                              onTap: (index) =>
-                                  setState(() => _currentIndex = index),
+                              onTap: (index) {
+                                setState(() => _currentIndex = index);
+                                _scrollController.animateTo(0,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.easeInOut);
+                              },
                               type: BottomNavigationBarType.fixed,
                               backgroundColor: Colors.white,
                               showSelectedLabels: true,
@@ -918,7 +924,12 @@ class _BottomNavBarState extends State<BottomNavBar>
             body: _screens[_currentIndex],
             bottomNavigationBar: BottomNavigationBar(
               currentIndex: _currentIndex,
-              onTap: (index) => setState(() => _currentIndex = index),
+              onTap: (index) {
+                setState(() => _currentIndex = index);
+                _scrollController.animateTo(0,
+                    duration: Duration(milliseconds: 500),
+                    curve: Curves.easeInOut);
+              },
               type: BottomNavigationBarType.fixed,
               backgroundColor: Colors.white,
               showSelectedLabels: true,
