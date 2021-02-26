@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-
+import 'package:image/image.dart' as im;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,8 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rsocial2/Screens/all_connections.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
@@ -29,6 +31,7 @@ import 'package:rsocial2/auth.dart';
 import 'package:rsocial2/contants/constants.dart';
 import 'package:rsocial2/functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 import '../model/user.dart';
 
 import '../contants/config.dart';
@@ -55,6 +58,7 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  String path;
   String postOrientation = "wage";
   bool isLoading = false;
   bool isLoadingUser = true;
@@ -184,27 +188,33 @@ class _ProfileState extends State<Profile> {
         // maxWidth: 960,
       );
       if (pickedFile != null) {
-        file = File(pickedFile.path);
+        file = await _cropImage(pickedFile.path);
+        // file = File(pickedFile.path);
         if (file != null) {
           print("File size");
           print(file.lengthSync());
 
           if (file.lengthSync() > 5000000) {
+            file = await compressImage(file);
+            print("New length =" + file.lengthSync().toString());
+
             print("not allowed");
-            var alertBox = AlertDialogBox(
-              title: 'Error',
-              content: 'Images must be less than 5MB',
-              actions: <Widget>[
-                FlatButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('Back'),
-                )
-              ],
-            );
-            showDialog(context: context, builder: (context) => alertBox);
-            return;
+            if (file.lengthSync() > 5000000) {
+              var alertBox = AlertDialogBox(
+                title: 'Error',
+                content: 'Image is too large',
+                actions: <Widget>[
+                  FlatButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Back'),
+                  )
+                ],
+              );
+              showDialog(context: context, builder: (context) => alertBox);
+              return;
+            }
           }
 
           final bytes = file.readAsBytesSync();
@@ -250,26 +260,32 @@ class _ProfileState extends State<Profile> {
           // maxWidth: 960,
         );
         if (pickedFile != null) {
-          file = File(pickedFile.path);
+          file = await _cropImage(pickedFile.path);
+          //file = File(pickedFile.path);
           if (file != null) {
             print("File size");
             print(file.lengthSync());
             if (file.lengthSync() > 5000000) {
+              file = await compressImage(file);
+              print("New length =" + file.lengthSync().toString());
+
               print("not allowed");
-              var alertBox = AlertDialogBox(
-                title: 'Error',
-                content: 'Images must be less than 5MB',
-                actions: <Widget>[
-                  FlatButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('Back'),
-                  )
-                ],
-              );
-              showDialog(context: context, builder: (context) => alertBox);
-              return;
+              if (file.lengthSync() > 5000000) {
+                var alertBox = AlertDialogBox(
+                  title: 'Error',
+                  content: 'Image is too large',
+                  actions: <Widget>[
+                    FlatButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Back'),
+                    )
+                  ],
+                );
+                showDialog(context: context, builder: (context) => alertBox);
+                return;
+              }
             }
             final bytes = file.readAsBytesSync();
             String img64 = base64Encode(bytes);
@@ -1065,6 +1081,36 @@ class _ProfileState extends State<Profile> {
 
   reactionCallback() {
     if (widget.reactionCallback != null) widget.reactionCallback();
+  }
+
+  Future<File> compressImage(File f) async {
+    final tempDir = await getTemporaryDirectory();
+    path = tempDir.path;
+    im.Image imageFile = im.decodeImage(f.readAsBytesSync());
+    String randomId = Uuid().v4();
+    final compressedImageFile = File('$path/img_$randomId.jpg')
+      ..writeAsBytesSync(im.encodeJpg(imageFile,
+          quality: ((5000000 / f.lengthSync()) * 100).floor()));
+
+    // print('$path/img_${Uuid().v4()}.jpg');
+
+    return compressedImageFile;
+  }
+
+  Future<File> _cropImage(filePath) async {
+    File croppedImage = await ImageCropper.cropImage(
+      aspectRatio: CropAspectRatio(
+        ratioX: 4,
+        ratioY: 3,
+      ),
+      sourcePath: filePath,
+      maxWidth: 1080,
+      maxHeight: 1080,
+    );
+    if (croppedImage != null) {
+      //setState(() {});
+      return croppedImage;
+    }
   }
 
   Future<bool> back() async {

@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/bio_page.dart';
+import 'package:rsocial2/Screens/profile_pic.dart';
 import 'package:rsocial2/Screens/userInfoGoogle.dart';
 import 'package:rsocial2/auth.dart';
 import 'package:flutter/services.dart';

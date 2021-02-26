@@ -91,6 +91,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   bool isNewUserFailed = false;
   User Ruser;
   bool storiesLeft = true;
+  ScrollController _scrollController = ScrollController();
 
   callback() {
     print("callback called");
@@ -631,7 +632,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     await getUser();
   }
 
-  final List<String> _labels = ["Ticker", "Bonds", "Slip", "Gong", "Yollar"];
+  //final List<String> _labels = ["Ticker", "Bonds", "Slip", "Gong", "Yollar"];
 
   @override
   Widget build(BuildContext context) {
@@ -641,12 +642,12 @@ class _BottomNavBarState extends State<BottomNavBar>
     // Screens to be present, will be switched with the help of bottom nav bar
     _screens = [
       Landing_Page(
-        curUser: curUser,
-        hasNoPosts: postsGlobal.length == 0 ? true : false,
-        isLoading: isLoadingPost,
-        isErrorLoadingPost: isFailedUserPost,
-        reactionCallback: reactionCallback,
-      ),
+          curUser: curUser,
+          hasNoPosts: postsGlobal.length == 0 ? true : false,
+          isLoading: isLoadingPost,
+          isErrorLoadingPost: isFailedUserPost,
+          scrollController: _scrollController,
+          reactionCallback: reactionCallback),
 
       Search_Page(),
       Wage(
@@ -723,8 +724,12 @@ class _BottomNavBarState extends State<BottomNavBar>
             body: _screens[_currentIndex],
             bottomNavigationBar: BottomNavigationBar(
               currentIndex: _currentIndex,
-              onTap: onTabTapped,
-              //(index) => setState(() => _currentIndex = index),
+              onTap: (index) {
+                setState(() => _currentIndex = index);
+                _scrollController.animateTo(0,
+                    duration: Duration(milliseconds: 500),
+                    curve: Curves.easeInOut);
+              },
               type: BottomNavigationBarType.fixed,
               backgroundColor: Colors.white,
               showSelectedLabels: true,
@@ -732,12 +737,16 @@ class _BottomNavBarState extends State<BottomNavBar>
               unselectedItemColor: colorUnselectedBottomNav.withOpacity(0.5),
               elevation: 5,
               items: [
-                Icons.home,
-                Icons.search,
-                Icons.add_circle_outline,
-                Icons.notifications,
-                Icons.account_balance_wallet,
-
+                // Icons.home,
+                // Icons.search,
+                // Icons.add_circle_outline,
+                // Icons.notifications,
+                // Icons.account_balance_wallet,
+                "images/Home.svg",
+                "images/high-five.svg",
+                Icons.add_circle_outline_sharp,
+                "images/Notification.svg",
+                "images/yollar_outline.svg"
                 // FaIcon(FontAwesomeIcons.plus),
                 // FaIcon(FontAwesomeIcons.bell),
                 // FaIcon(FontAwesomeIcons.wallet),
@@ -748,9 +757,9 @@ class _BottomNavBarState extends State<BottomNavBar>
                       key,
                       BottomNavigationBarItem(
                           title: Text(
-                            _labels[key],
+                            "",
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 0,
                               color: _currentIndex == key
                                   ? colorButton
                                   : colorUnselectedBottomNav.withOpacity(0.5),
@@ -768,65 +777,38 @@ class _BottomNavBarState extends State<BottomNavBar>
                                         ? colorUnselectedBottomNav
                                             .withOpacity(0.5)
                                         : colorPrimaryBlue,
-                                    height: 19,
+                                    height: 25,
                                   ),
                                 )
-                              : key == 4
+                              : key == 4 || key == 1 || key == 0 || key == 3
                                   ? Padding(
                                       padding: const EdgeInsets.only(
                                           top: 2, bottom: 3.5),
                                       child: SvgPicture.asset(
-                                        "images/yollar_outline.svg",
+                                        value,
                                         color: _currentIndex != key
                                             ? colorUnselectedBottomNav
                                                 .withOpacity(0.5)
                                             : colorPrimaryBlue,
-                                        height: 19,
+                                        height: 25,
                                       ),
                                     )
-                                  : key == 0
-                                      ? Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 1, bottom: 2.5),
-                                          child: SvgPicture.asset(
-                                            "images/Home.svg",
-                                            color: _currentIndex != key
-                                                ? colorUnselectedBottomNav
-                                                    .withOpacity(0.5)
-                                                : colorPrimaryBlue,
-                                            height: 19,
-                                          ),
-                                        )
-                                      : key == 3
-                                          ? Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 2, bottom: 3.5),
-                                              child: SvgPicture.asset(
-                                                "images/Notification.svg",
-                                                color: _currentIndex != key
-                                                    ? colorUnselectedBottomNav
-                                                        .withOpacity(0.5)
-                                                    : colorPrimaryBlue,
-                                                height: 19,
-                                              ),
-                                            )
-                                          : Container(
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical: 0, horizontal: 16),
-                                              decoration: BoxDecoration(
-                                                color: Colors.transparent,
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                              ),
-                                              child: Icon(
-                                                value,
-                                                color: _currentIndex == key
-                                                    ? colorButton
-                                                    : colorUnselectedBottomNav
-                                                        .withOpacity(0.5),
-                                                size: 24,
-                                              ),
-                                            )),
+                                  : Container(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 0, horizontal: 16),
+                                      decoration: BoxDecoration(
+                                        color: Colors.transparent,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Icon(
+                                        value,
+                                        color: _currentIndex == key
+                                            ? colorButton
+                                            : colorUnselectedBottomNav
+                                                .withOpacity(0.5),
+                                        size: 35,
+                                      ),
+                                    )),
                     ),
                   )
                   .values
