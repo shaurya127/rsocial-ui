@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:animated_splash_screen/animated_splash_screen.dart';
@@ -96,7 +97,7 @@ class MyApp extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
               backgroundColor: Colors.white,
-              nextScreen:  AuthScreen(analytics: analytics, observer: observer),
+              nextScreen: AuthScreen(analytics: analytics, observer: observer),
               pageTransitionType: PageTransitionType.fade,
             )),
       ),

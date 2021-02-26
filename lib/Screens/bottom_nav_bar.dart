@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
@@ -56,6 +57,7 @@ User savedUser;
 PackageInfo packageInfo;
 List postsGlobal = [];
 bool storiesStillLeft;
+
 //SharedPreferences prefs;
 
 class BottomNavBar extends StatefulWidget {
@@ -89,6 +91,11 @@ class _BottomNavBarState extends State<BottomNavBar>
   bool isNewUserFailed = false;
   User Ruser;
   bool storiesLeft = true;
+
+  callback() {
+    print("callback called");
+    setState(() {});
+  }
 
   reactionCallback() async {
     await getRCashDetails();
@@ -582,6 +589,15 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   @override
   void initState() {
+    // const oneSec = const Duration(seconds: 3);
+    // int counter = 0;
+    // Timer.periodic(oneSec, (Timer timer) {
+    //   setState(() {
+    //     curUser.lollarAmount = 1000 * counter;
+    //     counter++;
+    //   });
+    // });
+
     super.initState();
     getPackageInfo();
     getData();
@@ -625,11 +641,12 @@ class _BottomNavBarState extends State<BottomNavBar>
     // Screens to be present, will be switched with the help of bottom nav bar
     _screens = [
       Landing_Page(
-          curUser: curUser,
-          hasNoPosts: postsGlobal.length == 0 ? true : false,
-          isLoading: isLoadingPost,
-          isErrorLoadingPost: isFailedUserPost,
-          reactionCallback: reactionCallback),
+        curUser: curUser,
+        hasNoPosts: postsGlobal.length == 0 ? true : false,
+        isLoading: isLoadingPost,
+        isErrorLoadingPost: isFailedUserPost,
+        reactionCallback: reactionCallback,
+      ),
 
       Search_Page(),
       Wage(
@@ -694,220 +711,8 @@ class _BottomNavBarState extends State<BottomNavBar>
                           child: CircularProgressIndicator(),
                         ),
                       )
-                    : (postId == null
-                        ? Scaffold(
-                            appBar: customAppBar(context),
-                            drawer: Nav_Drawer(),
-                            body: _screens[_currentIndex],
-                            bottomNavigationBar: BottomNavigationBar(
-                              currentIndex: _currentIndex,
-                              onTap: (index) =>
-                                  setState(() => _currentIndex = index),
-                              type: BottomNavigationBarType.fixed,
-                              backgroundColor: Colors.white,
-                              showSelectedLabels: true,
-                              showUnselectedLabels: true,
-                              unselectedItemColor:
-                                  colorUnselectedBottomNav.withOpacity(0.5),
-                              elevation: 5,
-                              items: [
-                                Icons.home,
-                                Icons.search,
-                                Icons.add_circle_outline,
-                                Icons.notifications,
-                                Icons.account_balance_wallet
-                                // FaIcon(FontAwesomeIcons.plus),
-                                // FaIcon(FontAwesomeIcons.bell),
-                                // FaIcon(FontAwesomeIcons.wallet),
-                              ]
-                                  .asMap()
-                                  .map(
-                                    (key, value) => MapEntry(
-                                      key,
-                                      BottomNavigationBarItem(
-                                        title: Text(
-                                          _labels[key],
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: _currentIndex == key
-                                                ? colorButton
-                                                : colorUnselectedBottomNav
-                                                    .withOpacity(0.5),
-                                            fontFamily: "Lato",
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        icon: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 0, horizontal: 16),
-                                          decoration: BoxDecoration(
-                                            color: Colors.transparent,
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                          ),
-                                          child: Icon(
-                                            value,
-                                            color: _currentIndex == key
-                                                ? colorButton
-                                                : colorUnselectedBottomNav
-                                                    .withOpacity(0.5),
-                                            size: 24,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                  .values
-                                  .toList(),
-                            ),
-                          )
-                        : DisplayPost(
-                            postId: postId,
-                          ))
+                    : buildLoadedPage()
                 : buildLoadedPage();
-    // (postId == null
-    //     ? Scaffold(
-    //   appBar: customAppBar(context),
-    //   drawer: Nav_Drawer(),
-    //   body: _screens[_currentIndex],
-    //   bottomNavigationBar: BottomNavigationBar(
-    //     currentIndex: _currentIndex,
-    //     onTap: (index) =>
-    //         setState(() => _currentIndex = index),
-    //     type: BottomNavigationBarType.fixed,
-    //     backgroundColor: Colors.white,
-    //     showSelectedLabels: true,
-    //     showUnselectedLabels: true,
-    //     unselectedItemColor:
-    //     colorUnselectedBottomNav.withOpacity(0.5),
-    //     elevation: 5,
-    //     items: [
-    //       Icons.home,
-    //       Icons.search,
-    //       Icons.add_circle_outline,
-    //       Icons.notifications,
-    //       Icons.account_balance_wallet,
-    //
-    //       // FaIcon(FontAwesomeIcons.plus),
-    //       // FaIcon(FontAwesomeIcons.bell),
-    //       // FaIcon(FontAwesomeIcons.wallet),
-    //     ]
-    //         .asMap()
-    //         .map(
-    //           (key, value) =>
-    //           MapEntry(
-    //             key,
-    //             BottomNavigationBarItem(
-    //                 title: Text(
-    //                   _labels[key],
-    //                   style: TextStyle(
-    //                     fontSize: 12,
-    //                     color: _currentIndex == key
-    //                         ? colorButton
-    //                         : colorUnselectedBottomNav
-    //                         .withOpacity(0.5),
-    //                     fontFamily: "Lato",
-    //                     fontWeight: FontWeight.bold,
-    //                   ),
-    //                 ),
-    //                 icon: key == 1
-    //                     ? Padding(
-    //                   padding: const EdgeInsets.only(
-    //                       top: 2, bottom: 2.5),
-    //                   child: SvgPicture.asset(
-    //                     "images/high-five.svg",
-    //                     color: _currentIndex != key
-    //                         ? colorUnselectedBottomNav
-    //                         .withOpacity(0.5)
-    //                         : colorPrimaryBlue,
-    //                     height: 19,
-    //                   ),
-    //                 )
-    //                     : key == 4
-    //                     ? Padding(
-    //                   padding:
-    //                   const EdgeInsets.only(
-    //                       top: 2, bottom: 3.5),
-    //                   child: SvgPicture.asset(
-    //                     "images/yollar_outline.svg",
-    //                     color: _currentIndex != key
-    //                         ? colorUnselectedBottomNav
-    //                         .withOpacity(0.5)
-    //                         : colorPrimaryBlue,
-    //                     height: 19,
-    //                   ),
-    //                 )
-    //                     : key == 0
-    //                     ? Padding(
-    //                   padding:
-    //                   const EdgeInsets.only(
-    //                       top: 1,
-    //                       bottom: 2.5),
-    //                   child: SvgPicture.asset(
-    //                     "images/Home.svg",
-    //                     color: _currentIndex !=
-    //                         key
-    //                         ? colorUnselectedBottomNav
-    //                         .withOpacity(
-    //                         0.5)
-    //                         : colorPrimaryBlue,
-    //                     height: 19,
-    //                   ),
-    //                 )
-    //                     : key == 3
-    //                     ? Padding(
-    //                   padding:
-    //                   const EdgeInsets
-    //                       .only(
-    //                       top: 2,
-    //                       bottom: 3.5),
-    //                   child:
-    //                   SvgPicture.asset(
-    //                     "images/Notification.svg",
-    //                     color: _currentIndex !=
-    //                         key
-    //                         ? colorUnselectedBottomNav
-    //                         .withOpacity(
-    //                         0.5)
-    //                         : colorPrimaryBlue,
-    //                     height: 19,
-    //                   ),
-    //                 )
-    //                     : Container(
-    //                   padding: EdgeInsets
-    //                       .symmetric(
-    //                       vertical: 0,
-    //                       horizontal:
-    //                       16),
-    //                   decoration:
-    //                   BoxDecoration(
-    //                     color: Colors
-    //                         .transparent,
-    //                     borderRadius:
-    //                     BorderRadius
-    //                         .circular(
-    //                         20),
-    //                   ),
-    //                   child: Icon(
-    //                     value,
-    //                     color: _currentIndex ==
-    //                         key
-    //                         ? colorButton
-    //                         : colorUnselectedBottomNav
-    //                         .withOpacity(
-    //                         0.5),
-    //                     size: 24,
-    //                   ),
-    //                 )),
-    //           ),
-    //     )
-    //         .values
-    //         .toList(),
-    //   ),
-    // )
-    //     : DisplayPost(
-    //   postId: postId,
-    // ));
   }
 
   buildLoadedPage() {
@@ -918,7 +723,8 @@ class _BottomNavBarState extends State<BottomNavBar>
             body: _screens[_currentIndex],
             bottomNavigationBar: BottomNavigationBar(
               currentIndex: _currentIndex,
-              onTap: (index) => setState(() => _currentIndex = index),
+              onTap: onTabTapped,
+              //(index) => setState(() => _currentIndex = index),
               type: BottomNavigationBarType.fixed,
               backgroundColor: Colors.white,
               showSelectedLabels: true,
@@ -1030,5 +836,11 @@ class _BottomNavBarState extends State<BottomNavBar>
         : DisplayPost(
             postId: postId,
           );
+  }
+
+  void onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
   }
 }

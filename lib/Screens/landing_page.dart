@@ -26,12 +26,14 @@ class Landing_Page extends StatefulWidget {
   bool hasNoPosts;
   bool isErrorLoadingPost;
   Function reactionCallback;
-  Landing_Page(
-      {this.curUser,
-      this.isLoading,
-      this.isErrorLoadingPost,
-      this.reactionCallback,
-      this.hasNoPosts});
+
+  Landing_Page({
+    this.curUser,
+    this.isLoading,
+    this.isErrorLoadingPost,
+    this.reactionCallback,
+    this.hasNoPosts,
+  });
 
   @override
   _Landing_PageState createState() => _Landing_PageState();
@@ -50,6 +52,7 @@ class _Landing_PageState extends State<Landing_Page> {
 
   @override
   void initState() {
+    print("Init state of landing page called");
     super.initState();
     FirebaseAnalytics().setCurrentScreen(screenName: "Landing_Page");
     if (widget.isErrorLoadingPost) isPostLoadFail = true;
