@@ -19,7 +19,6 @@ import 'package:rsocial2/Widgets/alert_box.dart';
 import 'package:rsocial2/Widgets/selectButton.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:rsocial2/Screens/investment.dart';
 import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/contants/constants.dart';
 import 'package:rsocial2/functions.dart';
@@ -31,7 +30,6 @@ import 'package:path_provider/path_provider.dart';
 import '../helper.dart';
 import '../model/post.dart';
 import '../model/user.dart';
-import 'investment.dart';
 import 'package:http/http.dart' as http;
 import 'login_page.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
