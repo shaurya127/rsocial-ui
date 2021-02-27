@@ -17,8 +17,14 @@ class Nav_Drawer extends StatefulWidget {
 
 class _Nav_DrawerState extends State<Nav_Drawer> {
   @override
+  void initState() {
+    // TODO: implement initState
+  }
+
+  @override
   Widget build(BuildContext context) {
     //print(widget.currentUser);
+
     return SafeArea(
       child: Drawer(
         child: Container(
