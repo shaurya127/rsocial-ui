@@ -66,6 +66,7 @@ const kNavDrawerProfile = "Profile";
 const kNavDrawerRefer = "Refer & earn";
 const kNavDrawerSettings = "Settings & Privacy";
 const kNavDrawerLogout = "Logout";
+const kNavDrawerFeedback = "Feedback";
 
 const kProfilePageWage = "Make a Wage story now";
 const kProfilePageInvestment = "Make a Investment story now";

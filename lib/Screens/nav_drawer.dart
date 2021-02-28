@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rsocial2/Screens/all_connections.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
+import 'package:rsocial2/Screens/feedback.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rsocial2/Screens/refer_and_earn.dart';
-import 'package:rsocial2/Widgets/alert_box.dart';
-import 'package:rsocial2/auth.dart';
 import '../authLogic.dart';
 import '../contants/constants.dart';
 import '../functions.dart';
-import '../model/user.dart';
-import 'create_account_page.dart';
 import '../Widgets/nav_drawer_tile.dart';
 
 class Nav_Drawer extends StatefulWidget {
@@ -196,6 +189,24 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                   title: kNavDrawerSettings,
                   icon: SvgPicture.asset(
                     "images/settings.svg",
+                    color: nameCol.withOpacity(0.4),
+                  ),
+                  trailing: IconButton(
+                    alignment: Alignment.centerRight,
+                    icon: Icon(Icons.chevron_right),
+                  ),
+                ),
+                Nav_Drawer_Tile(
+                  title: kNavDrawerFeedback,
+                  f: (){
+                    Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FeedbackScreen()));
+                  },
+                  icon: Icon(
+                    Icons.feedback_outlined,
                     color: nameCol.withOpacity(0.4),
                   ),
                   trailing: IconButton(

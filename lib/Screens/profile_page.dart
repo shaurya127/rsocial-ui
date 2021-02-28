@@ -23,7 +23,6 @@ import 'package:http/http.dart' as http;
 import 'package:rsocial2/Widgets/alert_box.dart';
 import 'package:rsocial2/Widgets/error.dart';
 import 'package:rsocial2/Widgets/invest_post_tile.dart';
-import 'package:rsocial2/Widgets/platform_post_tile.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/Widgets/request_button.dart';
 import 'package:rsocial2/Widgets/selectButton.dart';
@@ -67,7 +66,7 @@ class _ProfileState extends State<Profile> {
   List<InvestPostTile> InvestTiles = [];
   List<Post_Tile> WageTiles = [];
   List<Post> platformPost = [];
-  List<PlatformPostTile> platformTiles = [];
+  //List<PlatformPostTile> platformTiles = [];
   TextEditingController bioController = TextEditingController();
   bool isEditable = false;
   File file;
@@ -574,7 +573,7 @@ class _ProfileState extends State<Profile> {
   }
 
   buildPlatformInteraction() {
-    platformTiles = [];
+    //platformTiles = [];
     if (platformPost.isEmpty) {
       return Center(
         child: Column(
