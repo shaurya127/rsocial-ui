@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Widgets/alert_box.dart';
+import 'package:rsocial2/Widgets/error.dart';
 import 'package:rsocial2/Widgets/rcash_tile.dart';
 import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/contants/constants.dart';
@@ -24,6 +25,7 @@ class RcashScreen extends StatefulWidget {
 
 class _RcashScreenState extends State<RcashScreen> {
   bool isLoading = true;
+  bool isFailedRcash = false;
   List titles = [
     "Total",
     "Available",
@@ -49,6 +51,11 @@ class _RcashScreenState extends State<RcashScreen> {
   }
 
   Future<void> getRCashDetails() async {
+    setState(() {
+      isLoading = true;
+      isFailedRcash = false;
+    });
+
     var user = await authFirebase.currentUser();
     var token = await user.getIdToken();
     var id = curUser.id;
@@ -59,6 +66,10 @@ class _RcashScreenState extends State<RcashScreen> {
         body: jsonEncode({"id": id}));
 
     if (response == null) {
+      setState(() {
+        isLoading = false;
+        isFailedRcash = true;
+      });
       return null;
     }
     if (response.statusCode == 200) {
@@ -93,6 +104,10 @@ class _RcashScreenState extends State<RcashScreen> {
       //print(this.user.lollarAmount);
       if (widget.reactionCallback != null) widget.reactionCallback();
     }
+    setState(() {
+      isLoading = false;
+      isFailedRcash = false;
+    });
   }
 
   buildList() {
@@ -116,9 +131,21 @@ class _RcashScreenState extends State<RcashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: 20),
-      child: RefreshIndicator(onRefresh: getRCashDetails, child: buildList()),
-    );
+    return isLoading && !isFailedRcash
+        ? Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        : isFailedRcash
+            ? ErrWidget(
+                showLogout: false,
+                tryAgainOnPressed: () {
+                  getRCashDetails();
+                })
+            : Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: RefreshIndicator(
+                    onRefresh: getRCashDetails, child: buildList()),
+              );
   }
 }

@@ -150,11 +150,14 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    if(widget.user.id!=curUser.id)
+
+    if (widget.user.id != curUser.id)
       getUser();
-    else{
-      widget.user=curUser;
-      isLoadingUser=false;
+    else {
+      setState(() {
+        isLoadingUser = false;
+        widget.user = curUser;
+      });
     }
     getUserPosts();
     getPlatformPostsInitial();

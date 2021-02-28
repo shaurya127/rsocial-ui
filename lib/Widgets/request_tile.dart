@@ -38,26 +38,28 @@ class _Request_TileState extends State<Request_Tile> {
   // investingWithCallbackListener() {
   //   setState(() {});
   // }
+  bool isDisabled = false;
 
   //User curUser;
-
   removeConnection(String friendId) async {
-    var url = userEndPoint + "removeconnection";
-    var user = await FirebaseAuth.instance.currentUser();
+    setState(() {
+      isDisabled = true;
+    });
 
-    var uid = curUser.id;
-    //print(uid);
-    Connection connection = Connection(
-      id: uid,
-      friendId: friendId,
-    );
-    var token = await user.getIdToken();
-    print(jsonEncode(connection.toJson()));
-    //print(token);
-
-    var response;
     try {
-      response = await http.put(
+      var url = userEndPoint + "removeconnection";
+      var user = await FirebaseAuth.instance.currentUser();
+      DocumentSnapshot doc = await users.document(user.uid).get();
+      var uid = doc['id'];
+      //print(uid);
+      Connection connection = Connection(
+        id: uid,
+        friendId: friendId,
+      );
+      var token = await user.getIdToken();
+      print(jsonEncode(connection.toJson()));
+      //print(token);
+      var response = await http.put(
         url,
         encoding: Encoding.getByName("utf-8"),
         body: jsonEncode(connection.toJson()),
@@ -66,49 +68,49 @@ class _Request_TileState extends State<Request_Tile> {
           "Content-Type": "application/json",
         },
       );
-    } catch (e) {
-      Fluttertoast.showToast(
-          msg: "Error occurred, check internet connection",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          fontSize: 15);
-      return;
-    }
-
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      print(response.body);
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      //print("body is $body");
-      // print(body1);
-      var msg = body1['message'];
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        print(response.body);
+        final jsonUser = jsonDecode(response.body);
+        var body = jsonUser['body'];
+        var body1 = jsonDecode(body);
+        //print("body is $body");
+        // print(body1);
+        var msg = body1['message'];
+        setState(() {
+          curUser = User.fromJson(msg);
+          widget.text = "";
+          //widget.accepted = false;
+        });
+      }
       setState(() {
-        curUser = User.fromJson(msg);
-        widget.text = "";
-        //widget.accepted = false;
+        isDisabled = false;
+      });
+    } catch (e) {
+      setState(() {
+        isDisabled = false;
       });
     }
   }
 
   addConnection(String friendId) async {
-    var url = userEndPoint + "addconnection";
-    var user = await FirebaseAuth.instance.currentUser();
-
-    var uid = curUser.id;
-    //print(uid);
-    Connection connection = Connection(
-      id: uid,
-      friendId: friendId,
-    );
-    var token = await user.getIdToken();
-    print(jsonEncode(connection.toJson()));
-    //print(token);
-    var response;
-
+    setState(() {
+      isDisabled = true;
+    });
     try {
-      response = await http.put(
+      var url = userEndPoint + "addconnection";
+      var user = await FirebaseAuth.instance.currentUser();
+      DocumentSnapshot doc = await users.document(user.uid).get();
+      var uid = doc['id'];
+      //print(uid);
+      Connection connection = Connection(
+        id: uid,
+        friendId: friendId,
+      );
+      var token = await user.getIdToken();
+      //print(jsonEncode(connection.toJson()));
+      //print(token);
+      var response = await http.put(
         url,
         encoding: Encoding.getByName("utf-8"),
         body: jsonEncode(connection.toJson()),
@@ -117,49 +119,50 @@ class _Request_TileState extends State<Request_Tile> {
           "Content-Type": "application/json",
         },
       );
-    } catch (e) {
-      Fluttertoast.showToast(
-          msg: "Error occurred, check internet connection",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          fontSize: 15);
-      return;
-    }
-
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      print(response.body);
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      //print("body is $body");
-      // print(body1);
-      var msg = body1['message'];
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        print(response.body);
+        final jsonUser = jsonDecode(response.body);
+        var body = jsonUser['body'];
+        var body1 = jsonDecode(body);
+        //print("body is $body");
+        // print(body1);
+        var msg = body1['message'];
+        setState(() {
+          curUser = User.fromJson(msg);
+          widget.text = "pending";
+        });
+      }
       setState(() {
-        curUser = User.fromJson(msg);
-        widget.text = "pending";
+        isDisabled = false;
+      });
+    } catch (e) {
+      setState(() {
+        isDisabled = false;
       });
     }
   }
 
   acceptConnection(String friendId) async {
-    var url = userEndPoint + "acceptconnection";
+    setState(() {
+      isDisabled = true;
+    });
 
-    var user = await FirebaseAuth.instance.currentUser();
-
-    var uid = curUser.id;
-
-    print(uid);
-    Connection connection = Connection(
-      id: uid,
-      friendId: friendId,
-    );
-    var token = await user.getIdToken();
-    print(jsonEncode(connection.toJson()));
-    //print(token);
-    var response;
     try {
-      response = await http.put(
+      var url = userEndPoint + "acceptconnection";
+
+      var user = await FirebaseAuth.instance.currentUser();
+      DocumentSnapshot doc = await users.document(user.uid).get();
+      var uid = doc['id'];
+      print(uid);
+      Connection connection = Connection(
+        id: uid,
+        friendId: friendId,
+      );
+      var token = await user.getIdToken();
+      print(jsonEncode(connection.toJson()));
+      //print(token);
+      var response = await http.put(
         url,
         encoding: Encoding.getByName("utf-8"),
         body: jsonEncode(connection.toJson()),
@@ -168,43 +171,29 @@ class _Request_TileState extends State<Request_Tile> {
           "Content-Type": "application/json",
         },
       );
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        final jsonUser = jsonDecode(response.body);
+        var body = jsonUser['body'];
+        var body1 = jsonDecode(body);
+        //print("body is $body");
+        // print(body1);
+        var msg = body1['message'];
+        //print("id is: ${msg['id']}");
+        //print(msg);
+        setState(() {
+          curUser = User.fromJson(msg);
+          widget.text = "";
+          //widget.accepted = true;
+        });
+      }
+
+      isDisabled = false;
     } catch (e) {
-      Fluttertoast.showToast(
-          msg: "Error occurred, check internet connection",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          fontSize: 15);
-      return;
-    }
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      //print("body is $body");
-      // print(body1);
-      var msg = body1['message'];
-      //print("id is: ${msg['id']}");
-      //print(msg);
       setState(() {
-        curUser = User.fromJson(msg);
-        widget.text = "";
-        //widget.accepted = true;
+        isDisabled = false;
       });
     }
-  }
-
-  showProfile(BuildContext context, User user, String photourl, User curUser) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Profile(
-          currentUser: curUser,
-          photoUrl: photourl,
-          user: user,
-        ),
-      ),
-    );
   }
 
   buildRequest() {
@@ -213,9 +202,12 @@ class _Request_TileState extends State<Request_Tile> {
     return Row(
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
+          padding: const EdgeInsets.only(right: 8),
           child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              print("isDisabled" + isDisabled.toString());
+              if (isDisabled == false) removeConnection(widget.user.id);
+            },
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
               child: Text(
@@ -232,10 +224,10 @@ class _Request_TileState extends State<Request_Tile> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 2),
           child: GestureDetector(
             onTap: () {
-              acceptConnection(widget.user.id);
+              if (isDisabled == false) acceptConnection(widget.user.id);
             },
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -264,7 +256,7 @@ class _Request_TileState extends State<Request_Tile> {
 
   buildPending() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 2),
       child: GestureDetector(
         onTap: () {},
         child: Container(
@@ -287,10 +279,10 @@ class _Request_TileState extends State<Request_Tile> {
     // return widget.accepted==false
     //     ?
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 2),
       child: GestureDetector(
         onTap: () {
-          addConnection(widget.user.id);
+          if (isDisabled == false) addConnection(widget.user.id);
         },
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -312,10 +304,10 @@ class _Request_TileState extends State<Request_Tile> {
 
   buildRemove() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 2),
       child: GestureDetector(
         onTap: () {
-          removeConnection(widget.user.id);
+          if (isDisabled = false) removeConnection(widget.user.id);
         },
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -333,6 +325,146 @@ class _Request_TileState extends State<Request_Tile> {
       ),
     );
   }
+
+  showProfile(BuildContext context, User user, String photourl, User curUser) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Profile(
+          currentUser: curUser,
+          photoUrl: photourl,
+          user: user,
+        ),
+      ),
+    );
+  }
+
+  // buildRequest() {
+  //   // return (widget.accepted == false)
+  //   //     ?
+  //   return Row(
+  //     children: <Widget>[
+  //       Padding(
+  //         padding: const EdgeInsets.symmetric(horizontal: 5),
+  //         child: GestureDetector(
+  //           onTap: () {},
+  //           child: Container(
+  //             padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+  //             child: Text(
+  //               "Reject",
+  //               style: TextStyle(
+  //                   fontFamily: "Lato", fontSize: 14, color: colorPrimaryBlue),
+  //             ),
+  //             decoration: BoxDecoration(
+  //                 color: Colors.white,
+  //                 borderRadius: BorderRadius.circular(10),
+  //                 border: Border.all(
+  //                     width: 1, color: Theme.of(context).primaryColor)),
+  //           ),
+  //         ),
+  //       ),
+  //       Padding(
+  //         padding: const EdgeInsets.symmetric(horizontal: 5),
+  //         child: GestureDetector(
+  //           onTap: () {
+  //             acceptConnection(widget.user.id);
+  //           },
+  //           child: Container(
+  //             padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+  //             child: Text(
+  //               "Accept",
+  //               style: TextStyle(
+  //                   fontFamily: "Lato", fontSize: 14, color: Colors.white),
+  //             ),
+  //             decoration: BoxDecoration(
+  //                 color: Theme.of(context).primaryColor,
+  //                 borderRadius: BorderRadius.circular(10),
+  //                 border: Border.all(
+  //                     width: 1, color: Theme.of(context).primaryColor)),
+  //           ),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  //   // :
+  //   // Icon(
+  //   //   Icons.check,
+  //   //   size: 24,
+  //   //   color: colorPrimaryBlue,
+  //   // );
+  // }
+  //
+  // buildPending() {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 5),
+  //     child: GestureDetector(
+  //       onTap: () {},
+  //       child: Container(
+  //         padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+  //         child: Text(
+  //           "Pending",
+  //           style:
+  //               TextStyle(fontFamily: "Lato", fontSize: 14, color: Colors.grey),
+  //         ),
+  //         decoration: BoxDecoration(
+  //             color: Colors.white,
+  //             borderRadius: BorderRadius.circular(10),
+  //             border: Border.all(width: 1, color: Colors.grey)),
+  //       ),
+  //     ),
+  //   );
+  // }
+  //
+  // buildAdd() {
+  //   // return widget.accepted==false
+  //   //     ?
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 5),
+  //     child: GestureDetector(
+  //       onTap: () {
+  //         addConnection(widget.user.id);
+  //       },
+  //       child: Container(
+  //         padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+  //         child: Text(
+  //           "Add",
+  //           style: TextStyle(
+  //               fontFamily: "Lato", fontSize: 14, color: Colors.white),
+  //         ),
+  //         decoration: BoxDecoration(
+  //             color: Theme.of(context).primaryColor,
+  //             borderRadius: BorderRadius.circular(10),
+  //             border:
+  //                 Border.all(width: 1, color: Theme.of(context).primaryColor)),
+  //       ),
+  //     ),
+  //   );
+  //   //:buildPending();
+  // }
+  //
+  // buildRemove() {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 5),
+  //     child: GestureDetector(
+  //       onTap: () {
+  //         removeConnection(widget.user.id);
+  //       },
+  //       child: Container(
+  //         padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+  //         child: Text(
+  //           "Remove",
+  //           style: TextStyle(
+  //               fontFamily: "Lato", fontSize: 14, color: Colors.white),
+  //         ),
+  //         decoration: BoxDecoration(
+  //             color: Theme.of(context).primaryColor,
+  //             borderRadius: BorderRadius.circular(10),
+  //             border:
+  //                 Border.all(width: 1, color: Theme.of(context).primaryColor)),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
