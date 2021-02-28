@@ -7,7 +7,8 @@ import '../contants/constants.dart';
 class ErrWidget extends StatefulWidget {
   Function tryAgainOnPressed;
   bool showLogout = false;
-  ErrWidget({this.tryAgainOnPressed, this.showLogout = false});
+  String text;
+  ErrWidget({this.tryAgainOnPressed, this.showLogout = false, this.text});
   @override
   _ErrWidgetState createState() => _ErrWidgetState();
 }
@@ -23,7 +24,9 @@ class _ErrWidgetState extends State<ErrWidget> {
         children: <Widget>[
           Center(
             child: Text(
-              "Some Error occurred, Please check Internet Connection",
+              widget.text == null
+                  ? "Some Error occurred, Please check Internet Connection"
+                  : widget.text,
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontFamily: "Lato",

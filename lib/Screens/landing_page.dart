@@ -50,6 +50,7 @@ class _Landing_PageState extends State<Landing_Page> {
   int length;
   bool isFailedUserPost = false;
   int page = 0;
+  bool startLoadingTile=false;
 
   @override
   void initState() {
@@ -65,28 +66,32 @@ class _Landing_PageState extends State<Landing_Page> {
             page = page + 10;
           });
           print("i was called with $page and $storiesStillLeft");
-          getUserPosts();
+          getUserPosts(curUser != null
+              ? curUser.id
+              : (savedUser != null ? savedUser.id : null));
         }
       }
     });
   }
 
-  Future<void> getUserPosts() async {
+  Future<void> getUserPosts(String id) async {
     print("getUserPostFired");
     FirebaseUser user;
-    var id;
-    try {
-      user = await authFirebase.currentUser();
-      DocumentSnapshot doc = await users.document(user.uid).get();
-      if (doc == null) print("error from get user post");
-      id = doc['id'];
-    } catch (e) {
-      setState(() {
-        isFailedUserPost = true;
-      });
-    }
-
+    user = await authFirebase.currentUser();
     var token = await user.getIdToken();
+    if (id == null) {
+      try {
+        user = await authFirebase.currentUser();
+        DocumentSnapshot doc = await users.document(user.uid).get();
+        if (doc == null) print("error from get user post");
+        id = doc['id'];
+      } catch (e) {
+        setState(() {
+          widget.isLoading=false;
+          isFailedUserPost = true;
+        });
+      }
+    }
 
     var response = await postFunc(
         url: storyEndPoint + "all",
@@ -122,16 +127,12 @@ class _Landing_PageState extends State<Landing_Page> {
         }
       }
       setState(() {
+        widget.isLoading=false;
+        startLoadingTile=false;
+        isFailedUserPost=false;
         postsGlobal.addAll(posts);
-// <<<<<<< HEAD
-//         //isLoading = false;
-//         isLoading = false;
-//
-//         storiesStillLeft = storiesLeft;
-// =======
         storiesStillLeft = storiesLeft;
         print("now setting stories left to $storiesLeft and $storiesStillLeft");
-//>>>>>>> 291fa7219baff9e2b641b3cd6dd063a505e187d5
       });
     } else {
       print(response.statusCode);
@@ -171,16 +172,22 @@ class _Landing_PageState extends State<Landing_Page> {
           ],
         ),
       ));
-    } else {
-      // List<Post_Tile> postTiles = [];
-      // //print(posts.length);
-      // for (int i = 0; i < widget.posts.length; i++) {
-      //   Post_Tile tile = Post_Tile(
-      //       curUser: widget.curUser,
-      //       userPost: widget.posts[i],
-      //       photoUrl: photourl);
-      //   postTiles.add(tile);
-      // }
+    }
+    else if(isFailedUserPost && postsGlobal.length==0){
+      print("i am here!!!");
+      print(postsGlobal.length);
+      return ErrWidget(
+        tryAgainOnPressed: () {
+          setState(() {
+            widget.isLoading = true;
+            isFailedUserPost = false;
+          });
+          getPostOnRefresh();
+        },
+        showLogout: false,
+      );
+    }
+    else {
       setState(() {
         widget.isLoading = false;
       });
@@ -193,7 +200,19 @@ class _Landing_PageState extends State<Landing_Page> {
                   1, // Add one more item for progress indicator
               itemBuilder: (BuildContext context, int index) {
                 if (index == postsGlobal.length) {
-                  if (storiesStillLeft == true && postsGlobal.length != 0)
+                  if(isFailedUserPost && postsGlobal.length!=0)
+                    return ErrWidget(
+                      tryAgainOnPressed: () {
+                        setState(() {
+                          startLoadingTile = true;
+                          isFailedUserPost = false;
+                        });
+                        getUserPosts(curUser!=null?curUser.id:savedUser.id);
+                      },
+                      showLogout: false,
+                      text: "",
+                    );
+                  else if ((storiesStillLeft == true && postsGlobal.length != 0) || startLoadingTile)
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Center(child: CircularProgressIndicator()),
@@ -233,7 +252,9 @@ class _Landing_PageState extends State<Landing_Page> {
       page = 0;
       postsGlobal.clear();
     });
-    return getUserPosts();
+    return getUserPosts(curUser != null
+        ? curUser.id
+        : (savedUser != null ? savedUser.id : null));
   }
 
   getPostOnDelete() async {
@@ -242,7 +263,9 @@ class _Landing_PageState extends State<Landing_Page> {
       widget.isLoading = true;
       postsGlobal.clear();
     });
-    getUserPosts();
+    getUserPosts(curUser != null
+        ? curUser.id
+        : (savedUser != null ? savedUser.id : null));
     setState(() {
       widget.isLoading = false;
     });
@@ -315,17 +338,21 @@ class _Landing_PageState extends State<Landing_Page> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.grey.withOpacity(0.2),
-        body: isPostLoadFail == true
-            ? ErrWidget(
-                tryAgainOnPressed: () {
-                  setState(() {
-                    this.isPostLoadFail = false;
-                  });
-                  getUserPosts();
-                },
-                showLogout: false,
-              )
-            : (widget.isLoading
+        body:
+        // isPostLoadFail == true
+        //     ? ErrWidget(
+        //         tryAgainOnPressed: () {
+        //           setState(() {
+        //             this.isPostLoadFail = false;
+        //           });
+        //           getUserPosts(curUser != null
+        //               ? curUser.id
+        //               : (savedUser != null ? savedUser.id : null));
+        //         },
+        //         showLogout: false,
+        //       )
+        //     :
+        (widget.isLoading
                 ? Center(
                     child: CircularProgressIndicator(),
                   )

@@ -108,7 +108,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       _currentIndex = 0;
     });
 
-    getAllPosts();
+    getAllPosts(curUser != null ? curUser.id : savedUser.id);
   }
 
   createNgetUser() async {
@@ -212,193 +212,7 @@ class _BottomNavBarState extends State<BottomNavBar>
             });
           }
 
-          // try {
-          //   final url = storyEndPoint + "$id/all";
-          //   var token = await user.getIdToken();
-          //   final response = await http.get(url, headers: {
-          //     "Authorization": "Bearer $token",
-          //     "Content-Type": "application/json",
-          //   });
-          // } catch (e) {
-          //   setState(() {
-          //     isLoadingPost = false;
-          //
-          //     isFailedUserPost = true;
-          //   });
-          //   return;
-          // }
-          // //print("body is ${response.body}");
-          // //print(response.statusCode);
-          // //print("User posts $response");
-          // if (response.statusCode == 200) {
-          //   final jsonUser = jsonDecode(response.body);
-          //   var body = jsonUser['body'];
-          //   var body1 = jsonDecode(body);
-          //   //print("body is $body");
-          //   //print(body1);
-          //   var msg = body1['message'];
-          //   //print(msg.length);
-          //   //print("msg id ${msg}");
-          //   List<Post> posts = [];
-          //   if (msg == null) {
-          //     setState(() {
-          //       postsGlobal = posts;
-          //       isLoading = false;
-          //       isLoadingPost = false;
-          //     });
-          //
-          //     return;
-          //   }
-          //   for (int i = 0; i < msg.length; i++) {
-          //     //print("msg $i is ${msg[i]}");
-          //     Post post;
-          //     if (msg[i]['StoryType'] == "Investment")
-          //       post = Post.fromJsonI(msg[i]);
-          //     else
-          //       post = Post.fromJsonW(msg[i]);
-          //     if (post != null) {
-          //       //print(post.investedWithUser);
-          //       posts.add(post);
-          //     }
-          //   }
-          //   //print(posts.length);
-          //   setState(() {
-          //     postsGlobal = posts;
-          //     isLoading = false;
-          //     isLoadingPost = false;
-          //   });
-          // } else {
-          //   print(response.statusCode);
-          //   throw Exception();
-          // }
-
-          // getAllPosts();
-          try {
-            int start = 0;
-            var response = await postFunc(
-                url: storyEndPoint + "all",
-                token: token,
-                body: jsonEncode({"id": id, "start_token": start}));
-
-            if (response == null) {
-              setState(() {
-                isLoadingPost = false;
-                isFailedUserPost = true;
-              });
-              return true;
-            }
-
-            if (response.statusCode == 200) {
-              var responseMessage =
-                  jsonDecode((jsonDecode(response.body))['body'])['message'];
-
-              var responseStories = responseMessage['stories'];
-
-              storiesStillLeft = responseMessage['still_left'];
-
-              List<Post> posts = [];
-              if (responseMessage != []) {
-                for (int i = 0; i < responseStories.length; i++) {
-                  Post post;
-                  if (responseStories[i]['StoryType'] == "Investment")
-                    post = Post.fromJsonI(responseStories[i]);
-                  else
-                    post = Post.fromJsonW(responseStories[i]);
-                  if (post != null) {
-                    //print(post.investedWithUser);
-                    posts.add(post);
-                  }
-                }
-              }
-              setState(() {
-                postsGlobal.addAll(posts);
-                isLoading = false;
-                isLoadingPost = false;
-                print(
-                    "number of stories left $storiesLeft , message id $storiesStillLeft");
-                storiesLeft = storiesStillLeft;
-                print("number of stories after call $storiesLeft");
-                print(
-                    "number of stories left $storiesLeft , message id $storiesStillLeft");
-              });
-            } else {
-              print(response.statusCode);
-              throw Exception();
-            }
-          } catch (e) {}
-
-          //   final urlAll = userEndPoint + "all";
-          //
-          //   //var token = await user.getIdToken();
-          //   //print(token);
-          //   var responseAll;
-          //   try {
-          //     responseAll = await http.post(urlAll,
-          //         headers: {
-          //           "Authorization": "Bearer $token",
-          //           "Content-Type": "application/json"
-          //         },
-          //         body: jsonEncode({"id": id, "email": user.email}));
-          //   } catch (e) {
-          //     setState(() {
-          //       isLoading = false;
-          //       isLoadingPost = false;
-          //       isFailedGetAllUser = true;
-          //     });
-          //     return;
-          //   }
-          //
-          //   //print(response.statusCode);
-          //   if (responseAll.statusCode == 200) {
-          //     final jsonUser = jsonDecode(responseAll.body);
-          //     var body = jsonUser['body'];
-          //     var body1 = jsonDecode(body);
-          //     var msg = body1['message'];
-          //     //print(msg);
-          //     //print("length is ${msg.length}")
-          //     for (int i = 0; i < msg.length; i++) {
-          //       // print(msg[i]['PendingConnection']);
-          //
-          //       if (msg[i]['id'] == id) {
-          //         continue;
-          //       }
-          //
-          //       User user = User.fromJson(msg[i]);
-          //
-          //       //allUsers.add(user);
-          //     }
-          //     setState(() {
-          //       isLoading = false;
-          //     });
-          //     // print("all the users");
-          //     // print(allUsers.length);
-          //     //return allUsers;
-          //   } else {
-          //     print(response.statusCode);
-          //     throw Exception();
-          //   }
-          // } else {
-          //   print(response.statusCode);
-          //   throw Exception();
-          // }
-
-          // if (widget.sign_in_mode == "RSocial_sign_in") {
-          //   FirebaseAnalytics().setUserId(uid);
-          //   FirebaseAnalytics().logEvent(name: "Signed_in_with", parameters: {
-          //     "mode": widget.sign_in_mode,
-          //     'phone_number': phn,
-          //     'uid': uid,
-          //     'id': resMessage.toString(),
-          //   });
-          // } else {
-          //   FirebaseAnalytics().setUserId(uid);
-          //   FirebaseAnalytics().logEvent(name: "Signed_in_with", parameters: {
-          //     "mode": widget.sign_in_mode,
-          //     'email': email,
-          //     'uid': uid,
-          //     'id': resMessage.toString(),
-          //   });
-          // }
+          getAllPosts(id);
         }
       } else {
         logout(context);
@@ -434,7 +248,8 @@ class _BottomNavBarState extends State<BottomNavBar>
       });
       return null;
     }
-
+    print("----------------------------------");
+    print(response.body);
     if (response.statusCode == 200) {
       var responseMessage =
           jsonDecode((jsonDecode(response.body))['body'])['message'];
@@ -516,29 +331,30 @@ class _BottomNavBarState extends State<BottomNavBar>
     setState(() {});
   }
 
-  getAllPosts() async {
-    int start = 0, i = 0;
-    // while (storiesLeft) {
-
+  getAllPosts(String id) async {
+    int start = 0;
     print("getUserPostFired");
     setState(() {
       isLoadingPost = true;
       //isLoading = false;
     });
     FirebaseUser user;
-    var id;
-    try {
-      user = await authFirebase.currentUser();
-      DocumentSnapshot doc = await users.document(user.uid).get();
-      if (doc == null) print("error from get user post");
-      id = doc['id'];
-    } catch (e) {
-      setState(() {
-        isFailedUserPost = true;
-      });
-    }
-
+    user = await authFirebase.currentUser();
     var token = await user.getIdToken();
+    //var id;
+    if(id==null)
+      {
+        try {
+          user = await authFirebase.currentUser();
+          DocumentSnapshot doc = await users.document(user.uid).get();
+          if (doc == null) print("error from get user post");
+          id = doc['id'];
+        } catch (e) {
+          setState(() {
+            isFailedUserPost = true;
+          });
+        }
+      }
 
     var response = await postFunc(
         url: storyEndPoint + "all",
@@ -554,7 +370,7 @@ class _BottomNavBarState extends State<BottomNavBar>
 
     if (response.statusCode == 200) {
       var responseMessage =
-          jsonDecode((jsonDecode(response.body))['body'])['message'];
+      jsonDecode((jsonDecode(response.body))['body'])['message'];
 
       var responseStories = responseMessage['stories'];
 
@@ -578,19 +394,12 @@ class _BottomNavBarState extends State<BottomNavBar>
         postsGlobal.addAll(posts);
         //isLoading = false;
         isLoadingPost = false;
-        print(
-            "number of stories left $storiesLeft , message id $storiesStillLeft");
         storiesLeft = storiesStillLeft;
-        print("number of stories after call $storiesLeft");
-        print(
-            "number of stories left $storiesLeft , message id $storiesStillLeft");
       });
     } else {
       print(response.statusCode);
       throw Exception();
     }
-    //  start = start + 10;
-    //}
   }
 
   getRCashDetails() async {
@@ -660,11 +469,8 @@ class _BottomNavBarState extends State<BottomNavBar>
       });
       createNgetUserAwait();
     } else {
-      getAllPosts();
-      getUserAwait();
-      //  getAllUsers();
-      //getRCashDetails();
-
+      getAllPosts(curUser != null ? curUser.id :(savedUser!=null? savedUser.id:null));
+      getUser();
       if (postId == null) initDynamicLinks();
     }
   }
@@ -749,7 +555,7 @@ class _BottomNavBarState extends State<BottomNavBar>
                       isFailedUserPost = false;
                     });
                     getUserAwait();
-                    getAllPosts();
+                    getAllPosts(curUser != null ? curUser.id : savedUser.id);
                     //getAllUsers();
                   },
                   showLogout: true,
