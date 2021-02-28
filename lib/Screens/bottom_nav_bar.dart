@@ -140,6 +140,8 @@ class _BottomNavBarState extends State<BottomNavBar>
           isNewUserFailed = true;
         });
       }
+      print("This is the response");
+      print(response);
       //print('Response status: ${response.statusCode}');
       log('Response status: ${response.statusCode}');
       if (response.statusCode == 200) {
@@ -159,13 +161,13 @@ class _BottomNavBarState extends State<BottomNavBar>
         var resBody = json.decode(res['body']);
 
         var id = resBody['message']['id'];
-        // var messagingToken = await getFirebaseMessagingToken();
-        //print(widget.sign_in_mode);
+        var messagingToken = await getFirebaseMessagingToken();
+        print(widget.sign_in_mode);
 
         var responseGet;
         try {
-          // await users.document(user.uid).setData(
-          //     {"id": resBody['message']['id'], "token": messagingToken});
+          await users.document(user.uid).setData(
+              {"id": resBody['message']['id'], "token": messagingToken});
 
           final url = userEndPoint + "get";
 
@@ -188,17 +190,11 @@ class _BottomNavBarState extends State<BottomNavBar>
           var body1 = jsonDecode(body);
 
           var msg = body1['message'];
-          //print("id is: ${msg['id']}");
-          //print(msg);
+
           curUser = User.fromJson(msg);
           saveData();
           getData();
-          //print("haha");
-          //print(curUser);
-          // setState(() {
-          //   isLoading = false;
-          // });
-          // return curUser;
+
           setState(() {
             isLoadingPost = true;
             isLoading = false;
@@ -216,65 +212,120 @@ class _BottomNavBarState extends State<BottomNavBar>
             });
           }
 
-          try {
-            final url = storyEndPoint + "$id/all";
-            var token = await user.getIdToken();
-            final response = await http.get(url, headers: {
-              "Authorization": "Bearer $token",
-              "Content-Type": "application/json",
-            });
-          } catch (e) {
-            setState(() {
-              isLoadingPost = false;
+          // try {
+          //   final url = storyEndPoint + "$id/all";
+          //   var token = await user.getIdToken();
+          //   final response = await http.get(url, headers: {
+          //     "Authorization": "Bearer $token",
+          //     "Content-Type": "application/json",
+          //   });
+          // } catch (e) {
+          //   setState(() {
+          //     isLoadingPost = false;
+          //
+          //     isFailedUserPost = true;
+          //   });
+          //   return;
+          // }
+          // //print("body is ${response.body}");
+          // //print(response.statusCode);
+          // //print("User posts $response");
+          // if (response.statusCode == 200) {
+          //   final jsonUser = jsonDecode(response.body);
+          //   var body = jsonUser['body'];
+          //   var body1 = jsonDecode(body);
+          //   //print("body is $body");
+          //   //print(body1);
+          //   var msg = body1['message'];
+          //   //print(msg.length);
+          //   //print("msg id ${msg}");
+          //   List<Post> posts = [];
+          //   if (msg == null) {
+          //     setState(() {
+          //       postsGlobal = posts;
+          //       isLoading = false;
+          //       isLoadingPost = false;
+          //     });
+          //
+          //     return;
+          //   }
+          //   for (int i = 0; i < msg.length; i++) {
+          //     //print("msg $i is ${msg[i]}");
+          //     Post post;
+          //     if (msg[i]['StoryType'] == "Investment")
+          //       post = Post.fromJsonI(msg[i]);
+          //     else
+          //       post = Post.fromJsonW(msg[i]);
+          //     if (post != null) {
+          //       //print(post.investedWithUser);
+          //       posts.add(post);
+          //     }
+          //   }
+          //   //print(posts.length);
+          //   setState(() {
+          //     postsGlobal = posts;
+          //     isLoading = false;
+          //     isLoadingPost = false;
+          //   });
+          // } else {
+          //   print(response.statusCode);
+          //   throw Exception();
+          // }
 
-              isFailedUserPost = true;
-            });
-            return;
-          }
-          //print("body is ${response.body}");
-          //print(response.statusCode);
-          //print("User posts $response");
-          if (response.statusCode == 200) {
-            final jsonUser = jsonDecode(response.body);
-            var body = jsonUser['body'];
-            var body1 = jsonDecode(body);
-            //print("body is $body");
-            //print(body1);
-            var msg = body1['message'];
-            //print(msg.length);
-            //print("msg id ${msg}");
-            List<Post> posts = [];
-            if (msg == null) {
+          // getAllPosts();
+          try {
+            int start = 0;
+            var response = await postFunc(
+                url: storyEndPoint + "all",
+                token: token,
+                body: jsonEncode({"id": id, "start_token": start}));
+
+            if (response == null) {
               setState(() {
-                postsGlobal = posts;
+                isLoadingPost = false;
+                isFailedUserPost = true;
+              });
+              return true;
+            }
+
+            if (response.statusCode == 200) {
+              var responseMessage =
+                  jsonDecode((jsonDecode(response.body))['body'])['message'];
+
+              var responseStories = responseMessage['stories'];
+
+              storiesStillLeft = responseMessage['still_left'];
+
+              List<Post> posts = [];
+              if (responseMessage != []) {
+                for (int i = 0; i < responseStories.length; i++) {
+                  Post post;
+                  if (responseStories[i]['StoryType'] == "Investment")
+                    post = Post.fromJsonI(responseStories[i]);
+                  else
+                    post = Post.fromJsonW(responseStories[i]);
+                  if (post != null) {
+                    //print(post.investedWithUser);
+                    posts.add(post);
+                  }
+                }
+              }
+              setState(() {
+                postsGlobal.addAll(posts);
                 isLoading = false;
                 isLoadingPost = false;
+                print(
+                    "number of stories left $storiesLeft , message id $storiesStillLeft");
+                storiesLeft = storiesStillLeft;
+                print("number of stories after call $storiesLeft");
+                print(
+                    "number of stories left $storiesLeft , message id $storiesStillLeft");
               });
-
-              return;
+            } else {
+              print(response.statusCode);
+              throw Exception();
             }
-            for (int i = 0; i < msg.length; i++) {
-              //print("msg $i is ${msg[i]}");
-              Post post;
-              if (msg[i]['StoryType'] == "Investment")
-                post = Post.fromJsonI(msg[i]);
-              else
-                post = Post.fromJsonW(msg[i]);
-              if (post != null) {
-                //print(post.investedWithUser);
-                posts.add(post);
-              }
-            }
-            //print(posts.length);
-            setState(() {
-              postsGlobal = posts;
-              isLoading = false;
-              isLoadingPost = false;
-            });
-          } else {
-            print(response.statusCode);
-            throw Exception();
-          }
+          } catch (e) {}
 
           //   final urlAll = userEndPoint + "all";
           //
@@ -618,11 +669,11 @@ class _BottomNavBarState extends State<BottomNavBar>
     }
   }
 
-  // Future<String> getFirebaseMessagingToken() async {
-  //   var token = await _messaging.getToken();
-  //   print(token);
-  //   return token;
-  // }
+  Future<String> getFirebaseMessagingToken() async {
+    var token = await FirebaseMessaging().getToken();
+    print(token);
+    return token;
+  }
 
   createNgetUserAwait() async {
     await createNgetUser();

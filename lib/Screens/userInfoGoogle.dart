@@ -36,7 +36,7 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
   final int initialYear = 1900;
 
   // Final year for the date picker
-  final int finalYear = 2020;
+  final int finalYear = 2022;
 
   // This function is used to select date from date picker
   selectDate(BuildContext context) async {
