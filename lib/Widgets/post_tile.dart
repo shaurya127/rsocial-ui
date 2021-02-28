@@ -665,110 +665,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                       SizedBox(
                         width: 14,
                       ),
-
-                      // if (counter['loved'] == 0 &&
-                      //     counter['liked'] == 0 &&
-                      //     counter['whatever'] == 0 &&
-                      //     counter['hated'] == 0)
-                      //   SizedBox()
-                      // else if (counter['loved'] >= counter['liked'] &&
-                      //     counter['loved'] >= counter['whatever'] &&
-                      //     counter['loved'] >= counter['hated'])
-                      //   GestureDetector(
-                      //     onTap: () {
-                      //       buildReactionTile();
-                      //       Navigator.push(
-                      //           context,
-                      //           PageTransition(
-                      //               // settings: RouteSettings(
-                      //               //     name: "Login_Page"),
-                      //               type: PageTransitionType.fade,
-                      //               child: Reaction_Info(
-                      //                 like: likes,
-                      //                 love: love,
-                      //                 hate: hates,
-                      //                 whatever: whatevers,
-                      //               )));
-                      //     },
-                      //     child: SvgPicture.asset(
-                      //       "images/thumb_blue.svg",
-                      //       //color: colorPrimaryBlue,
-                      //       height: 23,
-                      //     ),
-                      //   )
-                      // else if (counter['liked'] > counter['loved'] &&
-                      //     counter['liked'] >= counter['whatever'] &&
-                      //     counter['liked'] >= counter['hated'])
-                      //   GestureDetector(
-                      //     onTap: () {
-                      //       buildReactionTile();
-                      //       Navigator.push(
-                      //           context,
-                      //           PageTransition(
-                      //               // settings: RouteSettings(
-                      //               //     name: "Login_Page"),
-                      //               type: PageTransitionType.fade,
-                      //               child: Reaction_Info(
-                      //                 like: likes,
-                      //                 love: love,
-                      //                 hate: hates,
-                      //                 whatever: whatevers,
-                      //               )));
-                      //     },
-                      //     child: SvgPicture.asset(
-                      //       "images/rsocial_thumbUp_blue.svg",
-                      //       height: 23,
-                      //     ),
-                      //   )
-                      // else if (counter['whatever'] > counter['loved'] &&
-                      //     counter['whatever'] > counter['liked'] &&
-                      //     counter['whatever'] >= counter['hated'])
-                      //   GestureDetector(
-                      //     onTap: () {
-                      //       buildReactionTile();
-                      //       Navigator.push(
-                      //           context,
-                      //           PageTransition(
-                      //               // settings: RouteSettings(
-                      //               //     name: "Login_Page"),
-                      //               type: PageTransitionType.fade,
-                      //               child: Reaction_Info(
-                      //                 like: likes,
-                      //                 love: love,
-                      //                 hate: hates,
-                      //                 whatever: whatevers,
-                      //               )));
-                      //     },
-                      //     child: SvgPicture.asset(
-                      //       "images/rsocial_thumbDown_blue.svg",
-                      //       height: 23,
-                      //     ),
-                      //   )
-                      // else if (counter['hated'] > counter['liked'] &&
-                      //     counter['hated'] > counter['loved'] &&
-                      //     counter['hated'] > counter['whatever'])
-                      //   GestureDetector(
-                      //     onTap: () {
-                      //       buildReactionTile();
-                      //       Navigator.push(
-                      //           context,
-                      //           PageTransition(
-                      //               // settings: RouteSettings(
-                      //               //     name: "Login_Page"),
-                      //               type: PageTransitionType.fade,
-                      //               child: Reaction_Info(
-                      //                 like: likes,
-                      //                 love: love,
-                      //                 hate: hates,
-                      //                 whatever: whatevers,
-                      //               )));
-                      //     },
-                      //     child: SvgPicture.asset(
-                      //       "images/rsocial_punch_blue.svg",
-                      //       height: 23,
-                      //     ),
-                      //   ),
-                      //SizedBox(width: 14,),
                       PopupMenuButton(
                         icon: Icon(
                           Icons.more_vert,
@@ -930,7 +826,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Container(
-                    child: Row(
+                    child: widget.userPost.canReact ? Row(
                       children: <Widget>[
                         isDisabled
                             ? Column(
@@ -1236,7 +1132,17 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                 ),
                               ),
                       ],
-                    ),
+                    ):
+                        Container(child: Text(
+                          "Investment Matured",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontFamily: "Lato",
+                            fontWeight: FontWeight.bold,
+                            color: colorUnselectedBottomNav,
+                          ),
+                        ),)
                   ),
                   SizedBox(
                     width: 20 - hatedController.value * reactionSizeIncrease,

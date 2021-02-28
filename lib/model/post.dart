@@ -20,7 +20,8 @@ class Post {
       this.reactedBy,
       this.duration,
       this.profit,
-      this.createdOn});
+      this.createdOn,
+      this.canReact});
 
   String id;
   User user;
@@ -34,26 +35,25 @@ class Post {
   int duration;
   String profit;
   String createdOn;
+  bool canReact;
 
   factory Post.fromJsonI(final json) {
     var uid = json["UserId"];
     var frnd = json['InvestedWith'];
     final diff = DateTime.now().difference(DateTime.parse(json['PostedOn']));
     final txt = timeago.format(DateTime.now().subtract(diff), locale: locale);
-    //print(txt);
-    //print("frnd is $frnd with type ${json['StoryType']}");
+    var expiringOnDiff =
+        DateTime.now().difference(DateTime.parse(json['ExpiringOn'])).isNegative
+            ? false
+            : true;
 
     List<User> investedWith = [];
     if (json['InvestedWith'].isNotEmpty) {
       for (int i = 0; i < json['InvestedWith'].length; i++) {
-        //print("reacted by $i is ${json["ReactedBy"][i]}");
         User user = User.fromJson(json['InvestedWith'][i]);
         investedWith.add(user);
       }
     }
-    // print("hsdfljsdfklsdjfkllsdjfklsdfjsdklfjdkfjdf");
-    // print(json["id"]);
-    // print(json["ReactedBy"]);
 
     List<User> rxn = [];
     if (json["ReactedBy"] != null) if (json["ReactedBy"].isNotEmpty) {
@@ -66,6 +66,7 @@ class Post {
     return Post(
         storyType: json["StoryType"],
         id: json["id"],
+        canReact: expiringOnDiff,
         user: User.fromJson(uid),
         storyText: json["StoryText"],
         investedWithUser: investedWith,
@@ -100,8 +101,7 @@ class Post {
         profit: json["PresentValue"].toString(),
         reactedBy: rxn,
         createdOn: txt,
-        //investedWithUser: User.fromJson(json['InvestedWith']),
-        //investedAmount: json["InvestedAmount"],
+        canReact: true,
         fileUpload: json["FileUpload"] == null
             ? []
             : List<String>.from(json["FileUpload"].map((x) => x)));
