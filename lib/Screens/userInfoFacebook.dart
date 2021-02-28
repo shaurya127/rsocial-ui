@@ -33,13 +33,13 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
   final int initialYear = 1900;
 
   // Final year for the date picker
-  final int finalYear = 2025;
+  final int finalYear = 2020;
 
   @override
   void initState() {
     selectedDate = widget.currentUser.dob != null
         ? stringToDateTime(widget.currentUser.dob)
-        : DateTime.now();
+        : DateTime(initialYear);
 
     if (widget.currentUser.dob != null) isDateSelected = true;
   } // This function is used to select date from date picker
@@ -47,7 +47,8 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
   selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: (context),
-        initialDate: selectedDate != null ? selectedDate : DateTime.now(),
+        initialDate:
+            selectedDate != null ? selectedDate : DateTime(initialYear),
         firstDate: DateTime(initialYear),
         lastDate: DateTime(finalYear));
     if (picked != null && picked != selectedDate) {
