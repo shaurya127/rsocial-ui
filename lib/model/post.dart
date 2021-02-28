@@ -44,8 +44,8 @@ class Post {
     final txt = timeago.format(DateTime.now().subtract(diff), locale: locale);
     var expiringOnDiff =
         DateTime.now().difference(DateTime.parse(json['ExpiringOn'])).isNegative
-            ? false
-            : true;
+            ? true
+            : false;
 
     List<User> investedWith = [];
     if (json['InvestedWith'].isNotEmpty) {

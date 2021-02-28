@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -27,6 +28,7 @@ import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
 import '../contants/config.dart';
 import '../contants/constants.dart';
+import '../deep_links.dart';
 import '../functions.dart';
 import '../model/post.dart';
 import '../model/reaction_model.dart';
@@ -65,6 +67,7 @@ class _InvestPostTileState extends State<InvestPostTile>
   List<Request_Tile> likes = [];
   List<Request_Tile> whatevers = [];
   List<User> investedWithUser = [];
+  bool _isCreatingLink = false;
   String rxn = "noreact";
   Map<String, int> counter = {
     'loved': 0,
@@ -969,383 +972,406 @@ class _InvestPostTileState extends State<InvestPostTile>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Container(
-                  child: Row(
-                    children: <Widget>[
-                      isDisabled
-                          ? Column(
-                              children: <Widget>[
-                                Container(
-                                  height: 23 +
-                                      reactionSizeIncrease *
-                                          lovedAnimation.value,
-                                  width: 23 +
-                                      reactionSizeIncrease *
-                                          lovedAnimation.value,
-                                  // child: Icon(
-                                  //   MyFlutterApp.rsocial_logo_thumb_upside,
-                                  //   color: rxn == "loved"
-                                  //       ? colorPrimaryBlue
-                                  //       : postIcons,
-                                  //   size: 30,
-                                  // ),
-                                  child: rxn == "loved"
-                                      ? SvgPicture.asset(
-                                          "images/thumb_blue.svg",
-                                          // color: rxn == "loved"
-                                          //     ? colorPrimaryBlue
-                                          //     : postIcons,
-                                          height: 40,
-                                        )
-                                      : SvgPicture.asset(
-                                          "images/rsocial_thumb_outline.svg",
-                                          height: 40,
+                    child: widget.userPost.canReact
+                        ? Row(
+                            children: <Widget>[
+                              isDisabled
+                                  ? Column(
+                                      children: <Widget>[
+                                        Container(
+                                          height: 23 +
+                                              reactionSizeIncrease *
+                                                  lovedAnimation.value,
+                                          width: 23 +
+                                              reactionSizeIncrease *
+                                                  lovedAnimation.value,
+                                          // child: Icon(
+                                          //   MyFlutterApp.rsocial_logo_thumb_upside,
+                                          //   color: rxn == "loved"
+                                          //       ? colorPrimaryBlue
+                                          //       : postIcons,
+                                          //   size: 30,
+                                          // ),
+                                          child: rxn == "loved"
+                                              ? SvgPicture.asset(
+                                                  "images/thumb_blue.svg",
+                                                  // color: rxn == "loved"
+                                                  //     ? colorPrimaryBlue
+                                                  //     : postIcons,
+                                                  height: 40,
+                                                )
+                                              : SvgPicture.asset(
+                                                  "images/rsocial_thumb_outline.svg",
+                                                  height: 40,
+                                                ),
                                         ),
-                                ),
-                                SizedBox(
-                                  height: 4 -
-                                      reactionSizeIncrease *
-                                          lovedAnimation.value,
-                                ),
-                                Text(
-                                  counter['loved'].toString(),
-                                  style: TextStyle(
-                                    fontFamily: "Lato",
-                                    fontSize: 10,
-                                    color: colorUnselectedBottomNav,
-                                  ),
-                                )
-                              ],
-                            )
-                          : GestureDetector(
-                              onTap: () => {
-                                reaction('loved')
-                                // widget.userPost.user.id != widget.curUser.id
-                                //     ?
-                                // //     ? Fluttertoast.showToast(
-                                // //         msg: "You cannot react on your own post!",
-                                // //         toastLength: Toast.LENGTH_SHORT,
-                                // //         gravity: ToastGravity.BOTTOM,
-                                // //         fontSize: 15)
-                                // //     :
-                                // (rxn == 'loved'
-                                //     ? {react("noreact"), counter['loved']--}
-                                //     : {react("loved"), counter['loved']++})
-                                //     : print("not allowed")
-                              },
-                              child: Column(
-                                children: <Widget>[
-                                  Container(
-                                    height: 23 +
-                                        reactionSizeIncrease *
-                                            lovedAnimation.value,
-                                    width: 23 +
-                                        reactionSizeIncrease *
-                                            lovedAnimation.value,
+                                        SizedBox(
+                                          height: 4 -
+                                              reactionSizeIncrease *
+                                                  lovedAnimation.value,
+                                        ),
+                                        Text(
+                                          counter['loved'].toString(),
+                                          style: TextStyle(
+                                            fontFamily: "Lato",
+                                            fontSize: 10,
+                                            color: colorUnselectedBottomNav,
+                                          ),
+                                        )
+                                      ],
+                                    )
+                                  : GestureDetector(
+                                      onTap: () => {
+                                        reaction('loved')
+                                        // widget.userPost.user.id != widget.curUser.id
+                                        //     ?
+                                        // //     ? Fluttertoast.showToast(
+                                        // //         msg: "You cannot react on your own post!",
+                                        // //         toastLength: Toast.LENGTH_SHORT,
+                                        // //         gravity: ToastGravity.BOTTOM,
+                                        // //         fontSize: 15)
+                                        // //     :
+                                        // (rxn == 'loved'
+                                        //     ? {react("noreact"), counter['loved']--}
+                                        //     : {react("loved"), counter['loved']++})
+                                        //     : print("not allowed")
+                                      },
+                                      child: Column(
+                                        children: <Widget>[
+                                          Container(
+                                            height: 23 +
+                                                reactionSizeIncrease *
+                                                    lovedAnimation.value,
+                                            width: 23 +
+                                                reactionSizeIncrease *
+                                                    lovedAnimation.value,
 
-                                    // child: Icon(
-                                    //   MyFlutterApp.rsocial_logo_thumb_upside,
-                                    //   color: rxn == "loved"
-                                    //       ? colorPrimaryBlue
-                                    //       : postIcons,
-                                    //   size: 35,
-                                    // ),
-                                    child: rxn == "loved"
-                                        ? SvgPicture.asset(
-                                            "images/thumb_blue.svg",
-                                            // color: rxn == "loved"
-                                            //     ? colorPrimaryBlue
-                                            //     : postIcons,
-                                            height: 40,
-                                          )
-                                        : SvgPicture.asset(
-                                            "images/rsocial_thumb_outline.svg",
+                                            // child: Icon(
+                                            //   MyFlutterApp.rsocial_logo_thumb_upside,
+                                            //   color: rxn == "loved"
+                                            //       ? colorPrimaryBlue
+                                            //       : postIcons,
+                                            //   size: 35,
+                                            // ),
+                                            child: rxn == "loved"
+                                                ? SvgPicture.asset(
+                                                    "images/thumb_blue.svg",
+                                                    // color: rxn == "loved"
+                                                    //     ? colorPrimaryBlue
+                                                    //     : postIcons,
+                                                    height: 40,
+                                                  )
+                                                : SvgPicture.asset(
+                                                    "images/rsocial_thumb_outline.svg",
+                                                  ),
                                           ),
-                                  ),
-                                  SizedBox(
-                                    height: 4 - 3 * lovedAnimation.value,
-                                  ),
-                                  Text(
-                                    counter['loved'].toString(),
-                                    style: TextStyle(
-                                      fontFamily: "Lato",
-                                      fontSize: 10,
-                                      color: colorUnselectedBottomNav,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                      SizedBox(
-                        width: 20 -
-                            lovedAnimation.value * reactionSizeIncrease -
-                            likedAnimation.value * reactionSizeIncrease / 2,
-                      ),
-                      isDisabled
-                          ? Column(
-                              children: <Widget>[
-                                Container(
-                                  height: 23 +
-                                      reactionSizeIncrease *
-                                          likedAnimation.value,
-                                  width: 23 +
-                                      reactionSizeIncrease *
-                                          likedAnimation.value,
-                                  child: rxn == "liked"
-                                      ? SvgPicture.asset(
-                                          "images/rsocial_thumbUp_blue.svg",
-                                        )
-                                      : SvgPicture.asset(
-                                          "images/rsocial_thumbUp_outline.svg"),
-                                ),
-                                //Icon(Icons.thumb_up,size: 30,color:postIcons),
-                                SizedBox(
-                                  height: 4 -
-                                      reactionSizeIncrease *
-                                          likedAnimation.value,
-                                ),
-                                Text(
-                                  counter['liked'].toString(),
-                                  style: TextStyle(
-                                    fontFamily: "Lato",
-                                    fontSize: 10,
-                                    color: colorUnselectedBottomNav,
-                                  ),
-                                )
-                              ],
-                            )
-                          : GestureDetector(
-                              onTap: () => {
-                                reaction('liked')
-                                // widget.userPost.user.id != widget.curUser.id
-                                //     ?
-                                // //     ? Fluttertoast.showToast(
-                                // //         msg: "You cannot react on your own post!",
-                                // //         toastLength: Toast.LENGTH_SHORT,
-                                // //         gravity: ToastGravity.BOTTOM,
-                                // //         fontSize: 15)
-                                // //     :
-                                // (rxn == 'liked'
-                                //     ? {react("noreact"), counter['liked']--}
-                                //     : {react("liked"), counter['liked']++})
-                                //     : print("not allowed")
-                              },
-                              child: Column(
-                                children: <Widget>[
-                                  Container(
-                                    height: 23 +
-                                        reactionSizeIncrease *
-                                            likedAnimation.value,
-                                    width: 23 +
-                                        reactionSizeIncrease *
-                                            likedAnimation.value,
-                                    child: rxn == "liked"
-                                        ? SvgPicture.asset(
-                                            "images/rsocial_thumbUp_blue.svg",
+                                          SizedBox(
+                                            height:
+                                                4 - 3 * lovedAnimation.value,
+                                          ),
+                                          Text(
+                                            counter['loved'].toString(),
+                                            style: TextStyle(
+                                              fontFamily: "Lato",
+                                              fontSize: 10,
+                                              color: colorUnselectedBottomNav,
+                                            ),
                                           )
-                                        : SvgPicture.asset(
-                                            "images/rsocial_thumbUp_outline.svg"),
-                                  ),
-                                  //Icon(Icons.thumb_up,size: 30,color:postIcons),
-                                  SizedBox(
-                                    height: 4 -
-                                        reactionSizeIncrease *
-                                            likedAnimation.value,
-                                  ),
-                                  Text(
-                                    counter['liked'].toString(),
-                                    style: TextStyle(
-                                      fontFamily: "Lato",
-                                      fontSize: 10,
-                                      color: colorUnselectedBottomNav,
+                                        ],
+                                      ),
                                     ),
-                                  )
-                                ],
+                              SizedBox(
+                                width: 20 -
+                                    lovedAnimation.value *
+                                        reactionSizeIncrease -
+                                    likedAnimation.value *
+                                        reactionSizeIncrease /
+                                        2,
                               ),
-                            ),
-                      SizedBox(
-                        width: 20 -
-                            likedAnimation.value * reactionSizeIncrease / 2 -
-                            whateverAnimation.value * reactionSizeIncrease / 2,
-                      ),
-                      isDisabled
-                          ? Column(
-                              children: <Widget>[
-                                Container(
-                                    height: 23 +
-                                        reactionSizeIncrease *
-                                            whateverAnimation.value,
-                                    width: 23 +
-                                        reactionSizeIncrease *
-                                            whateverAnimation.value,
-                                    child: rxn == "whatever"
-                                        ? SvgPicture.asset(
-                                            "images/rsocial_thumbDown_blue.svg")
-                                        : SvgPicture.asset(
-                                            "images/rsocial_thumbDown_outline.svg")),
-                                SizedBox(
-                                  height: 4 -
-                                      reactionSizeIncrease *
-                                          whateverAnimation.value,
-                                ),
-                                Text(
-                                  counter['whatever'].toString(),
-                                  style: TextStyle(
-                                    fontFamily: "Lato",
-                                    fontSize: 10,
-                                    color: colorUnselectedBottomNav,
-                                  ),
-                                )
-                              ],
-                            )
-                          : GestureDetector(
-                              onTap: () => {
-                                reaction('whatever')
-                                // widget.userPost.user.id != widget.curUser.id
-                                //     ?
-                                // //     ? Fluttertoast.showToast(
-                                // //         msg: "You cannot react on your own post!",
-                                // //         toastLength: Toast.LENGTH_SHORT,
-                                // //         gravity: ToastGravity.BOTTOM,
-                                // //         fontSize: 15)
-                                // //     :
-                                // (rxn == 'whatever'
-                                //     ? {
-                                //   react("noreact"),
-                                //   counter['whatever']--
-                                // }
-                                //     : {
-                                //   react("whatever"),
-                                //   counter['whatever']++
-                                // })
-                                //     : print("not allowed")
-                              },
-                              child: Column(
-                                children: <Widget>[
-                                  Container(
-                                      height: 23 +
-                                          reactionSizeIncrease *
-                                              whateverAnimation.value,
-                                      width: 23 +
-                                          reactionSizeIncrease *
-                                              whateverAnimation.value,
-                                      child: rxn == "whatever"
-                                          ? SvgPicture.asset(
-                                              "images/rsocial_thumbDown_blue.svg")
-                                          : SvgPicture.asset(
-                                              "images/rsocial_thumbDown_outline.svg")),
-                                  SizedBox(
-                                    height: 4 -
-                                        reactionSizeIncrease *
-                                            whateverAnimation.value,
-                                  ),
-                                  Text(
-                                    counter['whatever'].toString(),
-                                    style: TextStyle(
-                                      fontFamily: "Lato",
-                                      fontSize: 10,
-                                      color: colorUnselectedBottomNav,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                      SizedBox(
-                        width: 20 -
-                            hatedAnimation.value * reactionSizeIncrease -
-                            whateverAnimation.value * reactionSizeIncrease / 2,
-                      ),
-                      isDisabled
-                          ? Column(
-                              children: <Widget>[
-                                Container(
-                                  height: 23 +
-                                      reactionSizeIncrease *
-                                          hatedAnimation.value,
-                                  width: 23 +
-                                      reactionSizeIncrease *
-                                          hatedAnimation.value,
-                                  child: rxn == "hated"
-                                      ? SvgPicture.asset(
-                                          "images/rsocial_punch_blue.svg",
-                                          fit: BoxFit.cover,
-                                        )
-                                      : SvgPicture.asset(
-                                          "images/rsocial_punch_outline.svg",
-                                          fit: BoxFit.cover,
+                              isDisabled
+                                  ? Column(
+                                      children: <Widget>[
+                                        Container(
+                                          height: 23 +
+                                              reactionSizeIncrease *
+                                                  likedAnimation.value,
+                                          width: 23 +
+                                              reactionSizeIncrease *
+                                                  likedAnimation.value,
+                                          child: rxn == "liked"
+                                              ? SvgPicture.asset(
+                                                  "images/rsocial_thumbUp_blue.svg",
+                                                )
+                                              : SvgPicture.asset(
+                                                  "images/rsocial_thumbUp_outline.svg"),
                                         ),
-                                ),
-                                SizedBox(
-                                  height: 4 -
-                                      reactionSizeIncrease *
-                                          hatedAnimation.value,
-                                ),
-                                Text(
-                                  counter['hated'].toString(),
-                                  style: TextStyle(
-                                    fontFamily: "Lato",
-                                    fontSize: 10,
-                                    color: colorUnselectedBottomNav,
-                                  ),
-                                )
-                              ],
-                            )
-                          : GestureDetector(
-                              onTap: () => {
-                                reaction('hated')
-                                // rxn == 'hated'
-                                //     ? reaction('noreact')
-                                //     : reaction('hated')
-                                // widget.userPost.user.id != widget.curUser.id
-                                //     ?
-                                // //     ? Fluttertoast.showToast(
-                                // //         msg: "You cannot react on your own post!",
-                                // //         toastLength: Toast.LENGTH_SHORT,
-                                // //         gravity: ToastGravity.BOTTOM,
-                                // //         fontSize: 15)
-                                // //     :
-                                // (rxn == 'hated'
-                                //     ? {react("noreact"), counter['hated']--}
-                                //     : {react("hated"), counter['hated']++})
-                                //     : print("not allowed")
-                              },
-                              child: Column(
-                                children: <Widget>[
-                                  Container(
-                                    height: 23 +
-                                        reactionSizeIncrease *
-                                            hatedAnimation.value,
-                                    width: 23 +
-                                        reactionSizeIncrease *
-                                            hatedAnimation.value,
-                                    child: rxn == "hated"
-                                        ? SvgPicture.asset(
-                                            "images/rsocial_punch_blue.svg",
-                                            fit: BoxFit.cover,
-                                          )
-                                        : SvgPicture.asset(
-                                            "images/rsocial_punch_outline.svg",
-                                            fit: BoxFit.cover,
+                                        //Icon(Icons.thumb_up,size: 30,color:postIcons),
+                                        SizedBox(
+                                          height: 4 -
+                                              reactionSizeIncrease *
+                                                  likedAnimation.value,
+                                        ),
+                                        Text(
+                                          counter['liked'].toString(),
+                                          style: TextStyle(
+                                            fontFamily: "Lato",
+                                            fontSize: 10,
+                                            color: colorUnselectedBottomNav,
                                           ),
-                                  ),
-                                  SizedBox(
-                                    height: 4 -
-                                        reactionSizeIncrease *
-                                            hatedAnimation.value,
-                                  ),
-                                  Text(
-                                    counter['hated'].toString(),
-                                    style: TextStyle(
-                                      fontFamily: "Lato",
-                                      fontSize: 10,
-                                      color: colorUnselectedBottomNav,
+                                        )
+                                      ],
+                                    )
+                                  : GestureDetector(
+                                      onTap: () => {
+                                        reaction('liked')
+                                        // widget.userPost.user.id != widget.curUser.id
+                                        //     ?
+                                        // //     ? Fluttertoast.showToast(
+                                        // //         msg: "You cannot react on your own post!",
+                                        // //         toastLength: Toast.LENGTH_SHORT,
+                                        // //         gravity: ToastGravity.BOTTOM,
+                                        // //         fontSize: 15)
+                                        // //     :
+                                        // (rxn == 'liked'
+                                        //     ? {react("noreact"), counter['liked']--}
+                                        //     : {react("liked"), counter['liked']++})
+                                        //     : print("not allowed")
+                                      },
+                                      child: Column(
+                                        children: <Widget>[
+                                          Container(
+                                            height: 23 +
+                                                reactionSizeIncrease *
+                                                    likedAnimation.value,
+                                            width: 23 +
+                                                reactionSizeIncrease *
+                                                    likedAnimation.value,
+                                            child: rxn == "liked"
+                                                ? SvgPicture.asset(
+                                                    "images/rsocial_thumbUp_blue.svg",
+                                                  )
+                                                : SvgPicture.asset(
+                                                    "images/rsocial_thumbUp_outline.svg"),
+                                          ),
+                                          //Icon(Icons.thumb_up,size: 30,color:postIcons),
+                                          SizedBox(
+                                            height: 4 -
+                                                reactionSizeIncrease *
+                                                    likedAnimation.value,
+                                          ),
+                                          Text(
+                                            counter['liked'].toString(),
+                                            style: TextStyle(
+                                              fontFamily: "Lato",
+                                              fontSize: 10,
+                                              color: colorUnselectedBottomNav,
+                                            ),
+                                          )
+                                        ],
+                                      ),
                                     ),
-                                  )
-                                ],
+                              SizedBox(
+                                width: 20 -
+                                    likedAnimation.value *
+                                        reactionSizeIncrease /
+                                        2 -
+                                    whateverAnimation.value *
+                                        reactionSizeIncrease /
+                                        2,
+                              ),
+                              isDisabled
+                                  ? Column(
+                                      children: <Widget>[
+                                        Container(
+                                            height: 23 +
+                                                reactionSizeIncrease *
+                                                    whateverAnimation.value,
+                                            width: 23 +
+                                                reactionSizeIncrease *
+                                                    whateverAnimation.value,
+                                            child: rxn == "whatever"
+                                                ? SvgPicture.asset(
+                                                    "images/rsocial_thumbDown_blue.svg")
+                                                : SvgPicture.asset(
+                                                    "images/rsocial_thumbDown_outline.svg")),
+                                        SizedBox(
+                                          height: 4 -
+                                              reactionSizeIncrease *
+                                                  whateverAnimation.value,
+                                        ),
+                                        Text(
+                                          counter['whatever'].toString(),
+                                          style: TextStyle(
+                                            fontFamily: "Lato",
+                                            fontSize: 10,
+                                            color: colorUnselectedBottomNav,
+                                          ),
+                                        )
+                                      ],
+                                    )
+                                  : GestureDetector(
+                                      onTap: () => {
+                                        reaction('whatever')
+                                        // widget.userPost.user.id != widget.curUser.id
+                                        //     ?
+                                        // //     ? Fluttertoast.showToast(
+                                        // //         msg: "You cannot react on your own post!",
+                                        // //         toastLength: Toast.LENGTH_SHORT,
+                                        // //         gravity: ToastGravity.BOTTOM,
+                                        // //         fontSize: 15)
+                                        // //     :
+                                        // (rxn == 'whatever'
+                                        //     ? {
+                                        //   react("noreact"),
+                                        //   counter['whatever']--
+                                        // }
+                                        //     : {
+                                        //   react("whatever"),
+                                        //   counter['whatever']++
+                                        // })
+                                        //     : print("not allowed")
+                                      },
+                                      child: Column(
+                                        children: <Widget>[
+                                          Container(
+                                              height: 23 +
+                                                  reactionSizeIncrease *
+                                                      whateverAnimation.value,
+                                              width: 23 +
+                                                  reactionSizeIncrease *
+                                                      whateverAnimation.value,
+                                              child: rxn == "whatever"
+                                                  ? SvgPicture.asset(
+                                                      "images/rsocial_thumbDown_blue.svg")
+                                                  : SvgPicture.asset(
+                                                      "images/rsocial_thumbDown_outline.svg")),
+                                          SizedBox(
+                                            height: 4 -
+                                                reactionSizeIncrease *
+                                                    whateverAnimation.value,
+                                          ),
+                                          Text(
+                                            counter['whatever'].toString(),
+                                            style: TextStyle(
+                                              fontFamily: "Lato",
+                                              fontSize: 10,
+                                              color: colorUnselectedBottomNav,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                              SizedBox(
+                                width: 20 -
+                                    hatedAnimation.value *
+                                        reactionSizeIncrease -
+                                    whateverAnimation.value *
+                                        reactionSizeIncrease /
+                                        2,
+                              ),
+                              isDisabled
+                                  ? Column(
+                                      children: <Widget>[
+                                        Container(
+                                          height: 23 +
+                                              reactionSizeIncrease *
+                                                  hatedAnimation.value,
+                                          width: 23 +
+                                              reactionSizeIncrease *
+                                                  hatedAnimation.value,
+                                          child: rxn == "hated"
+                                              ? SvgPicture.asset(
+                                                  "images/rsocial_punch_blue.svg",
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : SvgPicture.asset(
+                                                  "images/rsocial_punch_outline.svg",
+                                                  fit: BoxFit.cover,
+                                                ),
+                                        ),
+                                        SizedBox(
+                                          height: 4 -
+                                              reactionSizeIncrease *
+                                                  hatedAnimation.value,
+                                        ),
+                                        Text(
+                                          counter['hated'].toString(),
+                                          style: TextStyle(
+                                            fontFamily: "Lato",
+                                            fontSize: 10,
+                                            color: colorUnselectedBottomNav,
+                                          ),
+                                        )
+                                      ],
+                                    )
+                                  : GestureDetector(
+                                      onTap: () => {
+                                        reaction('hated')
+                                        // rxn == 'hated'
+                                        //     ? reaction('noreact')
+                                        //     : reaction('hated')
+                                        // widget.userPost.user.id != widget.curUser.id
+                                        //     ?
+                                        // //     ? Fluttertoast.showToast(
+                                        // //         msg: "You cannot react on your own post!",
+                                        // //         toastLength: Toast.LENGTH_SHORT,
+                                        // //         gravity: ToastGravity.BOTTOM,
+                                        // //         fontSize: 15)
+                                        // //     :
+                                        // (rxn == 'hated'
+                                        //     ? {react("noreact"), counter['hated']--}
+                                        //     : {react("hated"), counter['hated']++})
+                                        //     : print("not allowed")
+                                      },
+                                      child: Column(
+                                        children: <Widget>[
+                                          Container(
+                                            height: 23 +
+                                                reactionSizeIncrease *
+                                                    hatedAnimation.value,
+                                            width: 23 +
+                                                reactionSizeIncrease *
+                                                    hatedAnimation.value,
+                                            child: rxn == "hated"
+                                                ? SvgPicture.asset(
+                                                    "images/rsocial_punch_blue.svg",
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : SvgPicture.asset(
+                                                    "images/rsocial_punch_outline.svg",
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                          ),
+                                          SizedBox(
+                                            height: 4 -
+                                                reactionSizeIncrease *
+                                                    hatedAnimation.value,
+                                          ),
+                                          Text(
+                                            counter['hated'].toString(),
+                                            style: TextStyle(
+                                              fontFamily: "Lato",
+                                              fontSize: 10,
+                                              color: colorUnselectedBottomNav,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                            ],
+                          )
+                        : Container(
+                            child: Text(
+                              "Investment Matured",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontFamily: "Lato",
+                                fontWeight: FontWeight.bold,
+                                color: colorUnselectedBottomNav,
                               ),
                             ),
-                    ],
-                  ),
-                ),
+                          )),
                 SizedBox(
                   width: 20 - hatedController.value * reactionSizeIncrease,
                 ),
@@ -1353,12 +1379,25 @@ class _InvestPostTileState extends State<InvestPostTile>
 
                 Column(
                   children: <Widget>[
-                    Container(
-                      height: 23,
-                      width: 23,
-                      child: SvgPicture.asset(
-                        "images/share.svg",
-                        color: postIcons,
+                    GestureDetector(
+                      onTap: !_isCreatingLink
+                          ? () async {
+                              final Uri uri =
+                                  await makeLink('postid', widget.userPost);
+                              String sender = uri.queryParameters['postid'];
+                              print("link is: $uri \n sent by: $sender");
+
+                              final RenderBox box = context.findRenderObject();
+                              share(uri);
+                            }
+                          : null,
+                      child: Container(
+                        height: 23,
+                        width: 23,
+                        child: SvgPicture.asset(
+                          "images/share.svg",
+                          color: postIcons,
+                        ),
                       ),
                     ),
                     Padding(
@@ -1380,5 +1419,25 @@ class _InvestPostTileState extends State<InvestPostTile>
         ),
       ),
     );
+  }
+
+  Future<Uri> makeLink(String type, Post post) async {
+    Uri uri;
+    setState(() {
+      _isCreatingLink = true;
+    });
+    uri = await createDynamicLink(type, post);
+    setState(() {
+      _isCreatingLink = false;
+    });
+    return uri;
+  }
+
+  Future<void> share(Uri uri) async {
+    await FlutterShare.share(
+        title: 'Hey! checkout this post',
+        //text: '${widget.userPost.user.fname} on RSocial',
+        linkUrl: uri.toString(),
+        chooserTitle: 'Share this post with');
   }
 }
