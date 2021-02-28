@@ -36,13 +36,16 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
   final int initialYear = 1900;
 
   // Final year for the date picker
-  final int finalYear = 2022;
+  final int finalYear = 2020;
 
   // This function is used to select date from date picker
   selectDate(BuildContext context) async {
+    print(DateTime(initialYear));
+    print(DateTime(finalYear));
     final DateTime picked = await showDatePicker(
         context: (context),
-        initialDate: selectedDate != null ? selectedDate : DateTime.now(),
+        initialDate:
+            selectedDate != null ? selectedDate : DateTime(initialYear),
         firstDate: DateTime(initialYear),
         lastDate: DateTime(finalYear));
     if (picked != null && picked != selectedDate) {
@@ -71,9 +74,9 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
               dob.substring(3, 5) +
               "-" +
               dob.substring(0, 2))
-          : DateTime.now();
+          : DateTime(initialYear);
     } catch (E) {
-      this.selectedDate = DateTime.now();
+      this.selectedDate = DateTime(initialYear);
     }
 
     if (widget.currentUser.dob != null) isDateSelected = true;
