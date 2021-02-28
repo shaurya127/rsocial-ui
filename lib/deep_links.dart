@@ -48,10 +48,10 @@ Future<Uri> createDynamicLink(String type, Post post) async {
         campaignToken: 'example-promo',
       ),
       socialMetaTagParameters: SocialMetaTagParameters(
-        title: type == 'postId'
+        title: type == 'postid'
             ? '${post.user.fname} on RSocial'
             : 'Hey! join me on RSocial',
-        description: type == 'postId'
+        description: type == 'postid'
             ? ""
             : "Join via this link and we both can earn 50 Yollars!",
         // imageUrl: type=='post' ? post.fileUpload.isNotEmpty
@@ -71,32 +71,32 @@ Future<Uri> createDynamicLink(String type, Post post) async {
   return shortenedLink.shortUrl;
 }
 
-void initDynamicLinks() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  //final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
-  //final Uri deepLink = data?.link;
-
-  FirebaseDynamicLinks.instance.onLink(
-      onSuccess: (PendingDynamicLinkData dynamicLink) async {
-    final Uri deepLink = dynamicLink?.link;
-    if (deepLink != null) {
-      print(
-          "the postid is:${deepLink.queryParameters['postid']}"); // <- prints 'abc'
-      postId = deepLink.queryParameters['postid'];
-      inviteSenderId = deepLink.queryParameters['sender'];
-      prefs.setString('inviteSenderId', inviteSenderId);
-    }
-  }, onError: (OnLinkErrorException e) async {
-    print('onLinkError');
-    print(e.message);
-  });
-
-  final PendingDynamicLinkData data =
-      await FirebaseDynamicLinks.instance.getInitialLink();
-  final Uri deepLink = data?.link;
-
-  if (deepLink != null) {
-    postId = deepLink.queryParameters['postid'];
-    inviteSenderId = deepLink.queryParameters['sender'];
-  }
-}
+// initDynamicLinks() async {
+//   SharedPreferences prefs = await SharedPreferences.getInstance();
+//   //final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+//   //final Uri deepLink = data?.link;
+//
+//   FirebaseDynamicLinks.instance.onLink(
+//       onSuccess: (PendingDynamicLinkData dynamicLink) async {
+//     final Uri deepLink = dynamicLink?.link;
+//     if (deepLink != null) {
+//       print(
+//           "the postid is:${deepLink.queryParameters['postid']}"); // <- prints 'abc'
+//       postId = deepLink.queryParameters['postid'];
+//       inviteSenderId = deepLink.queryParameters['sender'];
+//       prefs.setString('inviteSenderId', inviteSenderId);
+//     }
+//   }, onError: (OnLinkErrorException e) async {
+//     print('onLinkError');
+//     print(e.message);
+//   });
+//
+//   final PendingDynamicLinkData data =
+//       await FirebaseDynamicLinks.instance.getInitialLink();
+//   final Uri deepLink = data?.link;
+//
+//   if (deepLink != null) {
+//     postId = deepLink.queryParameters['postid'];
+//     inviteSenderId = deepLink.queryParameters['sender'];
+//   }
+// }

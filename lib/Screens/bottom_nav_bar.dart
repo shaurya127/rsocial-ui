@@ -431,6 +431,7 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   @override
   void initState() {
+    print("post id is this: $postId");
     // const oneSec = const Duration(seconds: 3);
     // int counter = 0;
     // Timer.periodic(oneSec, (Timer timer) {
@@ -460,8 +461,46 @@ class _BottomNavBarState extends State<BottomNavBar>
       //  getAllUsers();
       //getRCashDetails();
 
-      if (postId == null) initDynamicLinks();
+      if (postId == null)
+        {
+          initDynamicLinks();
+          print("found id : $postId");
+        }
     }
+  }
+
+  void initDynamicLinks() async {
+    // setState(() {
+    //   findingLink=true;
+    // });
+    //final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    //final Uri deepLink = data?.link;
+
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+          final Uri deepLink = dynamicLink?.link;
+          if (deepLink != null) {
+            //print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
+            //postId = deepLink.queryParameters['postid'];
+            Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:deepLink.queryParameters['postid'])));
+          }
+        }, onError: (OnLinkErrorException e) async {
+      print('onLinkError');
+      print(e.message);
+    }
+    );
+
+    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    final Uri deepLink = data?.link;
+
+    if (deepLink != null) {
+      //postId = deepLink.queryParameters['postid'];
+      Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:deepLink.queryParameters['postid'])));
+    }
+
+    // setState(() {
+    //   findingLink=false;
+    // });
   }
 
   Future<String> getFirebaseMessagingToken() async {

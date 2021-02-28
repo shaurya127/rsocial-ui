@@ -26,18 +26,45 @@ class _CreateAccountState extends State<CreateAccount> {
   @override
   void initState() {
     super.initState();
-    checkForDynamicLinks();
+    initDynamicLinks();
     FirebaseAnalytics().setCurrentScreen(screenName: "Create_Acc");
   }
 
-  void checkForDynamicLinks() async {
-    setState(() {
-      findingLink = true;
-    });
-    initDynamicLinks();
-    setState(() {
-      findingLink = false;
-    });
+  void initDynamicLinks() async {
+    // setState(() {
+    //   findingLink=true;
+    // });
+    //final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    //final Uri deepLink = data?.link;
+
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+          final Uri deepLink = dynamicLink?.link;
+          if (deepLink != null) {
+            print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
+            postId = deepLink.queryParameters['postid'];
+            inviteSenderId = deepLink.queryParameters['sender'];
+            print("the postid is:${deepLink.queryParameters['sender']}");
+            //Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
+          }
+        }, onError: (OnLinkErrorException e) async {
+      print('onLinkError');
+      print(e.message);
+    }
+    );
+
+    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    final Uri deepLink = data?.link;
+
+    if (deepLink != null) {
+      postId = deepLink.queryParameters['postid'];
+      inviteSenderId = deepLink.queryParameters['sender'];
+      //Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
+    }
+
+    // setState(() {
+    //   findingLink=false;
+    // });
   }
 
   @override
