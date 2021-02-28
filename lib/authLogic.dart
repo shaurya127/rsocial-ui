@@ -10,6 +10,7 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/userInfoFacebook.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'model/user.dart';
 import 'Screens/bottom_nav_bar.dart';
 import 'Screens/create_account_page.dart';
@@ -488,6 +489,8 @@ loginWithGoogle(User _currentUser, BuildContext context) async {
 void logout(BuildContext context) async {
   FirebaseAuth _authInstance = FirebaseAuth.instance;
   FirebaseUser user = await _authInstance.currentUser();
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.clear();
 
   if (user != null) {
     if (Platform.isIOS) {

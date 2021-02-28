@@ -413,6 +413,12 @@ class _BottomNavBarState extends State<BottomNavBar>
     }
   }
 
+  checkSavedUserData() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(prefs.containsKey('id'))
+      getData();
+  }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -436,7 +442,7 @@ class _BottomNavBarState extends State<BottomNavBar>
 
     super.initState();
     getPackageInfo();
-    getData();
+    checkSavedUserData();
 
     if (widget.isNewUser) {
       setState(() {
