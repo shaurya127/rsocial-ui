@@ -386,7 +386,7 @@ class _WageState extends State<Wage> {
           storyText: investmentstoryText.trim(),
           investedWith: idSelectedList,
           investedAmount: investmentAmount,
-          duration: isOne ? 1 : 7,
+          duration: isOne ? 2 : 7,
           fileUpload: list);
 
       // Awaiting for post Response
