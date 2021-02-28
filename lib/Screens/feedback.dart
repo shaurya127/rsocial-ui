@@ -105,7 +105,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             child: RoundedButton(
               color: colorPrimaryBlue,
               textColor: Colors.white,
-              text: "Send",
+              text: "Submit",
               onPressed: () {
                 feedback = textController.text;
                 sendFeedback(feedback.trim());

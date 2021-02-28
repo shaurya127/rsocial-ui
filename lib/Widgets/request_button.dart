@@ -24,120 +24,160 @@ class RequestButton extends StatefulWidget {
 }
 
 class _RequestButtonState extends State<RequestButton> {
+  bool isDisabled = false;
+
   removeConnection(String friendId) async {
-    var url = userEndPoint + "removeconnection";
-    var user = await FirebaseAuth.instance.currentUser();
-    DocumentSnapshot doc = await users.document(user.uid).get();
-    var uid = doc['id'];
-    //print(uid);
-    Connection connection = Connection(
-      id: uid,
-      friendId: friendId,
-    );
-    var token = await user.getIdToken();
-    print(jsonEncode(connection.toJson()));
-    //print(token);
-    var response = await http.put(
-      url,
-      encoding: Encoding.getByName("utf-8"),
-      body: jsonEncode(connection.toJson()),
-      headers: {
-        "Authorization": "Bearer: $token",
-        "Content-Type": "application/json",
-      },
-    );
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      print(response.body);
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      //print("body is $body");
-      // print(body1);
-      var msg = body1['message'];
+    setState(() {
+      isDisabled = true;
+    });
+
+    try {
+      var url = userEndPoint + "removeconnection";
+      var user = await FirebaseAuth.instance.currentUser();
+      DocumentSnapshot doc = await users.document(user.uid).get();
+      var uid = doc['id'];
+      //print(uid);
+      Connection connection = Connection(
+        id: uid,
+        friendId: friendId,
+      );
+      var token = await user.getIdToken();
+      print(jsonEncode(connection.toJson()));
+      //print(token);
+      var response = await http.put(
+        url,
+        encoding: Encoding.getByName("utf-8"),
+        body: jsonEncode(connection.toJson()),
+        headers: {
+          "Authorization": "Bearer: $token",
+          "Content-Type": "application/json",
+        },
+      );
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        print(response.body);
+        final jsonUser = jsonDecode(response.body);
+        var body = jsonUser['body'];
+        var body1 = jsonDecode(body);
+        //print("body is $body");
+        // print(body1);
+        var msg = body1['message'];
+        setState(() {
+          curUser = User.fromJson(msg);
+          widget.text = "";
+          //widget.accepted = false;
+        });
+      }
       setState(() {
-        curUser = User.fromJson(msg);
-        widget.text = "";
-        //widget.accepted = false;
+        isDisabled = false;
+      });
+    } catch (e) {
+      setState(() {
+        isDisabled = false;
       });
     }
   }
 
   addConnection(String friendId) async {
-    var url = userEndPoint + "addconnection";
-    var user = await FirebaseAuth.instance.currentUser();
-    DocumentSnapshot doc = await users.document(user.uid).get();
-    var uid = doc['id'];
-    //print(uid);
-    Connection connection = Connection(
-      id: uid,
-      friendId: friendId,
-    );
-    var token = await user.getIdToken();
-    print(jsonEncode(connection.toJson()));
-    //print(token);
-    var response = await http.put(
-      url,
-      encoding: Encoding.getByName("utf-8"),
-      body: jsonEncode(connection.toJson()),
-      headers: {
-        "Authorization": "Bearer: $token",
-        "Content-Type": "application/json",
-      },
-    );
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      print(response.body);
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      //print("body is $body");
-      // print(body1);
-      var msg = body1['message'];
+    print("isDisabled");
+    setState(() {
+      isDisabled = true;
+    });
+    try {
+      var url = userEndPoint + "addconnection";
+      var user = await FirebaseAuth.instance.currentUser();
+      DocumentSnapshot doc = await users.document(user.uid).get();
+      var uid = doc['id'];
+      //print(uid);
+      Connection connection = Connection(
+        id: uid,
+        friendId: friendId,
+      );
+      var token = await user.getIdToken();
+      //print(jsonEncode(connection.toJson()));
+      //print(token);
+      var response = await http.put(
+        url,
+        encoding: Encoding.getByName("utf-8"),
+        body: jsonEncode(connection.toJson()),
+        headers: {
+          "Authorization": "Bearer: $token",
+          "Content-Type": "application/json",
+        },
+      );
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        print(response.body);
+        final jsonUser = jsonDecode(response.body);
+        var body = jsonUser['body'];
+        var body1 = jsonDecode(body);
+        //print("body is $body");
+        // print(body1);
+        var msg = body1['message'];
+        setState(() {
+          curUser = User.fromJson(msg);
+          widget.text = "pending";
+        });
+      }
       setState(() {
-        curUser = User.fromJson(msg);
-        widget.text = "pending";
+        isDisabled = false;
+      });
+    } catch (e) {
+      setState(() {
+        isDisabled = false;
       });
     }
   }
 
   acceptConnection(String friendId) async {
-    var url = userEndPoint + "acceptconnection";
+    setState(() {
+      isDisabled = true;
+    });
 
-    var user = await FirebaseAuth.instance.currentUser();
-    DocumentSnapshot doc = await users.document(user.uid).get();
-    var uid = doc['id'];
-    print(uid);
-    Connection connection = Connection(
-      id: uid,
-      friendId: friendId,
-    );
-    var token = await user.getIdToken();
-    print(jsonEncode(connection.toJson()));
-    //print(token);
-    var response = await http.put(
-      url,
-      encoding: Encoding.getByName("utf-8"),
-      body: jsonEncode(connection.toJson()),
-      headers: {
-        "Authorization": "Bearer: $token",
-        "Content-Type": "application/json",
-      },
-    );
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      //print("body is $body");
-      // print(body1);
-      var msg = body1['message'];
-      //print("id is: ${msg['id']}");
-      //print(msg);
+    try {
+      var url = userEndPoint + "acceptconnection";
+
+      var user = await FirebaseAuth.instance.currentUser();
+      DocumentSnapshot doc = await users.document(user.uid).get();
+      var uid = doc['id'];
+      print(uid);
+      Connection connection = Connection(
+        id: uid,
+        friendId: friendId,
+      );
+      var token = await user.getIdToken();
+      print(jsonEncode(connection.toJson()));
+      //print(token);
+      var response = await http.put(
+        url,
+        encoding: Encoding.getByName("utf-8"),
+        body: jsonEncode(connection.toJson()),
+        headers: {
+          "Authorization": "Bearer: $token",
+          "Content-Type": "application/json",
+        },
+      );
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        final jsonUser = jsonDecode(response.body);
+        var body = jsonUser['body'];
+        var body1 = jsonDecode(body);
+        //print("body is $body");
+        // print(body1);
+        var msg = body1['message'];
+        //print("id is: ${msg['id']}");
+        //print(msg);
+        setState(() {
+          curUser = User.fromJson(msg);
+          widget.text = "";
+          //widget.accepted = true;
+        });
+      }
+
+      isDisabled = false;
+    } catch (e) {
       setState(() {
-        curUser = User.fromJson(msg);
-        widget.text = "";
-        //widget.accepted = true;
+        isDisabled = false;
       });
     }
   }
@@ -150,7 +190,9 @@ class _RequestButtonState extends State<RequestButton> {
         Padding(
           padding: const EdgeInsets.only(right: 5),
           child: GestureDetector(
-            onTap: () {},
+            onTap: () {
+              if (isDisabled == false) removeConnection(widget.user.id);
+            },
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
               child: Text(
@@ -170,7 +212,7 @@ class _RequestButtonState extends State<RequestButton> {
           padding: const EdgeInsets.symmetric(horizontal: 5),
           child: GestureDetector(
             onTap: () {
-              acceptConnection(widget.user.id);
+              if (isDisabled == false) acceptConnection(widget.user.id);
             },
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -225,7 +267,7 @@ class _RequestButtonState extends State<RequestButton> {
       padding: const EdgeInsets.symmetric(horizontal: 0),
       child: GestureDetector(
         onTap: () {
-          addConnection(widget.user.id);
+          if (isDisabled == false) addConnection(widget.user.id);
         },
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -250,7 +292,7 @@ class _RequestButtonState extends State<RequestButton> {
       padding: const EdgeInsets.symmetric(horizontal: 5),
       child: GestureDetector(
         onTap: () {
-          removeConnection(widget.user.id);
+          if (isDisabled = false) removeConnection(widget.user.id);
         },
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -271,6 +313,8 @@ class _RequestButtonState extends State<RequestButton> {
 
   @override
   Widget build(BuildContext context) {
+    if (isDisabled) print("I am disabled right now");
+
     if (widget.text == "request")
       return buildRequest();
     else if (widget.text == "pending")

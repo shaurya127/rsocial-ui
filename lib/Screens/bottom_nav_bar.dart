@@ -227,7 +227,8 @@ class _BottomNavBarState extends State<BottomNavBar>
       });
       return null;
     }
-
+    print("----------------------------------");
+    print(response.body);
     if (response.statusCode == 200) {
       var responseMessage =
           jsonDecode((jsonDecode(response.body))['body'])['message'];
@@ -344,7 +345,7 @@ class _BottomNavBarState extends State<BottomNavBar>
 
     if (response.statusCode == 200) {
       var responseMessage =
-          jsonDecode((jsonDecode(response.body))['body'])['message'];
+      jsonDecode((jsonDecode(response.body))['body'])['message'];
 
       var responseStories = responseMessage['stories'];
 
@@ -443,6 +444,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       });
       createNgetUserAwait();
     } else {
+
       getAllPosts(curUser != null
           ? curUser.id
           : savedUser != null
@@ -536,6 +538,7 @@ class _BottomNavBarState extends State<BottomNavBar>
                       isFailedUserPost = false;
                     });
                     getUserAwait();
+
                     getAllPosts(curUser != null
                         ? curUser.id
                         : savedUser != null

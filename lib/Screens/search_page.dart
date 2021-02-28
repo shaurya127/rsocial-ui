@@ -183,7 +183,7 @@ class _Search_PageState extends State<Search_Page>
       var body = jsonUser['body'];
       var body1 = jsonDecode(body);
       var msg = body1['message'];
-      //print(msg);
+      print(msg);
       //print("length is ${msg.length}")
       for (int i = 0; i < msg.length; i++) {
         // print(msg[i]['PendingConnection']);

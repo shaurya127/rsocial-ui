@@ -150,6 +150,7 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
+
     if (widget.user.id != curUser.id)
       getUser();
     else {
@@ -1237,7 +1238,7 @@ class _ProfileState extends State<Profile> {
                                         this.postOrientation = "invest";
                                       });
                                     },
-                                    text: "Investment",
+                                    text: "Invest",
                                     orientation: 'invest',
                                     curOrientation: postOrientation),
                                 SelectButton(
@@ -1246,7 +1247,7 @@ class _ProfileState extends State<Profile> {
                                         this.postOrientation = "platform";
                                       });
                                     },
-                                    text: "Platform",
+                                    text: "Interaction",
                                     orientation: 'platform',
                                     curOrientation: postOrientation),
                                 // Container(
