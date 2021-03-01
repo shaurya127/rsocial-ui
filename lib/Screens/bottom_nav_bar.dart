@@ -248,6 +248,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       print("THis is my curUser lollar amount");
       print(curUser.lollarAmount);
       print(curUser.id);
+      setState(() {});
     } else {
       print(response.statusCode);
       setState(() {
@@ -345,7 +346,7 @@ class _BottomNavBarState extends State<BottomNavBar>
 
     if (response.statusCode == 200) {
       var responseMessage =
-      jsonDecode((jsonDecode(response.body))['body'])['message'];
+          jsonDecode((jsonDecode(response.body))['body'])['message'];
 
       var responseStories = responseMessage['stories'];
 
@@ -413,10 +414,9 @@ class _BottomNavBarState extends State<BottomNavBar>
     }
   }
 
-  checkSavedUserData() async{
+  checkSavedUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(prefs.containsKey('id'))
-      getData();
+    if (prefs.containsKey('id')) getData();
   }
 
   @override
@@ -451,7 +451,6 @@ class _BottomNavBarState extends State<BottomNavBar>
       });
       createNgetUserAwait();
     } else {
-
       getAllPosts(curUser != null
           ? curUser.id
           : savedUser != null
@@ -461,11 +460,10 @@ class _BottomNavBarState extends State<BottomNavBar>
       //  getAllUsers();
       //getRCashDetails();
 
-      if (postId == null)
-        {
-          initDynamicLinks();
-          print("found id : $postId");
-        }
+      if (postId == null) {
+        initDynamicLinks();
+        print("found id : $postId");
+      }
     }
   }
 
@@ -478,24 +476,32 @@ class _BottomNavBarState extends State<BottomNavBar>
 
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
-          final Uri deepLink = dynamicLink?.link;
-          if (deepLink != null) {
-            //print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
-            //postId = deepLink.queryParameters['postid'];
-            Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:deepLink.queryParameters['postid'])));
-          }
-        }, onError: (OnLinkErrorException e) async {
+      final Uri deepLink = dynamicLink?.link;
+      if (deepLink != null) {
+        //print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
+        //postId = deepLink.queryParameters['postid'];
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    DisplayPost(postId: deepLink.queryParameters['postid'])));
+      }
+    }, onError: (OnLinkErrorException e) async {
       print('onLinkError');
       print(e.message);
-    }
-    );
+    });
 
-    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    final PendingDynamicLinkData data =
+        await FirebaseDynamicLinks.instance.getInitialLink();
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {
       //postId = deepLink.queryParameters['postid'];
-      Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:deepLink.queryParameters['postid'])));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  DisplayPost(postId: deepLink.queryParameters['postid'])));
     }
 
     // setState(() {

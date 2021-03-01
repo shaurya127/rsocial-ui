@@ -827,17 +827,11 @@ class _ProfileState extends State<Profile> {
               // print(msg);
               curUser = User.fromJson(msg);
               //print("id is: ${msg['id']}");
-
-              //getUserPosts();
-              // curUser.bio = user.bio;
-              // print(user.photoUrl);
-              // setState(() {
-              //   if (user.photoUrl != null) curUser.photoUrl = user.photoUrl;
-              // });
               if (curUser != null) {
                 //  print("This is curUser photoUrl");
                 //  print(curUser.photoUrl);
                 bioController.text = newBio;
+                curUser.bio = newBio;
                 encodedFile = null;
                 file = null;
                 //print(curUser);
