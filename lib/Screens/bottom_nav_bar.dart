@@ -98,6 +98,12 @@ class _BottomNavBarState extends State<BottomNavBar>
     setState(() {});
   }
 
+  yollarCallback() async {
+    setState(() {
+      _currentIndex = 4;
+    });
+  }
+
   reactionCallback() async {
     await getRCashDetails();
     setState(() {});
@@ -619,7 +625,9 @@ class _BottomNavBarState extends State<BottomNavBar>
     return postId == null
         ? Scaffold(
             appBar: customAppBar(context),
-            drawer: Nav_Drawer(),
+            drawer: Nav_Drawer(
+              callback: yollarCallback,
+            ),
             body: _screens[_currentIndex],
             bottomNavigationBar: BottomNavigationBar(
               currentIndex: _currentIndex,

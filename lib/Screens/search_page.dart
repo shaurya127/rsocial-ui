@@ -140,8 +140,11 @@ class _Search_PageState extends State<Search_Page>
 
   Future<void> getAllUsers() async {
     setState(() {
+      suggestionList = [];
+      allUsers = [];
       isLoadingSearch = true;
     });
+    print("Inside get all users");
     //print("==========Inside get all users ===================");
     var user;
     var id;
@@ -210,7 +213,7 @@ class _Search_PageState extends State<Search_Page>
 
   Widget buildSuggestions(BuildContext context, String query) {
     // show when someone searches for something
-
+    suggestionList = [];
     suggestionList = query == null || query.isEmpty || allUsers.isEmpty
         ? []
         : allUsers
@@ -283,11 +286,8 @@ class _Search_PageState extends State<Search_Page>
   // }
 
   buildSearchTab() {
-    //sentPendingConnections = curUser.sentPendingConnection;
-    //print("These are my sent connections");
-    //print(curUser.sentPendingConnection);
-    //print(sentPendingConnections.length);
-    // if (suggestionList.isNotEmpty) {
+    print("This is the length of suggestion list");
+    print(suggestionList.length);
     List<Request_Tile> searchResults = [];
     Request_Tile tile;
     for (int i = 0; i < suggestionList.length; i++) {
@@ -453,7 +453,7 @@ class _Search_PageState extends State<Search_Page>
                       isFailedGetAllUser = false;
                       isLoadingSearch = true;
                     });
-                    getUser();
+                    getAllUsers();
                   },
                 )
               : RefreshIndicator(
