@@ -42,6 +42,7 @@ class _Request_TileState extends State<Request_Tile> {
 
   //User curUser;
   removeConnection(String friendId) async {
+    print("Hello");
     setState(() {
       isDisabled = true;
     });
@@ -307,7 +308,8 @@ class _Request_TileState extends State<Request_Tile> {
       padding: const EdgeInsets.symmetric(horizontal: 2),
       child: GestureDetector(
         onTap: () {
-          if (isDisabled = false) removeConnection(widget.user.id);
+          print("hello 2");
+          if (isDisabled == false) removeConnection(widget.user.id);
         },
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
