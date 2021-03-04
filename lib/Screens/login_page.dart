@@ -307,7 +307,7 @@ class _LoginPageState extends State<LoginPage> {
                               setState(() {
                                 isLoading = true;
                               });
-                              loginWithGoogle(_currentUser, context);
+                              loginWithGoogle(_currentUser, context, true);
                               setState(() {
                                 isLoading = false;
                               });

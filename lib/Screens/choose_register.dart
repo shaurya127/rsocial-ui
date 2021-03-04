@@ -100,7 +100,7 @@ class _ChooseRegisterState extends State<ChooseRegister> {
                         setState(() {
                           isLoading = true;
                         });
-                        loginWithGoogle(_currentUser, context);
+                        loginWithGoogle(_currentUser, context, false);
                         setState(() {
                           isLoading = false;
                         });
