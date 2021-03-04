@@ -626,52 +626,67 @@ class _InvestPostTileState extends State<InvestPostTile>
                     SizedBox(
                       width: 0,
                     ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            SvgPicture.asset(
-                              "images/coins.svg",
-                              color: colorCoins,
-                            ),
-                            Container(
-                              //transform: Matrix4.translationValues(-38, 0.0, 0.0),
-                              child: Text(
-                                kPostTileGain,
-                                style: TextStyle(
-                                  fontFamily: "Lato",
-                                  fontSize: 12,
-                                  color: colorGreyTint,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            PageTransition(
+                              // settings: RouteSettings(
+                              //     name: "Login_Page"),
+                                type: PageTransitionType.fade,
+                                child: Reaction_Info(
+                                  counter: counter,
+                                  postId: widget.userPost.id,
+                                )));
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              SvgPicture.asset(
+                                "images/coins.svg",
+                                color: colorCoins,
+                              ),
+                              Container(
+                                //transform: Matrix4.translationValues(-38, 0.0, 0.0),
+                                child: Text(
+                                  kPostTileGain,
+                                  style: TextStyle(
+                                    fontFamily: "Lato",
+                                    fontSize: 12,
+                                    color: colorGreyTint,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 6,
-                        ),
-                        Container(
-                          child: Text(
-                            double.parse(widget.userPost.profit)
-                                .round()
-                                .toString(),
-                            style: TextStyle(
-                              fontFamily: "Lato",
-                              fontSize: 12,
-                              color: double.parse(widget.userPost.profit) >= 0
-                                  ? colorProfitPositive
-                                  : colorProfitNegative,
-                            ),
-                            //     TextStyle(
-                            //     fontSize: 12,
-                            //     color: Color(0xff37B44B)
-                            // ),
+                            ],
                           ),
-                          //transform: Matrix4.translationValues(-35, 0.0, 0.0),
-                        ),
-                      ],
+                          SizedBox(
+                            height: 6,
+                          ),
+                          Container(
+                            child: Text(
+                              double.parse(widget.userPost.profit)
+                                  .round()
+                                  .toString(),
+                              style: TextStyle(
+                                fontFamily: "Lato",
+                                fontSize: 12,
+                                color:
+                                double.parse(widget.userPost.profit) >= 0
+                                    ? colorProfitPositive
+                                    : colorProfitNegative,
+                              ),
+                              //     TextStyle(
+                              //     fontSize: 12,
+                              //     color: Color(0xff37B44B)
+                              // ),
+                            ),
+                            //transform: Matrix4.translationValues(-35, 0.0, 0.0),
+                          ),
+                        ],
+                      ),
                     ),
                     SizedBox(
                       width: 14,
@@ -788,38 +803,40 @@ class _InvestPostTileState extends State<InvestPostTile>
                         color: colorGreyTint,
                       ),
                       itemBuilder: (_) => <PopupMenuItem>[
-                        new PopupMenuItem(
-                            child: GestureDetector(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  Navigator.push(
-                                      context,
-                                      PageTransition(
+                          new PopupMenuItem(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
                                           // settings: RouteSettings(
                                           //     name: "Login_Page"),
-                                          type: PageTransitionType.fade,
-                                          child: DisplayPost(
-                                            postId: widget.userPost.id,
-                                          )));
-                                },
-                                child: new Text('View post'))),
-                        new PopupMenuItem(
-                            child: GestureDetector(
-                                onTap: () {
-                                  buildReactionTile();
-                                  Navigator.pop(context);
-                                  Navigator.push(
-                                      context,
-                                      PageTransition(
-                                          // settings: RouteSettings(
-                                          //     name: "Login_Page"),
-                                          type: PageTransitionType.fade,
-                                          child: Reaction_Info(
-                                            postId: widget.userPost.id,
-                                          )));
-                                },
-                                child: new Text('Reactions'))),
-                        if (widget.userPost.user.id == curUser.id)
+                                            type: PageTransitionType.fade,
+                                            child: DisplayPost(
+                                              postId: widget.userPost.id,
+                                            )));
+                                  },
+                                  child: new Text('View post'))),
+                        // new PopupMenuItem(
+                        //     child: GestureDetector(
+                        //         onTap: () {
+                        //           //buildReactionTile();
+                        //           Navigator.pop(context);
+                        //           Navigator.push(
+                        //               context,
+                        //               PageTransition(
+                        //                   // settings: RouteSettings(
+                        //                   //     name: "Login_Page"),
+                        //                   type: PageTransitionType.fade,
+                        //                   child: Reaction_Info(
+                        //                     counter: counter,
+                        //                     postId: widget.userPost.id,
+                        //                   )));
+                        //         },
+                        //         child: new Text('Reactions'))),
+                        if (widget.userPost.user.id ==
+                            (curUser != null ? curUser.id : savedUser.id))
                           new PopupMenuItem(
                               child: GestureDetector(
                                   onTap: widget.onPressDelete,
