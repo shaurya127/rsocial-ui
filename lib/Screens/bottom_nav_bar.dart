@@ -92,6 +92,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   User Ruser;
   bool storiesLeft = true;
   ScrollController _scrollController = ScrollController();
+  final List<int> backStack = [0];
 
   callback() {
     print("callback called");
@@ -571,11 +572,33 @@ class _BottomNavBarState extends State<BottomNavBar>
     await getUser(null);
   }
 
-  //final List<String> _labels = ["Ticker", "Bonds", "Slip", "Gong", "Yollar"];
+  void navigateTo(int index) {
+    backStack.add(index);
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  void navigateBack(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  Future<bool> customPop(BuildContext context) {
+    print("CustomPop is called");
+    print("_backstack = $backStack");
+    if (backStack.length > 1) {
+      backStack.removeAt(backStack.length - 1);
+      navigateBack(backStack[backStack.length - 1]);
+      return Future.value(false);
+    } else {
+      return Future.value(true);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Provider.of<Post_Tile>(context);
     print("Build of bottom nav bar worked");
 
     // Screens to be present, will be switched with the help of bottom nav bar
@@ -598,8 +621,6 @@ class _BottomNavBarState extends State<BottomNavBar>
         Ruser: Ruser,
         reactionCallback: reactionCallback,
       )
-      //BioPage(analytics:widget.analytics,observer:widget.observer,currentUser: currentUser,),
-      //ProfilePicPage(currentUser: widget.currentUser,analytics:widget.analytics,observer:widget.observer),
     ];
     print("This is my savedUser");
     print(savedUser);
@@ -665,103 +686,102 @@ class _BottomNavBarState extends State<BottomNavBar>
     // print(savedUser.id);
     // print(curUser.id);
     return postId == null
-        ? Scaffold(
-            appBar: customAppBar(context),
-            drawer: Nav_Drawer(
-              callback: yollarCallback,
-            ),
-            body: _screens[_currentIndex],
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: _currentIndex,
-              onTap: (index) {
-                setState(() => _currentIndex = index);
-                _scrollController.animateTo(0,
-                    duration: Duration(milliseconds: 500),
-                    curve: Curves.easeInOut);
-              },
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: Colors.white,
-              showSelectedLabels: true,
-              showUnselectedLabels: true,
-              unselectedItemColor: colorUnselectedBottomNav.withOpacity(0.5),
-              elevation: 5,
-              items: [
-                // Icons.home,
-                // Icons.search,
-                // Icons.add_circle_outline,
-                // Icons.notifications,
-                // Icons.account_balance_wallet,
-                "images/Home.svg",
-                "images/high-five.svg",
-                Icons.add_circle_outline_sharp,
-                "images/Notification.svg",
-                "images/yollar_outline.svg"
-                // FaIcon(FontAwesomeIcons.plus),
-                // FaIcon(FontAwesomeIcons.bell),
-                // FaIcon(FontAwesomeIcons.wallet),
-              ]
-                  .asMap()
-                  .map(
-                    (key, value) => MapEntry(
-                      key,
-                      BottomNavigationBarItem(
-                          title: Text(
-                            "",
-                            style: TextStyle(
-                              fontSize: 0,
-                              color: _currentIndex == key
-                                  ? colorButton
-                                  : colorUnselectedBottomNav.withOpacity(0.5),
-                              fontFamily: "Lato",
-                              fontWeight: FontWeight.bold,
+        ? WillPopScope(
+            onWillPop: () {
+              return customPop(context);
+            },
+            child: Scaffold(
+              appBar: customAppBar(context),
+              drawer: Nav_Drawer(
+                callback: yollarCallback,
+              ),
+              body: _screens[_currentIndex],
+              bottomNavigationBar: BottomNavigationBar(
+                currentIndex: _currentIndex,
+                onTap: (index) {
+                  navigateTo(index);
+                  setState(() => _currentIndex = index);
+                  _scrollController.animateTo(0,
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.easeInOut);
+                },
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: Colors.white,
+                showSelectedLabels: true,
+                showUnselectedLabels: true,
+                unselectedItemColor: colorUnselectedBottomNav.withOpacity(0.5),
+                elevation: 5,
+                items: [
+                  "images/Home.svg",
+                  "images/high-five.svg",
+                  Icons.add_circle_outline_sharp,
+                  "images/Notification.svg",
+                  "images/yollar_outline.svg"
+                ]
+                    .asMap()
+                    .map(
+                      (key, value) => MapEntry(
+                        key,
+                        BottomNavigationBarItem(
+                            title: Text(
+                              "",
+                              style: TextStyle(
+                                fontSize: 0,
+                                color: _currentIndex == key
+                                    ? colorButton
+                                    : colorUnselectedBottomNav.withOpacity(0.5),
+                                fontFamily: "Lato",
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          icon: key == 1
-                              ? Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 2, bottom: 2.5),
-                                  child: SvgPicture.asset(
-                                    "images/high-five.svg",
-                                    color: _currentIndex != key
-                                        ? colorUnselectedBottomNav
-                                            .withOpacity(0.5)
-                                        : colorPrimaryBlue,
-                                    height: 25,
-                                  ),
-                                )
-                              : key == 4 || key == 1 || key == 0 || key == 3
-                                  ? Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 2, bottom: 3.5),
-                                      child: SvgPicture.asset(
-                                        value,
-                                        color: _currentIndex != key
-                                            ? colorUnselectedBottomNav
-                                                .withOpacity(0.5)
-                                            : colorPrimaryBlue,
-                                        height: 25,
-                                      ),
-                                    )
-                                  : Container(
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 0, horizontal: 16),
-                                      decoration: BoxDecoration(
-                                        color: Colors.transparent,
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: Icon(
-                                        value,
-                                        color: _currentIndex == key
-                                            ? colorButton
-                                            : colorUnselectedBottomNav
-                                                .withOpacity(0.5),
-                                        size: 35,
-                                      ),
-                                    )),
-                    ),
-                  )
-                  .values
-                  .toList(),
+                            icon: key == 1
+                                ? Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 2, bottom: 2.5),
+                                    child: SvgPicture.asset(
+                                      "images/high-five.svg",
+                                      color: _currentIndex != key
+                                          ? colorUnselectedBottomNav
+                                              .withOpacity(0.5)
+                                          : colorPrimaryBlue,
+                                      height: 25,
+                                    ),
+                                  )
+                                : key == 4 || key == 1 || key == 0 || key == 3
+                                    ? Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 2, bottom: 3.5),
+                                        child: SvgPicture.asset(
+                                          value,
+                                          color: _currentIndex != key
+                                              ? colorUnselectedBottomNav
+                                                  .withOpacity(0.5)
+                                              : colorPrimaryBlue,
+                                          height: 25,
+                                        ),
+                                      )
+                                    : Container(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 0, horizontal: 16),
+                                        decoration: BoxDecoration(
+                                          color: Colors.transparent,
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                        child: Icon(
+                                          value,
+                                          color: _currentIndex == key
+                                              ? colorButton
+                                              : colorUnselectedBottomNav
+                                                  .withOpacity(0.5),
+                                          size: 35,
+                                        ),
+                                      )),
+                      ),
+                    )
+                    .values
+                    .toList(),
+              ),
             ),
           )
         : DisplayPost(

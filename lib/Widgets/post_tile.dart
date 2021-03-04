@@ -44,6 +44,7 @@ Map<String, Map<String, int>> mp = new Map();
 Map<String, String> prft = new Map();
 
 class Post_Tile extends StatefulWidget {
+  bool showPopup;
   Post userPost;
   var photoUrl;
   User curUser;
@@ -54,7 +55,8 @@ class Post_Tile extends StatefulWidget {
       this.userPost,
       this.photoUrl,
       this.onPressDelete,
-      this.reactionCallback});
+      this.reactionCallback,
+      this.showPopup=true});
   @override
   _Post_TileState createState() => _Post_TileState();
 }
@@ -680,21 +682,22 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                           color: colorGreyTint,
                         ),
                         itemBuilder: (_) => <PopupMenuItem>[
-                          new PopupMenuItem(
-                              child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                    Navigator.push(
-                                        context,
-                                        PageTransition(
+                          if(widget.showPopup==true)
+                            new PopupMenuItem(
+                                child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      Navigator.push(
+                                          context,
+                                          PageTransition(
                                             // settings: RouteSettings(
                                             //     name: "Login_Page"),
-                                            type: PageTransitionType.fade,
-                                            child: DisplayPost(
-                                              postId: widget.userPost.id,
-                                            )));
-                                  },
-                                  child: new Text('View post'))),
+                                              type: PageTransitionType.fade,
+                                              child: DisplayPost(
+                                                postId: widget.userPost.id,
+                                              )));
+                                    },
+                                    child: new Text('View post'))),
                           // new PopupMenuItem(
                           //     child: GestureDetector(
                           //         onTap: () {
