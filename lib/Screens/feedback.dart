@@ -26,36 +26,44 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     var token = await user.getIdToken();
     var id = curUser.id;
 
-    var response = await postFunc(
-        url: userEndPoint + "feedback",
-        token: token,
-        body: jsonEncode({
-          "id": id,
-          'fname': curUser.fname,
-          'lname': curUser.lname,
-          'message': feedback
-        }));
+    if(feedback=="")
+      return Fluttertoast.showToast(
+          msg: "Cannot send an empty feedback!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
+    else
+      {
+        var response = await postFunc(
+            url: userEndPoint + "feedback",
+            token: token,
+            body: jsonEncode({
+              "id": id,
+              'fname': curUser.fname,
+              'lname': curUser.lname,
+              'message': feedback
+            }));
 
-    if (response == null) {
-      return null;
-    }
-    print("fffffffffffffffffffffffffffffffff");
-    print(response.statusCode);
-    print(response.body);
-    if (response.statusCode == 200) {
-      textController.clear();
-      Fluttertoast.showToast(
-          msg: "Feedback sent",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          fontSize: 15);
-    } else {
-      Fluttertoast.showToast(
-          msg: "encountered an error, please try later",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          fontSize: 15);
-    }
+        if (response == null) {
+          return null;
+        }
+        print(response.statusCode);
+        print(response.body);
+        if (response.statusCode == 200) {
+          textController.clear();
+          Fluttertoast.showToast(
+              msg: "Feedback sent",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              fontSize: 15);
+        } else {
+          Fluttertoast.showToast(
+              msg: "encountered an error, please try later",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              fontSize: 15);
+        }
+      }
   }
 
   @override
