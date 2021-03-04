@@ -292,7 +292,7 @@ class _RequestButtonState extends State<RequestButton> {
       padding: const EdgeInsets.symmetric(horizontal: 5),
       child: GestureDetector(
         onTap: () {
-          if (isDisabled = false) removeConnection(widget.user.id);
+          if (isDisabled == false) removeConnection(widget.user.id);
         },
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),

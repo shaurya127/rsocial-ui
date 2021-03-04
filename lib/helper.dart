@@ -35,3 +35,21 @@ Future<http.Response> postFunc({String url, String token, String body}) async {
     return null;
   }
 }
+
+Future<http.Response> putFunc({String url, String token, String body}) async {
+  try {
+    var response = await http.put(url,
+        encoding: Encoding.getByName("utf-8"),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+          //"Accept": "*/*"
+        },
+        body: body);
+
+    return response;
+  } catch (e) {
+    print("Exception in post");
+    return null;
+  }
+}

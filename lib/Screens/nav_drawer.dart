@@ -11,6 +11,9 @@ import '../functions.dart';
 import '../Widgets/nav_drawer_tile.dart';
 
 class Nav_Drawer extends StatefulWidget {
+  Function callback;
+
+  Nav_Drawer({this.callback});
   @override
   _Nav_DrawerState createState() => _Nav_DrawerState();
 }
@@ -48,12 +51,6 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                       height: 15,
                     ),
                   ),
-                  // decoration: BoxDecoration(
-                  //     image: DecorationImage(
-                  //   image: AssetImage("images/logo2.png"),
-                  //   //fit: BoxFit
-                  // )
-                  // ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(4.0),
@@ -96,6 +93,10 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                   ),
                 ),
                 Nav_Drawer_Tile(
+                  f: () {
+                    if (widget.callback != null) widget.callback();
+                    Navigator.of(context).pop();
+                  },
                   title: kNavDrawerAmount,
                   icon: Container(
                     height: 23,
@@ -198,7 +199,7 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                 ),
                 Nav_Drawer_Tile(
                   title: kNavDrawerFeedback,
-                  f: (){
+                  f: () {
                     Navigator.pop(context);
                     Navigator.push(
                         context,
