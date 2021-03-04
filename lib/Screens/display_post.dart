@@ -51,6 +51,7 @@ class _DisplayPostState extends State<DisplayPost> {
       if (post != null) {
         //print(post.investedWithUser);
         post_tile = Post_Tile(
+          showPopup: false,
           curUser: curUser,
           userPost: post,
           photoUrl: curUser.photoUrl,
