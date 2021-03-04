@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,7 +23,7 @@ import 'Widgets/alert_box.dart';
 import 'contants/constants.dart';
 import 'package:http/http.dart' as http;
 
-final googleSignIn = GoogleSignIn(scopes: [
+final googleSign = GoogleSignIn(scopes: [
   "https://www.googleapis.com/auth/userinfo.email",
   "https://www.googleapis.com/auth/userinfo.profile",
   "https://www.googleapis.com/auth/user.birthday.read",
@@ -274,7 +275,7 @@ class Inf {
   String dob = null;
 }
 
-Future<Inf> getGenderBirthday() async {
+Future<Inf> getGenderBirthday(GoogleSignIn googleSignIn) async {
   Inf inf = Inf();
 
   var key;
@@ -317,12 +318,24 @@ Future<Inf> getGenderBirthday() async {
 }
 
 // Logic followed when logged in using google
-loginWithGoogle(User _currentUser, BuildContext context) async {
+loginWithGoogle(User _currentUser, BuildContext context, bool log) async {
   FirebaseUser user;
   FirebaseUser currentUser;
   String user_id;
+  var googleSignIn = GoogleSignIn(scopes: [
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
+    "https://www.googleapis.com/auth/user.birthday.read",
+    "https://www.googleapis.com/auth/user.gender.read"
+  ]);
   try {
-    final GoogleSignInAccount googleUser = await googleSignIn.signIn();
+    var googleUser;
+
+    if (log == true) {
+      googleUser = await GoogleSignIn().signIn();
+      print("Hello");
+    } else
+      googleUser = await googleSignIn.signIn();
 
     if (googleUser != null) {
       final GoogleSignInAuthentication googleKey =
@@ -335,20 +348,23 @@ loginWithGoogle(User _currentUser, BuildContext context) async {
         //title: "",//Text("Just a second, logging you in."),
 
         content: Container(
-            height: 30,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  "Loading...",
-                  style: TextStyle(color: colorUnselectedBottomNav),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Container(child: Center(child: CircularProgressIndicator())),
+          height: 30,
+          child: Center(
+            child: ColorizeAnimatedTextKit(
+              text: [
+                "Loading...",
               ],
-            )),
+              textStyle: TextStyle(fontSize: 18.0, fontFamily: "Lato"),
+              colors: [
+                Colors.purple,
+                Colors.blue,
+                Colors.yellow,
+                Colors.red,
+              ],
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
       );
 
       showDialog(
@@ -425,14 +441,14 @@ loginWithGoogle(User _currentUser, BuildContext context) async {
     DocumentSnapshot doc = await users.document(user.uid).get();
 
     final GoogleSignInAccount guser = googleSignIn.currentUser;
-
-    // If user does not exists
-    if (!doc.exists) {
-      print("Hello");
-      Inf inf = await getGenderBirthday();
+    var inf;
+    if (log == false) {
+      inf = await getGenderBirthday(googleSignIn);
       print(inf.gender);
       print(inf.dob);
-
+    }
+    // If user does not exists
+    if (!doc.exists) {
       print(guser.photoUrl);
       print(guser.displayName);
       User curUser = User(
@@ -444,8 +460,8 @@ loginWithGoogle(User _currentUser, BuildContext context) async {
           lollarAmount: 1000,
           socialStanding: 1,
           photoUrl: guser.photoUrl,
-          gender: inf.gender,
-          dob: inf.dob);
+          gender: !log ? inf.gender : null,
+          dob: !log ? inf.dob : null);
       Navigator.pop(context);
       FirebaseAnalytics().setUserId(user_id);
 
@@ -496,7 +512,7 @@ void logout(BuildContext context) async {
     if (Platform.isIOS) {
       if (user.providerData[0].providerId == 'google.com') {
         try {
-          await googleSignIn.disconnect();
+          await googleSign.disconnect();
         } on PlatformException catch (e) {
           if (e.code == 'Failed to disconnect') {
             print("Failed to disconnect");
@@ -506,7 +522,7 @@ void logout(BuildContext context) async {
     } else {
       if (user.providerData[1].providerId == 'google.com') {
         try {
-          await googleSignIn.disconnect();
+          await googleSign.disconnect();
         } on PlatformException catch (e) {
           if (e.code == 'Failed to disconnect') {
             print("Failed to disconnect");

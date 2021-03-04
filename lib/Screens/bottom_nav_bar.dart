@@ -435,17 +435,52 @@ class _BottomNavBarState extends State<BottomNavBar>
     packageInfo = await PackageInfo.fromPlatform();
   }
 
+  getSocialStanding() async {
+    var token;
+    try {
+      var user = await authFirebase.currentUser();
+      token = await user.getIdToken();
+    } catch (e) {
+      return;
+    }
+    var id = curUser != null
+        ? curUser.id
+        : savedUser != null
+            ? savedUser.id
+            : null;
+    if (id == null) return;
+    var response = await postFunc(
+        url: userEndPoint + "socialstanding",
+        token: token,
+        body: jsonEncode({"id": id}));
+
+    if (response == null) {
+      return;
+    }
+    if (response.statusCode == 200) {
+      var responseMessage =
+          jsonDecode((jsonDecode(response.body))['body'])['message'];
+
+      try {
+        curUser.lollarAmount = responseMessage['yollar'];
+        curUser.socialStanding = responseMessage['rank'];
+
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        if (savedUser != null) {
+          savedUser.socialStanding = curUser.socialStanding;
+          savedUser.lollarAmount = curUser.lollarAmount;
+        }
+        prefs.setInt('socialStanding', curUser.socialStanding);
+        prefs.setInt('yollarAmount', curUser.lollarAmount);
+      } catch (e) {
+        print("Exception " + e + "in social standing");
+      }
+    }
+  }
+
   @override
   void initState() {
     print("post id is this: $postId");
-    // const oneSec = const Duration(seconds: 3);
-    // int counter = 0;
-    // Timer.periodic(oneSec, (Timer timer) {
-    //   setState(() {
-    //     curUser.lollarAmount = 1000 * counter;
-    //     counter++;
-    //   });
-    // });
 
     super.initState();
     getPackageInfo();
@@ -471,6 +506,13 @@ class _BottomNavBarState extends State<BottomNavBar>
         print("found id : $postId");
       }
     }
+
+    const time = const Duration(minutes: 5);
+
+    Timer.periodic(time, (Timer timer) async {
+      await getSocialStanding();
+      setState(() {});
+    });
   }
 
   void initDynamicLinks() async {
