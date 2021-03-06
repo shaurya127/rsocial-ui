@@ -5,6 +5,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
@@ -317,6 +318,12 @@ Future<Inf> getGenderBirthday(GoogleSignIn googleSignIn) async {
   return inf;
 }
 
+Future<String> getFirebaseMessagingToken() async {
+  var token = await FirebaseMessaging().getToken();
+  print(token);
+  return token;
+}
+
 // Logic followed when logged in using google
 loginWithGoogle(User _currentUser, BuildContext context, bool log) async {
   FirebaseUser user;
@@ -333,7 +340,6 @@ loginWithGoogle(User _currentUser, BuildContext context, bool log) async {
 
     if (log == true) {
       googleUser = await GoogleSignIn().signIn();
-      print("Hello");
     } else
       googleUser = await googleSignIn.signIn();
 
@@ -442,13 +448,15 @@ loginWithGoogle(User _currentUser, BuildContext context, bool log) async {
 
     final GoogleSignInAccount guser = googleSignIn.currentUser;
     var inf;
-    if (log == false) {
-      inf = await getGenderBirthday(googleSignIn);
-      print(inf.gender);
-      print(inf.dob);
-    }
+
     // If user does not exists
     if (!doc.exists) {
+      if (log == false) {
+        inf = await getGenderBirthday(googleSignIn);
+        print(inf.gender);
+        print(inf.dob);
+      }
+
       print(guser.photoUrl);
       print(guser.displayName);
       User curUser = User(
@@ -488,6 +496,26 @@ loginWithGoogle(User _currentUser, BuildContext context, bool log) async {
 
     //Navigator.pop(context);
     //widget.analytics.setUserId(user_id);
+
+    // Compare token id for device and the value that is stored
+    // var messagingToken;
+    // bool isChangedToken = false;
+    // try {
+    //   messagingToken = await getFirebaseMessagingToken();
+    //   print("Firebase messaging token");
+    //   print(messagingToken);
+    //   DocumentSnapshot doc = await users.document(user.uid).get();
+    //
+    //   if (doc['token'] == null) {
+    //     await users.document(user.uid).setData({"token": messagingToken});
+    //     isChangedToken = true;
+    //   } else if (doc['token'].toString().compareTo(messagingToken.toString()) !=
+    //       0) {
+    //     await users.document(user.uid).setData({"token": messagingToken});
+    //     isChangedToken = true;
+    //   }
+    // } catch (e) {}
+
     return Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
             settings: RouteSettings(name: "Landing_Page"),

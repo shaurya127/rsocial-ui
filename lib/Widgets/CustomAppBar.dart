@@ -79,9 +79,11 @@ class _customAppBarState extends State<customAppBar> {
                 width: 1,
               ),
               Text(
-                curUser != null
+                curUser != null && curUser.socialStanding != null
                     ? formatNumber(curUser.socialStanding)
-                    : formatNumber(savedUser.socialStanding),
+                    : savedUser != null
+                        ? formatNumber(savedUser.socialStanding)
+                        : "",
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,

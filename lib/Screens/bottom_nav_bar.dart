@@ -64,11 +64,12 @@ class BottomNavBar extends StatefulWidget {
   User currentUser;
   bool isNewUser;
   String sign_in_mode;
-
+  String tokenChanged;
   BottomNavBar(
       {@required this.currentUser,
       @required this.isNewUser,
-      @required this.sign_in_mode});
+      @required this.sign_in_mode,
+      String tokenChanged});
 
   @override
   _BottomNavBarState createState() => _BottomNavBarState();
@@ -252,7 +253,8 @@ class _BottomNavBarState extends State<BottomNavBar>
 
       if (curUser != null) saveData();
 
-      print("THis is my curUser lollar amount");
+      await getSocialStanding();
+
       print(curUser.lollarAmount);
       print(curUser.id);
       setState(() {});
@@ -375,7 +377,6 @@ class _BottomNavBarState extends State<BottomNavBar>
       }
       setState(() {
         postsGlobal.addAll(posts);
-        //isLoading = false;
         isLoadingPost = false;
         storiesLeft = storiesStillLeft;
       });
@@ -437,6 +438,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   }
 
   getSocialStanding() async {
+    print("Get social standing triggered");
     var token;
     try {
       var user = await authFirebase.currentUser();
@@ -610,7 +612,6 @@ class _BottomNavBarState extends State<BottomNavBar>
           isErrorLoadingPost: isFailedUserPost,
           scrollController: _scrollController,
           reactionCallback: reactionCallback),
-
       Search_Page(),
       Wage(
         currentUser: curUser,

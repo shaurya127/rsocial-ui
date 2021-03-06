@@ -31,6 +31,7 @@ import 'package:rsocial2/contants/constants.dart';
 import 'package:rsocial2/functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+import '../helper.dart';
 import '../model/user.dart';
 
 import '../contants/config.dart';
@@ -92,6 +93,40 @@ class _ProfileState extends State<Profile> {
     prefs.setString('profilePhoto', curUser.photoUrl);
   }
 
+  getSocialStanding() async {
+    print("Get social standing triggered");
+    var token;
+    try {
+      var user = await authFirebase.currentUser();
+      token = await user.getIdToken();
+    } catch (e) {
+      return;
+    }
+
+    var id = widget.user.id;
+    if (id == null) return;
+    var response = await postFunc(
+        url: userEndPoint + "socialstanding",
+        token: token,
+        body: jsonEncode({"id": id}));
+
+    if (response == null) {
+      return;
+    }
+    if (response.statusCode == 200) {
+      var responseMessage =
+          jsonDecode((jsonDecode(response.body))['body'])['message'];
+
+      try {
+        widget.user.lollarAmount = responseMessage['yollar'];
+        widget.user.socialStanding = responseMessage['rank'];
+        setState(() {});
+      } catch (e) {
+        print("Exception " + e + "in social standing");
+      }
+    }
+  }
+
   getUser() async {
     print("get user started");
     setState(() {
@@ -136,6 +171,10 @@ class _ProfileState extends State<Profile> {
       }
 
       widget.user = User.fromJson(msg);
+      print("Widget user bio is : ");
+      print(widget.user.bio);
+      if (widget.user != null) getSocialStanding();
+
       if (widget.user.id == curUser.id) await saveData();
       setState(() {
         isLoadingUser = false;
@@ -722,7 +761,9 @@ class _ProfileState extends State<Profile> {
             var user = await FirebaseAuth.instance.currentUser();
             var token = await user.getIdToken();
             String url = userEndPoint + 'update';
-            print(encodedFile);
+            print("New bio");
+            print(newBio);
+
             if (encodedFile == null) {
               try {
                 response = await http.put(
@@ -824,7 +865,8 @@ class _ProfileState extends State<Profile> {
               //print("body is $body");
               print(body1);
               var msg = body1['message'];
-              // print(msg);
+              print("This is my response on bio update");
+              print(msg);
               curUser = User.fromJson(msg);
               //print("id is: ${msg['id']}");
               if (curUser != null) {
@@ -1062,14 +1104,25 @@ class _ProfileState extends State<Profile> {
                               border: InputBorder.none,
                               hintText: 'Enter your bio'),
                         )
-                      : Text(
-                          bioController.text,
-                          style: TextStyle(
-                            fontFamily: "Lato",
-                            fontSize: 13,
-                            color: colorProfileBio,
-                          ),
-                        ),
+                      : widget.user.id == curUser.id
+                          ? Text(
+                              bioController.text,
+                              style: TextStyle(
+                                fontFamily: "Lato",
+                                fontSize: 13,
+                                color: colorProfileBio,
+                              ),
+                            )
+                          : Text(
+                              widget.user.bio == null || widget.user.bio.isEmpty
+                                  ? "Here comes the bio"
+                                  : widget.user.bio,
+                              style: TextStyle(
+                                fontFamily: "Lato",
+                                fontSize: 13,
+                                color: colorProfileBio,
+                              ),
+                            ),
                   SizedBox(
                     height: widget.user.bio != null ? 3 : 0,
                   ),

@@ -36,7 +36,9 @@ class PushNotificationService {
       FirebaseUser user = await _authInstance.currentUser();
 
       if (user != null) {
-        await users.document(user.uid).updateData({"token": token});
+        try {
+          await users.document(user.uid).updateData({"token": token});
+        } catch (e) {}
       }
     });
     _fcm.configure(
