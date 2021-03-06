@@ -99,8 +99,8 @@ class User {
         map[user.id] = "request";
       }
     }
-    print("This is my new bio");
-    print(json['Bio']);
+    // print("This is my new bio");
+    // print(json['Bio']);
     return User(
       id: json['id'],
       photoUrl: json['ProfilePic'],

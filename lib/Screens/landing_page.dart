@@ -282,6 +282,9 @@ class _Landing_PageState extends State<Landing_Page> {
     setState(() {
       page = 0;
       postsGlobal.clear();
+      m.clear();
+      mp.clear();
+      prft.clear();
     });
     return getUserPosts(curUser != null
         ? curUser.id

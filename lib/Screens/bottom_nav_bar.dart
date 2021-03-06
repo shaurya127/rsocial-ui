@@ -255,7 +255,9 @@ class _BottomNavBarState extends State<BottomNavBar>
         return null;
       }
 
-      curUser = User.fromJson(responseMessage);
+      setState(() {
+        curUser = User.fromJson(responseMessage);
+      });
 
       if (curUser != null) saveData();
 
@@ -622,7 +624,7 @@ class _BottomNavBarState extends State<BottomNavBar>
           reactionCallback: reactionCallback,
           refresh: refreshLandingPage,
           refreshCallback: refreshCallback),
-      Search_Page(),
+      Search_Page(currentUser: curUser,),
       Wage(
         currentUser: curUser,
         isPostedCallback: isPostedCallback,
