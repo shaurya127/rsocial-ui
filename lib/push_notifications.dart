@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -11,6 +12,7 @@ import 'package:rsocial2/Screens/search_page.dart';
 import 'package:rsocial2/contants/constants.dart';
 import 'package:rsocial2/model/push_notification_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'Screens/login_page.dart';
 import 'model/user.dart';
 
 import 'Screens/bottom_nav_bar.dart';
@@ -29,7 +31,16 @@ class PushNotificationService {
 
     String token = await _fcm.getToken();
     print("FirebaseMessaging token: $token");
+    _fcm.onTokenRefresh.listen((token) async {
+      FirebaseAuth _authInstance = FirebaseAuth.instance;
+      FirebaseUser user = await _authInstance.currentUser();
 
+      if (user != null) {
+        try {
+          await users.document(user.uid).updateData({"token": token});
+        } catch (e) {}
+      }
+    });
     _fcm.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
