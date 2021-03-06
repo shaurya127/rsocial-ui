@@ -494,28 +494,6 @@ loginWithGoogle(User _currentUser, BuildContext context, bool log) async {
 
     // if user already exists, the app directly goes to the landing page
 
-    //Navigator.pop(context);
-    //widget.analytics.setUserId(user_id);
-
-    // Compare token id for device and the value that is stored
-    // var messagingToken;
-    // bool isChangedToken = false;
-    // try {
-    //   messagingToken = await getFirebaseMessagingToken();
-    //   print("Firebase messaging token");
-    //   print(messagingToken);
-    //   DocumentSnapshot doc = await users.document(user.uid).get();
-    //
-    //   if (doc['token'] == null) {
-    //     await users.document(user.uid).setData({"token": messagingToken});
-    //     isChangedToken = true;
-    //   } else if (doc['token'].toString().compareTo(messagingToken.toString()) !=
-    //       0) {
-    //     await users.document(user.uid).setData({"token": messagingToken});
-    //     isChangedToken = true;
-    //   }
-    // } catch (e) {}
-
     return Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
             settings: RouteSettings(name: "Landing_Page"),

@@ -64,12 +64,12 @@ class BottomNavBar extends StatefulWidget {
   User currentUser;
   bool isNewUser;
   String sign_in_mode;
-  String tokenChanged;
-  BottomNavBar(
-      {@required this.currentUser,
-      @required this.isNewUser,
-      @required this.sign_in_mode,
-      String tokenChanged});
+
+  BottomNavBar({
+    @required this.currentUser,
+    @required this.isNewUser,
+    @required this.sign_in_mode,
+  });
 
   @override
   _BottomNavBarState createState() => _BottomNavBarState();
@@ -94,7 +94,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   bool storiesLeft = true;
   ScrollController _scrollController = ScrollController();
   final List<int> backStack = [0];
-
+  bool refreshLandingPage = false;
   callback() {
     print("callback called");
     setState(() {});
@@ -111,16 +111,22 @@ class _BottomNavBarState extends State<BottomNavBar>
     setState(() {});
   }
 
+  refreshCallback() async {
+    refreshLandingPage = false;
+  }
+
   void isPostedCallback() {
+    print("IsPostedCallback called");
     setState(() {
       _currentIndex = 0;
+      refreshLandingPage = true;
     });
 
-    getAllPosts(curUser != null
-        ? curUser.id
-        : savedUser != null
-            ? savedUser.id
-            : null);
+    // getAllPosts(curUser != null
+    //     ? curUser.id
+    //     : savedUser != null
+    //         ? savedUser.id
+    //         : null);
   }
 
   createNgetUser() async {
@@ -318,6 +324,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   }
 
   getAllPosts(String id) async {
+    print("Inside get all posts");
     int start = 0;
     print("getUserPostFired");
     setState(() {
@@ -327,7 +334,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     FirebaseUser user;
     user = await authFirebase.currentUser();
     var token = await user.getIdToken();
-    //var id;
+
     if (id == null) {
       try {
         user = await authFirebase.currentUser();
@@ -335,6 +342,7 @@ class _BottomNavBarState extends State<BottomNavBar>
         if (doc == null) print("error from get user post");
         id = doc['id'];
       } catch (e) {
+        print("inside try");
         setState(() {
           isFailedUserPost = true;
         });
@@ -611,7 +619,9 @@ class _BottomNavBarState extends State<BottomNavBar>
           isLoading: isLoadingPost,
           isErrorLoadingPost: isFailedUserPost,
           scrollController: _scrollController,
-          reactionCallback: reactionCallback),
+          reactionCallback: reactionCallback,
+          refresh: refreshLandingPage,
+          refreshCallback: refreshCallback),
       Search_Page(),
       Wage(
         currentUser: curUser,
