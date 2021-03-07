@@ -360,7 +360,7 @@ class _Search_PageState extends State<Search_Page>
               ));
       }
     else
-      return Center(child: CircularProgressIndicator(),);
+      return LinearProgressIndicator();
   }
 
   buildRequestTab() {
@@ -393,9 +393,7 @@ class _Search_PageState extends State<Search_Page>
   Widget BuildScreen(String Orientation) {
     if (Orientation == 'request')
       return isLoading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
+          ? LinearProgressIndicator()
           : isGetUserFail
               ? ErrWidget(
                   tryAgainOnPressed: () {
@@ -412,9 +410,7 @@ class _Search_PageState extends State<Search_Page>
                 );
     else if (Orientation == "suggest")
       return isLoading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
+          ? LinearProgressIndicator()
           : isGetUserFail
               ? ErrWidget(
                   tryAgainOnPressed: () {
@@ -431,9 +427,7 @@ class _Search_PageState extends State<Search_Page>
                 );
     else if (Orientation == "search")
       return isLoadingSearch
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
+          ? LinearProgressIndicator()
           : isFailedGetAllUser
               ? ErrWidget(
                   tryAgainOnPressed: () {
@@ -455,7 +449,7 @@ class _Search_PageState extends State<Search_Page>
     // buildSuggestions(context, searchQuery);
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(80),
+        preferredSize: Size.fromHeight(65),
         child: Column(
           children: <Widget>[
             Padding(
