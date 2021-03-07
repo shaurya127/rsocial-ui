@@ -11,9 +11,10 @@ import '../functions.dart';
 import '../Widgets/nav_drawer_tile.dart';
 
 class Nav_Drawer extends StatefulWidget {
-  Function callback;
+  Function yollarCallback;
+  Function feedbackCallback;
 
-  Nav_Drawer({this.callback});
+  Nav_Drawer({this.feedbackCallback,this.yollarCallback});
   @override
   _Nav_DrawerState createState() => _Nav_DrawerState();
 }
@@ -94,7 +95,7 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                 ),
                 Nav_Drawer_Tile(
                   f: () {
-                    if (widget.callback != null) widget.callback();
+                    if (widget.yollarCallback != null) widget.yollarCallback();
                     Navigator.of(context).pop();
                   },
                   title: kNavDrawerAmount,
@@ -188,10 +189,11 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                 ),
                 Nav_Drawer_Tile(
                   title: kNavDrawerSettings,
-                  icon: SvgPicture.asset(
-                    "images/settings.svg",
-                    color: nameCol.withOpacity(0.4),
-                  ),
+                  icon: Icon(Icons.help_outline,color: nameCol.withOpacity(0.4),),
+                  // SvgPicture.asset(
+                  //   "images/settings.svg",
+                  //   color: nameCol.withOpacity(0.4),
+                  // ),
                   trailing: IconButton(
                     alignment: Alignment.centerRight,
                     icon: Icon(Icons.chevron_right),
@@ -204,7 +206,8 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => FeedbackScreen()));
+                            builder: (context) => FeedbackScreen(callback: widget.feedbackCallback,)));
+                    //widget.feedbackCallback();
                   },
                   icon: Icon(
                     Icons.feedback_outlined,
@@ -220,7 +223,7 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                   icon: Icon(Icons.exit_to_app),
                   trailing: IconButton(
                     alignment: Alignment.centerRight,
-                    icon: Icon(Icons.chevron_right),
+                    icon: Icon(Icons.chevron_right,color: nameCol.withOpacity(0.4),),
                   ),
                   f: () {
                     logout(context);
