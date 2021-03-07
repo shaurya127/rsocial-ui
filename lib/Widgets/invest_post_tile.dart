@@ -30,6 +30,7 @@ import '../contants/config.dart';
 import '../contants/constants.dart';
 import '../deep_links.dart';
 import '../functions.dart';
+import '../helper.dart';
 import '../model/post.dart';
 import '../model/reaction_model.dart';
 import '../read_more.dart';
@@ -88,29 +89,15 @@ class _InvestPostTileState extends State<InvestPostTile>
   Animation whateverAnimation;
 
   int reactionSizeIncrease = 3;
+
   getReactions() {
-    print(rxn);
-    loved = [];
-    liked = [];
-    whatever = [];
-    hated = [];
     counter = {'loved': 0, 'liked': 0, 'whatever': 0, 'hated': 0, 'noreact': 0};
-    //bool inLoop=true;
     for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
       User user = widget.userPost.reactedBy[i];
       String rt = user.reactionType;
-      if (rt == 'loved')
-        loved.add(user);
-      else if (rt == 'liked')
-        liked.add(user);
-      else if (rt == 'hated')
-        hated.add(user);
-      else
-        whatever.add(user);
-
       counter[rt]++;
 
-      if (user.id == widget.curUser.id) {
+      if (user.id == (curUser != null ? curUser.id : savedUser.id)) {
         this.rxn = user.reactionType;
       }
     }
@@ -184,7 +171,7 @@ class _InvestPostTileState extends State<InvestPostTile>
   react(String reactn) async {
     setState(() {
       isDisabled = true;
-      //audioCache.play("click.mp3");
+      // audioCache.play("click.mp3");
       String prvrxn = rxn;
       rxn = reactn;
       counter[prvrxn]--;
@@ -195,119 +182,69 @@ class _InvestPostTileState extends State<InvestPostTile>
       mp[widget.userPost.id] = counter;
       prft[widget.userPost.id] = widget.userPost.profit;
     });
-    var url = storyEndPoint + 'react';
-    var user = await FirebaseAuth.instance.currentUser();
-    //print(uid);
+    var user, token;
+    try {
+      user = await FirebaseAuth.instance.currentUser();
+      token = await user.getIdToken();
+    } catch (e) {
+      setState(() {
+        isDisabled = false;
+      });
+      return;
+    }
     Reaction reaction = Reaction(
-        id: curUser.id, storyId: widget.userPost.id, reactionType: reactn);
-    var token = await user.getIdToken();
+        id: (curUser != null
+            ? (curUser != null ? curUser.id : savedUser.id)
+            : savedUser.id),
+        storyId: widget.userPost.id,
+        reactionType: reactn);
+
+    print(reaction.id);
+    print(reaction.reactionType);
+    print(reaction.storyId);
+    print(reactn);
+
     //print(jsonEncode(reaction.toJson()));
     //print(token);
-    var response = await http.put(
-      url,
-      encoding: Encoding.getByName("utf-8"),
-      body: jsonEncode(reaction.toJson()),
-      headers: {
-        "Authorization": "Bearer: $token",
-        "Content-Type": "application/json",
-      },
-    );
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      //setState(() {
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      print("body is $body");
-      //print(body1);
-      var msg = body1['message'];
+    var response = await putFunc(
+        url: storyEndPoint + 'react',
+        token: token,
+        body: jsonEncode(reaction.toJson()));
+
+    if (response == null) {
       setState(() {
-        prft[widget.userPost.id] = msg["PresentValue"].toString();
+        isDisabled = false;
       });
+      return;
+    }
+
+    print("This is the story reaction");
+    print(response.statusCode);
+
+    if (response.statusCode == 200) {
+      var responseMessage;
+      try {
+        responseMessage =
+        jsonDecode((jsonDecode(response.body))['body'])['message'];
+
+        setState(() {
+          prft[widget.userPost.id] = responseMessage["PresentValue"].toString();
+        });
+      } catch (e) {
+        setState(() {
+          isDisabled = false;
+        });
+        return;
+      }
+      getReactions();
 
       if (widget.reactionCallback != null) widget.reactionCallback();
-
-      // if (widget.userPost.storyType == 'Wage')
-      //   widget.userPost = Post.fromJsonW(msg);
-      // else
-      //   widget.userPost = Post.fromJsonI(msg);
-      //
-      // getReactions();
-      //
-      // m[widget.userPost.id] = {reactn: counter[reactn]};
-      // //print("updating mp");
-      // mp[widget.userPost.id] = counter;
-      // prft[widget.userPost.id] = widget.userPost.profit;
-      //});
-      // });
       setState(() {});
     }
-    print("hello hello");
+    //print("hello hello");
     setState(() {
       isDisabled = false;
     });
-  }
-
-  buildReactionTile() {
-    likes = [];
-    love = [];
-    hates = [];
-    whatevers = [];
-    for (int i = 0; i < counter['loved']; i++) {
-      Request_Tile tile = Request_Tile(
-        //request: recievedpending ? true : false,
-        text: curUser.userMap.containsKey(loved[i].id)
-            ? curUser.userMap[loved[i].id]
-            : "add",
-        //accepted: aconnection,
-        user: loved[i],
-        //photourl: loved[i].photoUrl,
-        //curUser: widget.curUser,
-      );
-      love.add(tile);
-    }
-
-    for (int i = 0; i < counter['liked']; i++) {
-      Request_Tile tile = Request_Tile(
-        //request: recievedpending ? true : false,
-        text: curUser.userMap.containsKey(liked[i].id)
-            ? curUser.userMap[liked[i].id]
-            : "add",
-        //accepted: aconnection ,
-        user: liked[i],
-        //photourl: liked[i].photoUrl,
-        //curUser: widget.curUser,
-      );
-      likes.add(tile);
-    }
-
-    for (int i = 0; i < counter['hated']; i++) {
-      Request_Tile tile = Request_Tile(
-        //request: recievedpending ? true : false,
-        text: curUser.userMap.containsKey(hated[i].id)
-            ? curUser.userMap[hated[i].id]
-            : "add",
-        //accepted: aconnection ,
-        user: hated[i],
-        //photourl: hated[i].photoUrl,
-        //curUser: widget.curUser,
-      );
-      hates.add(tile);
-    }
-
-    for (int i = 0; i < counter['whatever']; i++) {
-      Request_Tile tile = Request_Tile(
-        //request: recievedpending ? true : false,
-        text: curUser.userMap.containsKey(whatever[i].id)
-            ? curUser.userMap[whatever[i].id]
-            : "add",
-        //accepted: aconnection ? true : false,
-        user: whatever[i],
-        //photourl: whatever[i].photoUrl,
-        //curUser: widget.curUser,
-      );
-      whatevers.add(tile);
-    }
   }
 
   reaction(String reaction) {
