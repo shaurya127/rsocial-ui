@@ -78,7 +78,6 @@ class BottomNavBar extends StatefulWidget {
 class _BottomNavBarState extends State<BottomNavBar>
     with SingleTickerProviderStateMixin {
   bool isLoading = false;
-  String photourl;
   bool isFailedUserPost = false;
   bool isFailedGetAllUser = false;
   bool isFailedGetUser = false;
@@ -141,7 +140,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     });
     var url = userEndPoint + 'create';
     var user = await FirebaseAuth.instance.currentUser();
-    photourl = user.photoUrl;
+
     var token = await user.getIdToken();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String inviteId = prefs.getString('inviteSenderId');
@@ -151,6 +150,10 @@ class _BottomNavBarState extends State<BottomNavBar>
 
     if (widget.currentUser != null) {
       var response;
+      var messagingToken;
+      try {
+        messagingToken = await getFirebaseMessagingToken();
+      } catch (e) {}
 
       try {
         response = await http.post(
@@ -182,9 +185,10 @@ class _BottomNavBarState extends State<BottomNavBar>
         var id;
         if (responseMessage != "UserAlreadyExists") {
           id = responseMessage['id'];
-          var messagingToken = await getFirebaseMessagingToken();
+
           print(widget.sign_in_mode);
 
+          // Updating Messagingtoken in Cloud Firestore
           try {
             await users
                 .document(user.uid)
@@ -547,7 +551,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       if (deepLink != null) {
         //print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
         postId = deepLink.queryParameters['postid'];
-        if(postId!=null)
+        if (postId != null)
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -565,7 +569,7 @@ class _BottomNavBarState extends State<BottomNavBar>
 
     if (deepLink != null) {
       //postId = deepLink.queryParameters['postid'];
-      if(postId!=null)
+      if (postId != null)
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -632,7 +636,9 @@ class _BottomNavBarState extends State<BottomNavBar>
           reactionCallback: reactionCallback,
           refresh: refreshLandingPage,
           refreshCallback: refreshCallback),
-      Search_Page(currentUser: curUser,),
+      Search_Page(
+        currentUser: curUser,
+      ),
       Wage(
         currentUser: curUser,
         isPostedCallback: isPostedCallback,
