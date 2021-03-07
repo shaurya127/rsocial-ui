@@ -532,20 +532,21 @@ class _BottomNavBarState extends State<BottomNavBar>
     // setState(() {
     //   findingLink=true;
     // });
-    //final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
-    //final Uri deepLink = data?.link;
+    // final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    // final Uri deepLink = data?.link;
 
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
       final Uri deepLink = dynamicLink?.link;
       if (deepLink != null) {
         //print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
-        //postId = deepLink.queryParameters['postid'];
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    DisplayPost(postId: deepLink.queryParameters['postid'])));
+        postId = deepLink.queryParameters['postid'];
+        if(postId!=null)
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      DisplayPost(postId: deepLink.queryParameters['postid'])));
       }
     }, onError: (OnLinkErrorException e) async {
       print('onLinkError');
@@ -558,11 +559,12 @@ class _BottomNavBarState extends State<BottomNavBar>
 
     if (deepLink != null) {
       //postId = deepLink.queryParameters['postid'];
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  DisplayPost(postId: deepLink.queryParameters['postid'])));
+      if(postId!=null)
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    DisplayPost(postId: deepLink.queryParameters['postid'])));
     }
 
     // setState(() {
