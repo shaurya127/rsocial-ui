@@ -1026,30 +1026,37 @@ class _ProfileState extends State<Profile> {
                             fontSize: 15,
                             fontFamily: 'Lato'),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Container(
-                          width: 1,
-                          height: 15,
-                          color: colorGreyTint,
-                        ),
-                      ),
-                      Container(
-                        height: 15,
-                        width: 15,
-                        padding: EdgeInsets.only(right: 2),
-                        child: SvgPicture.asset(
-                          "images/social-standing.svg",
-                          color: colorGreyTint,
-                        ),
-                      ),
-                      Text(
-                        "${widget.user.socialStanding}",
-                        style: TextStyle(
-                            color: colorGreyTint,
-                            fontSize: 15,
-                            fontFamily: 'Lato'),
-                      ),
+                      widget.user.socialStanding != null
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              child: Container(
+                                width: 1,
+                                height: 15,
+                                color: colorGreyTint,
+                              ),
+                            )
+                          : SizedBox.shrink(),
+                      widget.user.socialStanding != null
+                          ? Container(
+                              height: 15,
+                              width: 15,
+                              padding: EdgeInsets.only(right: 2),
+                              child: SvgPicture.asset(
+                                "images/social-standing.svg",
+                                color: colorGreyTint,
+                              ),
+                            )
+                          : SizedBox.shrink(),
+                      widget.user.socialStanding != null
+                          ? Text(
+                              "${widget.user.socialStanding}",
+                              style: TextStyle(
+                                  color: colorGreyTint,
+                                  fontSize: 15,
+                                  fontFamily: 'Lato'),
+                            )
+                          : SizedBox.shrink(),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: Container(
