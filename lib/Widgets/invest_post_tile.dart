@@ -631,8 +631,8 @@ class _InvestPostTileState extends State<InvestPostTile>
                         Navigator.push(
                             context,
                             PageTransition(
-                              // settings: RouteSettings(
-                              //     name: "Login_Page"),
+                                // settings: RouteSettings(
+                                //     name: "Login_Page"),
                                 type: PageTransitionType.fade,
                                 child: Reaction_Info(
                                   counter: counter,
@@ -673,8 +673,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                               style: TextStyle(
                                 fontFamily: "Lato",
                                 fontSize: 12,
-                                color:
-                                double.parse(widget.userPost.profit) >= 0
+                                color: double.parse(widget.userPost.profit) >= 0
                                     ? colorProfitPositive
                                     : colorProfitNegative,
                               ),
@@ -803,38 +802,38 @@ class _InvestPostTileState extends State<InvestPostTile>
                         color: colorGreyTint,
                       ),
                       itemBuilder: (_) => <PopupMenuItem>[
-                          new PopupMenuItem(
-                              child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                    Navigator.push(
-                                        context,
-                                        PageTransition(
+                        new PopupMenuItem(
+                            child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
                                           // settings: RouteSettings(
                                           //     name: "Login_Page"),
-                                            type: PageTransitionType.fade,
-                                            child: DisplayPost(
-                                              postId: widget.userPost.id,
-                                            )));
-                                  },
-                                  child: new Text('View post'))),
-                        // new PopupMenuItem(
-                        //     child: GestureDetector(
-                        //         onTap: () {
-                        //           //buildReactionTile();
-                        //           Navigator.pop(context);
-                        //           Navigator.push(
-                        //               context,
-                        //               PageTransition(
-                        //                   // settings: RouteSettings(
-                        //                   //     name: "Login_Page"),
-                        //                   type: PageTransitionType.fade,
-                        //                   child: Reaction_Info(
-                        //                     counter: counter,
-                        //                     postId: widget.userPost.id,
-                        //                   )));
-                        //         },
-                        //         child: new Text('Reactions'))),
+                                          type: PageTransitionType.fade,
+                                          child: DisplayPost(
+                                            postId: widget.userPost.id,
+                                          )));
+                                },
+                                child: new Text('View post'))),
+                        new PopupMenuItem(
+                            child: GestureDetector(
+                                onTap: () {
+                                  //buildReactionTile();
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          // settings: RouteSettings(
+                                          //     name: "Login_Page"),
+                                          type: PageTransitionType.fade,
+                                          child: Reaction_Info(
+                                            counter: counter,
+                                            postId: widget.userPost.id,
+                                          )));
+                                },
+                                child: new Text('Reactions'))),
                         if (widget.userPost.user.id ==
                             (curUser != null ? curUser.id : savedUser.id))
                           new PopupMenuItem(

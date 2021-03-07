@@ -203,7 +203,7 @@ class _ProfileState extends State<Profile> {
     isEditable = false;
     //isLoading = false;
     bioController.text =
-        widget.user.bio != null ? widget.user.bio : "here comes the bio";
+        widget.user.bio != null ? widget.user.bio.trim() : "here comes the bio";
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -392,6 +392,8 @@ class _ProfileState extends State<Profile> {
   }
 
   getUserPosts() async {
+    postsI=[];
+    postsW=[];
     setState(() {
       isLoadingPosts = true;
     });
@@ -547,7 +549,7 @@ class _ProfileState extends State<Profile> {
       //print(posts.length);
       for (int i = 0; i < postsW.length; i++) {
         Post_Tile tile = Post_Tile(
-            onPressDelete: () => deletePost(i, "wage"),
+            onPressDelete: () => deletePost(i, "wage",postsW[i].id),
             curUser: widget.currentUser,
             userPost: postsW[i],
             photoUrl: curUser.id == widget.user.id
@@ -601,7 +603,7 @@ class _ProfileState extends State<Profile> {
         print("Invest reaction");
         print(postsI[i].reactedBy.length);
         InvestPostTile tile = InvestPostTile(
-            onPressDelete: () => deletePost(i, "invest"),
+            onPressDelete: () => deletePost(i, "invest",postsI[i].id),
             curUser: widget.currentUser,
             userPost: postsI[i],
             photoUrl: curUser.id == widget.user.id
@@ -657,7 +659,7 @@ class _ProfileState extends State<Profile> {
                 } else {
                   return new Post_Tile(
                       curUser: curUser,
-                      onPressDelete: () => deletePost(index, ""),
+                      //onPressDelete: () => deletePost(index, ""),
                       userPost: platformPost[index],
                       photoUrl: "",
                       reactionCallback: reactionCallback);
@@ -1161,8 +1163,8 @@ class _ProfileState extends State<Profile> {
   Future<File> _cropImage(filePath) async {
     File croppedImage = await ImageCropper.cropImage(
       aspectRatio: CropAspectRatio(
-        ratioX: 4,
-        ratioY: 3,
+        ratioX: 1,
+        ratioY: 1,
       ),
       sourcePath: filePath,
       maxWidth: 1080,
@@ -1189,7 +1191,7 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  void deletePost(int index, String type) async {
+  void deletePost(int index, String type, String id) async {
     var url = storyEndPoint + 'delete';
     var user = await FirebaseAuth.instance.currentUser();
     var token = await user.getIdToken();
@@ -1204,7 +1206,7 @@ class _ProfileState extends State<Profile> {
         "Authorization": "Bearer $token",
         "Content-Type": "application/json",
       },
-      body: jsonEncode({"id": curUser.id, "StoryId": postsGlobal[index].id}),
+      body: jsonEncode({"id": curUser.id, "StoryId": id}),
     );
 
     print(response.statusCode);
