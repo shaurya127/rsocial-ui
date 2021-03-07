@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +9,9 @@ import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:rsocial2/Screens/search_page.dart';
+import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/contants/constants.dart';
+import 'package:rsocial2/helper.dart';
 import 'package:rsocial2/model/push_notification_model.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'Screens/login_page.dart';
@@ -34,9 +36,28 @@ class PushNotificationService {
     _fcm.onTokenRefresh.listen((token) async {
       FirebaseAuth _authInstance = FirebaseAuth.instance;
       FirebaseUser user = await _authInstance.currentUser();
-
+      var authToken = await user.getIdToken();
+      var id;
       if (user != null) {
         try {
+          DocumentSnapshot doc = await users.document(user.uid).get();
+          if (!doc.exists) {
+            return;
+          } else {
+            if (doc['id'] != null) {
+              id = doc['id'];
+            } else
+              return;
+          }
+          // Token update in backend
+          var response = await postFunc(
+              url: userEndPoint + "setfcmtoken",
+              token: authToken,
+              body: jsonEncode({"id": id, "fcmToken": token}));
+
+          print("Response in set fcm token triggered");
+
+          // Token update in firebase
           await users.document(user.uid).updateData({"token": token});
         } catch (e) {}
       }
