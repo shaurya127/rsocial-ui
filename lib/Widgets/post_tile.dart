@@ -510,7 +510,22 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                                       ),
                                                     ),
                                                     Text(
-                                                      "${widget.userPost.investedWithUser[0].fname}",
+                                                      widget
+                                                                  .userPost
+                                                                  .investedWithUser[
+                                                                      0]
+                                                                  .fname
+                                                                  .length <=
+                                                              12
+                                                          ? "${widget.userPost.investedWithUser[0].fname}"
+                                                          : widget
+                                                                  .userPost
+                                                                  .investedWithUser[
+                                                                      0]
+                                                                  .fname
+                                                                  .substring(
+                                                                      0, 9) +
+                                                              "...",
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                       style: TextStyle(
@@ -673,7 +688,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                         ),
                       ),
                       SizedBox(
-                        width: 14,
+                        width: 4,
                       ),
                       PopupMenuButton(
                         icon: Icon(

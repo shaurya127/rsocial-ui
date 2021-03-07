@@ -112,6 +112,7 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   refreshCallback() async {
     refreshLandingPage = false;
+    getRCashDetails();
   }
 
   void isPostedCallback() {
