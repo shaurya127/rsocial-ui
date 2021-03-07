@@ -1276,7 +1276,7 @@ class _ProfileState extends State<Profile> {
                                         this.postOrientation = "wage";
                                       });
                                     },
-                                    text: "Wage",
+                                    text: "Wassup",
                                     orientation: 'wage',
                                     curOrientation: postOrientation),
                                 SelectButton(

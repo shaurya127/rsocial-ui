@@ -1413,7 +1413,7 @@ class _WageState extends State<Wage> {
                                 orientation = "wage";
                               });
                             },
-                            text: "Wage",
+                            text: "Wassup",
                             orientation: "wage",
                             curOrientation: orientation),
                       ],
