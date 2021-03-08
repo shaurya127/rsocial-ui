@@ -50,7 +50,7 @@ List<String> titles;
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 21.0, horizontal: 16),
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 16),
             child: Column(
               children: [
                 Row(
@@ -59,12 +59,15 @@ List<String> titles;
                     Text(
                       titles[0],
                       style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+
                           fontSize: 15,
                           fontFamily: 'Lato'),
                     ),
                     Container(
-                      child: Row(
+                      child:Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           SvgPicture.asset("images/yollar.svg",
@@ -86,7 +89,7 @@ List<String> titles;
                                     : colorAmountPositive),
                           )
                         ],
-                      ),
+                      ),)
                     )
 
 
@@ -96,9 +99,9 @@ List<String> titles;
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      titles[1],
+                      "  "+titles[1],
                       style: TextStyle(
-                          fontWeight: FontWeight.bold,
+
                           fontSize: 15,
                           fontFamily: 'Lato'),
                     ),
@@ -135,9 +138,9 @@ List<String> titles;
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      "Invested",
+                      "  "+"Invested",
                       style: TextStyle(
-                          fontWeight: FontWeight.bold,
+
                           fontSize: 15,
                           fontFamily: 'Lato'),
                     ),
@@ -176,7 +179,7 @@ List<String> titles;
                     Text(
                       titles[4],
                       style: TextStyle(
-                          fontWeight: FontWeight.bold,
+
                           fontSize: 15,
                           fontFamily: 'Lato'),
                     ),
@@ -213,9 +216,9 @@ List<String> titles;
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      titles[2],
+                      "Wassup",
                       style: TextStyle(
-                          fontWeight: FontWeight.bold,
+
                           fontSize: 15,
                           fontFamily: 'Lato'),
                     ),

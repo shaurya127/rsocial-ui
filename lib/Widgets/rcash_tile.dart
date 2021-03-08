@@ -338,7 +338,8 @@ expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
                           fontSize: 15,
                           color: curUser.referralAmount < 0
                               ? colorAmountNegative
-                              : colorAmountPositive),
+                              : colorAmountPositive,
+                      ),
                     )
                   ],
                 ),
