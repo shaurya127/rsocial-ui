@@ -10,7 +10,7 @@ import 'package:rsocial2/Widgets/rcash_tile.dart';
 import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/contants/constants.dart';
 import 'package:rsocial2/model/user.dart';
-
+import 'package:rsocial2/Widgets/expanded_Rcashtile.dart';
 import '../helper.dart';
 import 'login_page.dart';
 import 'package:http/http.dart' as http;
@@ -111,8 +111,30 @@ class _RcashScreenState extends State<RcashScreen> {
   }
 
   buildList() {
-    List<RcashTile> tiles = [];
+    List<Widget> tiles = [];
+
+    List<int> value1= [];
+    List<String> title1=[];
+
+    int j = 0;
+
+    while(j<6){
+      if(titles[j]!="Platform Engagement"||titles[j]!="Investment"){
+        value1.add(values[j]);
+        title1.add(titles[j]);
+      }
+      j++;
+     }
+
+     EpandedRcashTile tile1 = EpandedRcashTile(
+      user: widget.Ruser,
+       titles: title1,
+       values: value1,
+    );
+    tiles.add(tile1);
+
     for (int i = 0; i < 6; i++) {
+      if(titles[i]=="Platform Engagement"||titles[i]=="Investment"){
       RcashTile tile = RcashTile(
         user: widget.Ruser,
         title: titles[i],
@@ -122,6 +144,9 @@ class _RcashScreenState extends State<RcashScreen> {
             values[i] < 0 ? colorRcashNegative : colorRcashPositive,
       );
       tiles.add(tile);
+      }
+
+
     }
 
     return ListView(
@@ -145,7 +170,8 @@ class _RcashScreenState extends State<RcashScreen> {
             : Padding(
                 padding: EdgeInsets.only(top: 20),
                 child: RefreshIndicator(
-                    onRefresh: getRCashDetails, child: buildList()),
+                    onRefresh: getRCashDetails, child: buildList(),
+                ),
               );
   }
 }
