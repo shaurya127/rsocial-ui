@@ -76,6 +76,15 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       appBar: customAppBar(context),
       body: ListView(
         children: [
+
+          Padding(
+            padding: const EdgeInsets.only(left: 25.0, right: 25, top: 10),
+            child: Text("(ou)रsocial",style: TextStyle(fontWeight:FontWeight.bold,fontFamily: 'lato',fontSize: 28,),textAlign: TextAlign.center,),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 25.0, right: 25, top: 0),
+            child: Text("#ReinventingSocialTogether",style: TextStyle(fontWeight:FontWeight.bold,fontFamily: 'lato',fontSize: 28,),textAlign: TextAlign.center,),
+          ),
           Padding(
             padding: const EdgeInsets.only(left: 25.0, right: 25, top: 32),
             child: Container(
@@ -96,7 +105,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight:
-                          boldInput ? FontWeight.bold : FontWeight.normal),
+                          boldInput ? FontWeight.bold : FontWeight.normal,
+                  ),
                   maxLength: 150,
                   maxLines: 10,
                   decoration: InputDecoration(
@@ -107,13 +117,13 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
                         color: colorGreyTint,
-                      )),
+                      ),),
                 ),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 25),
+            padding: const EdgeInsets.symmetric(vertical: 32),
             child: RoundedButton(
               color: colorPrimaryBlue,
               textColor: Colors.white,
