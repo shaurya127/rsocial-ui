@@ -56,7 +56,7 @@ class Post_Tile extends StatefulWidget {
       this.photoUrl,
       this.onPressDelete,
       this.reactionCallback,
-      this.showPopup=true});
+      this.showPopup = true});
   @override
   _Post_TileState createState() => _Post_TileState();
 }
@@ -510,7 +510,22 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                                       ),
                                                     ),
                                                     Text(
-                                                      "${widget.userPost.investedWithUser[0].fname}",
+                                                      widget
+                                                                  .userPost
+                                                                  .investedWithUser[
+                                                                      0]
+                                                                  .fname
+                                                                  .length <=
+                                                              12
+                                                          ? "${widget.userPost.investedWithUser[0].fname}"
+                                                          : widget
+                                                                  .userPost
+                                                                  .investedWithUser[
+                                                                      0]
+                                                                  .fname
+                                                                  .substring(
+                                                                      0, 9) +
+                                                              "...",
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                       style: TextStyle(
@@ -673,7 +688,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                         ),
                       ),
                       SizedBox(
-                        width: 14,
+                        width: 4,
                       ),
                       PopupMenuButton(
                         icon: Icon(
@@ -682,7 +697,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                           color: colorGreyTint,
                         ),
                         itemBuilder: (_) => <PopupMenuItem>[
-                          if(widget.showPopup==true)
+                          if (widget.showPopup == true)
                             new PopupMenuItem(
                                 child: GestureDetector(
                                     onTap: () {
@@ -690,31 +705,31 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                       Navigator.push(
                                           context,
                                           PageTransition(
-                                            // settings: RouteSettings(
-                                            //     name: "Login_Page"),
+                                              // settings: RouteSettings(
+                                              //     name: "Login_Page"),
                                               type: PageTransitionType.fade,
                                               child: DisplayPost(
                                                 postId: widget.userPost.id,
                                               )));
                                     },
                                     child: new Text('View post'))),
-                          // new PopupMenuItem(
-                          //     child: GestureDetector(
-                          //         onTap: () {
-                          //           //buildReactionTile();
-                          //           Navigator.pop(context);
-                          //           Navigator.push(
-                          //               context,
-                          //               PageTransition(
-                          //                   // settings: RouteSettings(
-                          //                   //     name: "Login_Page"),
-                          //                   type: PageTransitionType.fade,
-                          //                   child: Reaction_Info(
-                          //                     counter: counter,
-                          //                     postId: widget.userPost.id,
-                          //                   )));
-                          //         },
-                          //         child: new Text('Reactions'))),
+                          new PopupMenuItem(
+                              child: GestureDetector(
+                                  onTap: () {
+                                    //buildReactionTile();
+                                    Navigator.pop(context);
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
+                                            // settings: RouteSettings(
+                                            //     name: "Login_Page"),
+                                            type: PageTransitionType.fade,
+                                            child: Reaction_Info(
+                                              counter: counter,
+                                              postId: widget.userPost.id,
+                                            )));
+                                  },
+                                  child: new Text('Reactions'))),
                           if (widget.userPost.user.id ==
                               (curUser != null ? curUser.id : savedUser.id))
                             new PopupMenuItem(

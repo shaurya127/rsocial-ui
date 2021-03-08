@@ -99,7 +99,8 @@ class User {
         map[user.id] = "request";
       }
     }
-
+    // print("This is my new bio");
+    // print(json['Bio']);
     return User(
       id: json['id'],
       photoUrl: json['ProfilePic'],
@@ -109,7 +110,7 @@ class User {
       lollarAmount: json['LollarAmount'] != null
           ? json['LollarAmount'].floor()
           : json['LollarAmount'],
-      socialStanding: json['SocialStanding'],
+      //socialStanding: json['SocialStanding'],
       bio: json['Bio'],
       gender: json['gender'],
       reactionType: json["reaction_type"],

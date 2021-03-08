@@ -11,6 +11,8 @@ import '../helper.dart';
 import 'bottom_nav_bar.dart';
 
 class FeedbackScreen extends StatefulWidget {
+  Function callback;
+  FeedbackScreen({this.callback});
   @override
   _FeedbackScreenState createState() => _FeedbackScreenState();
 }
@@ -56,6 +58,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.BOTTOM,
               fontSize: 15);
+          widget.callback();
+          Navigator.pop(context);
         } else {
           Fluttertoast.showToast(
               msg: "encountered an error, please try later",

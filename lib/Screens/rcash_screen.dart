@@ -29,7 +29,7 @@ class _RcashScreenState extends State<RcashScreen> {
   List titles = [
     "Total",
     "Available",
-    "Wage",
+    "Wassup",
     "Investment",
     "Joining Bonus",
     "Platform Engagement"

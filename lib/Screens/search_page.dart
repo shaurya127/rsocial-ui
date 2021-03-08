@@ -21,9 +21,8 @@ import 'login_page.dart';
 import 'package:http/http.dart' as http;
 
 class Search_Page extends StatefulWidget {
-  // List<User> allusers;
-  //
-  // Search_Page({this.allusers});
+  User currentUser;
+  Search_Page({this.currentUser});
 
   @override
   _Search_PageState createState() => _Search_PageState();
@@ -50,15 +49,6 @@ class _Search_PageState extends State<Search_Page>
   void initState() {
     super.initState();
     FirebaseAnalytics().setCurrentScreen(screenName: "Search_page");
-    // setState(() {
-    //   isLoading = true;
-    // });
-    //getAllConnections();
-    //getUser();
-    //getConnections();
-    // print("all users in search page");
-    // print(widget.allusers.length);
-    getUser();
   }
 
   setOrientation(String Orientation) {
@@ -155,13 +145,6 @@ class _Search_PageState extends State<Search_Page>
       DocumentSnapshot doc = await users.document(user.uid).get();
       id = doc['id'];
 
-      // if (doc['token'] == null) {
-      //   var messagingToken = await getFirebaseMessagingToken();
-      //   await users.document(user.uid).updateData({"token": messagingToken});
-      // }
-
-      //var id = curUser.id;
-
       final url = userEndPoint + "all";
 
       var token = await user.getIdToken();
@@ -179,8 +162,8 @@ class _Search_PageState extends State<Search_Page>
         isLoadingSearch = false;
       });
     }
-
-    //print(response.statusCode);
+    // print("[[[[[[[[[[[[[[[[[[[[[[[[[[[[");
+    // print(response.body);
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body);
       var body = jsonUser['body'];
@@ -343,36 +326,41 @@ class _Search_PageState extends State<Search_Page>
   }
 
   buildSuggestedTab() {
-    connections = curUser.connection;
-    List<Request_Tile> friendResults = [];
-    if (connections.isNotEmpty) {
-      for (int i = 0; i < connections.length; i++) {
-        print("printing connection length");
-        print(connections[i].connection.length);
-        print(connections[i].fname);
-        Request_Tile tile = Request_Tile(
-          user: connections[i],
-          text: "remove",
-          accepted: true,
-          //request: false,
-          //photourl: photourl,
-          //curUser: curUser,
-        );
-        friendResults.add(tile);
+    if(widget.currentUser!=null)
+      {
+        connections = curUser.connection;
+        List<Request_Tile> friendResults = [];
+        if (connections.isNotEmpty) {
+          for (int i = 0; i < connections.length; i++) {
+            print("printing connection length");
+            print(connections[i].connection.length);
+            print(connections[i].fname);
+            Request_Tile tile = Request_Tile(
+              user: connections[i],
+              text: "remove",
+              accepted: true,
+              //request: false,
+              //photourl: photourl,
+              //curUser: curUser,
+            );
+            friendResults.add(tile);
+          }
+          return ListView(
+            children: friendResults,
+          );
+        } else
+          return Scaffold(
+              body: ListView(
+                children: <Widget>[
+                  Text(
+                    "You have no friends till now",
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ));
       }
-      return ListView(
-        children: friendResults,
-      );
-    } else
-      return Scaffold(
-          body: ListView(
-        children: <Widget>[
-          Text(
-            "You have no friends till now",
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ));
+    else
+      return LinearProgressIndicator();
   }
 
   buildRequestTab() {
@@ -405,9 +393,7 @@ class _Search_PageState extends State<Search_Page>
   Widget BuildScreen(String Orientation) {
     if (Orientation == 'request')
       return isLoading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
+          ? LinearProgressIndicator()
           : isGetUserFail
               ? ErrWidget(
                   tryAgainOnPressed: () {
@@ -424,9 +410,7 @@ class _Search_PageState extends State<Search_Page>
                 );
     else if (Orientation == "suggest")
       return isLoading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
+          ? LinearProgressIndicator()
           : isGetUserFail
               ? ErrWidget(
                   tryAgainOnPressed: () {
@@ -443,9 +427,7 @@ class _Search_PageState extends State<Search_Page>
                 );
     else if (Orientation == "search")
       return isLoadingSearch
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
+          ? LinearProgressIndicator()
           : isFailedGetAllUser
               ? ErrWidget(
                   tryAgainOnPressed: () {
@@ -467,7 +449,7 @@ class _Search_PageState extends State<Search_Page>
     // buildSuggestions(context, searchQuery);
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(80),
+        preferredSize: Size.fromHeight(65),
         child: Column(
           children: <Widget>[
             Padding(
@@ -479,6 +461,7 @@ class _Search_PageState extends State<Search_Page>
                       onTap: () {
                         setState(() {
                           this.Orientation = "request";
+                          getUser();
                         });
                       },
                       text: "Request",
