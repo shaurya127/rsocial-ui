@@ -31,6 +31,7 @@ import 'package:rsocial2/contants/constants.dart';
 import 'package:rsocial2/functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+import '../helper.dart';
 import '../model/user.dart';
 
 import '../contants/config.dart';
@@ -92,6 +93,40 @@ class _ProfileState extends State<Profile> {
     prefs.setString('profilePhoto', curUser.photoUrl);
   }
 
+  getSocialStanding() async {
+    print("Get social standing triggered");
+    var token;
+    try {
+      var user = await authFirebase.currentUser();
+      token = await user.getIdToken();
+    } catch (e) {
+      return;
+    }
+
+    var id = widget.user.id;
+    if (id == null) return;
+    var response = await postFunc(
+        url: userEndPoint + "socialstanding",
+        token: token,
+        body: jsonEncode({"id": id}));
+
+    if (response == null) {
+      return;
+    }
+    if (response.statusCode == 200) {
+      var responseMessage =
+          jsonDecode((jsonDecode(response.body))['body'])['message'];
+
+      try {
+        widget.user.lollarAmount = responseMessage['yollar'];
+        widget.user.socialStanding = responseMessage['rank'];
+        setState(() {});
+      } catch (e) {
+        print("Exception " + e + "in social standing");
+      }
+    }
+  }
+
   getUser() async {
     print("get user started");
     setState(() {
@@ -136,6 +171,10 @@ class _ProfileState extends State<Profile> {
       }
 
       widget.user = User.fromJson(msg);
+      print("Widget user bio is : ");
+      print(widget.user.bio);
+      if (widget.user != null) getSocialStanding();
+
       if (widget.user.id == curUser.id) await saveData();
       setState(() {
         isLoadingUser = false;
@@ -164,7 +203,7 @@ class _ProfileState extends State<Profile> {
     isEditable = false;
     //isLoading = false;
     bioController.text =
-        widget.user.bio != null ? widget.user.bio : "here comes the bio";
+        widget.user.bio != null ? widget.user.bio.trim() : "here comes the bio";
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -353,6 +392,8 @@ class _ProfileState extends State<Profile> {
   }
 
   getUserPosts() async {
+    postsI=[];
+    postsW=[];
     setState(() {
       isLoadingPosts = true;
     });
@@ -508,7 +549,7 @@ class _ProfileState extends State<Profile> {
       //print(posts.length);
       for (int i = 0; i < postsW.length; i++) {
         Post_Tile tile = Post_Tile(
-            onPressDelete: () => deletePost(i, "wage"),
+            onPressDelete: () => deletePost(i, "wage",postsW[i].id),
             curUser: widget.currentUser,
             userPost: postsW[i],
             photoUrl: curUser.id == widget.user.id
@@ -562,7 +603,7 @@ class _ProfileState extends State<Profile> {
         print("Invest reaction");
         print(postsI[i].reactedBy.length);
         InvestPostTile tile = InvestPostTile(
-            onPressDelete: () => deletePost(i, "invest"),
+            onPressDelete: () => deletePost(i, "invest",postsI[i].id),
             curUser: widget.currentUser,
             userPost: postsI[i],
             photoUrl: curUser.id == widget.user.id
@@ -618,7 +659,7 @@ class _ProfileState extends State<Profile> {
                 } else {
                   return new Post_Tile(
                       curUser: curUser,
-                      onPressDelete: () => deletePost(index, ""),
+                      //onPressDelete: () => deletePost(index, ""),
                       userPost: platformPost[index],
                       photoUrl: "",
                       reactionCallback: reactionCallback);
@@ -722,7 +763,9 @@ class _ProfileState extends State<Profile> {
             var user = await FirebaseAuth.instance.currentUser();
             var token = await user.getIdToken();
             String url = userEndPoint + 'update';
-            print(encodedFile);
+            print("New bio");
+            print(newBio);
+
             if (encodedFile == null) {
               try {
                 response = await http.put(
@@ -824,7 +867,8 @@ class _ProfileState extends State<Profile> {
               //print("body is $body");
               print(body1);
               var msg = body1['message'];
-              // print(msg);
+              print("This is my response on bio update");
+              print(msg);
               curUser = User.fromJson(msg);
               //print("id is: ${msg['id']}");
               if (curUser != null) {
@@ -984,30 +1028,37 @@ class _ProfileState extends State<Profile> {
                             fontSize: 15,
                             fontFamily: 'Lato'),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Container(
-                          width: 1,
-                          height: 15,
-                          color: colorGreyTint,
-                        ),
-                      ),
-                      Container(
-                        height: 15,
-                        width: 15,
-                        padding: EdgeInsets.only(right: 2),
-                        child: SvgPicture.asset(
-                          "images/social-standing.svg",
-                          color: colorGreyTint,
-                        ),
-                      ),
-                      Text(
-                        "${widget.user.socialStanding}",
-                        style: TextStyle(
-                            color: colorGreyTint,
-                            fontSize: 15,
-                            fontFamily: 'Lato'),
-                      ),
+                      widget.user.socialStanding != null
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              child: Container(
+                                width: 1,
+                                height: 15,
+                                color: colorGreyTint,
+                              ),
+                            )
+                          : SizedBox.shrink(),
+                      widget.user.socialStanding != null
+                          ? Container(
+                              height: 15,
+                              width: 15,
+                              padding: EdgeInsets.only(right: 2),
+                              child: SvgPicture.asset(
+                                "images/social-standing.svg",
+                                color: colorGreyTint,
+                              ),
+                            )
+                          : SizedBox.shrink(),
+                      widget.user.socialStanding != null
+                          ? Text(
+                              "${widget.user.socialStanding}",
+                              style: TextStyle(
+                                  color: colorGreyTint,
+                                  fontSize: 15,
+                                  fontFamily: 'Lato'),
+                            )
+                          : SizedBox.shrink(),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: Container(
@@ -1062,14 +1113,25 @@ class _ProfileState extends State<Profile> {
                               border: InputBorder.none,
                               hintText: 'Enter your bio'),
                         )
-                      : Text(
-                          bioController.text,
-                          style: TextStyle(
-                            fontFamily: "Lato",
-                            fontSize: 13,
-                            color: colorProfileBio,
-                          ),
-                        ),
+                      : widget.user.id == curUser.id
+                          ? Text(
+                              bioController.text,
+                              style: TextStyle(
+                                fontFamily: "Lato",
+                                fontSize: 13,
+                                color: colorProfileBio,
+                              ),
+                            )
+                          : Text(
+                              widget.user.bio == null || widget.user.bio.isEmpty
+                                  ? "Here comes the bio"
+                                  : widget.user.bio,
+                              style: TextStyle(
+                                fontFamily: "Lato",
+                                fontSize: 13,
+                                color: colorProfileBio,
+                              ),
+                            ),
                   SizedBox(
                     height: widget.user.bio != null ? 3 : 0,
                   ),
@@ -1101,8 +1163,8 @@ class _ProfileState extends State<Profile> {
   Future<File> _cropImage(filePath) async {
     File croppedImage = await ImageCropper.cropImage(
       aspectRatio: CropAspectRatio(
-        ratioX: 4,
-        ratioY: 3,
+        ratioX: 1,
+        ratioY: 1,
       ),
       sourcePath: filePath,
       maxWidth: 1080,
@@ -1129,7 +1191,7 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  void deletePost(int index, String type) async {
+  void deletePost(int index, String type, String id) async {
     var url = storyEndPoint + 'delete';
     var user = await FirebaseAuth.instance.currentUser();
     var token = await user.getIdToken();
@@ -1144,7 +1206,7 @@ class _ProfileState extends State<Profile> {
         "Authorization": "Bearer $token",
         "Content-Type": "application/json",
       },
-      body: jsonEncode({"id": curUser.id, "StoryId": postsGlobal[index].id}),
+      body: jsonEncode({"id": curUser.id, "StoryId": id}),
     );
 
     print(response.statusCode);
@@ -1223,7 +1285,7 @@ class _ProfileState extends State<Profile> {
                                         this.postOrientation = "wage";
                                       });
                                     },
-                                    text: "Wage",
+                                    text: "Wassup",
                                     orientation: 'wage',
                                     curOrientation: postOrientation),
                                 SelectButton(

@@ -27,6 +27,8 @@ class Landing_Page extends StatefulWidget {
   ScrollController scrollController;
   bool isErrorLoadingPost;
   Function reactionCallback;
+  Function refreshCallback;
+  bool refresh;
 
   Landing_Page(
       {this.curUser,
@@ -34,7 +36,9 @@ class Landing_Page extends StatefulWidget {
       this.isErrorLoadingPost,
       this.reactionCallback,
       this.hasNoPosts,
-      this.scrollController});
+      this.scrollController,
+      this.refresh,
+      this.refreshCallback});
 
   @override
   _Landing_PageState createState() => _Landing_PageState();
@@ -50,13 +54,20 @@ class _Landing_PageState extends State<Landing_Page> {
   int length;
   bool isFailedUserPost = false;
   int page = 0;
-  bool startLoadingTile=false;
+  bool startLoadingTile = false;
 
   @override
   void initState() {
     print("Init state of landing page called");
     super.initState();
     FirebaseAnalytics().setCurrentScreen(screenName: "Landing_Page");
+    if (widget.refresh != null && widget.refresh == true) {
+      getUserPostsAsync();
+      print("Get user post completed");
+    }
+    if (widget.refreshCallback != null) {
+      widget.refreshCallback();
+    }
     if (widget.isErrorLoadingPost) isPostLoadFail = true;
     widget.scrollController.addListener(() {
       if (widget.scrollController.position.pixels ==
@@ -74,6 +85,25 @@ class _Landing_PageState extends State<Landing_Page> {
     });
   }
 
+  getUserPostsAsync() async {
+    await getPostOnRefreshWithIndicator();
+  }
+
+  Future<void> getPostOnRefreshWithIndicator() async {
+    setState(() {
+      page = 0;
+      widget.isLoading = true;
+      isFailedUserPost = false;
+      postsGlobal.clear();
+    });
+    getUserPosts(curUser != null
+        ? curUser.id
+        : (savedUser != null ? savedUser.id : null));
+    setState(() {
+      startLoadingTile = false;
+    });
+  }
+
   Future<void> getUserPosts(String id) async {
     print("getUserPostFired");
     FirebaseUser user;
@@ -87,7 +117,7 @@ class _Landing_PageState extends State<Landing_Page> {
         id = doc['id'];
       } catch (e) {
         setState(() {
-          widget.isLoading=false;
+          widget.isLoading = false;
           isFailedUserPost = true;
         });
       }
@@ -127,9 +157,9 @@ class _Landing_PageState extends State<Landing_Page> {
         }
       }
       setState(() {
-        widget.isLoading=false;
-        startLoadingTile=false;
-        isFailedUserPost=false;
+        widget.isLoading = false;
+        startLoadingTile = false;
+        isFailedUserPost = false;
         postsGlobal.addAll(posts);
         storiesStillLeft = storiesLeft;
         print("now setting stories left to $storiesLeft and $storiesStillLeft");
@@ -172,8 +202,7 @@ class _Landing_PageState extends State<Landing_Page> {
           ],
         ),
       ));
-    }
-    else if(isFailedUserPost && postsGlobal.length==0){
+    } else if (isFailedUserPost && postsGlobal.length == 0) {
       print("i am here!!!");
       print(postsGlobal.length);
       return ErrWidget(
@@ -186,8 +215,7 @@ class _Landing_PageState extends State<Landing_Page> {
         },
         showLogout: false,
       );
-    }
-    else {
+    } else {
       setState(() {
         widget.isLoading = false;
       });
@@ -200,19 +228,22 @@ class _Landing_PageState extends State<Landing_Page> {
                   1, // Add one more item for progress indicator
               itemBuilder: (BuildContext context, int index) {
                 if (index == postsGlobal.length) {
-                  if(isFailedUserPost && postsGlobal.length!=0)
+                  if (isFailedUserPost && postsGlobal.length != 0)
                     return ErrWidget(
                       tryAgainOnPressed: () {
                         setState(() {
                           startLoadingTile = true;
                           isFailedUserPost = false;
                         });
-                        getUserPosts(curUser!=null?curUser.id:savedUser.id);
+                        getUserPosts(
+                            curUser != null ? curUser.id : savedUser.id);
                       },
                       showLogout: false,
                       text: "",
                     );
-                  else if ((storiesStillLeft == true && postsGlobal.length != 0) || startLoadingTile)
+                  else if ((storiesStillLeft == true &&
+                          postsGlobal.length != 0) ||
+                      startLoadingTile)
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Center(child: CircularProgressIndicator()),
@@ -251,6 +282,9 @@ class _Landing_PageState extends State<Landing_Page> {
     setState(() {
       page = 0;
       postsGlobal.clear();
+      m.clear();
+      mp.clear();
+      prft.clear();
     });
     return getUserPosts(curUser != null
         ? curUser.id
@@ -339,20 +373,20 @@ class _Landing_PageState extends State<Landing_Page> {
     return Scaffold(
         backgroundColor: Colors.grey.withOpacity(0.2),
         body:
-        // isPostLoadFail == true
-        //     ? ErrWidget(
-        //         tryAgainOnPressed: () {
-        //           setState(() {
-        //             this.isPostLoadFail = false;
-        //           });
-        //           getUserPosts(curUser != null
-        //               ? curUser.id
-        //               : (savedUser != null ? savedUser.id : null));
-        //         },
-        //         showLogout: false,
-        //       )
-        //     :
-        (widget.isLoading
+            // isPostLoadFail == true
+            //     ? ErrWidget(
+            //         tryAgainOnPressed: () {
+            //           setState(() {
+            //             this.isPostLoadFail = false;
+            //           });
+            //           getUserPosts(curUser != null
+            //               ? curUser.id
+            //               : (savedUser != null ? savedUser.id : null));
+            //         },
+            //         showLogout: false,
+            //       )
+            //     :
+            (widget.isLoading
                 ? Center(
                     child: CircularProgressIndicator(),
                   )

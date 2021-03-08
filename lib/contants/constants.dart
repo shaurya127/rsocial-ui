@@ -64,7 +64,7 @@ const kNavDrawerAmount = "Yollar";
 const kNavDrawerConnection = "Bonds";
 const kNavDrawerProfile = "Profile";
 const kNavDrawerRefer = "Refer & earn";
-const kNavDrawerSettings = "Settings & Privacy";
+const kNavDrawerSettings = "Help Center";
 const kNavDrawerLogout = "Logout";
 const kNavDrawerFeedback = "Feedback";
 

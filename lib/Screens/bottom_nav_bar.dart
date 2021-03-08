@@ -65,10 +65,11 @@ class BottomNavBar extends StatefulWidget {
   bool isNewUser;
   String sign_in_mode;
 
-  BottomNavBar(
-      {@required this.currentUser,
-      @required this.isNewUser,
-      @required this.sign_in_mode});
+  BottomNavBar({
+    @required this.currentUser,
+    @required this.isNewUser,
+    @required this.sign_in_mode,
+  });
 
   @override
   _BottomNavBarState createState() => _BottomNavBarState();
@@ -77,7 +78,6 @@ class BottomNavBar extends StatefulWidget {
 class _BottomNavBarState extends State<BottomNavBar>
     with SingleTickerProviderStateMixin {
   bool isLoading = false;
-  String photourl;
   bool isFailedUserPost = false;
   bool isFailedGetAllUser = false;
   bool isFailedGetUser = false;
@@ -93,7 +93,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   bool storiesLeft = true;
   ScrollController _scrollController = ScrollController();
   final List<int> backStack = [0];
-
+  bool refreshLandingPage = false;
   callback() {
     print("callback called");
     setState(() {});
@@ -105,21 +105,33 @@ class _BottomNavBarState extends State<BottomNavBar>
     });
   }
 
+  feedbackCallback() async {
+    setState(() {
+      _currentIndex = 0;
+    });
+  }
+
   reactionCallback() async {
     await getRCashDetails();
     setState(() {});
   }
 
+  refreshCallback() async {
+    refreshLandingPage = false;
+  }
+
   void isPostedCallback() {
+    print("IsPostedCallback called");
     setState(() {
       _currentIndex = 0;
+      refreshLandingPage = true;
     });
 
-    getAllPosts(curUser != null
-        ? curUser.id
-        : savedUser != null
-            ? savedUser.id
-            : null);
+    // getAllPosts(curUser != null
+    //     ? curUser.id
+    //     : savedUser != null
+    //         ? savedUser.id
+    //         : null);
   }
 
   createNgetUser() async {
@@ -128,7 +140,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     });
     var url = userEndPoint + 'create';
     var user = await FirebaseAuth.instance.currentUser();
-    photourl = user.photoUrl;
+
     var token = await user.getIdToken();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String inviteId = prefs.getString('inviteSenderId');
@@ -138,6 +150,10 @@ class _BottomNavBarState extends State<BottomNavBar>
 
     if (widget.currentUser != null) {
       var response;
+      var messagingToken;
+      try {
+        messagingToken = await getFirebaseMessagingToken();
+      } catch (e) {}
 
       try {
         response = await http.post(
@@ -169,9 +185,10 @@ class _BottomNavBarState extends State<BottomNavBar>
         var id;
         if (responseMessage != "UserAlreadyExists") {
           id = responseMessage['id'];
-          var messagingToken = await getFirebaseMessagingToken();
+
           print(widget.sign_in_mode);
 
+          // Updating Messagingtoken in Cloud Firestore
           try {
             await users
                 .document(user.uid)
@@ -248,11 +265,14 @@ class _BottomNavBarState extends State<BottomNavBar>
         return null;
       }
 
-      curUser = User.fromJson(responseMessage);
+      setState(() {
+        curUser = User.fromJson(responseMessage);
+      });
 
       if (curUser != null) saveData();
 
-      print("THis is my curUser lollar amount");
+      await getSocialStanding();
+
       print(curUser.lollarAmount);
       print(curUser.id);
       setState(() {});
@@ -316,6 +336,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   }
 
   getAllPosts(String id) async {
+    print("Inside get all posts");
     int start = 0;
     print("getUserPostFired");
     setState(() {
@@ -325,7 +346,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     FirebaseUser user;
     user = await authFirebase.currentUser();
     var token = await user.getIdToken();
-    //var id;
+
     if (id == null) {
       try {
         user = await authFirebase.currentUser();
@@ -333,6 +354,7 @@ class _BottomNavBarState extends State<BottomNavBar>
         if (doc == null) print("error from get user post");
         id = doc['id'];
       } catch (e) {
+        print("inside try");
         setState(() {
           isFailedUserPost = true;
         });
@@ -375,7 +397,6 @@ class _BottomNavBarState extends State<BottomNavBar>
       }
       setState(() {
         postsGlobal.addAll(posts);
-        //isLoading = false;
         isLoadingPost = false;
         storiesLeft = storiesStillLeft;
       });
@@ -437,6 +458,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   }
 
   getSocialStanding() async {
+    print("Get social standing triggered");
     var token;
     try {
       var user = await authFirebase.currentUser();
@@ -520,20 +542,21 @@ class _BottomNavBarState extends State<BottomNavBar>
     // setState(() {
     //   findingLink=true;
     // });
-    //final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
-    //final Uri deepLink = data?.link;
+    // final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    // final Uri deepLink = data?.link;
 
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
       final Uri deepLink = dynamicLink?.link;
       if (deepLink != null) {
         //print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
-        //postId = deepLink.queryParameters['postid'];
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    DisplayPost(postId: deepLink.queryParameters['postid'])));
+        postId = deepLink.queryParameters['postid'];
+        if (postId != null)
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      DisplayPost(postId: deepLink.queryParameters['postid'])));
       }
     }, onError: (OnLinkErrorException e) async {
       print('onLinkError');
@@ -546,11 +569,12 @@ class _BottomNavBarState extends State<BottomNavBar>
 
     if (deepLink != null) {
       //postId = deepLink.queryParameters['postid'];
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  DisplayPost(postId: deepLink.queryParameters['postid'])));
+      if (postId != null)
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    DisplayPost(postId: deepLink.queryParameters['postid'])));
     }
 
     // setState(() {
@@ -609,9 +633,12 @@ class _BottomNavBarState extends State<BottomNavBar>
           isLoading: isLoadingPost,
           isErrorLoadingPost: isFailedUserPost,
           scrollController: _scrollController,
-          reactionCallback: reactionCallback),
-
-      Search_Page(),
+          reactionCallback: reactionCallback,
+          refresh: refreshLandingPage,
+          refreshCallback: refreshCallback),
+      Search_Page(
+        currentUser: curUser,
+      ),
       Wage(
         currentUser: curUser,
         isPostedCallback: isPostedCallback,
@@ -693,7 +720,8 @@ class _BottomNavBarState extends State<BottomNavBar>
             child: Scaffold(
               appBar: customAppBar(context),
               drawer: Nav_Drawer(
-                callback: yollarCallback,
+                yollarCallback: yollarCallback,
+                feedbackCallback: feedbackCallback,
               ),
               body: _screens[_currentIndex],
               bottomNavigationBar: BottomNavigationBar(

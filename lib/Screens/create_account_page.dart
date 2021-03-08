@@ -9,6 +9,7 @@ import 'package:rsocial2/Widgets/RoundedButton.dart';
 import 'package:rsocial2/Screens/choose_register.dart';
 import 'package:rsocial2/Screens/register_page.dart';
 import 'package:rsocial2/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../auth.dart';
 import '../contants/constants.dart';
@@ -31,9 +32,10 @@ class _CreateAccountState extends State<CreateAccount> {
   }
 
   void initDynamicLinks() async {
-    // setState(() {
-    //   findingLink=true;
-    // });
+    setState(() {
+      findingLink = true;
+    });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     //final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
     //final Uri deepLink = data?.link;
 
@@ -41,30 +43,29 @@ class _CreateAccountState extends State<CreateAccount> {
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
           final Uri deepLink = dynamicLink?.link;
           if (deepLink != null) {
-            print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
+            print(
+                "the postid is:${deepLink.queryParameters['postid']}"); // <- prints 'abc'
             postId = deepLink.queryParameters['postid'];
             inviteSenderId = deepLink.queryParameters['sender'];
-            print("the postid is:${deepLink.queryParameters['sender']}");
-            //Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
+            prefs.setString('inviteSenderId', inviteSenderId);
           }
         }, onError: (OnLinkErrorException e) async {
       print('onLinkError');
       print(e.message);
-    }
-    );
+    });
 
-    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    final PendingDynamicLinkData data =
+    await FirebaseDynamicLinks.instance.getInitialLink();
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {
       postId = deepLink.queryParameters['postid'];
       inviteSenderId = deepLink.queryParameters['sender'];
-      //Navigator.push(context, MaterialPageRoute(builder:(context)=>DisplayPost(postId:postId)));
     }
 
-    // setState(() {
-    //   findingLink=false;
-    // });
+    setState(() {
+      findingLink = false;
+    });
   }
 
   @override
