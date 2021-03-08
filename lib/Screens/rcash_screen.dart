@@ -31,7 +31,7 @@ class _RcashScreenState extends State<RcashScreen> {
     "Available",
     "Wage",
     "Investment",
-    "Joining",
+    "Joining Bonus",
     "Platform Engagement"
   ];
   List values;

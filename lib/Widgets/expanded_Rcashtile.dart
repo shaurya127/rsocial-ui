@@ -90,16 +90,17 @@ List<String> titles;
                           )
                         ],
                       ),)
-                    )
+                    ),
 
 
                   ],
                 ),
+                SizedBox(height: 12,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      "  "+titles[1],
+                     titles[1],
                       style: TextStyle(
 
                           fontSize: 15,
@@ -134,11 +135,12 @@ List<String> titles;
 
                   ],
                 ),
+                SizedBox(height: 12,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      "  "+"Invested",
+                      "Invested",
                       style: TextStyle(
 
                           fontSize: 15,
@@ -173,11 +175,12 @@ List<String> titles;
 
                   ],
                 ),
+                SizedBox(height: 12,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      titles[4],
+                      "Joining Bonus",
                       style: TextStyle(
 
                           fontSize: 15,
@@ -212,6 +215,7 @@ List<String> titles;
 
                   ],
                 ),
+                SizedBox(height: 12,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -251,7 +255,7 @@ List<String> titles;
 
                   ],
                 ),
-
+                SizedBox(height: 12,),
               ],
             ),
           ),
