@@ -18,8 +18,11 @@ class RcashTile extends StatelessWidget {
   Color textColor;
   String title;
   int value;
+  bool isInvestment = false;
+  bool isplatformEngagement = false;
   Widget build(BuildContext context) {
     if (title == "Investment") {
+      isInvestment = true;
       if (curUser.totalActiveInvestmentAmount < 0 ||
           curUser.totalInvestmentEarningMaturedAmount < 0) {
         backgroundColor = colorRcashNegative;
@@ -27,6 +30,7 @@ class RcashTile extends StatelessWidget {
     }
 
     if (title == "Platform Engagement") {
+      isplatformEngagement = true;
       if (curUser.totalPlatformInteractionAmount < 0 ||
           curUser.referralAmount < 0) {
         backgroundColor = colorRcashNegative;
@@ -48,7 +52,7 @@ class RcashTile extends StatelessWidget {
             ),
           ],
         ),
-        child: Padding(
+        child: !isInvestment&&!isplatformEngagement? Padding(
           padding: const EdgeInsets.symmetric(vertical: 21.0, horizontal: 16),
           child: Column(
             children: [
@@ -208,190 +212,285 @@ class RcashTile extends StatelessWidget {
                   // )
                 ],
               ),
-              title == "Investment"
-                  ? Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              "Matured Investment",
-                              style:
-                                  TextStyle(fontSize: 12, fontFamily: 'Lato'),
-                            ),
-                            Container(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  SvgPicture.asset(
-                                    "images/yollar.svg",
-                                    height: 12,
-                                    color:
-                                        curUser.totalInvestmentEarningMaturedAmount <
-                                                0
-                                            ? colorAmountNegative
-                                            : colorAmountPositive,
-                                  ),
-                                  SizedBox(
-                                    width: 2,
-                                  ),
-                                  Text(
-                                    formatNumber(curUser
-                                        .totalInvestmentEarningMaturedAmount
-                                        .floor()),
-                                    style: TextStyle(
-                                      fontFamily: 'Lato',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                      color:
-                                          curUser.totalInvestmentEarningMaturedAmount <
-                                                  0
-                                              ? colorAmountNegative
-                                              : colorAmountPositive,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            )
-                          ]),
-                    )
-                  : title == "Platform Engagement"
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 16.0),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  "Interaction",
-                                  style: TextStyle(
-                                      fontSize: 12, fontFamily: 'Lato'),
-                                ),
-                                Container(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      SvgPicture.asset(
-                                        "images/yollar.svg",
-                                        height: 12,
-                                        color:
-                                            curUser.totalPlatformInteractionAmount <
-                                                    0
-                                                ? colorAmountNegative
-                                                : colorAmountPositive,
-                                      ),
-                                      SizedBox(
-                                        width: 2,
-                                      ),
-                                      Text(
-                                        formatNumber(curUser
-                                            .totalPlatformInteractionAmount
-                                            .floor()),
-                                        style: TextStyle(
-                                          fontFamily: 'Lato',
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12,
-                                          color:
-                                              curUser.totalPlatformInteractionAmount <
-                                                      0
-                                                  ? colorAmountNegative
-                                                  : colorAmountPositive,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                )
-                              ]),
-                        )
-                      : SizedBox.shrink(),
-              title == "Investment"
-                  ? Padding(
-                      padding: const EdgeInsets.only(top: 12.0),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              "Active Investment",
-                              style:
-                                  TextStyle(fontSize: 12, fontFamily: 'Lato'),
-                            ),
-                            Container(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  SvgPicture.asset(
-                                    "images/yollar.svg",
-                                    height: 12,
-                                    color:
-                                        curUser.totalActiveInvestmentAmount < 0
-                                            ? colorAmountNegative
-                                            : colorAmountPositive,
-                                  ),
-                                  SizedBox(
-                                    width: 2,
-                                  ),
-                                  Text(
-                                    formatNumber(curUser
-                                        .totalActiveInvestmentAmount
-                                        .floor()),
-                                    style: TextStyle(
-                                      fontFamily: 'Lato',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                      color:
-                                          curUser.totalActiveInvestmentAmount <
-                                                  0
-                                              ? colorAmountNegative
-                                              : colorAmountPositive,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            )
-                          ]),
-                    )
-                  : title == "Platform Engagement"
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 12),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  "Referral",
-                                  style: TextStyle(
-                                      fontSize: 12, fontFamily: 'Lato'),
-                                ),
-                                Container(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      SvgPicture.asset("images/yollar.svg",
-                                          height: 12,
-                                          color: curUser.referralAmount < 0
-                                              ? colorAmountNegative
-                                              : colorAmountPositive),
-                                      SizedBox(
-                                        width: 2,
-                                      ),
-                                      Text(
-                                        formatNumber(
-                                            curUser.referralAmount.floor()),
-                                        style: TextStyle(
-                                            fontFamily: 'Lato',
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12,
-                                            color: curUser.referralAmount < 0
-                                                ? colorAmountNegative
-                                                : colorAmountPositive),
-                                      )
-                                    ],
-                                  ),
-                                )
-                              ]),
-                        )
-                      : SizedBox.shrink()
+
             ],
           ),
+        ):
+         isplatformEngagement?
+        Padding(
+    padding: const EdgeInsets.only(top: 0),
+    child: ExpansionTile(
+expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+    title: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+
+      Text(
+        title,
+        style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+            fontFamily: 'Lato'),
+      ),
+      Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SvgPicture.asset("images/yollar.svg",
+                height: 15,
+                color: value < 0
+                    ? colorAmountNegative
+                    : colorAmountPositive),
+            SizedBox(
+              width: 2,
+            ),
+            Text(
+              formatNumber(value),
+              style: TextStyle(
+                  fontFamily: 'Lato',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: value < 0
+                      ? colorAmountNegative
+                      : colorAmountPositive),
+            )
+          ],
         ),
+      )
+
+
+    ],),
+    children: <Widget>[
+      Padding(
+        padding: const EdgeInsets.only(left: 15,right: 15,bottom: 12),
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Interaction",
+                style: TextStyle(
+                    fontSize: 15, fontFamily: 'Lato'),
+              ),
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SvgPicture.asset(
+                      "images/yollar.svg",
+                      height: 15,
+                      color:
+                      curUser.totalPlatformInteractionAmount <
+                          0
+                          ? colorAmountNegative
+                          : colorAmountPositive,
+                    ),
+                    SizedBox(
+                      width: 2,
+                    ),
+                    Text(
+                      formatNumber(curUser
+                          .totalPlatformInteractionAmount
+                          .floor()),
+                      style: TextStyle(
+                        fontFamily: 'Lato',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color:
+                        curUser.totalPlatformInteractionAmount <
+                            0
+                            ? colorAmountNegative
+                            : colorAmountPositive,
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ]),
+      ),
+
+      Padding(
+        padding: const EdgeInsets.only(left: 15,right: 15,bottom: 16),
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                "Referral",
+                style: TextStyle(
+                    fontSize: 15, fontFamily: 'Lato'),
+              ),
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SvgPicture.asset("images/yollar.svg",
+                        height: 15,
+                        color: curUser.referralAmount < 0
+                            ? colorAmountNegative
+                            : colorAmountPositive),
+                    SizedBox(
+                      width: 2,
+                    ),
+                    Text(
+                      formatNumber(
+                          curUser.referralAmount.floor()),
+                      style: TextStyle(
+                          fontFamily: 'Lato',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          color: curUser.referralAmount < 0
+                              ? colorAmountNegative
+                              : colorAmountPositive,
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ]),
+      )
+    ],
+    ),
+    ):
+          Padding(
+            padding: const EdgeInsets.only(top: 0),
+            child: ExpansionTile(
+              expandedAlignment: Alignment.centerLeft,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+
+                Text(
+                  title,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      fontFamily: 'Lato'),
+                ),
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SvgPicture.asset("images/yollar.svg",
+                          height: 15,
+                          color: value < 0
+                              ? colorAmountNegative
+                              : colorAmountPositive),
+                      SizedBox(
+                        width: 2,
+                      ),
+                      Text(
+                        formatNumber(value),
+                        style: TextStyle(
+                            fontFamily: 'Lato',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                            color: value < 0
+                                ? colorAmountNegative
+                                : colorAmountPositive),
+                      )
+                    ],
+                  ),
+                )
+
+
+              ],),
+              children: <Widget>[
+
+
+                Padding(
+                  padding: const EdgeInsets.only(left: 15,right: 15,bottom: 12),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          "Matured Investment",
+                          style:
+                          TextStyle(fontSize: 15, fontFamily: 'Lato'),
+                        ),
+                        Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SvgPicture.asset(
+                                "images/yollar.svg",
+                                height: 15,
+                                color:
+                                curUser.totalInvestmentEarningMaturedAmount <
+                                    0
+                                    ? colorAmountNegative
+                                    : colorAmountPositive,
+                              ),
+                              SizedBox(
+                                width: 2,
+                              ),
+                              Text(
+                                formatNumber(curUser
+                                    .totalInvestmentEarningMaturedAmount
+                                    .floor()),
+                                style: TextStyle(
+                                  fontFamily: 'Lato',
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color:
+                                  curUser.totalInvestmentEarningMaturedAmount <
+                                      0
+                                      ? colorAmountNegative
+                                      : colorAmountPositive,
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      ]),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 15,right: 15,bottom:16),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          "Active Investment",
+                          style:
+                          TextStyle(fontSize: 15, fontFamily: 'Lato'),
+                        ),
+                        Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SvgPicture.asset(
+                                "images/yollar.svg",
+                                height: 15,
+                                color:
+                                curUser.totalActiveInvestmentAmount < 0
+                                    ? colorAmountNegative
+                                    : colorAmountPositive,
+                              ),
+                              SizedBox(
+                                width: 2,
+                              ),
+                              Text(
+                                formatNumber(curUser
+                                    .totalActiveInvestmentAmount
+                                    .floor()),
+                                style: TextStyle(
+                                  fontFamily: 'Lato',
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color:
+                                  curUser.totalActiveInvestmentAmount <
+                                      0
+                                      ? colorAmountNegative
+                                      : colorAmountPositive,
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      ]),
+                ),
+
+
+              ],
+            ),
+          )
       ),
     );
   }
