@@ -31,15 +31,28 @@ class _NotificationTileState extends State<NotificationTile> {
                   leading: CircleAvatar(
                     backgroundImage:  AssetImage("images/avatar.jpg"),
                   ),
-                  title: Text(
-                    widget.name+"  "+ widget.notification,
-                    style: TextStyle(
-                      fontFamily: "Lato",
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: Colors.black,
+                  title:Row(children: <Widget>[
+                    Text(
+                      widget.name ,
+                      style: TextStyle(
+                        fontFamily: "Lato",
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
+
+                    Text(
+                      widget.notification,
+                      style: TextStyle(
+                        fontFamily: "Lato",
+
+                        fontSize: 14,
+                        color: Colors.black,
+                      ),
+                    ),
+
+                  ],),
                   subtitle: Text("1 hour"),
                   trailing: Icon(Icons.more_horiz)
                 ),

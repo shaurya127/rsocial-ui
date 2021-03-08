@@ -51,7 +51,7 @@ class _NotificationPageState extends State<NotificationPage>
            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
            child: ListView(
             children: <Widget>[
-              NotificationTile(name: "aisha",notification: " ewfaw",),
+              NotificationTile(name: "aisha",notification: " created a wage story",),
               NotificationTile(name: "aisha",notification: " rgaerg",),
               NotificationTile(name: "aisha",notification: " agfawegf",),
               NotificationTile(name: "aisha",notification: "qga3g34",),

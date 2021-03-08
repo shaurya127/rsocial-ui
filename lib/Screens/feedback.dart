@@ -79,7 +79,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           ),
           Padding(
             padding: const EdgeInsets.only(left: 25.0, right: 25, top: 0),
-            child: Text("ReinventingSocialTogether",style: TextStyle(fontWeight:FontWeight.bold,fontFamily: 'lato',fontSize: 28,),textAlign: TextAlign.center,),
+            child: Text("#ReinventingSocialTogether",style: TextStyle(fontWeight:FontWeight.bold,fontFamily: 'lato',fontSize: 28,),textAlign: TextAlign.center,),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 25.0, right: 25, top: 32),
