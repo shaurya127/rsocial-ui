@@ -225,7 +225,7 @@ class _InvestPostTileState extends State<InvestPostTile>
       var responseMessage;
       try {
         responseMessage =
-        jsonDecode((jsonDecode(response.body))['body'])['message'];
+            jsonDecode((jsonDecode(response.body))['body'])['message'];
 
         setState(() {
           prft[widget.userPost.id] = responseMessage["PresentValue"].toString();
@@ -790,19 +790,26 @@ class _InvestPostTileState extends State<InvestPostTile>
                 : Padding(
                     padding: const EdgeInsets.only(
                         top: 7, bottom: 3, left: 3, right: 3),
-                    child: Read_More(
-                      "${widget.userPost.storyText}",
-                      trimLines: 2,
-                      colorClickableText: Colors.blueGrey,
-                      trimMode: TrimMode.Line,
-                      trimCollapsedText: "...Show More",
-                      trimExpandedText: " Show Less",
+                    child: Text(
+                      widget.userPost.storyText,
                       style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: "Lato",
-                        color: colorUnselectedBottomNav,
-                      ),
+                          fontSize: 16,
+                          fontFamily: "Lato",
+                          color: colorUnselectedBottomNav),
                     )
+                    // Read_More(
+                    //   "${widget.userPost.storyText}",
+                    //   trimLines: 2,
+                    //   colorClickableText: Colors.blueGrey,
+                    //   trimMode: TrimMode.Line,
+                    //   trimCollapsedText: "...Show More",
+                    //   trimExpandedText: " Show Less",
+                    //   style: TextStyle(
+                    //     fontSize: 16,
+                    //     fontFamily: "Lato",
+                    //     color: colorUnselectedBottomNav,
+                    //   ),
+                    // )
                     /*Text(
 
                 "today was a great day with my cats! ",

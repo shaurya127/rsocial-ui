@@ -750,19 +750,27 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                 : Padding(
                     padding: const EdgeInsets.only(
                         top: 0, bottom: 3, left: 3, right: 3),
-                    child: Read_More(
-                      "${widget.userPost.storyText}",
-                      trimLines: 2,
-                      colorClickableText: Colors.blueGrey,
-                      trimMode: TrimMode.Line,
-                      trimCollapsedText: "...Show More",
-                      trimExpandedText: " Show Less",
+                    child: Text(
+                      widget.userPost.storyText,
                       style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: "Lato",
-                        color: colorUnselectedBottomNav,
-                      ),
-                    )),
+                          fontSize: 16,
+                          fontFamily: "Lato",
+                          color: colorUnselectedBottomNav),
+                    )
+                    // Read_More(
+                    //   "${widget.userPost.storyText}",
+                    //   trimLines: 2,
+                    //   colorClickableText: Colors.blueGrey,
+                    //   trimMode: TrimMode.Line,
+                    //   trimCollapsedText: "...Show More",
+                    //   trimExpandedText: " Show Less",
+                    //   style: TextStyle(
+                    //     fontSize: 16,
+                    //     fontFamily: "Lato",
+                    //     color: colorUnselectedBottomNav,
+                    //   ),
+                    // )
+                    ),
             widget.userPost.fileUpload.length != 0
                 ? Padding(
                     padding: widget.userPost.storyText == null

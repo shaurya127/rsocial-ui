@@ -128,6 +128,7 @@ class _ProfileState extends State<Profile> {
   }
 
   getUser() async {
+    print(widget.user.id);
     print("get user started");
     setState(() {
       isLoadingUser = true;
@@ -149,7 +150,7 @@ class _ProfileState extends State<Profile> {
             "Content-Type": "application/json",
             //"Accept": "*/*"
           },
-          body: jsonEncode({"id": widget.user.id, "email": curUser.email}));
+          body: jsonEncode({"id": widget.user.id}));
     } catch (e) {
       return null;
     }
@@ -392,8 +393,8 @@ class _ProfileState extends State<Profile> {
   }
 
   getUserPosts() async {
-    postsI=[];
-    postsW=[];
+    postsI = [];
+    postsW = [];
     setState(() {
       isLoadingPosts = true;
     });
@@ -549,7 +550,7 @@ class _ProfileState extends State<Profile> {
       //print(posts.length);
       for (int i = 0; i < postsW.length; i++) {
         Post_Tile tile = Post_Tile(
-            onPressDelete: () => deletePost(i, "wage",postsW[i].id),
+            onPressDelete: () => deletePost(i, "wage", postsW[i].id),
             curUser: widget.currentUser,
             userPost: postsW[i],
             photoUrl: curUser.id == widget.user.id
@@ -603,7 +604,7 @@ class _ProfileState extends State<Profile> {
         print("Invest reaction");
         print(postsI[i].reactedBy.length);
         InvestPostTile tile = InvestPostTile(
-            onPressDelete: () => deletePost(i, "invest",postsI[i].id),
+            onPressDelete: () => deletePost(i, "invest", postsI[i].id),
             curUser: widget.currentUser,
             userPost: postsI[i],
             photoUrl: curUser.id == widget.user.id

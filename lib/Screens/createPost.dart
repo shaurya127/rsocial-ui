@@ -476,6 +476,9 @@ class _WageState extends State<Wage> {
     getFriends();
   }
 
+  @override
+  void dispose() {}
+
   createWagePost(String storyText, List<String> list) async {
     if (storyText == null || storyText.isEmpty) {
       Fluttertoast.showToast(
