@@ -60,7 +60,7 @@ List<String> titles;
                       titles[0],
                       style: TextStyle(
                         color: Colors.blue,
-
+                          fontWeight: FontWeight.bold,
                           fontSize: 15,
                           fontFamily: 'Lato'),
                     ),

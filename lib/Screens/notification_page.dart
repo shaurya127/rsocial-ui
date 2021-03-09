@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../contants/constants.dart';
 import 'package:rsocial2/Widgets/Notification_tile.dart';
+
 class NotificationPage extends StatefulWidget {
   @override
   _NotificationPageState createState() => _NotificationPageState();
@@ -25,46 +26,77 @@ class _NotificationPageState extends State<NotificationPage>
 
   @override
   Widget build(BuildContext context) {
+    // return Scaffold(
+    //   appBar: TabBar(
+    //     indicatorColor: colorPrimaryBlue,
+    //     indicatorWeight: 3,
+    //     labelColor: colorPrimaryBlue,
+    //     labelStyle: TextStyle(fontSize: 16, fontFamily: 'Lato'),
+    //     unselectedLabelColor: colorGreyTint,
+    //     unselectedLabelStyle: TextStyle(fontSize: 16, fontFamily: 'Lato'),
+    //     controller: _tabController2,
+    //     tabs: <Tab>[
+    //       Tab(
+    //         text: "Platform",
+    //       ),
+    //       Tab(
+    //         text: "User",
+    //       ),
+    //     ],
+    //   ),
+    //   body: TabBarView(
+    //     children: <Widget>[
+    //       Container(
+    //         color: Colors.grey.withOpacity(0.1),
+    //      child: Padding(
+    //        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+    //        child: ListView(
+    //         children: <Widget>[
+    //           NotificationTile(name: "aisha",notification: " created a wage story",),
+    //           NotificationTile(name: "aisha",notification: " rgaerg",),
+    //           NotificationTile(name: "aisha",notification: " agfawegf",),
+    //           NotificationTile(name: "aisha",notification: "qga3g34",),
+    //         ],
+    //        ),
+    //      ),
+    //       ),
+    //       Container(
+    //         color: Colors.redAccent.withOpacity(0.1),
+    //       ),
+    //     ],
+    //     controller: _tabController2,
+    //   ),
+    // );
     return Scaffold(
-      appBar: TabBar(
-        indicatorColor: colorPrimaryBlue,
-        indicatorWeight: 3,
-        labelColor: colorPrimaryBlue,
-        labelStyle: TextStyle(fontSize: 16, fontFamily: 'Lato'),
-        unselectedLabelColor: colorGreyTint,
-        unselectedLabelStyle: TextStyle(fontSize: 16, fontFamily: 'Lato'),
-        controller: _tabController2,
-        tabs: <Tab>[
-          Tab(
-            text: "Platform",
+        body: Container(
+      child: Center(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            "Nothing to see here... yet.",
+            style: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: 27, fontFamily: "Lato"),
           ),
-          Tab(
-            text: "User",
+          SizedBox(
+            height: 8,
           ),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Text(
+                "This where all the actions about your RSocial happens. You'll like here.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontFamily: 'Lato',
+                    fontSize: 17,
+                    color: colorUnselectedBottomNav),
+              ),
+            ),
+          )
         ],
-      ),
-      body: TabBarView(
-        children: <Widget>[
-          Container(
-            color: Colors.grey.withOpacity(0.1),
-         child: Padding(
-           padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-           child: ListView(
-            children: <Widget>[
-              NotificationTile(name: "aisha",notification: " created a wage story",),
-              NotificationTile(name: "aisha",notification: " rgaerg",),
-              NotificationTile(name: "aisha",notification: " agfawegf",),
-              NotificationTile(name: "aisha",notification: "qga3g34",),
-            ],
-           ),
-         ),
-          ),
-          Container(
-            color: Colors.redAccent.withOpacity(0.1),
-          ),
-        ],
-        controller: _tabController2,
-      ),
-    );
+      )),
+    ));
   }
 }
