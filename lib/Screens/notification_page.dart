@@ -20,7 +20,7 @@ class _NotificationPageState extends State<NotificationPage>
     with TickerProviderStateMixin {
   List<NotificationModel> readNotification = List<NotificationModel>();
   List<NotificationModel> unreadNotification = List<NotificationModel>();
-
+  List<NotificationModel> allNotification = List<NotificationModel>();
   //TabController _tabController2;
   bool isLoading = true;
   @override
@@ -170,13 +170,16 @@ class _NotificationPageState extends State<NotificationPage>
   }
 
   buildNotificationList() {
+    allNotification=[];
     List<NotificationTile> tiles = List<NotificationTile>();
-
-    for (int i = 0; i < readNotification.length; i++) {
+    allNotification.addAll(unreadNotification);
+    allNotification.addAll(readNotification);
+    for (int i = 0; i < allNotification.length; i++) {
       tiles.add(NotificationTile(
-        name: readNotification[i].text,
-        senderId: readNotification[i].senderId,
-        notificationId: readNotification[i].id,
+        read:allNotification[i].readFlag,
+        name: allNotification[i].text,
+        senderId: allNotification[i].senderId,
+        notificationId: allNotification[i].id,
       ));
     }
 

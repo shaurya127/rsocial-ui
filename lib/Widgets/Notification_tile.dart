@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
@@ -11,12 +12,15 @@ import 'package:rsocial2/model/user.dart';
 
 import '../helper.dart';
 
+Map<String, bool> notificationRead = new Map();
+
 class NotificationTile extends StatefulWidget {
   final String name;
   final String senderId;
   final String notificationId;
+  bool read;
 
-  NotificationTile({this.name, this.senderId, this.notificationId});
+  NotificationTile({this.name, this.senderId, this.notificationId,this.read});
 
   @override
   _NotificationTileState createState() => _NotificationTileState();
@@ -38,6 +42,11 @@ class _NotificationTileState extends State<NotificationTile> {
 
   @override
   Widget build(BuildContext context) {
+
+    if(notificationRead.containsKey(widget.notificationId))
+      {
+        widget.read = notificationRead[widget.notificationId];
+      }
     return GestureDetector(
       onTap: () async {
         showProfile(context, User(id: widget.senderId));
@@ -62,14 +71,15 @@ class _NotificationTileState extends State<NotificationTile> {
                         widget.name,
                         style: TextStyle(
                           fontFamily: "Lato",
-                          fontWeight: FontWeight.bold,
+                          fontWeight: widget.read?FontWeight.normal:FontWeight.bold,
                           fontSize: 15,
+                          fontStyle: widget.read?FontStyle.italic:FontStyle.normal,
                           color: Colors.black,
                         ),
                       ),
                       subtitle: Text("1 hour"),
                       trailing: Text(
-                        "read",
+                        widget.read==false?"unread":"read",
                         style: TextStyle(
                             fontFamily: 'Lato',
                             fontSize: 12,
@@ -94,6 +104,7 @@ class _NotificationTileState extends State<NotificationTile> {
 
   setNotification() async {
     print("set notification called");
+    notificationRead[widget.notificationId] = true;
 
     var response;
     try {
