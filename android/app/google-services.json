@@ -51,7 +51,8 @@
               "client_id": "734731438631-6edkgvtcfa7q4u806pqvq29t85f1t9g0.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.rsocial2"
+                "bundle_id": "com.example.rsocial2",
+                "app_store_id": "123456789"
               }
             }
           ]
@@ -67,11 +68,51 @@
       },
       "oauth_client": [
         {
+          "client_id": "734731438631-7i0apstvn5avqjj8jjvh8c01i15ge2aa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rsocial",
+            "certificate_hash": "d874a3130688a35ac82bd624f74b8da7aa8696c6"
+          }
+        },
+        {
           "client_id": "734731438631-8alvvugui0iiu4im24178sbraltirs9m.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.rsocial",
             "certificate_hash": "0f2ab2bc22699e4ddae69ec5d51a0c4cb48d0330"
+          }
+        },
+        {
+          "client_id": "734731438631-a4gvb4sto4go8l64s60j0p5ur7g17ako.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rsocial",
+            "certificate_hash": "54eceb749d66ee040a56815bcd5cce99ceb7df22"
+          }
+        },
+        {
+          "client_id": "734731438631-jofhed51gkmmc2s7qf23heuhc368smdh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rsocial",
+            "certificate_hash": "0e98e92245a0365a9f2203b50132532046a6c8f0"
+          }
+        },
+        {
+          "client_id": "734731438631-qta1r10gmt61u9maugu924n286t7gojk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rsocial",
+            "certificate_hash": "3ff211acae36af189e41516b11c38fbd75dca7ce"
+          }
+        },
+        {
+          "client_id": "734731438631-vnvin7al659vov1ae0dfjavl4a7ftfa1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rsocial",
+            "certificate_hash": "8507bdb94257e9e30e09e7b582bec049522695c5"
           }
         },
         {
@@ -95,7 +136,8 @@
               "client_id": "734731438631-6edkgvtcfa7q4u806pqvq29t85f1t9g0.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.rsocial2"
+                "bundle_id": "com.example.rsocial2",
+                "app_store_id": "123456789"
               }
             }
           ]

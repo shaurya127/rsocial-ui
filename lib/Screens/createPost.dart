@@ -665,7 +665,7 @@ class _WageState extends State<Wage> {
                       ),
                       Text(
                         (1000 - curUser.totalAvailableYollar).toString() +
-                            " to invest",
+                            " more to start investing!",
                         style: TextStyle(
                             fontFamily: 'Lato',
                             fontSize: 20,
@@ -1003,7 +1003,7 @@ class _WageState extends State<Wage> {
                                       fontWeight: boldInput
                                           ? FontWeight.bold
                                           : FontWeight.normal),
-                                  maxLength: 150,
+                                  maxLength: 200,
                                   maxLines: 6,
                                   decoration: InputDecoration(
                                       border: InputBorder.none,
@@ -1232,7 +1232,7 @@ class _WageState extends State<Wage> {
                             fontWeight: boldInput
                                 ? FontWeight.bold
                                 : FontWeight.normal),
-                        maxLength: 150,
+                        maxLength: 200,
                         maxLines: 6,
                         decoration: InputDecoration(
                             border: InputBorder.none,

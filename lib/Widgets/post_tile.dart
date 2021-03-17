@@ -11,7 +11,7 @@ import 'package:flutter_share/flutter_share.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
+import 'package:flutter_linkify/flutter_linkify.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
@@ -28,6 +28,7 @@ import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/Screens/reaction_info.dart';
 import 'package:rsocial2/Screens/search_page.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../contants/constants.dart';
 import '../model/post.dart';
 import '../model/reaction_model.dart';
@@ -750,13 +751,24 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                 : Padding(
                     padding: const EdgeInsets.only(
                         top: 0, bottom: 3, left: 3, right: 3),
-                    child: Text(
-                      widget.userPost.storyText,
+                    child: Linkify(
+                      onOpen: (link) async {
+                        if (await canLaunch(link.url)) {
+                          await launch(link.url);
+                        } else {
+                          throw 'Could not launch $link';
+                        }
+                      },
+                      linkStyle: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        color: Colors.blue,
+                      ),
+                      text: widget.userPost.storyText,
                       style: TextStyle(
                           fontSize: 16,
                           fontFamily: "Lato",
                           color: colorUnselectedBottomNav),
-                    )
+                    ),
                     // Read_More(
                     //   "${widget.userPost.storyText}",
                     //   trimLines: 2,
@@ -770,7 +782,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                     //     color: colorUnselectedBottomNav,
                     //   ),
                     // )
-                    ),
+                  ),
             widget.userPost.fileUpload.length != 0
                 ? Padding(
                     padding: widget.userPost.storyText == null

@@ -340,9 +340,10 @@ loginWithGoogle(User _currentUser, BuildContext context, bool log) async {
 
     if (log == true) {
       googleUser = await GoogleSignIn().signIn();
-    } else
+    } else {
       googleUser = await googleSignIn.signIn();
-
+    }
+    print("HELLLLLLLLLO");
     if (googleUser != null) {
       final GoogleSignInAuthentication googleKey =
           await googleUser.authentication;
@@ -379,14 +380,16 @@ loginWithGoogle(User _currentUser, BuildContext context, bool log) async {
           barrierDismissible: false);
 
       user = await FirebaseAuth.instance.signInWithCredential(credential);
-
+      print("JUST AFTER: " + user.toString());
       assert(user.getIdToken() != null);
       currentUser = await FirebaseAuth.instance.currentUser();
       assert(currentUser != null);
-      print(user.uid);
+      print("UID:" + user.uid);
       user_id = user.uid;
     }
   } on PlatformException catch (e) {
+    print("CATCH!");
+    print(e.toString());
     if (e.code == 'ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL') {
       var alertBox = AlertDialogBox(
         title: "Error",
@@ -440,8 +443,11 @@ loginWithGoogle(User _currentUser, BuildContext context, bool log) async {
 
       showDialog(context: (context), builder: (context) => alertBox);
     }
+  } catch (error) {
+    //print("CATCH!");
+    print(error.toString());
   }
-
+  print("USER:" + user.toString());
   if (user.uid == currentUser.uid) {
     // Checking whether user already exists in firebase
     DocumentSnapshot doc = await users.document(user.uid).get();

@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
@@ -26,6 +27,7 @@ import 'package:rsocial2/Screens/reaction_info.dart';
 import 'package:rsocial2/Screens/search_page.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../contants/config.dart';
 import '../contants/constants.dart';
 import '../deep_links.dart';
@@ -790,13 +792,24 @@ class _InvestPostTileState extends State<InvestPostTile>
                 : Padding(
                     padding: const EdgeInsets.only(
                         top: 7, bottom: 3, left: 3, right: 3),
-                    child: Text(
-                      widget.userPost.storyText,
+                    child: Linkify(
+                      onOpen: (link) async {
+                        if (await canLaunch(link.url)) {
+                          await launch(link.url);
+                        } else {
+                          throw 'Could not launch $link';
+                        }
+                      },
+                      linkStyle: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        color: Colors.blue,
+                      ),
+                      text: widget.userPost.storyText,
                       style: TextStyle(
                           fontSize: 16,
                           fontFamily: "Lato",
                           color: colorUnselectedBottomNav),
-                    )
+                    ),
                     // Read_More(
                     //   "${widget.userPost.storyText}",
                     //   trimLines: 2,
@@ -822,7 +835,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                 ),
                 //textAlign: TextAlign.left,
               ),*/
-                    ),
+                  ),
             widget.userPost.fileUpload.length != 0
                 ? Padding(
                     padding: widget.userPost.storyText == null

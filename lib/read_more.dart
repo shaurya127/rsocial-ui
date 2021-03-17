@@ -8,21 +8,21 @@ enum TrimMode {
 
 class Read_More extends StatefulWidget {
   const Read_More(
-      this.data, {
-        Key key,
-        this.trimExpandedText = ' read less',
-        this.trimCollapsedText = ' ...read more',
-        this.colorClickableText,
-        this.trimLength = 240,
-        this.trimLines = 2,
-        this.trimMode = TrimMode.Length,
-        this.style,
-        this.textAlign,
-        this.textDirection,
-        this.locale,
-        this.textScaleFactor,
-        this.semanticsLabel,
-      })  : assert(data != null),
+    this.data, {
+    Key key,
+    this.trimExpandedText = ' read less',
+    this.trimCollapsedText = ' ...read more',
+    this.colorClickableText,
+    this.trimLength = 240,
+    this.trimLines = 2,
+    this.trimMode = TrimMode.Length,
+    this.style,
+    this.textAlign,
+    this.textDirection,
+    this.locale,
+    this.textScaleFactor,
+    this.semanticsLabel,
+  })  : assert(data != null),
         super(key: key);
 
   final String data;
@@ -56,7 +56,6 @@ class Read_MoreState extends State<Read_More> {
 
   @override
   Widget build(BuildContext context) {
-
     final DefaultTextStyle defaultTextStyle = DefaultTextStyle.of(context);
     TextStyle effectiveTextStyle = widget.style;
     if (widget.style == null || widget.style.inherit) {
@@ -69,8 +68,7 @@ class Read_MoreState extends State<Read_More> {
     final textScaleFactor =
         widget.textScaleFactor ?? MediaQuery.textScaleFactorOf(context);
     final overflow = defaultTextStyle.overflow;
-    final locale =
-        widget.locale ?? Localizations.localeOf(context, nullOk: true);
+    final locale = widget.locale ?? Localizations.localeOf(context);
 
     final colorClickableText =
         widget.colorClickableText ?? Theme.of(context).accentColor;
@@ -124,8 +122,7 @@ class Read_MoreState extends State<Read_More> {
             textSize.height,
           ));
           endIndex = textPainter.getOffsetBefore(pos.offset);
-        }
-        else {
+        } else {
           var pos = textPainter.getPositionForOffset(
             textSize.bottomLeft(Offset.zero),
           );
@@ -157,7 +154,7 @@ class Read_MoreState extends State<Read_More> {
                 style: effectiveTextStyle,
                 text: _readMore
                     ? widget.data.substring(0, endIndex) +
-                    (linkLongerThanLine ? _kLineSeparator : '')
+                        (linkLongerThanLine ? _kLineSeparator : '')
                     : widget.data,
                 children: <TextSpan>[link],
               );

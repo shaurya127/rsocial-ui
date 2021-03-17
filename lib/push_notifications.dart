@@ -36,10 +36,12 @@ class PushNotificationService {
     _fcm.onTokenRefresh.listen((token) async {
       FirebaseAuth _authInstance = FirebaseAuth.instance;
       FirebaseUser user = await _authInstance.currentUser();
-      var authToken = await user.getIdToken();
+      print(user);
+
       var id;
       if (user != null) {
         try {
+          var authToken = await user.getIdToken();
           DocumentSnapshot doc = await users.document(user.uid).get();
           if (!doc.exists) {
             return;
