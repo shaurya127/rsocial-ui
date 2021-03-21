@@ -16,11 +16,13 @@ class NotificationModel {
   });
 
   factory NotificationModel.fromJson(final json) {
+    double datetime = json["ReceivedTime"];
+
     return NotificationModel(
         senderId: json['SenderUUID'],
         id: json['NotificationUUID'],
         text: json['NotificationText'],
         readFlag: json['ReadFlag'],
-        dateTime: DateTime.fromMillisecondsSinceEpoch(json['ReceivedTime']));
+        dateTime: DateTime.fromMillisecondsSinceEpoch(datetime.toInt() * 1000));
   }
 }

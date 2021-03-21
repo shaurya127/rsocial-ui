@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
@@ -23,12 +23,11 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   bool boldInput = false;
   String feedback;
 
-  get authFirebase => null;
+  get authFirebase => FirebaseAuth.instance;
 
   sendFeedback(String feedback) async {
     var user = await authFirebase.currentUser();
     var token = await user.getIdToken();
-    var curUser;
     var id = curUser.id;
 
     if (feedback == "")

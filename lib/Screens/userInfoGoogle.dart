@@ -322,7 +322,7 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                   height: 24.5,
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(10),
                   child: FittedBox(
                     child: Text(
                       "By continuing you agree to our ",
@@ -334,7 +334,7 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(2),
                   child: FittedBox(
                     child: GestureDetector(
                       onTap: () {

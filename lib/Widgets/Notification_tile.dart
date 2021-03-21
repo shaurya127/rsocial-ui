@@ -135,7 +135,7 @@ class _NotificationTileState extends State<NotificationTile> {
           url: userEndPoint + "setnotification",
           token: token,
           body: jsonEncode({
-            "id": user.uid,
+            "id": curUser.id,
             "notificationUid": [widget.notificationId]
           }));
 
