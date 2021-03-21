@@ -12,7 +12,8 @@ import 'package:rsocial2/Widgets/error.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/contants/constants.dart';
-
+import 'package:provider/provider.dart';
+import '../providers/data.dart';
 import '../helper.dart';
 import '../model/post.dart';
 import '../model/user.dart';
@@ -58,12 +59,10 @@ class _Landing_PageState extends State<Landing_Page> {
 
   @override
   void initState() {
-    print("Init state of landing page called");
     super.initState();
     FirebaseAnalytics().setCurrentScreen(screenName: "Landing_Page");
     if (widget.refresh != null && widget.refresh == true) {
       getUserPostsAsync();
-      print("Get user post completed");
     }
     if (widget.refreshCallback != null) {
       widget.refreshCallback();
@@ -76,7 +75,7 @@ class _Landing_PageState extends State<Landing_Page> {
           setState(() {
             page = page + 10;
           });
-          print("i was called with $page and $storiesStillLeft");
+          //  print("i was called with $page and $storiesStillLeft");
           getUserPosts(curUser != null
               ? curUser.id
               : (savedUser != null ? savedUser.id : null));
@@ -105,10 +104,10 @@ class _Landing_PageState extends State<Landing_Page> {
   }
 
   Future<void> getUserPosts(String id) async {
-    print("getUserPostFired");
     FirebaseUser user;
     user = await authFirebase.currentUser();
     var token = await user.getIdToken();
+
     if (id == null) {
       try {
         user = await authFirebase.currentUser();
@@ -127,10 +126,12 @@ class _Landing_PageState extends State<Landing_Page> {
         url: storyEndPoint + "all",
         token: token,
         body: jsonEncode({"id": id, "start_token": page}));
-
+    //print(response.body);
+    print("getUserPostFired");
     if (response == null) {
       setState(() {
         isFailedUserPost = true;
+        widget.isLoading = false;
       });
       return true;
     }
@@ -162,17 +163,17 @@ class _Landing_PageState extends State<Landing_Page> {
         isFailedUserPost = false;
         postsGlobal.addAll(posts);
         storiesStillLeft = storiesLeft;
-        print("now setting stories left to $storiesLeft and $storiesStillLeft");
+        //print("now setting stories left to $storiesLeft and $storiesStillLeft");
       });
     } else {
-      print(response.statusCode);
+      //print(response.statusCode);
       throw Exception();
     }
   }
 
   buildPosts() {
-    print("build started");
-    print(postsGlobal.length);
+    //print("build started");
+    //print(postsGlobal.length);
     setState(() {
       widget.isLoading = true;
     });
@@ -203,15 +204,16 @@ class _Landing_PageState extends State<Landing_Page> {
         ),
       ));
     } else if (isFailedUserPost && postsGlobal.length == 0) {
-      print("i am here!!!");
-      print(postsGlobal.length);
+//print(postsGlobal.length);
+      print("HI");
       return ErrWidget(
-        tryAgainOnPressed: () {
+        tryAgainOnPressed: () async {
+          print("HI");
           setState(() {
             widget.isLoading = true;
             isFailedUserPost = false;
           });
-          getPostOnRefresh();
+          await getPostOnRefresh();
         },
         showLogout: false,
       );
@@ -228,7 +230,8 @@ class _Landing_PageState extends State<Landing_Page> {
                   1, // Add one more item for progress indicator
               itemBuilder: (BuildContext context, int index) {
                 if (index == postsGlobal.length) {
-                  if (isFailedUserPost && postsGlobal.length != 0)
+                  if (isFailedUserPost && postsGlobal.length != 0) {
+                    print("HIYA");
                     return ErrWidget(
                       tryAgainOnPressed: () {
                         setState(() {
@@ -241,7 +244,7 @@ class _Landing_PageState extends State<Landing_Page> {
                       showLogout: false,
                       text: "",
                     );
-                  else if ((storiesStillLeft == true &&
+                  } else if ((storiesStillLeft == true &&
                           postsGlobal.length != 0) ||
                       startLoadingTile)
                     return Padding(
@@ -279,6 +282,8 @@ class _Landing_PageState extends State<Landing_Page> {
   }
 
   Future<void> getPostOnRefresh() async {
+    Provider.of<Data>(context, listen: false).isRefreshing = true;
+    print("Trying refresh");
     setState(() {
       page = 0;
       postsGlobal.clear();
@@ -286,9 +291,10 @@ class _Landing_PageState extends State<Landing_Page> {
       mp.clear();
       prft.clear();
     });
-    return getUserPosts(curUser != null
+    await getUserPosts(curUser != null
         ? curUser.id
         : (savedUser != null ? savedUser.id : null));
+    Provider.of<Data>(context, listen: false).isRefreshing = false;
   }
 
   getPostOnDelete() async {
@@ -323,7 +329,7 @@ class _Landing_PageState extends State<Landing_Page> {
       body: jsonEncode({"id": curUser.id, "StoryId": postsGlobal[index].id}),
     );
 
-    print(response.statusCode);
+    //print(response.statusCode);
     if (response.statusCode == 200) {
       // print("post length 1 id ${postsGlobal.length}");
       // print("post length 1 id ${postsGlobal[0].user.fname}");
@@ -353,7 +359,7 @@ class _Landing_PageState extends State<Landing_Page> {
 
   slideIt(BuildContext context, int index, animation) {
     var item = postsGlobal.removeAt(index);
-    print("in slide it ${item.user.fname}");
+    //print("in slide it ${item.user.fname}");
 
     return SlideTransition(
         position: Tween<Offset>(

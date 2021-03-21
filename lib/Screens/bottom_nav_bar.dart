@@ -13,6 +13,7 @@ import 'package:rsocial2/Widgets/error.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/contants/constants.dart';
 import 'package:rsocial2/helper.dart';
+import 'package:rsocial2/model/notification.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import '../contants/config.dart';
@@ -36,11 +37,11 @@ import 'package:rsocial2/Screens/nav_drawer.dart';
 import 'package:rsocial2/Screens/search_page.dart';
 import 'dart:developer';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
-
+import './notification_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import '../model/connection.dart';
-
+import '../providers/data.dart';
 import '../main.dart';
 import '../model/post.dart';
 
@@ -83,12 +84,14 @@ class _BottomNavBarState extends State<BottomNavBar>
   bool isFailedGetUser = false;
 
   List _screens;
-
+  List<NotificationModel> readNotification = [];
+  List<NotificationModel> unreadNotification = [];
   bool isPosted = false;
   int _currentIndex = 0;
   bool isLoadingPost = false;
   bool isForward = true;
   bool isNewUserFailed = false;
+  bool showNotification = false;
   User Ruser;
   bool storiesLeft = true;
   ScrollController _scrollController = ScrollController();
@@ -267,6 +270,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       }
 
       setState(() {
+        print("USERRR:${User.fromJson(responseMessage)}");
         curUser = User.fromJson(responseMessage);
       });
 
@@ -410,8 +414,12 @@ class _BottomNavBarState extends State<BottomNavBar>
   getRCashDetails() async {
     var user = await authFirebase.currentUser();
     var token = await user.getIdToken();
-    var id = curUser.id;
-
+    var id;
+    if (curUser == null) {
+      id = savedUser.id;
+    } else {
+      id = curUser.id;
+    }
     var response = await postFunc(
         url: userEndPoint + "getyollar",
         token: token,
@@ -420,26 +428,26 @@ class _BottomNavBarState extends State<BottomNavBar>
     if (response == null) {
       return null;
     }
-
     if (response.statusCode == 200) {
       var responseMessage =
           jsonDecode((jsonDecode(response.body))['body'])['message'];
-      Ruser = User.fromJson(responseMessage);
-
-      curUser.lollarAmount = Ruser.lollarAmount;
-      curUser.totalAvailableYollar = Ruser.totalAvailableYollar;
-      curUser.totalWageEarningAmount = Ruser.totalWageEarningAmount;
-      curUser.totalInvestmentEarningActiveAmount =
-          Ruser.totalInvestmentEarningActiveAmount;
-      curUser.joiningBonus = Ruser.joiningBonus;
-      curUser.totalPlatformEngagementAmount =
-          Ruser.totalPlatformEngagementAmount;
-      curUser.referralAmount = Ruser.referralAmount;
-      curUser.totalPlatformInteractionAmount =
-          Ruser.totalPlatformInteractionAmount;
-      curUser.totalActiveInvestmentAmount = Ruser.totalActiveInvestmentAmount;
-      curUser.totalInvestmentEarningMaturedAmount =
-          Ruser.totalInvestmentEarningMaturedAmount;
+      curUser = User.fromJson(responseMessage);
+      // if(curUser!=null){
+      // curUser.lollarAmount = Ruser.lollarAmount;
+      // curUser.totalAvailableYollar = Ruser.totalAvailableYollar;
+      // curUser.totalWageEarningAmount = Ruser.totalWageEarningAmount;
+      // curUser.totalInvestmentEarningActiveAmount =
+      //     Ruser.totalInvestmentEarningActiveAmount;
+      // curUser.joiningBonus = Ruser.joiningBonus;
+      // curUser.totalPlatformEngagementAmount =
+      //     Ruser.totalPlatformEngagementAmount;
+      // curUser.referralAmount = Ruser.referralAmount;
+      // curUser.totalPlatformInteractionAmount =
+      //     Ruser.totalPlatformInteractionAmount;
+      // curUser.totalActiveInvestmentAmount = Ruser.totalActiveInvestmentAmount;
+      // curUser.totalInvestmentEarningMaturedAmount =
+      //     Ruser.totalInvestmentEarningMaturedAmount;
+      // }
     }
   }
 
@@ -502,6 +510,63 @@ class _BottomNavBarState extends State<BottomNavBar>
     }
   }
 
+  getNotifications() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    var response;
+    try {
+      var user = await FirebaseAuth.instance.currentUser();
+      var token = await user.getIdToken();
+
+      response = await postFunc(
+          url: userEndPoint + "getnotification",
+          token: token,
+          body: jsonEncode({
+            //"id": "bb6c5841ba0d4f5597506ff3b61b91d3",
+            "id": curUser == null ? savedUser.id : curUser.id,
+          }));
+      print("NOTIFICATION:${response.body}");
+      print("Inside get notification");
+      if (response == null) {
+        print("response is null");
+      }
+    } catch (e) {
+      isLoading = false;
+    }
+    print(response.statusCode);
+    setState(() {
+      isLoading = false;
+    });
+    if (response.statusCode == 200) {
+      var responseMessage =
+          jsonDecode((jsonDecode(response.body))['body'])['message'];
+
+      print(responseMessage['True']);
+      if (responseMessage['True'] != null) {
+        for (int i = 0; i < responseMessage['True'].length; i++) {
+          readNotification
+              .add(NotificationModel.fromJson(responseMessage['True'][i]));
+          print(readNotification[i].text);
+        }
+      }
+      if (responseMessage['False'] != null) {
+        for (int i = 0; i < responseMessage['False'].length; i++) {
+          unreadNotification
+              .add(NotificationModel.fromJson(responseMessage['False'][i]));
+        }
+      }
+      print(readNotification.length);
+      if (unreadNotification.isNotEmpty) {
+        showNotification = true;
+      }
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   void initState() {
     print("post id is this: $postId");
@@ -537,6 +602,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       await getSocialStanding();
       setState(() {});
     });
+    getNotifications();
   }
 
   void initDynamicLinks() async {
@@ -601,12 +667,18 @@ class _BottomNavBarState extends State<BottomNavBar>
     backStack.add(index);
     setState(() {
       _currentIndex = index;
+      if (index == 3) {
+        showNotification = false;
+      }
     });
   }
 
   void navigateBack(int index) {
     setState(() {
       _currentIndex = index;
+      if (index == 3) {
+        showNotification = false;
+      }
     });
   }
 
@@ -644,23 +716,21 @@ class _BottomNavBarState extends State<BottomNavBar>
         currentUser: curUser,
         isPostedCallback: isPostedCallback,
       ),
-      NotificationPage(),
+      NotificationPage(
+        curUser: curUser,
+      ),
       RcashScreen(
         Ruser: Ruser,
         reactionCallback: reactionCallback,
       )
     ];
-    print("This is my savedUser");
-    print(savedUser);
-
-    print("This is my current User");
-    print(curUser);
     return isNewUserFailed
         ? Scaffold(
             backgroundColor: Colors.white,
             body: Center(
                 child: ErrWidget(
               tryAgainOnPressed: () {
+                print("HEY");
                 setState(() {
                   isLoading = true;
                   isNewUserFailed = false;
@@ -679,6 +749,7 @@ class _BottomNavBarState extends State<BottomNavBar>
                 body: Center(
                     child: ErrWidget(
                   tryAgainOnPressed: () {
+                    print("HI");
                     setState(() {
                       isLoading = true;
                       isFailedGetUser = false;
@@ -728,11 +799,16 @@ class _BottomNavBarState extends State<BottomNavBar>
               bottomNavigationBar: BottomNavigationBar(
                 currentIndex: _currentIndex,
                 onTap: (index) {
+                  if (Provider.of<Data>(context, listen: false).isRefreshing) {
+                    return;
+                  }
                   navigateTo(index);
                   setState(() => _currentIndex = index);
-                  _scrollController.animateTo(0,
-                      duration: Duration(milliseconds: 500),
-                      curve: Curves.easeInOut);
+                  if (_scrollController.hasClients) {
+                    _scrollController.animateTo(0,
+                        duration: Duration(milliseconds: 500),
+                        curve: Curves.easeInOut);
+                  }
                 },
                 type: BottomNavigationBarType.fixed,
                 backgroundColor: Colors.white,
@@ -748,8 +824,51 @@ class _BottomNavBarState extends State<BottomNavBar>
                   "images/yollar_outline.svg"
                 ]
                     .asMap()
-                    .map(
-                      (key, value) => MapEntry(
+                    .map((key, value) {
+                      if (key == 3) {
+                        return MapEntry(
+                          key,
+                          BottomNavigationBarItem(
+                              title: Text(
+                                "",
+                                style: TextStyle(
+                                  fontSize: 0,
+                                  color: _currentIndex == key
+                                      ? colorButton
+                                      : colorUnselectedBottomNav
+                                          .withOpacity(0.5),
+                                  fontFamily: "Lato",
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              icon: Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 2, bottom: 3.5),
+                                child: Stack(
+                                  children: [
+                                    if (showNotification)
+                                      Positioned(
+                                        right: 1,
+                                        top: 2,
+                                        child: CircleAvatar(
+                                          radius: 3,
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      ),
+                                    SvgPicture.asset(
+                                      value,
+                                      color: _currentIndex != key
+                                          ? colorUnselectedBottomNav
+                                              .withOpacity(0.5)
+                                          : colorPrimaryBlue,
+                                      height: 25,
+                                    ),
+                                  ],
+                                ),
+                              )),
+                        );
+                      }
+                      return MapEntry(
                         key,
                         BottomNavigationBarItem(
                             title: Text(
@@ -806,8 +925,8 @@ class _BottomNavBarState extends State<BottomNavBar>
                                           size: 35,
                                         ),
                                       )),
-                      ),
-                    )
+                      );
+                    })
                     .values
                     .toList(),
               ),

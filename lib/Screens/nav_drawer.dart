@@ -9,12 +9,13 @@ import '../authLogic.dart';
 import '../contants/constants.dart';
 import '../functions.dart';
 import '../Widgets/nav_drawer_tile.dart';
+import './help_center.dart';
 
 class Nav_Drawer extends StatefulWidget {
   Function yollarCallback;
   Function feedbackCallback;
 
-  Nav_Drawer({this.feedbackCallback,this.yollarCallback});
+  Nav_Drawer({this.feedbackCallback, this.yollarCallback});
   @override
   _Nav_DrawerState createState() => _Nav_DrawerState();
 }
@@ -188,8 +189,20 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                   ),
                 ),
                 Nav_Drawer_Tile(
+                  f: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HelpCenter(),
+                      ),
+                    );
+                  },
                   title: kNavDrawerSettings,
-                  icon: Icon(Icons.help_outline,color: nameCol.withOpacity(0.4),),
+                  icon: Icon(
+                    Icons.help_outline,
+                    color: nameCol.withOpacity(0.4),
+                  ),
                   // SvgPicture.asset(
                   //   "images/settings.svg",
                   //   color: nameCol.withOpacity(0.4),
@@ -206,7 +219,9 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => FeedbackScreen(callback: widget.feedbackCallback,)));
+                            builder: (context) => FeedbackScreen(
+                                  callback: widget.feedbackCallback,
+                                )));
                     //widget.feedbackCallback();
                   },
                   icon: Icon(
@@ -223,7 +238,10 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                   icon: Icon(Icons.exit_to_app),
                   trailing: IconButton(
                     alignment: Alignment.centerRight,
-                    icon: Icon(Icons.chevron_right,color: nameCol.withOpacity(0.4),),
+                    icon: Icon(
+                      Icons.chevron_right,
+                      color: nameCol.withOpacity(0.4),
+                    ),
                   ),
                   f: () {
                     logout(context);

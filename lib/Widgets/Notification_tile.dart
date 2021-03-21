@@ -18,9 +18,16 @@ class NotificationTile extends StatefulWidget {
   final String name;
   final String senderId;
   final String notificationId;
+  final DateTime datetime;
   bool read;
 
-  NotificationTile({this.name, this.senderId, this.notificationId,this.read});
+  NotificationTile({
+    this.name,
+    this.senderId,
+    this.notificationId,
+    this.read,
+    this.datetime,
+  });
 
   @override
   _NotificationTileState createState() => _NotificationTileState();
@@ -40,13 +47,26 @@ class _NotificationTileState extends State<NotificationTile> {
     setState(() {});
   }
 
+  String getTimeSinceNotification() {
+    Duration duration = DateTime.now().difference(widget.datetime);
+    if (duration.inDays == 1) {
+      return "${duration.inDays} day";
+    } else if (duration.inDays > 1) {
+      return "${duration.inDays} days";
+    } else if (duration.inHours == 1) {
+      return "${duration.inHours} hour";
+    } else if (duration.inHours > 1) {
+      return "${duration.inDays} hours";
+    } else {
+      return "Now";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-
-    if(notificationRead.containsKey(widget.notificationId))
-      {
-        widget.read = notificationRead[widget.notificationId];
-      }
+    if (notificationRead.containsKey(widget.notificationId)) {
+      widget.read = notificationRead[widget.notificationId];
+    }
     return GestureDetector(
       onTap: () async {
         showProfile(context, User(id: widget.senderId));
@@ -61,40 +81,40 @@ class _NotificationTileState extends State<NotificationTile> {
               children: <Widget>[
                 Expanded(
                   child: ListTile(
-                      //contentPadding: EdgeInsets.all(4),
-                      dense: true,
-                      //contentPadding: EdgeInsets.all(-10)
-                      // leading: CircleAvatar(
-                      //   backgroundImage: AssetImage("images/avatar.jpg"),
-                      // ),
-                      title: Text(
-                        widget.name,
-                        style: TextStyle(
-                          fontFamily: "Lato",
-                          fontWeight: widget.read?FontWeight.normal:FontWeight.bold,
-                          fontSize: 15,
-                          fontStyle: widget.read?FontStyle.italic:FontStyle.normal,
-                          color: Colors.black,
-                        ),
+                    contentPadding: EdgeInsets.all(6),
+                    dense: true,
+                    //contentPadding: EdgeInsets.all(-10)
+                    // leading: CircleAvatar(
+                    //   backgroundImage: AssetImage("images/avatar.jpg"),
+                    // ),
+                    tileColor:
+                        widget.read ? Colors.white : Colors.lightBlue[50],
+                    title: Text(
+                      widget.name,
+                      style: TextStyle(
+                        fontFamily: "Lato",
+                        fontWeight:
+                            widget.read ? FontWeight.normal : FontWeight.bold,
+                        fontSize: 15,
+                        color: Colors.black,
                       ),
-                      subtitle: Text("1 hour"),
-                      trailing: Text(
-                        widget.read==false?"unread":"read",
-                        style: TextStyle(
-                            fontFamily: 'Lato',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w200,
-                            color: colorUnselectedBottomNav),
-                      )),
+                    ),
+                    subtitle: Text(getTimeSinceNotification()),
+                    // trailing: Text(
+                    //   widget.read == false ? "unread" : "read",
+                    //   style: TextStyle(
+                    //       fontFamily: 'Lato',
+                    //       fontSize: 12,
+                    //       fontWeight: FontWeight.w200,
+                    //       color: colorUnselectedBottomNav),
+                    // )
+                  ),
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Divider(
-                height: 1,
-                color: Colors.grey,
-              ),
+            Divider(
+              height: 1,
+              color: Colors.grey,
             )
           ],
         ),
@@ -115,7 +135,7 @@ class _NotificationTileState extends State<NotificationTile> {
           url: userEndPoint + "setnotification",
           token: token,
           body: jsonEncode({
-            "id": "bb6c5841ba0d4f5597506ff3b61b91d3",
+            "id": user.uid,
             "notificationUid": [widget.notificationId]
           }));
 

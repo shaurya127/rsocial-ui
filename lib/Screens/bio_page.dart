@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Widgets/RoundedButton.dart';
-
+import './user_onboarding.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/profile_pic.dart';
 import 'package:rsocial2/auth.dart';
@@ -130,12 +130,18 @@ class _BioPageState extends State<BioPage> {
                       name: 'Wrote_Bio_or_not', value: "wrote_bio");
                   return Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
-                          settings: RouteSettings(name: "Landing_Page"),
-                          builder: (BuildContext context) => BottomNavBar(
-                                currentUser: widget.currentUser,
-                                isNewUser: true,
-                              )),
+                          settings: RouteSettings(name: "Onboarding_Page"),
+                          builder: (BuildContext context) =>
+                              UserOnboarding(widget.currentUser)),
                       (Route<dynamic> route) => false);
+                  // return Navigator.of(context).pushAndRemoveUntil(
+                  //     MaterialPageRoute(
+                  //         settings: RouteSettings(name: "Landing_Page"),
+                  //         builder: (BuildContext context) => BottomNavBar(
+                  //               currentUser: widget.currentUser,
+                  //               isNewUser: true,
+                  //             )),
+                  //     (Route<dynamic> route) => false);
                 },
               ),
               SizedBox(
@@ -148,12 +154,18 @@ class _BioPageState extends State<BioPage> {
                   //widget.analytics.logEvent(name: 'setUserProp_success');
                   return Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(
-                          settings: RouteSettings(name: "Landing_Page"),
-                          builder: (BuildContext context) => BottomNavBar(
-                                currentUser: widget.currentUser,
-                                isNewUser: true,
-                              )),
+                          settings: RouteSettings(name: "Onboarding_Page"),
+                          builder: (BuildContext context) =>
+                              UserOnboarding(widget.currentUser)),
                       (Route<dynamic> route) => false);
+                  // return Navigator.of(context).pushAndRemoveUntil(
+                  //     MaterialPageRoute(
+                  //         settings: RouteSettings(name: "Landing_Page"),
+                  //         builder: (BuildContext context) => BottomNavBar(
+                  //               currentUser: widget.currentUser,
+                  //               isNewUser: true,
+                  //             )),
+                  //     (Route<dynamic> route) => false);
                 },
                 child: Text(
                   kBioPageInkWell,

@@ -16,14 +16,14 @@ import 'package:rsocial2/Screens/userInfoGoogle.dart';
 import 'package:rsocial2/auth.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-
+import 'package:provider/provider.dart';
 import 'package:rsocial2/contants/constants.dart';
 import 'package:rsocial2/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Screens/bottom_nav_bar.dart';
 import 'Screens/create_account_page.dart';
 import 'Screens/login_page.dart';
-
+import 'providers/data.dart';
 import 'push_notifications.dart';
 
 void main() {
@@ -80,27 +80,33 @@ class MyApp extends StatelessWidget {
         }
       },
       child: OverlaySupport(
-        child: MaterialApp(
-            navigatorKey: navigatorKey,
-            debugShowCheckedModeBanner: false,
-            navigatorObservers: <NavigatorObserver>[MyApp.observer],
-            theme: ThemeData(
-              //visualDensity: VisualDensity.adaptivePlatformDensity,
-              //brightness: Brightness.light,
-              primaryColor: colorPrimaryBlue,
-            ),
-            home: AnimatedSplashScreen(
-              splashIconSize: double.infinity,
-              duration: 300,
-              animationDuration: Duration(milliseconds: 300),
-              splash: Image.asset(
-                "images/splashScreenAndroid.gif",
-                fit: BoxFit.cover,
+        child: ChangeNotifierProvider(
+          create: (ctx) {
+            return Data();
+          },
+          child: MaterialApp(
+              navigatorKey: navigatorKey,
+              debugShowCheckedModeBanner: false,
+              navigatorObservers: <NavigatorObserver>[MyApp.observer],
+              theme: ThemeData(
+                //visualDensity: VisualDensity.adaptivePlatformDensity,
+                //brightness: Brightness.light,
+                primaryColor: colorPrimaryBlue,
               ),
-              backgroundColor: Colors.white,
-              nextScreen: AuthScreen(analytics: analytics, observer: observer),
-              pageTransitionType: PageTransitionType.fade,
-            )),
+              home: AnimatedSplashScreen(
+                splashIconSize: double.infinity,
+                duration: 300,
+                animationDuration: Duration(milliseconds: 300),
+                splash: Image.asset(
+                  "images/splashScreenAndroid.gif",
+                  fit: BoxFit.cover,
+                ),
+                backgroundColor: Colors.white,
+                nextScreen:
+                    AuthScreen(analytics: analytics, observer: observer),
+                pageTransitionType: PageTransitionType.fade,
+              )),
+        ),
       ),
     );
   }

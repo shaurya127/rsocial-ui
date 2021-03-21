@@ -26,13 +26,26 @@ class RcashScreen extends StatefulWidget {
 class _RcashScreenState extends State<RcashScreen> {
   bool isLoading = true;
   bool isFailedRcash = false;
+  // List titles = [
+  //   "Total",
+  //   "Available",
+  //   "Wassup",
+  //   "Investment",
+  //   "Joining Bonus",
+  //   "Platform Engagement"
+  // ];
   List titles = [
-    "Total",
-    "Available",
+    "Your Earning",
+    "Reward",
     "Wassup",
-    "Investment",
-    "Joining Bonus",
-    "Platform Engagement"
+    "Investment Earning (Matured)",
+    "Investment Earning (Active)",
+    "Interaction",
+    "Referral",
+    "Your Investment",
+    "Available for Investment",
+    "Active Investment",
+    "Investment Earning (Active)"
   ];
   List values;
 
@@ -41,12 +54,23 @@ class _RcashScreenState extends State<RcashScreen> {
     super.initState();
     getRCashDetails();
     values = [
-      curUser.lollarAmount,
-      curUser.totalAvailableYollar,
-      curUser.totalWageEarningAmount,
-      curUser.totalInvestmentEarningActiveAmount,
+      0,
       curUser.joiningBonus,
-      curUser.totalPlatformEngagementAmount
+      curUser.totalWageEarningAmount,
+      curUser.totalInvestmentEarningMaturedAmount,
+      curUser.totalInvestmentEarningActiveAmount,
+      curUser.totalPlatformInteractionAmount,
+      curUser.referralAmount,
+      0,
+      curUser.totalAvailableYollar,
+      curUser.totalActiveInvestmentAmount,
+      curUser.totalInvestmentEarningActiveAmount,
+      // curUser.lollarAmount,
+      // curUser.totalAvailableYollar,
+      // curUser.totalWageEarningAmount,
+      // curUser.totalInvestmentEarningActiveAmount,
+      // curUser.joiningBonus,
+      // curUser.totalPlatformEngagementAmount
     ];
   }
 
@@ -94,12 +118,23 @@ class _RcashScreenState extends State<RcashScreen> {
           widget.Ruser.totalInvestmentEarningMaturedAmount;
       setState(() {});
       values = [
-        curUser.lollarAmount,
-        curUser.totalAvailableYollar,
-        curUser.totalWageEarningAmount,
-        curUser.totalInvestmentEarningActiveAmount,
+        0,
         curUser.joiningBonus,
-        curUser.totalPlatformEngagementAmount
+        curUser.totalWageEarningAmount,
+        curUser.totalInvestmentEarningMaturedAmount,
+        curUser.totalInvestmentEarningActiveAmount,
+        curUser.totalPlatformInteractionAmount,
+        curUser.referralAmount,
+        0,
+        curUser.totalAvailableYollar,
+        curUser.totalActiveInvestmentAmount,
+        curUser.totalInvestmentEarningActiveAmount,
+        // curUser.lollarAmount,
+        // curUser.totalAvailableYollar,
+        // curUser.totalWageEarningAmount,
+        // curUser.totalInvestmentEarningActiveAmount,
+        // curUser.joiningBonus,
+        // curUser.totalPlatformEngagementAmount
       ];
       //print(this.user.lollarAmount);
       if (widget.reactionCallback != null) widget.reactionCallback();
@@ -112,42 +147,50 @@ class _RcashScreenState extends State<RcashScreen> {
 
   buildList() {
     List<Widget> tiles = [];
-
-    List<int> value1= [];
-    List<String> title1=[];
-
+    List<int> value1 = [];
+    List<String> title1 = [];
+    List<String> title2 = [];
+    List<int> value2 = [];
     int j = 0;
 
-    while(j<6){
-      if(titles[j]!="Platform Engagement"||titles[j]!="Investment"){
-        value1.add(values[j]);
-        title1.add(titles[j]);
-      }
+    while (j < 7) {
+      value1.add(values[j]);
+      title1.add(titles[j]);
       j++;
-     }
-
-     EpandedRcashTile tile1 = EpandedRcashTile(
+    }
+    EpandedRcashTile tile1 = EpandedRcashTile(
       user: widget.Ruser,
-       titles: title1,
-       values: value1,
+      titles: title1,
+      values: value1,
+    );
+    while (j < 11) {
+      value2.add(values[j]);
+      title2.add(titles[j]);
+      j++;
+    }
+    EpandedRcashTile tile2 = EpandedRcashTile(
+      user: widget.Ruser,
+      titles: title2,
+      values: value2,
     );
     tiles.add(tile1);
-
-    for (int i = 0; i < 6; i++) {
-      if(titles[i]=="Platform Engagement"||titles[i]=="Investment"){
-      RcashTile tile = RcashTile(
-        user: widget.Ruser,
-        title: titles[i],
-        value: values[i],
-        textColor: values[i] < 0 ? colorAmountNegative : colorAmountPositive,
-        backgroundColor:
-            values[i] < 0 ? colorRcashNegative : colorRcashPositive,
-      );
-      tiles.add(tile);
-      }
-
-
-    }
+    tiles.add(SizedBox(
+      height: 10,
+    ));
+    tiles.add(tile2);
+    // for (int i = 0; i < 6; i++) {
+    //   if (titles[i] == "Platform Engagement" || titles[i] == "Investment") {
+    //     RcashTile tile = RcashTile(
+    //       user: widget.Ruser,
+    //       title: titles[i],
+    //       value: values[i],
+    //       textColor: values[i] < 0 ? colorAmountNegative : colorAmountPositive,
+    //       backgroundColor:
+    //           values[i] < 0 ? colorRcashNegative : colorRcashPositive,
+    //     );
+    //     tiles.add(tile);
+    //   }
+    // }
 
     return ListView(
       children: tiles,
@@ -170,7 +213,8 @@ class _RcashScreenState extends State<RcashScreen> {
             : Padding(
                 padding: EdgeInsets.only(top: 20),
                 child: RefreshIndicator(
-                    onRefresh: getRCashDetails, child: buildList(),
+                  onRefresh: getRCashDetails,
+                  child: buildList(),
                 ),
               );
   }

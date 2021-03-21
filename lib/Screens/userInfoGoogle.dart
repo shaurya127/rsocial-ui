@@ -3,10 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/create_account_page.dart';
 import 'package:rsocial2/Screens/profile_pic.dart';
+import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/RoundedButton.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import '../auth.dart';
 import '../authLogic.dart';
@@ -318,6 +321,46 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
                 SizedBox(
                   height: 24.5,
                 ),
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: FittedBox(
+                    child: Text(
+                      "By continuing you agree to our ",
+                      style: TextStyle(
+                        fontFamily: 'lato',
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: FittedBox(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) {
+                            return TermsScreen();
+                          }),
+                        );
+                      },
+                      child: Text(
+                        "Terms and Conditions",
+                        style: TextStyle(
+                          fontFamily: 'lato',
+                          fontSize: 16,
+                          color: colorPrimaryBlue,
+                          decoration: TextDecoration.underline,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 24.5,
+                ),
                 RoundedButton(
                   text: "Continue",
                   textColor: Colors.white,
@@ -381,6 +424,46 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
           ),
         ],
       )),
+    );
+  }
+}
+
+class TermsScreen extends StatefulWidget {
+  const TermsScreen({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  _TermsScreenState createState() => _TermsScreenState();
+}
+
+var isLoading = true;
+
+class _TermsScreenState extends State<TermsScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: colorButton,
+        iconTheme: IconThemeData(color: Colors.white),
+      ),
+      body: ModalProgressHUD(
+        inAsyncCall: isLoading,
+        opacity: 0.0,
+        child: Stack(
+          children: [
+            WebView(
+              initialUrl: 'https://relatotechnologies.com/tc/index.html',
+              javascriptMode: JavascriptMode.unrestricted,
+              onPageFinished: (_) {
+                setState(() {
+                  isLoading = false;
+                });
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

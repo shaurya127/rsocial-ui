@@ -23,9 +23,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   bool boldInput = false;
   String feedback;
 
+  get authFirebase => null;
+
   sendFeedback(String feedback) async {
     var user = await authFirebase.currentUser();
     var token = await user.getIdToken();
+    var curUser;
     var id = curUser.id;
 
     if (feedback == "")
@@ -83,19 +86,20 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 fontWeight: FontWeight.bold,
                 fontFamily: 'lato',
                 fontSize: 22,
+                color: colorPrimaryBlue,
               ),
               textAlign: TextAlign.center,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 25.0, right: 25, top: 0),
+            padding: const EdgeInsets.only(left: 25.0, right: 25, top: 10),
             child: Text(
               "#ReinventingSocialTogether",
               style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontFamily: 'lato',
-                fontSize: 22,
-              ),
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'lato',
+                  fontSize: 19,
+                  color: colorPrimaryBlue),
               textAlign: TextAlign.center,
             ),
           ),
@@ -120,7 +124,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     fontSize: 14,
                     fontWeight: boldInput ? FontWeight.bold : FontWeight.normal,
                   ),
-                  maxLength: 150,
+                  maxLength: 500,
                   maxLines: 10,
                   decoration: InputDecoration(
                     border: InputBorder.none,

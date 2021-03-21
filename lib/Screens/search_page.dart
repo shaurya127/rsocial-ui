@@ -49,6 +49,7 @@ class _Search_PageState extends State<Search_Page>
   void initState() {
     super.initState();
     FirebaseAnalytics().setCurrentScreen(screenName: "Search_page");
+    getUser();
   }
 
   setOrientation(String Orientation) {
@@ -63,7 +64,7 @@ class _Search_PageState extends State<Search_Page>
     });
     var user = await FirebaseAuth.instance.currentUser();
     var token = await user.getIdToken();
-    print(token);
+
     var id = curUser.id;
     final url = userEndPoint + "get";
 
@@ -169,7 +170,7 @@ class _Search_PageState extends State<Search_Page>
       var body = jsonUser['body'];
       var body1 = jsonDecode(body);
       var msg = body1['message'];
-      print(msg);
+      //print(msg);
       //print("length is ${msg.length}")
       for (int i = 0; i < msg.length; i++) {
         // print(msg[i]['PendingConnection']);
@@ -189,7 +190,7 @@ class _Search_PageState extends State<Search_Page>
       // print(allUsers.length);
       return allUsers;
     } else {
-      print(response.statusCode);
+      // print(response.statusCode);
       throw Exception();
     }
   }
@@ -269,8 +270,8 @@ class _Search_PageState extends State<Search_Page>
   // }
 
   buildSearchTab() {
-    print("This is the length of suggestion list");
-    print(suggestionList.length);
+    // print("This is the length of suggestion list");
+    // print(suggestionList.length);
     List<Request_Tile> searchResults = [];
     Request_Tile tile;
     for (int i = 0; i < suggestionList.length; i++) {
@@ -326,40 +327,38 @@ class _Search_PageState extends State<Search_Page>
   }
 
   buildSuggestedTab() {
-    if(widget.currentUser!=null)
-      {
-        connections = curUser.connection;
-        List<Request_Tile> friendResults = [];
-        if (connections.isNotEmpty) {
-          for (int i = 0; i < connections.length; i++) {
-            print("printing connection length");
-            print(connections[i].connection.length);
-            print(connections[i].fname);
-            Request_Tile tile = Request_Tile(
-              user: connections[i],
-              text: "remove",
-              accepted: true,
-              //request: false,
-              //photourl: photourl,
-              //curUser: curUser,
-            );
-            friendResults.add(tile);
-          }
-          return ListView(
-            children: friendResults,
+    if (widget.currentUser != null) {
+      connections = curUser.connection;
+      List<Request_Tile> friendResults = [];
+      if (connections.isNotEmpty) {
+        for (int i = 0; i < connections.length; i++) {
+          // print("printing connection length");
+          // print(connections[i].connection.length);
+          // print(connections[i].fname);
+          Request_Tile tile = Request_Tile(
+            user: connections[i],
+            text: "remove",
+            accepted: true,
+            //request: false,
+            //photourl: photourl,
+            //curUser: curUser,
           );
-        } else
-          return Scaffold(
-              body: ListView(
-                children: <Widget>[
-                  Text(
-                    "You have no friends till now",
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ));
-      }
-    else
+          friendResults.add(tile);
+        }
+        return ListView(
+          children: friendResults,
+        );
+      } else
+        return Scaffold(
+            body: ListView(
+          children: <Widget>[
+            Text(
+              "You have no friends till now",
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ));
+    } else
       return LinearProgressIndicator();
   }
 

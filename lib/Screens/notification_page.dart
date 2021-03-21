@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/helper.dart';
 import 'package:rsocial2/model/notification.dart';
+import 'package:rsocial2/model/user.dart';
 
 import '../contants/constants.dart';
 import 'package:rsocial2/Widgets/Notification_tile.dart';
@@ -12,15 +13,17 @@ import 'package:rsocial2/Widgets/Notification_tile.dart';
 import 'bottom_nav_bar.dart';
 
 class NotificationPage extends StatefulWidget {
+  User curUser;
+  NotificationPage({this.curUser});
   @override
   _NotificationPageState createState() => _NotificationPageState();
 }
 
 class _NotificationPageState extends State<NotificationPage>
     with TickerProviderStateMixin {
-  List<NotificationModel> readNotification = List<NotificationModel>();
-  List<NotificationModel> unreadNotification = List<NotificationModel>();
-  List<NotificationModel> allNotification = List<NotificationModel>();
+  List<NotificationModel> readNotification = [];
+  List<NotificationModel> unreadNotification = [];
+  List<NotificationModel> allNotification = [];
   //TabController _tabController2;
   bool isLoading = true;
   @override
@@ -43,7 +46,10 @@ class _NotificationPageState extends State<NotificationPage>
       response = await postFunc(
           url: userEndPoint + "getnotification",
           token: token,
-          body: jsonEncode({"id": "bb6c5841ba0d4f5597506ff3b61b91d3"}));
+          body: jsonEncode({
+            //"id": "bb6c5841ba0d4f5597506ff3b61b91d3",
+            "id": widget.curUser.id,
+          }));
 
       print("Inside get notification");
       if (response == null) {
@@ -52,7 +58,7 @@ class _NotificationPageState extends State<NotificationPage>
     } catch (e) {
       isLoading = false;
     }
-    print(response.statusCode);
+    print("NOTIFICATION:${response.body}");
     setState(() {
       isLoading = false;
     });
@@ -61,18 +67,19 @@ class _NotificationPageState extends State<NotificationPage>
           jsonDecode((jsonDecode(response.body))['body'])['message'];
 
       print(responseMessage['True']);
-
-      for (int i = 0; i < responseMessage['True'].length; i++) {
-        readNotification
-            .add(NotificationModel.fromJson(responseMessage['True'][i]));
-        print(readNotification[i].text);
+      if (responseMessage['True'] != null) {
+        for (int i = 0; i < responseMessage['True'].length; i++) {
+          readNotification
+              .add(NotificationModel.fromJson(responseMessage['True'][i]));
+          print(readNotification[i].text);
+        }
       }
-
-      for (int i = 0; i < responseMessage['False'].length; i++) {
-        unreadNotification
-            .add(NotificationModel.fromJson(responseMessage['False'][i]));
+      if (responseMessage['False'] != null) {
+        for (int i = 0; i < responseMessage['False'].length; i++) {
+          unreadNotification
+              .add(NotificationModel.fromJson(responseMessage['False'][i]));
+        }
       }
-
       print(readNotification.length);
 
       setState(() {
@@ -170,16 +177,21 @@ class _NotificationPageState extends State<NotificationPage>
   }
 
   buildNotificationList() {
-    allNotification=[];
-    List<NotificationTile> tiles = List<NotificationTile>();
+    allNotification = [];
+    List<NotificationTile> tiles = [];
     allNotification.addAll(unreadNotification);
     allNotification.addAll(readNotification);
+    allNotification.sort((noti1, noti2) {
+      return noti2.dateTime.compareTo(noti1.dateTime);
+    });
     for (int i = 0; i < allNotification.length; i++) {
+      print(allNotification[i].dateTime.toLocal());
       tiles.add(NotificationTile(
-        read:allNotification[i].readFlag,
+        read: allNotification[i].readFlag,
         name: allNotification[i].text,
         senderId: allNotification[i].senderId,
         notificationId: allNotification[i].id,
+        datetime: allNotification[i].dateTime,
       ));
     }
 

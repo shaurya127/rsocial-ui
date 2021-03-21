@@ -477,7 +477,9 @@ class _WageState extends State<Wage> {
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    super.dispose();
+  }
 
   createWagePost(String storyText, List<String> list) async {
     if (storyText == null || storyText.isEmpty) {
