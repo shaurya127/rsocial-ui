@@ -98,7 +98,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   final List<int> backStack = [0];
   bool refreshLandingPage = false;
   callback() {
-    print("callback called");
+    ////print("callback called");
     setState(() {});
   }
 
@@ -125,7 +125,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   }
 
   void isPostedCallback() {
-    print("IsPostedCallback called");
+    //print("IsPostedCallback called");
     setState(() {
       _currentIndex = 0;
       refreshLandingPage = true;
@@ -190,7 +190,7 @@ class _BottomNavBarState extends State<BottomNavBar>
         if (responseMessage != "UserAlreadyExists") {
           id = responseMessage['id'];
 
-          print(widget.sign_in_mode);
+          //print(widget.sign_in_mode);
 
           // Updating Messagingtoken in Cloud Firestore
           try {
@@ -255,8 +255,8 @@ class _BottomNavBarState extends State<BottomNavBar>
       });
       return null;
     }
-    print("----------------------------------");
-    print(response.body);
+    //print("----------------------------------");
+    //print(response.body);
     if (response.statusCode == 200) {
       var responseMessage =
           jsonDecode((jsonDecode(response.body))['body'])['message'];
@@ -270,7 +270,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       }
 
       setState(() {
-        print("USERRR:${User.fromJson(responseMessage)}");
+        //print("USERRR:${User.fromJson(responseMessage)}");
         curUser = User.fromJson(responseMessage);
       });
 
@@ -278,11 +278,11 @@ class _BottomNavBarState extends State<BottomNavBar>
 
       await getSocialStanding();
 
-      print(curUser.lollarAmount);
-      print(curUser.id);
+      //print(curUser.lollarAmount);
+      //print(curUser.id);
       setState(() {});
     } else {
-      print(response.statusCode);
+      //print(response.statusCode);
       setState(() {
         isLoading = false;
         isFailedGetUser = true;
@@ -315,7 +315,7 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   saveData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    print("get user finished");
+    //print("get user finished");
     prefs.setString('id', curUser.id);
     prefs.setString('FName', curUser.fname);
     prefs.setString('LName', curUser.lname);
@@ -341,9 +341,9 @@ class _BottomNavBarState extends State<BottomNavBar>
   }
 
   getAllPosts(String id) async {
-    print("Inside get all posts");
+    //print("Inside get all posts");
     int start = 0;
-    print("getUserPostFired");
+    //print("getUserPostFired");
     setState(() {
       isLoadingPost = true;
       //isLoading = false;
@@ -359,7 +359,7 @@ class _BottomNavBarState extends State<BottomNavBar>
         if (doc == null) print("error from get user post");
         id = doc['id'];
       } catch (e) {
-        print("inside try");
+        //print("inside try");
         setState(() {
           isFailedUserPost = true;
         });
@@ -370,7 +370,9 @@ class _BottomNavBarState extends State<BottomNavBar>
         url: storyEndPoint + "all",
         token: token,
         body: jsonEncode({"id": id, "start_token": start}));
-
+    print("TOKEN $token");
+    print("ID $id");
+    print("START $start");
     if (response == null) {
       setState(() {
         isFailedUserPost = true;
@@ -379,9 +381,10 @@ class _BottomNavBarState extends State<BottomNavBar>
     }
 
     if (response.statusCode == 200) {
+      print(response.body);
       var responseMessage =
           jsonDecode((jsonDecode(response.body))['body'])['message'];
-
+      print(responseMessage);
       var responseStories = responseMessage['stories'];
 
       storiesStillLeft = responseMessage['still_left'];
@@ -395,7 +398,7 @@ class _BottomNavBarState extends State<BottomNavBar>
           else
             post = Post.fromJsonW(responseStories[i]);
           if (post != null) {
-            //print(post.investedWithUser);
+            ////print(post.investedWithUser);
             posts.add(post);
           }
         }
@@ -406,7 +409,7 @@ class _BottomNavBarState extends State<BottomNavBar>
         storiesLeft = storiesStillLeft;
       });
     } else {
-      print(response.statusCode);
+      //print(response.statusCode);
       throw Exception();
     }
   }
@@ -431,23 +434,23 @@ class _BottomNavBarState extends State<BottomNavBar>
     if (response.statusCode == 200) {
       var responseMessage =
           jsonDecode((jsonDecode(response.body))['body'])['message'];
-      curUser = User.fromJson(responseMessage);
-      // if(curUser!=null){
-      // curUser.lollarAmount = Ruser.lollarAmount;
-      // curUser.totalAvailableYollar = Ruser.totalAvailableYollar;
-      // curUser.totalWageEarningAmount = Ruser.totalWageEarningAmount;
-      // curUser.totalInvestmentEarningActiveAmount =
-      //     Ruser.totalInvestmentEarningActiveAmount;
-      // curUser.joiningBonus = Ruser.joiningBonus;
-      // curUser.totalPlatformEngagementAmount =
-      //     Ruser.totalPlatformEngagementAmount;
-      // curUser.referralAmount = Ruser.referralAmount;
-      // curUser.totalPlatformInteractionAmount =
-      //     Ruser.totalPlatformInteractionAmount;
-      // curUser.totalActiveInvestmentAmount = Ruser.totalActiveInvestmentAmount;
-      // curUser.totalInvestmentEarningMaturedAmount =
-      //     Ruser.totalInvestmentEarningMaturedAmount;
-      // }
+      var Ruser = User.fromJson(responseMessage);
+      if (curUser != null) {
+        curUser.lollarAmount = Ruser.lollarAmount;
+        curUser.totalAvailableYollar = Ruser.totalAvailableYollar;
+        curUser.totalWageEarningAmount = Ruser.totalWageEarningAmount;
+        curUser.totalInvestmentEarningActiveAmount =
+            Ruser.totalInvestmentEarningActiveAmount;
+        curUser.joiningBonus = Ruser.joiningBonus;
+        curUser.totalPlatformEngagementAmount =
+            Ruser.totalPlatformEngagementAmount;
+        curUser.referralAmount = Ruser.referralAmount;
+        curUser.totalPlatformInteractionAmount =
+            Ruser.totalPlatformInteractionAmount;
+        curUser.totalActiveInvestmentAmount = Ruser.totalActiveInvestmentAmount;
+        curUser.totalInvestmentEarningMaturedAmount =
+            Ruser.totalInvestmentEarningMaturedAmount;
+      }
     }
   }
 
@@ -467,7 +470,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   }
 
   getSocialStanding() async {
-    print("Get social standing triggered");
+    //print("Get social standing triggered");
     var token;
     try {
       var user = await authFirebase.currentUser();
@@ -505,7 +508,7 @@ class _BottomNavBarState extends State<BottomNavBar>
         prefs.setInt('socialStanding', curUser.socialStanding);
         prefs.setInt('yollarAmount', curUser.lollarAmount);
       } catch (e) {
-        print("Exception " + e + "in social standing");
+        //print("Exception " + e + "in social standing");
       }
     }
   }
@@ -527,15 +530,15 @@ class _BottomNavBarState extends State<BottomNavBar>
             //"id": "bb6c5841ba0d4f5597506ff3b61b91d3",
             "id": curUser == null ? savedUser.id : curUser.id,
           }));
-      print("NOTIFICATION:${response.body}");
-      print("Inside get notification");
+      //print("NOTIFICATION:${response.body}");
+      //print("Inside get notification");
       if (response == null) {
-        print("response is null");
+        //print("response is null");
       }
     } catch (e) {
       isLoading = false;
     }
-    print(response.statusCode);
+    //print(response.statusCode);
     setState(() {
       isLoading = false;
     });
@@ -543,12 +546,12 @@ class _BottomNavBarState extends State<BottomNavBar>
       var responseMessage =
           jsonDecode((jsonDecode(response.body))['body'])['message'];
 
-      print(responseMessage['True']);
+      //print(responseMessage['True']);
       if (responseMessage['True'] != null) {
         for (int i = 0; i < responseMessage['True'].length; i++) {
           readNotification
               .add(NotificationModel.fromJson(responseMessage['True'][i]));
-          print(readNotification[i].text);
+          //print(readNotification[i].text);
         }
       }
       if (responseMessage['False'] != null) {
@@ -557,7 +560,7 @@ class _BottomNavBarState extends State<BottomNavBar>
               .add(NotificationModel.fromJson(responseMessage['False'][i]));
         }
       }
-      print(readNotification.length);
+      //print(readNotification.length);
       if (unreadNotification.isNotEmpty) {
         showNotification = true;
       }
@@ -569,7 +572,7 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   @override
   void initState() {
-    print("post id is this: $postId");
+    //print("post id is this: $postId");
 
     super.initState();
     getPackageInfo();
@@ -586,13 +589,14 @@ class _BottomNavBarState extends State<BottomNavBar>
           : savedUser != null
               ? savedUser.id
               : null);
+
       getUserAwait();
       //  getAllUsers();
       //getRCashDetails();
 
       if (postId == null) {
         initDynamicLinks();
-        print("found id : $postId");
+        //print("found id : $postId");
       }
     }
 
@@ -616,7 +620,7 @@ class _BottomNavBarState extends State<BottomNavBar>
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
       final Uri deepLink = dynamicLink?.link;
       if (deepLink != null) {
-        //print("the postid is:${deepLink.queryParameters['postid']}");// <- prints 'abc'
+        ////print("the postid is:${deepLink.queryParameters['postid']}");// <- //prints 'abc'
         postId = deepLink.queryParameters['postid'];
         if (postId != null)
           Navigator.push(
@@ -626,8 +630,8 @@ class _BottomNavBarState extends State<BottomNavBar>
                       DisplayPost(postId: deepLink.queryParameters['postid'])));
       }
     }, onError: (OnLinkErrorException e) async {
-      print('onLinkError');
-      print(e.message);
+      //print('onLinkError');
+      //print(e.message);
     });
 
     final PendingDynamicLinkData data =
@@ -651,7 +655,7 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   Future<String> getFirebaseMessagingToken() async {
     var token = await FirebaseMessaging().getToken();
-    print(token);
+    //print(token);
     return token;
   }
 
@@ -683,8 +687,8 @@ class _BottomNavBarState extends State<BottomNavBar>
   }
 
   Future<bool> customPop(BuildContext context) {
-    print("CustomPop is called");
-    print("_backstack = $backStack");
+    //print("CustomPop is called");
+    //print("_backstack = $backStack");
     if (backStack.length > 1) {
       backStack.removeAt(backStack.length - 1);
       navigateBack(backStack[backStack.length - 1]);
@@ -696,7 +700,7 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   @override
   Widget build(BuildContext context) {
-    print("Build of bottom nav bar worked");
+    //print("Build of bottom nav bar worked");
 
     // Screens to be present, will be switched with the help of bottom nav bar
     _screens = [
@@ -730,7 +734,7 @@ class _BottomNavBarState extends State<BottomNavBar>
             body: Center(
                 child: ErrWidget(
               tryAgainOnPressed: () {
-                print("HEY");
+                //print("HEY");
                 setState(() {
                   isLoading = true;
                   isNewUserFailed = false;
@@ -749,7 +753,7 @@ class _BottomNavBarState extends State<BottomNavBar>
                 body: Center(
                     child: ErrWidget(
                   tryAgainOnPressed: () {
-                    print("HI");
+                    //print("HI");
                     setState(() {
                       isLoading = true;
                       isFailedGetUser = false;
@@ -781,9 +785,9 @@ class _BottomNavBarState extends State<BottomNavBar>
   }
 
   buildLoadedPage() {
-    print("My saved user");
-    // print(savedUser.id);
-    // print(curUser.id);
+    //print("My saved user");
+    // //print(savedUser.id);
+    // //print(curUser.id);
     return postId == null
         ? WillPopScope(
             onWillPop: () {

@@ -49,7 +49,6 @@ class _Search_PageState extends State<Search_Page>
   void initState() {
     super.initState();
     FirebaseAnalytics().setCurrentScreen(screenName: "Search_page");
-    getUser();
   }
 
   setOrientation(String Orientation) {

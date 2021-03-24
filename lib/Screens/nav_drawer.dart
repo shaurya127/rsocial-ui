@@ -136,7 +136,7 @@ class _Nav_DrawerState extends State<Nav_Drawer> {
                     ),
                     trailing: Text(
                         curUser != null
-                            ? "${curUser.connection.length}"
+                            ? "${curUser.connectionCount}"
                             : savedUser.connectionCount.toString(),
                         style: TextStyle(color: Colors.grey, fontSize: 16))),
                 Nav_Drawer_Tile(
