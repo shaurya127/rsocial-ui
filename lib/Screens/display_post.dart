@@ -34,7 +34,12 @@ class _DisplayPostState extends State<DisplayPost> {
     });
     var user = await authFirebase.currentUser();
     var token = await user.getIdToken();
-    var id = curUser.id;
+    String id;
+    if (curUser == null) {
+      id = savedUser.id;
+    } else {
+      id = curUser.id;
+    }
 
     final response = await getFunc(
         url: storyEndPoint + "$id/${widget.postId}", token: token);

@@ -8,6 +8,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:rsocial2/Screens/display_post.dart';
 import 'package:rsocial2/Screens/search_page.dart';
 import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/contants/constants.dart';
@@ -65,20 +66,52 @@ class PushNotificationService {
       }
     });
     _fcm.configure(
+      //App in foreground
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
 
-        if (Platform.isAndroid) {
+        if (Platform.isAndroid || Platform.isIOS) {
+          String data = message["data"]["uuid"];
           PushNotificationMessage notification = PushNotificationMessage(
-              title: message['notification']['title'],
-              body: message['notification']['body'],
-              notificationType: message['data']['notification_type']);
+            title: message['notification']['title'],
+            body: message['notification']['body'],
+            notificationType: data.startsWith("post")
+                ? NotificationType.Post
+                : NotificationType.Profile,
+            id: data.startsWith("post")
+                ? data.substring(4, data.length)
+                : data.substring(7, data.length),
+          );
 
           //Here you can add the count when you get a notification you can increase the number by one
           FlutterAppBadger.updateBadgeCount(1);
           // UI
+          int count = 0;
           showSimpleNotification(
-              Container(
+            GestureDetector(
+              onTap: () {
+                count++;
+                if (count > 1) {
+                  return;
+                }
+                if (notification.notificationType == NotificationType.Post) {
+                  navigatorKey.currentState
+                      .push(MaterialPageRoute(builder: (ctx) {
+                    return DisplayPost(
+                      postId: notification.id,
+                    );
+                  }));
+                } else {
+                  navigatorKey.currentState
+                      .push(MaterialPageRoute(builder: (ctx) {
+                    return Profile(
+                      currentUser: curUser ?? savedUser,
+                      user: User(id: notification.id),
+                    );
+                  }));
+                }
+              },
+              child: Container(
                   child: Text(
                 notification.title,
                 style: TextStyle(
@@ -87,74 +120,127 @@ class PushNotificationService {
                     fontSize: 18,
                     fontWeight: FontWeight.bold),
               )),
-              position: NotificationPosition.top,
-              background: Colors.white,
-              autoDismiss: false,
-              slideDismiss: true,
-              leading: Container(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.only(right: 18.0, top: 8, bottom: 8),
-                  child: SvgPicture.asset(
-                    "images/rsocial-logo2.svg",
-                    height: 25,
-                  ),
+            ),
+            position: NotificationPosition.top,
+            background: Colors.white,
+            autoDismiss: true,
+            duration: Duration(seconds: 5),
+            leading: Container(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 18.0, top: 8, bottom: 8),
+                child: SvgPicture.asset(
+                  "images/rsocial-logo2.svg",
+                  height: 25,
                 ),
               ),
-              subtitle: Text(notification.body,
-                  style: TextStyle(
-                    fontFamily: 'Lato',
-                    color: colorPrimaryBlue,
-                    fontSize: 15,
-                  )));
+            ),
+            subtitle: Text(
+              notification.body,
+              style: TextStyle(
+                fontFamily: 'Lato',
+                color: colorPrimaryBlue,
+                fontSize: 15,
+              ),
+            ),
+          );
         }
       },
+      //App Terminated
       onLaunch: (Map<String, dynamic> message) async {
         print("onLaunch: $message");
-        if (Platform.isAndroid) {
+        if (Platform.isAndroid || Platform.isIOS) {
+          String data = message["data"]["uuid"];
           PushNotificationMessage notification = PushNotificationMessage(
             title: message['notification']['title'],
             body: message['notification']['body'],
+            notificationType: data.startsWith("post")
+                ? NotificationType.Post
+                : NotificationType.Profile,
+            id: data.startsWith("post")
+                ? data.substring(4, data.length)
+                : data.substring(7, data.length),
           );
-
           //Here you can remove the badge you created when it's launched
           FlutterAppBadger.removeBadge();
-
-          // // Navigate to a particular page
-          // navigatorKey.currentState.push(MaterialPageRoute(
-          //   builder: (_) => Profile(
-          //     currentUser: curUser,
-          //     user: curUser,
-          //   ),
-          // ));
+          //navigatorKey.currentState.
+          await Future.delayed(Duration(seconds: 5));
+          // Navigate to a particular page
+          // SchedulerBinding.instance.addPostFrameCallback((_) {
+          //   Navigator.of(navigatorKey.currentContext).push(MaterialPageRoute(
+          //     builder: (context) => DisplayPost(
+          //       postId: notification.id,
+          //     ),
+          //   ));
+          // });
+          if (notification.notificationType == NotificationType.Post) {
+            navigatorKey.currentState.push(MaterialPageRoute(builder: (ctx) {
+              return DisplayPost(
+                postId: notification.id,
+              );
+            }));
+          } else {
+            navigatorKey.currentState.push(MaterialPageRoute(builder: (ctx) {
+              return Profile(
+                  currentUser: curUser ?? savedUser,
+                  user: User(id: notification.id));
+            }));
+          }
         }
       },
+      //App in background
       onResume: (Map<String, dynamic> message) async {
         print("onResume: $message");
 
-        if (Platform.isAndroid) {
+        if (Platform.isAndroid || Platform.isIOS) {
+          String data = message["data"]["uuid"];
           PushNotificationMessage notification = PushNotificationMessage(
-              title: message['notification']['title'],
-              body: message['notification']['body'],
-              notificationType: message['data']['notification_type']);
+            title: message['notification']['title'],
+            body: message['notification']['body'],
+            notificationType: data.startsWith("post")
+                ? NotificationType.Post
+                : NotificationType.Profile,
+            id: data.startsWith("post")
+                ? data.substring(4, data.length)
+                : data.substring(7, data.length),
+          );
 
-          if (notification.notificationType == "friendAccept" ||
-              notification.notificationType == "friendRequest") {
+          // if (notification.notificationType == "friendAccept" ||
+          //     notification.notificationType == "friendRequest") {
+          if (notification.notificationType == NotificationType.Post) {
             SchedulerBinding.instance.addPostFrameCallback((_) {
               Navigator.of(navigatorKey.currentContext).push(MaterialPageRoute(
-                builder: (context) => Search_Page(),
+                builder: (context) => DisplayPost(
+                  postId: notification.id,
+                ),
               ));
             });
-
-            final jsonUser = jsonDecode(message['data']['user']);
-            var body = jsonUser['body'];
-            var body1 = jsonDecode(body);
-            var msg = body1['message'];
-            User user = User.fromJson(msg);
-            print(user.fname);
-
-            if (user != null) {}
+          } else {
+            SchedulerBinding.instance.addPostFrameCallback((_) {
+              Navigator.of(navigatorKey.currentContext).push(MaterialPageRoute(
+                  builder: (context) => Profile(
+                        currentUser: curUser ?? savedUser,
+                        user: User(id: notification.id),
+                      )));
+            });
           }
+
+          // FlutterAppBadger.removeBadge();
+          // await Future.delayed(Duration(seconds: 2));
+
+          // navigatorKey.currentState.push(MaterialPageRoute(builder: (ctx) {
+          //   return DisplayPost(
+          //     postId: notification.id,
+          //   );
+          // }));
+          //   final jsonUser = jsonDecode(message['data']['user']);
+          //   var body = jsonUser['body'];
+          //   var body1 = jsonDecode(body);
+          //   var msg = body1['message'];
+          //   User user = User.fromJson(msg);
+          //   print(user.fname);
+
+          //   if (user != null) {}
+          //}
         }
       },
     );

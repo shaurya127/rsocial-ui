@@ -36,6 +36,7 @@ void main() {
 
 final GlobalKey<NavigatorState> navigatorKey =
     GlobalKey(debugLabel: "Main Navigator");
+final GlobalKey key = GlobalKey();
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.

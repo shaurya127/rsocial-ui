@@ -36,10 +36,10 @@ class _UserInfoGoogleState extends State<UserInfoGoogle> {
   bool isDateSelected = false;
 
   // Initial year for date picker
-  final int initialYear = 1900;
+  final int initialYear = 1950;
 
   // Final year for the date picker
-  final int finalYear = 2020;
+  final int finalYear = DateTime.now().year;
 
   // This function is used to select date from date picker
   selectDate(BuildContext context) async {

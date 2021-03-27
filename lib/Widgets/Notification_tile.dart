@@ -56,7 +56,7 @@ class _NotificationTileState extends State<NotificationTile> {
     } else if (duration.inHours == 1) {
       return "${duration.inHours} hour";
     } else if (duration.inHours > 1) {
-      return "${duration.inDays} hours";
+      return "${duration.inHours} hours";
     } else {
       return "Now";
     }
@@ -73,7 +73,7 @@ class _NotificationTileState extends State<NotificationTile> {
         await setNotification();
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
         child: Column(
           children: <Widget>[
             Row(
