@@ -41,7 +41,8 @@ class Post {
     var uid = json["UserId"];
     var frnd = json['InvestedWith'];
     final diff = DateTime.now().difference(DateTime.parse(json['PostedOn']));
-    final txt = timeago.format(DateTime.now().subtract(diff), locale: locale);
+    //final txt = timeago.format(DateTime.now().subtract(diff), locale: locale);
+    final txt = getTimeSinceNotification(diff);
     var expiringOnDiff =
         DateTime.now().difference(DateTime.parse(json['ExpiringOn'])).isNegative
             ? true
@@ -81,7 +82,7 @@ class Post {
 
   factory Post.fromJsonW(final json) {
     final diff = DateTime.now().difference(DateTime.parse(json['PostedOn']));
-    final txt = timeago.format(DateTime.now().subtract(diff), locale: locale);
+    final txt = getTimeSinceNotification(diff);
     print(txt);
     var uid = json["UserId"];
     List<User> rxn = [];
@@ -154,4 +155,17 @@ class Post {
             ? List<String>.from(fileUpload.map((x) => x))
             : [],
       };
+  static String getTimeSinceNotification(Duration duration) {
+    if (duration.inDays == 1) {
+      return "A day ago";
+    } else if (duration.inDays > 1) {
+      return "${duration.inDays} days ago";
+    } else if (duration.inHours == 1) {
+      return "An hour ago";
+    } else if (duration.inHours > 1) {
+      return "${duration.inHours} hours ago";
+    } else {
+      return "Now";
+    }
+  }
 }

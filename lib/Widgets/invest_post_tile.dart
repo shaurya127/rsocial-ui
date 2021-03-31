@@ -10,7 +10,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:flutter_share/flutter_share.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -27,6 +26,7 @@ import 'package:rsocial2/Screens/reaction_info.dart';
 import 'package:rsocial2/Screens/search_page.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
+import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../contants/config.dart';
 import '../contants/constants.dart';
@@ -1407,10 +1407,19 @@ class _InvestPostTileState extends State<InvestPostTile>
   }
 
   Future<void> share(Uri uri) async {
-    await FlutterShare.share(
-        title: 'Hey! checkout this post',
-        //text: '${widget.userPost.user.fname} on RSocial',
-        linkUrl: uri.toString(),
-        chooserTitle: 'Share this post with');
+    final RenderBox box = context.findRenderObject();
+    Share.share(
+      "Hey! Checkout this post ${uri.toString()}",
+      subject: "Checkout this post on RSocial",
+      sharePositionOrigin: box.localToGlobal(
+            Offset.zero,
+          ) &
+          box.size,
+    );
+    // await FlutterShare.share(
+    //     title: 'Hey! checkout this post',
+    //     //text: '${widget.userPost.user.fname} on RSocial',
+    //     linkUrl: uri.toString(),
+    //     chooserTitle: 'Share this post with');
   }
 }

@@ -50,13 +50,13 @@ class _NotificationTileState extends State<NotificationTile> {
   String getTimeSinceNotification() {
     Duration duration = DateTime.now().difference(widget.datetime);
     if (duration.inDays == 1) {
-      return "${duration.inDays} day";
+      return "A day ago";
     } else if (duration.inDays > 1) {
-      return "${duration.inDays} days";
+      return "${duration.inDays} days ago";
     } else if (duration.inHours == 1) {
-      return "${duration.inHours} hour";
+      return "An hour ago";
     } else if (duration.inHours > 1) {
-      return "${duration.inHours} hours";
+      return "${duration.inHours} hours ago";
     } else {
       return "Now";
     }

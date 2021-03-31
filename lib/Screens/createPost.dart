@@ -535,7 +535,7 @@ class _WageState extends State<Wage> {
 
       // Show user that the wage story is successfully posted
       Fluttertoast.showToast(
-          msg: "Uploaded wage story!",
+          msg: "Uploaded wassup story!",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           fontSize: 15);
