@@ -21,9 +21,10 @@ Future<Uri> createDynamicLink(String type, Post post) async {
 
   final DynamicLinkParameters parameters = DynamicLinkParameters(
       // This should match firebase but without the username query param
-      uriPrefix: 'https://rsocial.page.link',
+      uriPrefix: 'https://rsocialdevapp.page.link',
       // This can be whatever you want for the uri, https://yourapp.com/groupinvite?username=$userName
-      link: Uri.parse('https://rsocial.page.link/$header?$type=$parameter&'),
+      link: Uri.parse(
+          'https://rsocialappdev.page.link/$header?$type=$parameter&'),
       androidParameters: AndroidParameters(
         packageName: packageInfo.packageName,
         minimumVersion: 0,

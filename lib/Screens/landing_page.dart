@@ -344,6 +344,11 @@ class _Landing_PageState extends State<Landing_Page> {
       // setState(() {
       // });
       //buildPosts();
+      Fluttertoast.showToast(
+          msg: "Deleted Post",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
       getPostOnRefresh();
     } else
       Fluttertoast.showToast(

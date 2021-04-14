@@ -82,8 +82,10 @@ class OnboardingGuide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: customAppBar(context),
-        body: Container(
+        body: Stack(
+      children: [
+        Container(
+          margin: EdgeInsets.only(top: 10),
           width: double.infinity,
           height: double.infinity,
           alignment: Alignment.center,
@@ -109,7 +111,23 @@ class OnboardingGuide extends StatelessWidget {
               "https://relatotechnologies.com/bg.gif",
             ),
           ),
-        ));
+        ),
+        Positioned(
+          top: 30,
+          right: 20,
+          child: IconButton(
+            icon: Icon(
+              Icons.cancel_outlined,
+              color: Colors.white,
+              size: 36,
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ),
+      ],
+    ));
   }
 }
 

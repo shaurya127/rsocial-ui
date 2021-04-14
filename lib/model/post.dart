@@ -114,9 +114,9 @@ class Post {
         "InvestedWith": investedWith == null ? [] : this.investedWith,
         "InvestedAmount": investedAmount,
         "Duration": duration.toString(),
-        "FileUpload": fileUpload != null
-            ? List<String>.from(fileUpload.map((x) => x))
-            : [],
+        // "FileUpload": fileUpload != null
+        //     ? List<String>.from(fileUpload.map((x) => x))
+        //     : [],
       };
 
   Map<String, dynamic> toJsonInvestDao() => {
@@ -151,9 +151,9 @@ class Post {
   Map<String, dynamic> toJsonWage() => {
         "id": id,
         "StoryText": storyText,
-        "FileUpload": fileUpload != null
-            ? List<String>.from(fileUpload.map((x) => x))
-            : [],
+        // "FileUpload": fileUpload != null
+        //     ? List<String>.from(fileUpload.map((x) => x))
+        //     : [],
       };
   static String getTimeSinceNotification(Duration duration) {
     if (duration.inDays == 1) {

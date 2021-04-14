@@ -36,7 +36,10 @@ import 'login_page.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:image/image.dart' as im;
+import 'package:http_parser/http_parser.dart';
 
+// import 'package:path/path.dart';
+//
 class Wage extends StatefulWidget {
   User currentUser;
   Function isPostedCallback;
@@ -333,7 +336,8 @@ class _WageState extends State<Wage> {
     );
   }
 
-  createPostInvestment(String investmentAmount, List<String> list) async {
+  createPostInvestment(String storytext, String investmentAmount,
+      List<String> list, List<File> files) async {
     if (selectedList.isEmpty) {
       Fluttertoast.showToast(
           msg: "You must invest with a bond",
@@ -342,6 +346,14 @@ class _WageState extends State<Wage> {
           fontSize: 15);
       return;
     }
+    // if(storytext.isEmpty){
+    //   Fluttertoast.showToast(
+    //       msg: "please enter some text",
+    //       toastLength: Toast.LENGTH_SHORT,
+    //       gravity: ToastGravity.BOTTOM,
+    //       fontSize: 15);
+    //   return;
+    // }
 
     if (double.parse(investmentAmount) == 0) {
       Fluttertoast.showToast(
@@ -349,12 +361,12 @@ class _WageState extends State<Wage> {
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           fontSize: 15);
-
       return;
     }
 
-    if (investmentstoryText == null && investmentfileList.isEmpty ||
-        (investmentstoryText.isEmpty && investmentfileList.isEmpty)) {
+    if (investmentstoryText == null ||
+        investmentfileList.isEmpty ||
+        (investmentstoryText.isEmpty)) {
       Fluttertoast.showToast(
           msg: "Please upload text or photo",
           toastLength: Toast.LENGTH_SHORT,
@@ -363,37 +375,95 @@ class _WageState extends State<Wage> {
       return;
     }
 
-    if (investmentstoryText != null || investmentfileList.isNotEmpty) {
+    if (investmentstoryText != null && investmentfileList.isNotEmpty) {
       // Show Modal Progress hud
       setState(() {
         isloading = true;
       });
 
       // Get the current Firebase user
+
+      int n = files.length;
       var user = await authFirebase.currentUser();
       // Get the user token
       var token = await user.getIdToken();
 
       var uid = curUser.id;
+      print(uid);
 
       for (int i = 0; i < selectedList.length; i++) {
         idSelectedList.add(selectedList[i].id);
       }
 
-      // Create Investment Post
       Post post = Post(
-          id: uid,
-          storyText: investmentstoryText.trim(),
-          investedWith: idSelectedList,
-          investedAmount: investmentAmount,
-          duration: isOne ? 2 : 7,
-          fileUpload: list);
+        id: uid,
+        storyText: investmentstoryText.trim(),
+        investedWith: idSelectedList,
+        investedAmount: investmentAmount,
+        duration: isOne ? 2 : 7,
+        // fileUpload: list
+      );
 
+      // Create Investment Post
+
+      var map = post.toJsonInvest();
+      map["count_image"] = n;
+      map["count_video"] = 0;
       // Awaiting for post Response
       var response = await postFunc(
-          url: storyEndPoint + "createinvestment",
-          token: token,
-          body: jsonEncode(post.toJsonInvest()));
+        url: storyEndPoint + "createinvestment2",
+        token: token,
+        body: jsonEncode(map),
+      );
+      // if()
+      print(map);
+
+      if (response == null) {
+        setState(() {
+          isloading = false;
+        });
+        Fluttertoast.showToast(
+            msg: "Error occurred, please check Internet connection.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            fontSize: 15);
+        return;
+      }
+
+      var body = json.decode(response.body);
+      var x = body["body"];
+      // print(x.runtimeType);
+      var b = json.decode(x);
+      x = b["presigned"];
+
+      for (var i = 0; i < x.length; i++) {
+        var y = x[i]["fields"];
+        var request = http.MultipartRequest(
+          'POST',
+          Uri.parse(x[i]["url"]),
+        );
+        request.files.add(
+          http.MultipartFile(
+            'file',
+            files[i].readAsBytes().asStream(),
+            files[i].lengthSync(),
+            filename: (files[i].path),
+            contentType: MediaType('image', 'jpeg'),
+          ),
+        );
+        // request.fields
+        request.fields.addAll({
+          "key": y["key"],
+          "x-amz-algorithm": y["x-amz-algorithm"],
+          "x-amz-credential": y["x-amz-credential"],
+          "x-amz-date": y["x-amz-date"],
+          "x-amz-security-token": y["x-amz-security-token"],
+          "policy": y["policy"],
+          "x-amz-signature": y["x-amz-signature"],
+        });
+
+        var res = await request.send();
+      }
 
       // Response is null if some exception occurred while posting, for eg - Lost internet connection
       if (response == null) {
@@ -465,6 +535,7 @@ class _WageState extends State<Wage> {
 
     Timer.periodic(oneSec, (Timer timer) {
       print("timer");
+      print(curUser);
       if (curUser != null) {
         timer.cancel();
         print("Timer cancelled");
@@ -481,7 +552,76 @@ class _WageState extends State<Wage> {
     super.dispose();
   }
 
-  createWagePost(String storyText, List<String> list) async {
+  createWagePost(String storyText, List<String> list, List<File> files) async {
+    var user = await authFirebase.currentUser();
+    var token = await user.getIdToken();
+
+    var uid = curUser.id;
+    // Creating Post
+    Post post = Post(id: uid, storyText: storyText);
+    var map = post.toJsonWage();
+    int n = files.length;
+    map["count_image"] = n;
+    map["count_video"] = 0;
+    // Awaiting for post Response
+    var response = await postFunc(
+        url: storyEndPoint + "createwage2",
+        token: token,
+        body: jsonEncode(map));
+
+    print(map);
+
+    if (response == null) {
+      setState(() {
+        isloading = false;
+      });
+      Fluttertoast.showToast(
+          msg: "Error occurred, please check Internet connection.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
+      return;
+    }
+    var body = json.decode(response.body);
+    // print(body);
+
+    // var response2=await http.get(body["url"]);
+    var x = body["body"];
+    print(x.runtimeType);
+    var b = json.decode(x);
+    x = b["presigned"];
+    // print(x
+    for (var i = 0; i < x.length; i++) {
+      var y = x[i]["fields"];
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(x[i]["url"]),
+      );
+      request.files.add(
+        http.MultipartFile(
+          'file',
+          files[i].readAsBytes().asStream(),
+          files[i].lengthSync(),
+          filename: (files[i].path),
+          contentType: MediaType('image', 'jpeg'),
+        ),
+      );
+      // request.fields
+      request.fields.addAll({
+        "key": y["key"],
+        "x-amz-algorithm": y["x-amz-algorithm"],
+        "x-amz-credential": y["x-amz-credential"],
+        "x-amz-date": y["x-amz-date"],
+        "x-amz-security-token": y["x-amz-security-token"],
+        "policy": y["policy"],
+        "x-amz-signature": y["x-amz-signature"],
+      });
+
+      var res = await request.send();
+
+      // print(x[i]);
+    }
+
     if (storyText == null || storyText.isEmpty) {
       Fluttertoast.showToast(
           msg: "Please enter text and upload pic",
@@ -495,20 +635,6 @@ class _WageState extends State<Wage> {
     setState(() {
       isloading = true;
     });
-
-    var user = await authFirebase.currentUser();
-    var token = await user.getIdToken();
-
-    var uid = curUser.id;
-
-    // Creating Post
-    Post post = Post(id: uid, storyText: storyText, fileUpload: list);
-
-    // Awaiting for post Response
-    var response = await postFunc(
-        url: storyEndPoint + "createwage",
-        token: token,
-        body: jsonEncode(post.toJsonWage()));
 
     // Response is null if some exception occurred while posting, for eg - Lost internet connection
     if (response == null) {
@@ -1167,8 +1293,8 @@ class _WageState extends State<Wage> {
                               fontSize: 15);
                           return;
                         }
-                        await createPostInvestment(
-                            amount.toString(), selectedImgList);
+                        await createPostInvestment(storytext, amount.toString(),
+                            selectedImgList, investmentfileList);
                       },
                     ),
                   )
@@ -1375,7 +1501,7 @@ class _WageState extends State<Wage> {
           text: "Time to Brag",
           onPressed: () {
             storytext = textController.text;
-            createWagePost(storytext.trim(), list);
+            createWagePost(storytext.trim(), list, fileList);
           },
         )
       ],
