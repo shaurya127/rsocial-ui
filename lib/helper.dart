@@ -3,8 +3,9 @@ import 'package:http/http.dart' as http;
 
 Future<http.Response> getFunc({String url, String token}) async {
   try {
+    var uri = Uri.parse(url);
     var response = await http.get(
-      url,
+      uri,
       headers: {
         "Authorization": "Bearer: $token",
         "Content-Type": "application/json",
@@ -20,7 +21,8 @@ Future<http.Response> getFunc({String url, String token}) async {
 
 Future<http.Response> postFunc({String url, String token, String body}) async {
   try {
-    var response = await http.post(url,
+    var uri = Uri.parse(url);
+    var response = await http.post(uri,
         encoding: Encoding.getByName("utf-8"),
         headers: {
           "Authorization": "Bearer $token",
@@ -38,7 +40,8 @@ Future<http.Response> postFunc({String url, String token, String body}) async {
 
 Future<http.Response> putFunc({String url, String token, String body}) async {
   try {
-    var response = await http.put(url,
+    var uri = Uri.parse(url);
+    var response = await http.put(uri,
         encoding: Encoding.getByName("utf-8"),
         headers: {
           "Authorization": "Bearer $token",

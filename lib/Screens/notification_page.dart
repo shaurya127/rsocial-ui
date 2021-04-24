@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/helper.dart';
 import 'package:rsocial2/model/notification.dart';
-import 'package:rsocial2/model/user.dart';
+import 'package:rsocial2/model/user.dart' as user;
 
 import '../contants/constants.dart';
 import 'package:rsocial2/Widgets/Notification_tile.dart';
@@ -13,7 +13,7 @@ import 'package:rsocial2/Widgets/Notification_tile.dart';
 import 'bottom_nav_bar.dart';
 
 class NotificationPage extends StatefulWidget {
-  User curUser;
+  user.User curUser;
   NotificationPage({this.curUser});
   @override
   _NotificationPageState createState() => _NotificationPageState();
@@ -40,7 +40,7 @@ class _NotificationPageState extends State<NotificationPage>
 
     var response;
     try {
-      var user = await FirebaseAuth.instance.currentUser();
+      var user = FirebaseAuth.instance.currentUser;
       var token = await user.getIdToken();
 
       response = await postFunc(

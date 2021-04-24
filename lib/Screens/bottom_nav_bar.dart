@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +32,7 @@ import 'package:rsocial2/Widgets/alert_box.dart';
 import 'package:rsocial2/auth.dart';
 import 'package:rsocial2/authLogic.dart';
 import '../deep_links.dart';
-import '../model/user.dart';
+import '../model/user.dart' as userModel;
 import 'package:rsocial2/Screens/landing_page.dart';
 import 'package:rsocial2/Screens/nav_drawer.dart';
 import 'package:rsocial2/Screens/search_page.dart';
@@ -53,8 +54,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 final googleSignIn = GoogleSignIn();
 final fblogin = FacebookLogin();
 var authFirebase = FirebaseAuth.instance;
-User curUser;
-User savedUser;
+userModel.User curUser;
+userModel.User savedUser;
 PackageInfo packageInfo;
 List postsGlobal = [];
 bool storiesStillLeft;
@@ -62,7 +63,7 @@ bool storiesStillLeft;
 //SharedPreferences prefs;
 
 class BottomNavBar extends StatefulWidget {
-  User currentUser;
+  userModel.User currentUser;
   bool isNewUser;
   String sign_in_mode;
 
@@ -92,7 +93,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   bool isForward = true;
   bool isNewUserFailed = false;
   bool showNotification = false;
-  User Ruser;
+  userModel.User Ruser;
   bool storiesLeft = true;
   ScrollController _scrollController = ScrollController();
   final List<int> backStack = [0];
@@ -143,7 +144,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       isLoading = true;
     });
     var url = userEndPoint + 'create';
-    var user = await FirebaseAuth.instance.currentUser();
+    var user = FirebaseAuth.instance.currentUser;
 
     var token = await user.getIdToken();
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -160,8 +161,9 @@ class _BottomNavBarState extends State<BottomNavBar>
       } catch (e) {}
 
       try {
+        var uri = Uri.parse(url);
         response = await http.post(
-          url,
+          uri,
           encoding: Encoding.getByName("utf-8"),
           body: jsonEncode(widget.currentUser.toJson()),
           headers: {
@@ -194,12 +196,10 @@ class _BottomNavBarState extends State<BottomNavBar>
 
           // Updating Messagingtoken in Cloud Firestore
           try {
-            await users
-                .document(user.uid)
-                .setData({"id": id, "token": messagingToken});
+            await users.doc(user.uid).set({"id": id, "token": messagingToken});
           } catch (e) {}
 
-          curUser = User.fromJson(responseMessage);
+          curUser = userModel.User.fromJson(responseMessage);
         } else {
           id = responseUserData['id'];
           await getUser(id);
@@ -220,10 +220,10 @@ class _BottomNavBarState extends State<BottomNavBar>
   }
 
   getUser(String id) async {
-    var user = await authFirebase.currentUser();
+    var user = authFirebase.currentUser;
     var token = await user.getIdToken();
 
-    DocumentSnapshot doc = await users.document(user.uid).get();
+    DocumentSnapshot doc = await users.doc(user.uid).get();
 
     if (doc.data == null) {
       if (id == null) {
@@ -235,9 +235,7 @@ class _BottomNavBarState extends State<BottomNavBar>
       } else {
         try {
           var messagingToken = await getFirebaseMessagingToken();
-          await users
-              .document(user.uid)
-              .setData({"id": id, "token": messagingToken});
+          await users.doc(user.uid).set({"id": id, "token": messagingToken});
         } catch (e) {}
       }
     }
@@ -271,7 +269,7 @@ class _BottomNavBarState extends State<BottomNavBar>
 
       setState(() {
         //print("USERRR:${User.fromJson(responseMessage)}");
-        curUser = User.fromJson(responseMessage);
+        curUser = userModel.User.fromJson(responseMessage);
       });
 
       if (curUser != null) saveData();
@@ -319,7 +317,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     prefs.setString('id', curUser.id);
     prefs.setString('FName', curUser.fname);
     prefs.setString('LName', curUser.lname);
-    prefs.setInt('socialStanding', curUser.socialStanding);
+    prefs.setInt('socialStanding', curUser.socialStanding ?? 0);
     prefs.setInt('yollarAmount', curUser.lollarAmount);
     prefs.setInt('totalConnections', curUser.connectionCount);
     prefs.setString('profilePhoto', curUser.photoUrl);
@@ -327,7 +325,7 @@ class _BottomNavBarState extends State<BottomNavBar>
 
   getData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    savedUser = User(
+    savedUser = userModel.User(
       id: prefs.getString('id'),
       photoUrl: prefs.getString('profilePhoto'),
       lollarAmount: prefs.getInt('yollarAmount'),
@@ -348,14 +346,14 @@ class _BottomNavBarState extends State<BottomNavBar>
       isLoadingPost = true;
       //isLoading = false;
     });
-    FirebaseUser user;
-    user = await authFirebase.currentUser();
+    User user;
+    user = authFirebase.currentUser;
     var token = await user.getIdToken();
 
     if (id == null) {
       try {
-        user = await authFirebase.currentUser();
-        DocumentSnapshot doc = await users.document(user.uid).get();
+        user = authFirebase.currentUser;
+        DocumentSnapshot doc = await users.doc(user.uid).get();
         if (doc == null) print("error from get user post");
         id = doc['id'];
       } catch (e) {
@@ -415,7 +413,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   }
 
   getRCashDetails() async {
-    var user = await authFirebase.currentUser();
+    var user = authFirebase.currentUser;
     var token = await user.getIdToken();
     var id;
     if (curUser == null) {
@@ -434,7 +432,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     if (response.statusCode == 200) {
       var responseMessage =
           jsonDecode((jsonDecode(response.body))['body'])['message'];
-      var Ruser = User.fromJson(responseMessage);
+      var Ruser = userModel.User.fromJson(responseMessage);
       if (curUser != null) {
         curUser.lollarAmount = Ruser.lollarAmount;
         curUser.totalAvailableYollar = Ruser.totalAvailableYollar;
@@ -473,7 +471,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     //print("Get social standing triggered");
     var token;
     try {
-      var user = await authFirebase.currentUser();
+      var user = authFirebase.currentUser;
       token = await user.getIdToken();
     } catch (e) {
       return;
@@ -520,21 +518,33 @@ class _BottomNavBarState extends State<BottomNavBar>
 
     var response;
     try {
-      var user = await FirebaseAuth.instance.currentUser();
+      var user = FirebaseAuth.instance.currentUser;
       var token = await user.getIdToken();
-
+      var id = curUser != null
+          ? curUser.id
+          : savedUser != null
+              ? savedUser.id
+              : null;
+      if (id == null) {
+        try {
+          user = authFirebase.currentUser;
+          DocumentSnapshot doc = await users.doc(user.uid).get();
+          if (doc == null) print("error from get user post");
+          id = doc['id'];
+        } catch (e) {
+          //print("inside try");
+        }
+      }
       response = await postFunc(
           url: userEndPoint + "getnotification",
           token: token,
           body: jsonEncode({
             //"id": "bb6c5841ba0d4f5597506ff3b61b91d3",
-            "id": curUser == null ? savedUser.id : curUser.id,
+            "id": id,
           }));
-      //print("NOTIFICATION:${response.body}");
+      print("NOTIFICATION:${response.body}");
       //print("Inside get notification");
-      if (response == null) {
-        //print("response is null");
-      }
+      if (response == null) {}
     } catch (e) {
       isLoading = false;
     }
@@ -597,6 +607,16 @@ class _BottomNavBarState extends State<BottomNavBar>
       if (postId == null) {
         initDynamicLinks();
         //print("found id : $postId");
+      } else {
+        // Future.delayed(Duration(seconds: 5));
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => DisplayPost(
+        //       postId: postId,
+        //     ),
+        //   ),
+        // );
       }
     }
 
@@ -609,7 +629,7 @@ class _BottomNavBarState extends State<BottomNavBar>
     getNotifications();
   }
 
-  void initDynamicLinks() async {
+  Future<void> initDynamicLinks() async {
     // setState(() {
     //   findingLink=true;
     // });
@@ -622,12 +642,22 @@ class _BottomNavBarState extends State<BottomNavBar>
       if (deepLink != null) {
         ////print("the postid is:${deepLink.queryParameters['postid']}");// <- //prints 'abc'
         postId = deepLink.queryParameters['postid'];
-        if (postId != null)
+        if (postId != null) {
+          // SchedulerBinding.instance.addPostFrameCallback((_) {
+          //   Navigator.of(navigatorKey.currentContext).push(MaterialPageRoute(
+          //     builder: (context) => DisplayPost(
+          //       postId: deepLink.queryParameters['postid'],
+          //     ),
+          //   ));
+          // });
+          // Future.delayed(Duration.zero).then((value) {
           Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) =>
                       DisplayPost(postId: deepLink.queryParameters['postid'])));
+          // });
+        }
       }
     }, onError: (OnLinkErrorException e) async {
       //print('onLinkError');
@@ -637,15 +667,25 @@ class _BottomNavBarState extends State<BottomNavBar>
     final PendingDynamicLinkData data =
         await FirebaseDynamicLinks.instance.getInitialLink();
     final Uri deepLink = data?.link;
-
+    print("LINK: $deepLink");
     if (deepLink != null) {
       //postId = deepLink.queryParameters['postid'];
-      if (postId != null)
+      if (postId != null) {
+        // SchedulerBinding.instance.addPostFrameCallback((_) {
+        //   Navigator.of(navigatorKey.currentContext).push(MaterialPageRoute(
+        //     builder: (context) => DisplayPost(
+        //       postId: deepLink.queryParameters['postid'],
+        //     ),
+        //   ));
+        // });
+        // Future.delayed(Duration.zero).then((value) {
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) =>
                     DisplayPost(postId: deepLink.queryParameters['postid'])));
+        //});
+      }
     }
 
     // setState(() {
@@ -654,7 +694,7 @@ class _BottomNavBarState extends State<BottomNavBar>
   }
 
   Future<String> getFirebaseMessagingToken() async {
-    var token = await FirebaseMessaging().getToken();
+    var token = await FirebaseMessaging.instance.getToken();
     //print(token);
     return token;
   }

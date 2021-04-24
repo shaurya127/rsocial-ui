@@ -1,11 +1,20 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:rsocial2/Screens/bottom_nav_bar.dart';
+import 'package:rsocial2/Screens/user_onboarding.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/contants/constants.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../Widgets/error.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:rsocial2/Screens/profile_page.dart';
+import '../model/user.dart';
 
 class HelpCenter extends StatelessWidget {
+  final String fname = curUser.fname;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,60 +22,156 @@ class HelpCenter extends StatelessWidget {
       body: ListView(
         children: [
           SizedBox(
-            height: 50,
+            height: 20,
           ),
-          Container(
-            width: double.infinity,
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                  left: 25.0, right: 25, top: 10, bottom: 10),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) {
-                      return FAQScreen();
-                    }),
-                  );
-                },
-                child: Text(
-                  "FAQ",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'lato',
-                      fontSize: 22,
-                      color: colorPrimaryBlue,
-                      decoration: TextDecoration.underline),
-                  textAlign: TextAlign.center,
-                ),
-              ),
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: TyperAnimatedTextKit(
+              isRepeatingAnimation: false,
+              text: [
+                'Hi, $fname! Welcome to Rsocial!',
+                'How can we help you?',
+              ],
+              textStyle: TextStyle(fontSize: 16, fontFamily: "Lato"),
             ),
           ),
-          Container(
-            width: double.infinity,
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 25.0, right: 25, top: 10),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) {
-                      return OnboardingGuide();
-                    }),
-                  );
-                },
-                child: Text(
-                  "Onboarding Guide",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'lato',
-                      fontSize: 22,
-                      color: colorPrimaryBlue,
-                      decoration: TextDecoration.underline),
-                  textAlign: TextAlign.center,
+          SizedBox(
+            height: 10,
+          ),
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(8),
+                width: MediaQuery.of(context).size.width * 0.5,
+                height: 160,
+                child: Card(
+                  elevation: 10,
+                  child: InkWell(
+                    splashColor: Colors.blue.withAlpha(30),
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return FAQScreen();
+                      }));
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 80,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage('images/answer.png'))),
+                        ),
+                        Container(
+                          alignment: Alignment.center,
+                          child: FittedBox(
+                            child: Text(
+                              'Still have questions',
+                              textAlign: TextAlign.center,
+                              style:
+                                  TextStyle(fontSize: 15, fontFamily: "Lato"),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
+              Container(
+                padding: EdgeInsets.all(8),
+                width: MediaQuery.of(context).size.width * 0.5,
+                height: 160,
+                child: Card(
+                  elevation: 10,
+                  child: Padding(
+                    padding: const EdgeInsets.all(3.0),
+                    child: InkWell(
+                      splashColor: Colors.blue.withAlpha(30),
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (BuildContext context) {
+                          //return UserOnboarding(null);
+                          return VideoScreen();
+                        }));
+                      },
+                      child: Column(
+                        // mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: Container(
+                              height: 80,
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: AssetImage(
+                                          'images/online-video.png'))),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Container(
+                            alignment: Alignment.center,
+                            child: FittedBox(
+                              child: Text(
+                                'Watch an interactive video',
+                                style:
+                                    TextStyle(fontSize: 13, fontFamily: "Lato"),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(8),
+                width: MediaQuery.of(context).size.width * 0.5,
+                height: 160,
+                child: Card(
+                  elevation: 10,
+                  child: InkWell(
+                    splashColor: Colors.blue.withAlpha(30),
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return AboutScreen();
+                      }));
+                    },
+                    child: Column(
+                      // mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.all(10),
+                          height: 80,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage('images/helprs.jpg'))),
+                        ),
+                        Container(
+                          alignment: Alignment.center,
+                          child: Text(
+                            'About us',
+                            style: TextStyle(fontSize: 15, fontFamily: "Lato"),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -74,60 +179,43 @@ class HelpCenter extends StatelessWidget {
   }
 }
 
-class OnboardingGuide extends StatelessWidget {
-  const OnboardingGuide({
-    Key key,
-  }) : super(key: key);
+class VideoScreen extends StatefulWidget {
+  @override
+  _VideoScreenState createState() => _VideoScreenState();
+}
 
+class _VideoScreenState extends State<VideoScreen> {
   @override
   Widget build(BuildContext context) {
+    var preferredWidget = AppBar(
+      backgroundColor: colorButton,
+      iconTheme: IconThemeData(color: Colors.white),
+    );
     return Scaffold(
-        body: Stack(
-      children: [
-        Container(
-          margin: EdgeInsets.only(top: 10),
-          width: double.infinity,
-          height: double.infinity,
-          alignment: Alignment.center,
-          child: FadeInImage(
-            imageErrorBuilder: (context, obj, trace) {
-              return ErrWidget(
-                tryAgainOnPressed: () {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) {
-                      return OnboardingGuide();
-                    }),
-                  );
-                },
-              );
-            },
-            height: MediaQuery.of(context).size.height - 50,
-            width: MediaQuery.of(context).size.width,
-            fit: BoxFit.cover,
-            placeholder: AssetImage(
-              "images/splashScreenAndroid.gif",
-            ),
-            image: NetworkImage(
-              "https://relatotechnologies.com/bg.gif",
+        appBar: preferredWidget,
+        bottomNavigationBar: Container(
+          color: colorButton,
+          height: 60,
+        ),
+        body: Center(
+          child: CachedNetworkImage(
+            fit: BoxFit.fill,
+            width: double.infinity,
+            imageUrl: "https://relatotechnologies.com/bg.gif",
+            placeholder: (ctx, _) => Center(child: CircularProgressIndicator()),
+            errorWidget: (ctx, _, error) => Center(
+              child: FittedBox(
+                child: Text(
+                  'Some error occured. Please try again later',
+                  style: TextStyle(
+                    fontFamily: "Lato",
+                    fontSize: 15,
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-        Positioned(
-          top: 30,
-          right: 20,
-          child: IconButton(
-            icon: Icon(
-              Icons.cancel_outlined,
-              color: Colors.white,
-              size: 36,
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ),
-      ],
-    ));
+        ));
   }
 }
 
@@ -155,6 +243,38 @@ class _FAQScreenState extends State<FAQScreen> {
             WebView(
               initialUrl:
                   'https://relatotechnologies.com/frequently-asked-questions/index.html',
+              javascriptMode: JavascriptMode.unrestricted,
+              onPageFinished: (_) {
+                setState(() {
+                  isLoading = false;
+                });
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AboutScreen extends StatefulWidget {
+  @override
+  _AboutScreenState createState() => _AboutScreenState();
+}
+
+class _AboutScreenState extends State<AboutScreen> {
+  var isLoading = true;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: customAppBar(context),
+      body: ModalProgressHUD(
+        inAsyncCall: isLoading,
+        opacity: 0.0,
+        child: Stack(
+          children: [
+            WebView(
+              initialUrl: 'https://relatotechnologies.com/rsocial/index.html',
               javascriptMode: JavascriptMode.unrestricted,
               onPageFinished: (_) {
                 setState(() {

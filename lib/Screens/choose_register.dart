@@ -14,7 +14,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rsocial2/Screens/register_page.dart';
 import 'package:rsocial2/contants/constants.dart';
 
-import '../model/user.dart';
+import '../model/user.dart' as user;
 import 'login_page.dart';
 import '../Widgets/provider_button.dart';
 import 'package:rsocial2/authLogic.dart';
@@ -29,7 +29,7 @@ class ChooseRegister extends StatefulWidget {
 class _ChooseRegisterState extends State<ChooseRegister> {
   final googleSignIn = GoogleSignIn();
   final fblogin = FacebookLogin();
-  User _currentUser;
+  user.User _currentUser;
   String Sign_in_mode;
   bool isLoading = false;
 

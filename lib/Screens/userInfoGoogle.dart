@@ -14,10 +14,10 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../auth.dart';
 import '../authLogic.dart';
 import '../contants/constants.dart';
-import '../model/user.dart';
+import '../model/user.dart' as user;
 
 class UserInfoGoogle extends StatefulWidget {
-  User currentUser;
+  user.User currentUser;
   UserInfoGoogle({this.currentUser});
   @override
   _UserInfoGoogleState createState() => _UserInfoGoogleState();

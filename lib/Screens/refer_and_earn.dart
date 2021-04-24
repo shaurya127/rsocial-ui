@@ -30,7 +30,7 @@ class _Refer_and_EarnState extends State<Refer_and_Earn> {
       gettingPoints = true;
     });
 
-    var user = await authFirebase.currentUser();
+    var user = authFirebase.currentUser;
     var token = await user.getIdToken();
     var id = curUser.id;
 

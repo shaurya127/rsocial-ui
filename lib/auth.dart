@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:rsocial2/Widgets/disabled_reaction_button.dart';
 import 'package:rsocial2/deep_links.dart';
 import 'Widgets/post_tile.dart';
-import 'model/user.dart';
+import 'model/user.dart' as user;
 
 import 'Screens/bottom_nav_bar.dart';
 import 'Screens/create_account_page.dart';
@@ -24,7 +24,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'main.dart';
 
-User currentUser;
+user.User currentUser;
 String postId;
 String inviteSenderId;
 
@@ -44,12 +44,12 @@ class _AuthScreenState extends State<AuthScreen> {
   bool findingLink = true;
 
   void isUserAuthenticated() async {
-    FirebaseUser user = await _auth.currentUser();
+    User user = _auth.currentUser;
     print("Hello");
     if (user == null) {
       isAuthenticated = false;
     } else {
-      DocumentSnapshot doc = await users.document(user.uid).get();
+      DocumentSnapshot doc = await users.doc(user.uid).get();
       isAuthenticated = doc.exists ? true : false;
     }
 
@@ -67,21 +67,21 @@ class _AuthScreenState extends State<AuthScreen> {
 
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
-          final Uri deepLink = dynamicLink?.link;
-          if (deepLink != null) {
-            print(
-                "the postid is:${deepLink.queryParameters['postid']}"); // <- prints 'abc'
-            postId = deepLink.queryParameters['postid'];
-            inviteSenderId = deepLink.queryParameters['sender'];
-            prefs.setString('inviteSenderId', inviteSenderId);
-          }
-        }, onError: (OnLinkErrorException e) async {
+      final Uri deepLink = dynamicLink?.link;
+      if (deepLink != null) {
+        print(
+            "the postid is:${deepLink.queryParameters['postid']}"); // <- prints 'abc'
+        postId = deepLink.queryParameters['postid'];
+        inviteSenderId = deepLink.queryParameters['sender'];
+        prefs.setString('inviteSenderId', inviteSenderId);
+      }
+    }, onError: (OnLinkErrorException e) async {
       print('onLinkError');
       print(e.message);
     });
 
     final PendingDynamicLinkData data =
-    await FirebaseDynamicLinks.instance.getInitialLink();
+        await FirebaseDynamicLinks.instance.getInitialLink();
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {

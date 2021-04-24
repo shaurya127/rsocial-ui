@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -19,14 +19,13 @@ class Reaction_Info extends StatefulWidget {
   String postId;
   Map<String, int> counter;
 
-  Reaction_Info({this.postId,this.counter});
+  Reaction_Info({this.postId, this.counter});
   @override
   _Reaction_InfoState createState() => _Reaction_InfoState();
 }
 
 class _Reaction_InfoState extends State<Reaction_Info>
     with TickerProviderStateMixin {
-
   TabController _tabController;
   bool isGettingReaction = true;
   bool failedGettingReaction = false;
@@ -54,7 +53,7 @@ class _Reaction_InfoState extends State<Reaction_Info>
 
   getPostReactions() async {
     print("get user started");
-    var user = await FirebaseAuth.instance.currentUser();
+    var user = auth.FirebaseAuth.instance.currentUser;
     var token = await user.getIdToken();
 
     final url = storyEndPoint + "getstoryreaction";
@@ -63,7 +62,7 @@ class _Reaction_InfoState extends State<Reaction_Info>
     try {
       token = await user.getIdToken();
       print(token);
-      response = await http.post(url,
+      response = await http.post(Uri.parse(url),
           encoding: Encoding.getByName("utf-8"),
           headers: {
             "Authorization": "Bearer $token",
@@ -96,33 +95,29 @@ class _Reaction_InfoState extends State<Reaction_Info>
       if (msg == 'User Not Found') {
         setState(() {
           isGettingReaction = false;
-          failedGettingReaction=true;
+          failedGettingReaction = true;
         });
       }
 
-      if(lovedResponse!=null)
-        {
-          for (int i = 0; i < lovedResponse.length; i++) {
-            User user = User.fromJson(lovedResponse[i]);
-            loved.add(user);
-          }
+      if (lovedResponse != null) {
+        for (int i = 0; i < lovedResponse.length; i++) {
+          User user = User.fromJson(lovedResponse[i]);
+          loved.add(user);
         }
-      if(likedResponse!=null)
-      {
+      }
+      if (likedResponse != null) {
         for (int i = 0; i < likedResponse.length; i++) {
           User user = User.fromJson(likedResponse[i]);
           liked.add(user);
         }
       }
-      if(whateverResponse!=null)
-      {
+      if (whateverResponse != null) {
         for (int i = 0; i < whateverResponse.length; i++) {
           User user = User.fromJson(whateverResponse[i]);
           whatever.add(user);
         }
       }
-      if(hatedResponse!=null)
-      {
+      if (hatedResponse != null) {
         for (int i = 0; i < hatedResponse.length; i++) {
           User user = User.fromJson(hatedResponse[i]);
           hated.add(user);
@@ -170,9 +165,9 @@ class _Reaction_InfoState extends State<Reaction_Info>
     hates = [];
     whatevers = [];
     setState(() {
-      isGettingReaction=true;
+      isGettingReaction = true;
     });
-    for (int i = 0; i <loved.length; i++) {
+    for (int i = 0; i < loved.length; i++) {
       Request_Tile tile = Request_Tile(
         text: curUser.userMap.containsKey(loved[i].id)
             ? curUser.userMap[loved[i].id]
@@ -213,7 +208,7 @@ class _Reaction_InfoState extends State<Reaction_Info>
       whatevers.add(tile);
     }
     setState(() {
-      isGettingReaction=false;
+      isGettingReaction = false;
     });
   }
 
@@ -263,7 +258,8 @@ class _Reaction_InfoState extends State<Reaction_Info>
                             SizedBox(
                               width: 5,
                             ),
-                            Text(widget.counter['loved'].toString(),
+                            Text(
+                              widget.counter['loved'].toString(),
                               style: TextStyle(
                                 fontFamily: "Lato",
                                 fontSize: 15,
@@ -283,7 +279,8 @@ class _Reaction_InfoState extends State<Reaction_Info>
                           SizedBox(
                             width: 5,
                           ),
-                          Text(widget.counter['liked'].toString(),
+                          Text(
+                            widget.counter['liked'].toString(),
                             style: TextStyle(
                               fontFamily: "Lato",
                               fontSize: 15,
@@ -341,73 +338,77 @@ class _Reaction_InfoState extends State<Reaction_Info>
           ),
         ),
       ),
-      body: isGettingReaction ? Center(child: CircularProgressIndicator(),) : TabBarView(
-        children: <Widget>[
-          love.isNotEmpty
-              ? Container(
-                  color: Colors.white,
-                  child: ListView(children: love),
-                )
-              : Center(
-                  child: Text(
-                    "No love yet!",
-                    style: TextStyle(
-                      fontFamily: "Lato",
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-          likes.isNotEmpty
-              ? Container(
-                  color: Colors.white,
-                  child: ListView(
-                    children: likes,
-                  ),
-                )
-              : Center(
-                  child: Text(
-                    "No likes yet!",
-                    style: TextStyle(
-                      fontFamily: "Lato",
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-          whatevers.isNotEmpty
-              ? Container(
-                  color: Colors.white,
-                  child: ListView(children: whatevers),
-                )
-              : Center(
-                  child: Text(
-                    "No one here!",
-                    style: TextStyle(
-                      fontFamily: "Lato",
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-          hates.isNotEmpty
-              ? Container(
-                  color: Colors.white,
-                  child: ListView(children: hates),
-                )
-              : Center(
-                  child: Text(
-                    "No one here!",
-                    style: TextStyle(
-                      fontFamily: "Lato",
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-        ],
-        controller: _tabController,
-      ),
+      body: isGettingReaction
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : TabBarView(
+              children: <Widget>[
+                love.isNotEmpty
+                    ? Container(
+                        color: Colors.white,
+                        child: ListView(children: love),
+                      )
+                    : Center(
+                        child: Text(
+                          "No love yet!",
+                          style: TextStyle(
+                            fontFamily: "Lato",
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                likes.isNotEmpty
+                    ? Container(
+                        color: Colors.white,
+                        child: ListView(
+                          children: likes,
+                        ),
+                      )
+                    : Center(
+                        child: Text(
+                          "No likes yet!",
+                          style: TextStyle(
+                            fontFamily: "Lato",
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                whatevers.isNotEmpty
+                    ? Container(
+                        color: Colors.white,
+                        child: ListView(children: whatevers),
+                      )
+                    : Center(
+                        child: Text(
+                          "No one here!",
+                          style: TextStyle(
+                            fontFamily: "Lato",
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                hates.isNotEmpty
+                    ? Container(
+                        color: Colors.white,
+                        child: ListView(children: hates),
+                      )
+                    : Center(
+                        child: Text(
+                          "No one here!",
+                          style: TextStyle(
+                            fontFamily: "Lato",
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+              ],
+              controller: _tabController,
+            ),
     );
   }
 }

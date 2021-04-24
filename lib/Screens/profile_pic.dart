@@ -70,7 +70,7 @@ class _ProfilePicPageState extends State<ProfilePicPage> {
     Navigator.pop(context);
     var status = await Permission.storage.status;
 
-    if (status.isGranted || status.isUndetermined) {
+    if (status.isGranted || status.isLimited) {
       try {
         PickedFile pickedFile = await ImagePicker().getImage(
           source: ImageSource.gallery,
@@ -168,7 +168,7 @@ class _ProfilePicPageState extends State<ProfilePicPage> {
     Navigator.pop(context);
     var status = await Permission.camera.status;
 
-    if (status.isGranted || status.isUndetermined) {
+    if (status.isGranted || status.isLimited) {
       PickedFile pickedFile = await ImagePicker().getImage(
         source: ImageSource.camera,
         // maxHeight: 675,

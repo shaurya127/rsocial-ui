@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/login_page.dart';
@@ -33,8 +33,8 @@ class _RequestButtonState extends State<RequestButton> {
 
     try {
       var url = userEndPoint + "removeconnection";
-      var user = await FirebaseAuth.instance.currentUser();
-      DocumentSnapshot doc = await users.document(user.uid).get();
+      var user = auth.FirebaseAuth.instance.currentUser;
+      DocumentSnapshot doc = await users.doc(user.uid).get();
       var uid = doc['id'];
       //print(uid);
       Connection connection = Connection(
@@ -44,8 +44,9 @@ class _RequestButtonState extends State<RequestButton> {
       var token = await user.getIdToken();
       print(jsonEncode(connection.toJson()));
       //print(token);
+      var uri = Uri.parse(url);
       var response = await http.put(
-        url,
+        uri,
         encoding: Encoding.getByName("utf-8"),
         body: jsonEncode(connection.toJson()),
         headers: {
@@ -85,8 +86,8 @@ class _RequestButtonState extends State<RequestButton> {
     });
     try {
       var url = userEndPoint + "addconnection";
-      var user = await FirebaseAuth.instance.currentUser();
-      DocumentSnapshot doc = await users.document(user.uid).get();
+      var user = auth.FirebaseAuth.instance.currentUser;
+      DocumentSnapshot doc = await users.doc(user.uid).get();
       var uid = doc['id'];
       //print(uid);
       Connection connection = Connection(
@@ -96,8 +97,9 @@ class _RequestButtonState extends State<RequestButton> {
       var token = await user.getIdToken();
       //print(jsonEncode(connection.toJson()));
       //print(token);
+      var uri = Uri.parse(url);
       var response = await http.put(
-        url,
+        uri,
         encoding: Encoding.getByName("utf-8"),
         body: jsonEncode(connection.toJson()),
         headers: {
@@ -137,8 +139,8 @@ class _RequestButtonState extends State<RequestButton> {
     try {
       var url = userEndPoint + "acceptconnection";
 
-      var user = await FirebaseAuth.instance.currentUser();
-      DocumentSnapshot doc = await users.document(user.uid).get();
+      var user = auth.FirebaseAuth.instance.currentUser;
+      DocumentSnapshot doc = await users.doc(user.uid).get();
       var uid = doc['id'];
       print(uid);
       Connection connection = Connection(
@@ -148,8 +150,9 @@ class _RequestButtonState extends State<RequestButton> {
       var token = await user.getIdToken();
       print(jsonEncode(connection.toJson()));
       //print(token);
+      var uri = Uri.parse(url);
       var response = await http.put(
-        url,
+        uri,
         encoding: Encoding.getByName("utf-8"),
         body: jsonEncode(connection.toJson()),
         headers: {

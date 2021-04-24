@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Widgets/alert_box.dart';
@@ -80,7 +80,7 @@ class _RcashScreenState extends State<RcashScreen> {
       isFailedRcash = false;
     });
 
-    var user = await authFirebase.currentUser();
+    var user = authFirebase.currentUser;
     var token = await user.getIdToken();
     var id = curUser.id;
 

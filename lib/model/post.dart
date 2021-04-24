@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'user.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 var locale = 'en';
 
@@ -164,6 +163,10 @@ class Post {
       return "An hour ago";
     } else if (duration.inHours > 1) {
       return "${duration.inHours} hours ago";
+      // } else if (duration.inMinutes > 1) {
+      //   return "${duration.inMinutes} minutes ago";
+      // } else if (duration.inMinutes == 1) {
+      //   return "A minute ago";
     } else {
       return "Now";
     }

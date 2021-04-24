@@ -3,13 +3,14 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/error.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
+import 'package:rsocial2/Widgets/video_player_landing.dart';
 import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/contants/constants.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,8 @@ import '../model/user.dart';
 import 'bottom_nav_bar.dart';
 import 'login_page.dart';
 import 'package:http/http.dart' as http;
+import '../controller.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class Landing_Page extends StatefulWidget {
   User curUser;
@@ -56,11 +59,19 @@ class _Landing_PageState extends State<Landing_Page> {
   bool isFailedUserPost = false;
   int page = 0;
   bool startLoadingTile = false;
+  bool _canBuild = true;
+  int lastMilli = DateTime.now().millisecondsSinceEpoch;
+  ReusableVideoListController reusableVideoListController;
+
+  bool canBuild() {
+    return _canBuild;
+  }
 
   @override
   void initState() {
     super.initState();
     FirebaseAnalytics().setCurrentScreen(screenName: "Landing_Page");
+    reusableVideoListController = ReusableVideoListController();
     if (widget.refresh != null && widget.refresh == true) {
       getUserPostsAsync();
     }
@@ -70,7 +81,7 @@ class _Landing_PageState extends State<Landing_Page> {
     if (widget.isErrorLoadingPost) isPostLoadFail = true;
     widget.scrollController.addListener(() {
       if (widget.scrollController.position.pixels ==
-          widget.scrollController.position.maxScrollExtent) {
+          (widget.scrollController.position.maxScrollExtent)) {
         if (storiesStillLeft) {
           setState(() {
             page = page + 10;
@@ -82,6 +93,8 @@ class _Landing_PageState extends State<Landing_Page> {
         }
       }
     });
+    VisibilityDetectorController.instance.updateInterval =
+        Duration(milliseconds: 100);
   }
 
   getUserPostsAsync() async {
@@ -104,14 +117,14 @@ class _Landing_PageState extends State<Landing_Page> {
   }
 
   Future<void> getUserPosts(String id) async {
-    FirebaseUser user;
-    user = await authFirebase.currentUser();
+    auth.User user;
+    user = authFirebase.currentUser;
     var token = await user.getIdToken();
 
     if (id == null) {
       try {
-        user = await authFirebase.currentUser();
-        DocumentSnapshot doc = await users.document(user.uid).get();
+        user = authFirebase.currentUser;
+        DocumentSnapshot doc = await users.doc(user.uid).get();
         if (doc == null) print("error from get user post");
         id = doc['id'];
       } catch (e) {
@@ -255,11 +268,14 @@ class _Landing_PageState extends State<Landing_Page> {
                     return SizedBox();
                 } else {
                   return new Post_Tile(
-                      curUser: curUser,
-                      onPressDelete: () => deletePost(index),
-                      userPost: postsGlobal[index],
-                      photoUrl: photourl,
-                      reactionCallback: reactionCallback);
+                    curUser: curUser,
+                    onPressDelete: () => deletePost(index),
+                    userPost: postsGlobal[index],
+                    photoUrl: photourl,
+                    reactionCallback: reactionCallback,
+                    reusableVideoListController: reusableVideoListController,
+                    canBuild: canBuild,
+                  );
                 }
               },
               controller: widget.scrollController,
@@ -313,14 +329,14 @@ class _Landing_PageState extends State<Landing_Page> {
 
   void deletePost(int index) async {
     var url = storyEndPoint + 'delete';
-    var user = await FirebaseAuth.instance.currentUser();
+    var user = auth.FirebaseAuth.instance.currentUser;
     var token = await user.getIdToken();
 
     var response;
     Navigator.pop(context);
-
+    var uri = Uri.parse(url);
     response = await http.post(
-      url,
+      uri,
       encoding: Encoding.getByName("utf-8"),
       headers: {
         "Authorization": "Bearer $token",
@@ -345,7 +361,7 @@ class _Landing_PageState extends State<Landing_Page> {
       // });
       //buildPosts();
       Fluttertoast.showToast(
-          msg: "Deleted Post",
+          msg: "Post deleted successfully",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           fontSize: 15);
@@ -376,6 +392,8 @@ class _Landing_PageState extends State<Landing_Page> {
           photoUrl: "",
           onPressDelete: () => deletePost(index),
           userPost: item,
+          reusableVideoListController: reusableVideoListController,
+          canBuild: canBuild,
         ));
   }
 

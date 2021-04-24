@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:image/image.dart' as im;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -97,7 +97,7 @@ class _ProfileState extends State<Profile> {
     print("Get social standing triggered");
     var token;
     try {
-      var user = await authFirebase.currentUser();
+      var user = authFirebase.currentUser;
       token = await user.getIdToken();
     } catch (e) {
       return;
@@ -133,7 +133,7 @@ class _ProfileState extends State<Profile> {
     setState(() {
       isLoadingUser = true;
     });
-    var user = await FirebaseAuth.instance.currentUser();
+    var user = auth.FirebaseAuth.instance.currentUser;
     var token;
 
     var id = curUser.id;
@@ -142,8 +142,8 @@ class _ProfileState extends State<Profile> {
     var response;
     try {
       token = await user.getIdToken();
-
-      response = await http.post(url,
+      var uri = Uri.parse(url);
+      response = await http.post(uri,
           encoding: Encoding.getByName("utf-8"),
           headers: {
             "Authorization": "Bearer $token",
@@ -228,7 +228,7 @@ class _ProfileState extends State<Profile> {
     Navigator.pop(context);
     var status = await Permission.camera.status;
 
-    if (status.isGranted || status.isUndetermined) {
+    if (status.isGranted || status.isLimited) {
       PickedFile pickedFile = await ImagePicker().getImage(
         source: ImageSource.camera,
         // maxHeight: 675,
@@ -299,7 +299,7 @@ class _ProfileState extends State<Profile> {
     Navigator.pop(context);
     var status = await Permission.storage.status;
 
-    if (status.isGranted || status.isUndetermined) {
+    if (status.isGranted || status.isLimited) {
       try {
         PickedFile pickedFile = await ImagePicker().getImage(
           source: ImageSource.gallery,
@@ -399,14 +399,14 @@ class _ProfileState extends State<Profile> {
       isLoadingPosts = true;
     });
     print("get user post fired");
-    var user = await FirebaseAuth.instance.currentUser();
+    var user = auth.FirebaseAuth.instance.currentUser;
     final url = storyEndPoint + "${widget.user.id}";
     var token = await user.getIdToken();
     //print(token);
     var response;
     try {
       response = await http.get(
-        url,
+        Uri.parse(url),
         headers: {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json",
@@ -459,13 +459,13 @@ class _ProfileState extends State<Profile> {
   }
 
   getPlatformPosts() async {
-    var user = await FirebaseAuth.instance.currentUser();
+    var user = auth.FirebaseAuth.instance.currentUser;
     final url = storyEndPoint + 'platformactivity';
     var token = await user.getIdToken();
     //print(token);
     var response;
     try {
-      response = await http.post(url,
+      response = await http.post(Uri.parse(url),
           headers: {
             "Authorization": "Bearer $token",
             "Content-Type": "application/json",
@@ -761,7 +761,7 @@ class _ProfileState extends State<Profile> {
               isLoading = true;
             });
             var response;
-            var user = await FirebaseAuth.instance.currentUser();
+            var user = auth.FirebaseAuth.instance.currentUser;
             var token = await user.getIdToken();
             String url = userEndPoint + 'update';
             print("New bio");
@@ -770,7 +770,7 @@ class _ProfileState extends State<Profile> {
             if (encodedFile == null) {
               try {
                 response = await http.put(
-                  url,
+                  Uri.parse(url),
                   encoding: Encoding.getByName("utf-8"),
                   body: jsonEncode({'id': curUser.id, 'bio': newBio}),
                   headers: {
@@ -793,7 +793,7 @@ class _ProfileState extends State<Profile> {
             } else if (newBio == widget.currentUser.bio) {
               try {
                 response = await http.put(
-                  url,
+                  Uri.parse(url),
                   encoding: Encoding.getByName("utf-8"),
                   body: jsonEncode({
                     'id': curUser.id,
@@ -826,7 +826,7 @@ class _ProfileState extends State<Profile> {
             } else {
               try {
                 response = await http.put(
-                  url,
+                  Uri.parse(url),
                   encoding: Encoding.getByName("utf-8"),
                   body: jsonEncode({
                     'id': curUser.id,
@@ -1194,14 +1194,14 @@ class _ProfileState extends State<Profile> {
 
   void deletePost(int index, String type, String id) async {
     var url = storyEndPoint + 'delete';
-    var user = await FirebaseAuth.instance.currentUser();
+    var user = auth.FirebaseAuth.instance.currentUser;
     var token = await user.getIdToken();
 
     var response;
     Navigator.pop(context);
 
     response = await http.post(
-      url,
+      Uri.parse(url),
       encoding: Encoding.getByName("utf-8"),
       headers: {
         "Authorization": "Bearer $token",

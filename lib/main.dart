@@ -5,6 +5,7 @@ import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,9 @@ import 'Screens/login_page.dart';
 import 'providers/data.dart';
 import 'push_notifications.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     //systemNavigationBarColor: Colors.blue, // navigation bar color
     statusBarColor: colorStatusBar, // status bar color
@@ -56,7 +59,8 @@ class MyApp extends StatelessWidget {
   // void printId() async {
   //   print(await FirebaseMessaging().getToken());
   // }
-  static final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  static final FirebaseMessaging _firebaseMessaging =
+      FirebaseMessaging.instance;
   static FirebaseAnalytics analytics = FirebaseAnalytics();
   static FirebaseAnalyticsObserver observer =
       FirebaseAnalyticsObserver(analytics: analytics);

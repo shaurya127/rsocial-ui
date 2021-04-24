@@ -21,7 +21,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import '../model/user.dart';
+import '../model/user.dart' as user;
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
@@ -32,7 +32,7 @@ import '../authLogic.dart';
 
 final googleSignIn = GoogleSignIn();
 final fblogin = FacebookLogin();
-final users = Firestore.instance.collection('users');
+final users = FirebaseFirestore.instance.collection('users');
 
 class LoginPage extends StatefulWidget {
   @override
@@ -81,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
   //   remoteConfig = await setupRemoteConfig();
   //   setState(() {});
   // }
-  User _currentUser;
+  user.User _currentUser;
 
   @override
   void initState() {

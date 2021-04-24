@@ -5,7 +5,7 @@ import 'dart:io';
 // import 'package:audioplayers/audio_cache.dart';
 // import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -186,7 +186,7 @@ class _InvestPostTileState extends State<InvestPostTile>
     });
     var user, token;
     try {
-      user = await FirebaseAuth.instance.currentUser();
+      user = auth.FirebaseAuth.instance.currentUser;
       token = await user.getIdToken();
     } catch (e) {
       setState(() {

@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/profile_pic.dart';
@@ -9,11 +10,11 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import '../authLogic.dart';
 import '../contants/constants.dart';
-import '../model/user.dart';
+import '../model/user.dart' as user;
 import 'create_account_page.dart';
 
 class UserInfoFacebook extends StatefulWidget {
-  final User currentUser;
+  final user.User currentUser;
   @override
   _UserInfoFacebookState createState() => _UserInfoFacebookState();
 
@@ -116,7 +117,10 @@ class _UserInfoFacebookState extends State<UserInfoFacebook> {
                   height: 20,
                 ),
                 Container(
-                  child: Image.asset("images/logo2.png"),
+                  child: SvgPicture.asset(
+                    "images/rsocial-logo2.svg",
+                    height: 50,
+                  ),
                 ),
                 SizedBox(
                   height: 20,

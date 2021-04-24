@@ -24,7 +24,7 @@ Future<Uri> createDynamicLink(String type, Post post) async {
       uriPrefix: 'https://rsocialdevapp.page.link',
       // This can be whatever you want for the uri, https://yourapp.com/groupinvite?username=$userName
       link: Uri.parse(
-          'https://rsocialappdev.page.link/$header?$type=$parameter&'),
+          'https://rsocialdevapp.page.link/$header?$type=$parameter&'),
       androidParameters: AndroidParameters(
         packageName: packageInfo.packageName,
         minimumVersion: 0,
@@ -50,11 +50,11 @@ Future<Uri> createDynamicLink(String type, Post post) async {
       ),
       socialMetaTagParameters: SocialMetaTagParameters(
         title: type == 'postid'
-            ? '${post.user.fname} on RSocial'
+            ? '${post.user.fname} on Rsocial'
             : 'Hey! join me on RSocial',
         description: type == 'postid'
             ? ""
-            : "Join via this link and we both can earn 50 Yollars!",
+            : "Join via this link and the referrer gets 500 Yollar once referee joins Rsocial.",
         // imageUrl: type=='post' ? post.fileUpload.isNotEmpty
         //     ? Uri.parse(post.fileUpload[0])
         //     : Uri.parse(post.user.photoUrl)

@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rsocial2/Screens/userInfoFacebook.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'model/user.dart';
+import 'model/user.dart' as userModel;
 import 'Screens/bottom_nav_bar.dart';
 import 'Screens/create_account_page.dart';
 import 'Screens/login_page.dart';
@@ -42,19 +42,20 @@ signUpWithRsocial(BuildContext context) {
 }
 
 // Logic followed when user is logged-in using facebook
-loginWithFacebook(User _currentUser, BuildContext context) async {
+loginWithFacebook(userModel.User _currentUser, BuildContext context) async {
   // These are the permissions required
-  final result = await fblogin
-      .logIn(['email', 'public_profile', 'user_gender', 'user_birthday']);
-
+  final result = await fblogin.logIn(['email', 'public_profile']);
+  print(result.status);
   switch (result.status) {
     case FacebookLoginStatus.loggedIn:
       // Getting the token
       final token = result.accessToken.token;
       var graphResponse, profile;
       try {
-        graphResponse = await http.get(
-            'https://graph.facebook.com/v2.12/me?fields=name,picture,birthday&access_token=$token');
+        var uri = Uri.parse(
+            'https://graph.facebook.com/v2.12/me?fields=name,email,picture&access_token=$token');
+        graphResponse = await http.get(uri);
+        print(json.decode(graphResponse.body));
       } on PlatformException catch (e) {
         if (e.code == 'network_error') {
           var alertBox = AlertDialogBox(
@@ -84,6 +85,7 @@ loginWithFacebook(User _currentUser, BuildContext context) async {
           return;
         }
       } catch (e) {
+        print(e.toString());
         var alertBox = AlertDialogBox(
           title: "Error",
           content: "Some error occurred. Please try again",
@@ -138,20 +140,45 @@ loginWithFacebook(User _currentUser, BuildContext context) async {
         return;
       } else {
         try {
-          AuthCredential credential =
-              FacebookAuthProvider.getCredential(accessToken: token);
+          AuthCredential credential = FacebookAuthProvider.credential(token);
+          var alertBox = AlertDialog(
+            //title: "",//Text("Just a second, logging you in."),
 
-          final FirebaseUser user =
-              await FirebaseAuth.instance.signInWithCredential(credential);
+            content: Container(
+              height: 30,
+              child: Center(
+                child: ColorizeAnimatedTextKit(
+                  text: [
+                    "Loading...",
+                  ],
+                  textStyle: TextStyle(fontSize: 18.0, fontFamily: "Lato"),
+                  colors: [
+                    Colors.purple,
+                    Colors.blue,
+                    Colors.yellow,
+                    Colors.red,
+                  ],
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          );
 
-          final FirebaseUser currentUser =
-              await FirebaseAuth.instance.currentUser();
+          showDialog(
+              context: (context),
+              builder: (context) => alertBox,
+              barrierDismissible: false);
+          final User user =
+              (await FirebaseAuth.instance.signInWithCredential(credential))
+                  .user;
+
+          final User currentUser = FirebaseAuth.instance.currentUser;
 
           assert(currentUser != null);
 
           if (user.uid == currentUser.uid) {
             // To check if the user already exists in firebase
-            DocumentSnapshot doc = await users.document(user.uid).get();
+            DocumentSnapshot doc = await users.doc(user.uid).get();
 
             // if user does not exists
             if (!doc.exists) {
@@ -162,19 +189,19 @@ loginWithFacebook(User _currentUser, BuildContext context) async {
               // final profile = jsonDecode(graphResponse.body);
 
               // Correcting the date format to the required format
-              String birthday = profile['birthday'];
-              birthday = birthday.substring(3, 5) +
-                  "/" +
-                  birthday.substring(0, 2) +
-                  birthday.substring(5);
+              // String birthday = profile['birthday'];
+              // birthday = birthday.substring(3, 5) +
+              //     "/" +
+              //     birthday.substring(0, 2) +
+              //     birthday.substring(5);
 
               // Creating a user from the information in the body
-              User curUser = User(
+              userModel.User curUser = userModel.User(
                   fname: profile['name'].split(" ")[0],
                   lname: profile['name'].split(" ").length == 2
                       ? profile['name'].split(" ")[1]
                       : "",
-                  dob: birthday,
+                  //dob: birthday,
                   email: profile['email'],
                   lollarAmount: 100,
                   socialStanding: 2,
@@ -287,8 +314,9 @@ Future<Inf> getGenderBirthday(GoogleSignIn googleSignIn) async {
   }
 
   final headers = await googleSignIn.currentUser.authHeaders;
-  final r = await http.get(googlePeopleApi + key,
-      headers: {"Authorization": headers["Authorization"]});
+  var uri = Uri.parse(googlePeopleApi + key);
+  final r =
+      await http.get(uri, headers: {"Authorization": headers["Authorization"]});
   final response = jsonDecode(r.body);
 
   print("This is response from google gender: ");
@@ -319,15 +347,16 @@ Future<Inf> getGenderBirthday(GoogleSignIn googleSignIn) async {
 }
 
 Future<String> getFirebaseMessagingToken() async {
-  var token = await FirebaseMessaging().getToken();
+  var token = await FirebaseMessaging.instance.getToken();
   print(token);
   return token;
 }
 
 // Logic followed when logged in using google
-loginWithGoogle(User _currentUser, BuildContext context, bool log) async {
-  FirebaseUser user;
-  FirebaseUser currentUser;
+loginWithGoogle(
+    userModel.User _currentUser, BuildContext context, bool log) async {
+  User user;
+  User currentUser;
   String user_id;
   var googleSignIn = GoogleSignIn(scopes: [
     "https://www.googleapis.com/auth/userinfo.email",
@@ -343,12 +372,11 @@ loginWithGoogle(User _currentUser, BuildContext context, bool log) async {
     } else {
       googleUser = await googleSignIn.signIn();
     }
-    print("HELLLLLLLLLO");
     if (googleUser != null) {
       final GoogleSignInAuthentication googleKey =
           await googleUser.authentication;
 
-      AuthCredential credential = GoogleAuthProvider.getCredential(
+      AuthCredential credential = GoogleAuthProvider.credential(
           idToken: googleKey.idToken, accessToken: googleKey.accessToken);
 
       var alertBox = AlertDialog(
@@ -379,10 +407,11 @@ loginWithGoogle(User _currentUser, BuildContext context, bool log) async {
           builder: (context) => alertBox,
           barrierDismissible: false);
 
-      user = await FirebaseAuth.instance.signInWithCredential(credential);
+      user =
+          (await FirebaseAuth.instance.signInWithCredential(credential)).user;
       print("JUST AFTER: " + user.toString());
       assert(user.getIdToken() != null);
-      currentUser = await FirebaseAuth.instance.currentUser();
+      currentUser = FirebaseAuth.instance.currentUser;
       assert(currentUser != null);
       print("UID:" + user.uid);
       user_id = user.uid;
@@ -450,9 +479,10 @@ loginWithGoogle(User _currentUser, BuildContext context, bool log) async {
   print("USER:" + user.toString());
   if (user.uid == currentUser.uid) {
     // Checking whether user already exists in firebase
-    DocumentSnapshot doc = await users.document(user.uid).get();
+    DocumentSnapshot doc = await users.doc(user.uid).get();
 
     final GoogleSignInAccount guser = googleSignIn.currentUser;
+    //print("GUSER:" + guser.toString());
     var inf;
 
     // If user does not exists
@@ -463,17 +493,17 @@ loginWithGoogle(User _currentUser, BuildContext context, bool log) async {
         print(inf.dob);
       }
 
-      print(guser.photoUrl);
-      print(guser.displayName);
-      User curUser = User(
-          fname: guser.displayName.split(" ")[0],
-          lname: guser.displayName.split(" ").length == 2
-              ? guser.displayName.split(" ")[1]
+      // print(user.photoUrl);
+      // print(user.displayName);
+      userModel.User curUser = userModel.User(
+          fname: user.displayName.split(" ")[0],
+          lname: user.displayName.split(" ").length == 2
+              ? user.displayName.split(" ")[1]
               : "",
-          email: guser.email,
+          email: user.email,
           lollarAmount: 1000,
           socialStanding: 1,
-          photoUrl: guser.photoUrl,
+          photoUrl: user.photoURL,
           gender: !log ? inf.gender : null,
           dob: !log ? inf.dob : null);
       Navigator.pop(context);
@@ -516,7 +546,7 @@ loginWithGoogle(User _currentUser, BuildContext context, bool log) async {
 
 void logout(BuildContext context) async {
   FirebaseAuth _authInstance = FirebaseAuth.instance;
-  FirebaseUser user = await _authInstance.currentUser();
+  User user = _authInstance.currentUser;
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.clear();
 

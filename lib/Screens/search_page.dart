@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -61,11 +61,11 @@ class _Search_PageState extends State<Search_Page>
     setState(() {
       isLoading = true;
     });
-    var user = await FirebaseAuth.instance.currentUser();
+    var user = auth.FirebaseAuth.instance.currentUser;
     var token = await user.getIdToken();
 
     var id = curUser.id;
-    final url = userEndPoint + "get";
+    final url = Uri.parse(userEndPoint + "get");
 
     token = await user.getIdToken();
 
@@ -140,12 +140,12 @@ class _Search_PageState extends State<Search_Page>
     var id;
     var response;
     try {
-      user = await FirebaseAuth.instance.currentUser();
+      user = auth.FirebaseAuth.instance.currentUser;
 
-      DocumentSnapshot doc = await users.document(user.uid).get();
+      DocumentSnapshot doc = await users.doc(user.uid).get();
       id = doc['id'];
 
-      final url = userEndPoint + "all";
+      final url = Uri.parse(userEndPoint + "all");
 
       var token = await user.getIdToken();
       //print(token);

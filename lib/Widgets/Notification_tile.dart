@@ -8,7 +8,7 @@ import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/contants/constants.dart';
-import 'package:rsocial2/model/user.dart';
+import 'package:rsocial2/model/user.dart' as user;
 
 import '../helper.dart';
 
@@ -34,7 +34,7 @@ class NotificationTile extends StatefulWidget {
 }
 
 class _NotificationTileState extends State<NotificationTile> {
-  showProfile(BuildContext context, User user) async {
+  showProfile(BuildContext context, user.User user) async {
     await Navigator.push(
       context,
       MaterialPageRoute(
@@ -57,6 +57,10 @@ class _NotificationTileState extends State<NotificationTile> {
       return "An hour ago";
     } else if (duration.inHours > 1) {
       return "${duration.inHours} hours ago";
+    } else if (duration.inMinutes > 1) {
+      return "${duration.inMinutes} minutes ago";
+    } else if (duration.inMinutes == 1) {
+      return "A minute ago";
     } else {
       return "Now";
     }
@@ -69,7 +73,7 @@ class _NotificationTileState extends State<NotificationTile> {
     }
     return GestureDetector(
       onTap: () async {
-        showProfile(context, User(id: widget.senderId));
+        showProfile(context, user.User(id: widget.senderId));
         await setNotification();
       },
       child: Padding(
@@ -128,7 +132,7 @@ class _NotificationTileState extends State<NotificationTile> {
 
     var response;
     try {
-      var user = await FirebaseAuth.instance.currentUser();
+      var user = FirebaseAuth.instance.currentUser;
       var token = await user.getIdToken();
 
       response = await postFunc(

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +14,7 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:rsocial2/Screens/display_post.dart';
 import 'package:rsocial2/Screens/landing_page.dart';
 import 'package:rsocial2/contants/config.dart';
@@ -29,16 +30,19 @@ import 'package:rsocial2/Screens/search_page.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../contants/constants.dart';
-import '../model/post.dart';
-import '../model/reaction_model.dart';
-import '../read_more.dart';
-import '../model/user.dart';
+import 'package:rsocial2/contants/constants.dart';
+// import '../contants/constants.dart';
+import 'package:rsocial2/model/post.dart';
+import 'package:rsocial2/model/reaction_model.dart';
+import 'package:rsocial2/read_more.dart';
+import 'package:rsocial2/model/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info/package_info.dart';
 import 'package:rsocial2/helper.dart';
-
-import 'disabled_reaction_button.dart';
+import 'package:video_player/video_player.dart';
+import './video_player_landing.dart' as video;
+import '../controller.dart';
+// import 'disabled_reaction_button.dart';
 
 Map<String, Map<String, int>> m = new Map();
 Map<String, Map<String, int>> mp = new Map();
@@ -51,13 +55,18 @@ class Post_Tile extends StatefulWidget {
   User curUser;
   Function reactionCallback;
   final VoidCallback onPressDelete;
-  Post_Tile(
-      {@required this.curUser,
-      this.userPost,
-      this.photoUrl,
-      this.onPressDelete,
-      this.reactionCallback,
-      this.showPopup = true});
+  ReusableVideoListController reusableVideoListController;
+  Function canBuild;
+  Post_Tile({
+    @required this.curUser,
+    this.userPost,
+    this.photoUrl,
+    this.onPressDelete,
+    this.reactionCallback,
+    this.showPopup = true,
+    @required this.canBuild,
+    @required this.reusableVideoListController,
+  });
   @override
   _Post_TileState createState() => _Post_TileState();
 }
@@ -85,7 +94,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     'noreact': 0
   };
   bool isDisabled = false;
-
   AnimationController hatedController;
   AnimationController lovedController;
   AnimationController likedController;
@@ -213,7 +221,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     });
     var user, token;
     try {
-      user = await FirebaseAuth.instance.currentUser();
+      user = auth.FirebaseAuth.instance.currentUser;
       token = await user.getIdToken();
     } catch (e) {
       setState(() {
@@ -799,7 +807,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                         : EdgeInsets.only(bottom: 15, top: 6),
                     child: Container(
                         height:
-                            widget.userPost.fileUpload.length != 0 ? 250 : 0,
+                            widget.userPost.fileUpload.length != 0 ? 300 : 0,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8)),
                         child: isLoading == false
@@ -826,49 +834,80 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                               widget.userPost.fileUpload.length,
                                           itemBuilder: (BuildContext context,
                                               int index) {
-                                            return Container(
+                                            return GestureDetector(
+                                              onTap: () {
+                                                showDialogFunc(
+                                                    context, fileList, index);
+                                              },
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.2),
+                                                    image: DecorationImage(
+                                                        image: NetworkImage(
+                                                          fileList[index],
+                                                          // errorWidget: (context,
+                                                          //         url, error) =>
+                                                          //     Icon(Icons.error),
+                                                        ),
+                                                        fit: BoxFit.contain)),
+                                                height: 300,
+                                              ),
+                                            );
+                                          }),
+                                    ),
+                                  )
+                                : widget.userPost.fileUpload[0].endsWith(".mp4")
+                                    // ? video.VideoListWidget(
+                                    //     videoListData: video.VideoListData(
+                                    //       "TEST",
+                                    //       "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
+                                    //     ),
+                                    //   )
+                                    // videoListController:
+                                    //     widget.reusableVideoListController,
+                                    // canBuildVideo: () => true)
+                                    ? video.ReusableVideoListWidget(
+                                        videoListController:
+                                            widget.reusableVideoListController,
+                                        videoListData: video.VideoListData(
+                                          "TEST",
+                                          widget.userPost.fileUpload[0],
+                                        ),
+                                        //"https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4"),
+                                        canBuildVideo: widget.canBuild,
+                                      )
+                                    : GestureDetector(
+                                        onTap: () {
+                                          showDialogFunc(context, fileList, 0);
+                                        },
+                                        child: InteractiveViewer(
+                                          transformationController:
+                                              transformationController,
+                                          onInteractionEnd: (details) {
+                                            setState(() {
+                                              transformationController
+                                                  .toScene(Offset.zero);
+                                            });
+                                          },
+                                          minScale: 0.1,
+                                          maxScale: 2,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            child: Container(
                                               decoration: BoxDecoration(
                                                   color: Colors.grey
                                                       .withOpacity(0.2),
                                                   image: DecorationImage(
                                                       image: NetworkImage(
-                                                        fileList[index],
-                                                        // errorWidget: (context,
-                                                        //         url, error) =>
-                                                        //     Icon(Icons.error),
+                                                        fileList[0],
                                                       ),
-                                                      fit: BoxFit.cover)),
-                                              height: 250,
-                                            );
-                                          }),
-                                    ),
-                                  )
-                                : InteractiveViewer(
-                                    transformationController:
-                                        transformationController,
-                                    onInteractionEnd: (details) {
-                                      setState(() {
-                                        transformationController
-                                            .toScene(Offset.zero);
-                                      });
-                                    },
-                                    //boundaryMargin: EdgeInsets.all(20.0),
-                                    minScale: 0.1,
-                                    maxScale: 2,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            color: Colors.grey.withOpacity(0.2),
-                                            image: DecorationImage(
-                                                image: NetworkImage(
-                                                  fileList[0],
-                                                ),
-                                                fit: BoxFit.cover)),
-                                        height: 250,
-                                      ),
-                                    ),
-                                  ))
+                                                      fit: BoxFit.contain)),
+                                              height: 300,
+                                            ),
+                                          ),
+                                        )))
                             : Center(
                                 child: CircularProgressIndicator(),
                               )))
@@ -1257,4 +1296,60 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
       ),
     );
   }
+}
+
+showDialogFunc(context, List<String> filelist, int index) {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: colorButton,
+          iconTheme: IconThemeData(color: Colors.white),
+        ),
+        body: Column(
+          children: [
+            // filelist.length > 1
+            //     ? Swiper(
+            //         itemCount: filelist.length,
+            //         pagination: SwiperPagination(),
+            //         scrollDirection: Axis.horizontal,
+            //         itemBuilder: (context, index) {
+            //         return  Expanded(
+            //             child: Container(
+            //               height: 100,
+            //               child: PhotoView(
+            //                 imageProvider: NetworkImage(
+            //                   filelist[index],
+            //                 ),
+            //                 minScale: PhotoViewComputedScale.contained * 0.9,
+            //                 enableRotation: true,
+            //                 backgroundDecoration:
+            //                 BoxDecoration(color: Colors.white),
+            //                 basePosition: Alignment.center,
+            //                 customSize: MediaQuery.of(context).size,
+            //               ),
+            //             ),
+            //           );
+            //         },
+            //       )
+            Expanded(
+              child: Container(
+                child: PhotoView(
+                  imageProvider: NetworkImage(
+                    filelist[index],
+                  ),
+                  minScale: PhotoViewComputedScale.contained * 0.9,
+                  enableRotation: true,
+                  backgroundDecoration: BoxDecoration(color: Colors.white),
+                  basePosition: Alignment.center,
+                  customSize: MediaQuery.of(context).size,
+                ),
+              ),
+            )
+          ],
+        ),
+      );
+    },
+  );
 }

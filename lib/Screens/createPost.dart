@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -28,6 +27,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:video_player/video_player.dart';
 import '../helper.dart';
 import '../model/post.dart';
 import '../model/user.dart';
@@ -37,87 +37,179 @@ import 'login_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:image/image.dart' as im;
 import 'package:http_parser/http_parser.dart';
-
-// import 'package:path/path.dart';
+import '../Widgets/video_player.dart' as video;
+import 'package:path/path.dart' as pathPackage;
 //
+//
+
 class Wage extends StatefulWidget {
+  final bool looping;
+
   User currentUser;
   Function isPostedCallback;
 
-  Wage({this.currentUser, this.isPostedCallback});
+  Wage({this.currentUser, this.isPostedCallback, this.looping});
 
   @override
   _WageState createState() => _WageState();
 }
 
 class _WageState extends State<Wage> {
+  final bool play = false;
+  final String url = "";
   bool boldInput = false;
   bool italics = false;
   String storytext;
   bool underline = false;
   bool isSelected = false;
   File file;
-  List<String> list = new List();
-  List<File> fileList = new List();
+  //List<String> list = [];
+  List<File> fileList = [];
+  List<File> fileListVideo = [];
   String orientation = "invest";
-  var textController = new TextEditingController();
+  var textController = TextEditingController();
   bool isloading = false;
   String path;
   String investmentstoryText = "";
-  List<File> investmentfileList = new List();
-  List<String> selectedImgList = new List();
-  List<User> selectedList = new List();
-  List<String> idSelectedList = new List();
-  List<User> investmentlist = new List();
+  List<File> investmentfileList = [];
+  List<File> investmentfileListvideo = [];
+  // List<String> selectedImgList = [];
+  // List<String> selectedvideolist = [];
+  List<User> selectedList = [];
+  List<String> idSelectedList = [];
+  List<User> investmentlist = [];
   List<User> connections = [];
-  var investmentTextController = new TextEditingController();
+  var investmentTextController = TextEditingController();
   List<String> imageCacheIds = [];
-
+  VideoPlayerController _videoPlayer;
   int amount = 1000;
   bool isOne = true;
-
   String search_query;
   TextEditingController investingWithController = TextEditingController();
+  // Future<File> _cropImage(filePath) async {
+  //   File croppedImage = await ImageCropper.cropImage(
+  //     aspectRatio: CropAspectRatio(
+  //       ratioX: 25,
+  //       ratioY:25,
+  //     ),
+  //     sourcePath: filePath,
+  //     maxWidth: 1080,
+  //     maxHeight: 1080,
+  //   );
+  //   if (croppedImage != null) {
+  //     //setState(() {});
+  //     return croppedImage;
+  //   }
+  // }
+  removeVideo() {
+    setState(() {
+      investmentfileListvideo.clear();
+      fileListVideo.clear();
+    });
+    _videoPlayer.dispose();
+  }
 
-  Future<File> _cropImage(filePath) async {
-    File croppedImage = await ImageCropper.cropImage(
-      aspectRatio: CropAspectRatio(
-        ratioX: 4,
-        ratioY: 3,
-      ),
-      sourcePath: filePath,
-      maxWidth: 1080,
-      maxHeight: 1080,
-    );
-    if (croppedImage != null) {
-      //setState(() {});
-      return croppedImage;
+  handleVideo() async {
+    var status = await Permission.storage.status;
+
+    if (status.isGranted || status.isLimited) {
+      try {
+        PickedFile pickedFile =
+            await ImagePicker().getVideo(source: ImageSource.gallery);
+        if (pickedFile != null) {
+          File video = File(pickedFile.path);
+          video = await video.rename("${video.path}.mp4");
+          if (video.lengthSync() > 5000000) {
+            var alertBox = AlertDialogBox(
+              title: 'Error',
+              content: 'Video is too large',
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Back'),
+                ),
+              ],
+            );
+            showDialog(context: context, builder: (context) => alertBox);
+            return;
+          }
+          _videoPlayer = VideoPlayerController.file(video);
+          await _videoPlayer.initialize();
+          setState(() {
+            orientation == "wage"
+                ? fileListVideo.add(video)
+                : investmentfileListvideo.add(video);
+          });
+        }
+      } on PlatformException catch (e) {
+        if (e.code == 'photo_access_denied') {
+          print(e);
+
+          var alertBox = AlertDialogBox(
+            title: "Gallery Permission",
+            content: "This app needs gallery access to fetch videos",
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Settings"),
+                onPressed: () {
+                  Navigator.pop(context);
+                  openAppSettings();
+                },
+              ),
+              FlatButton(
+                child: Text("Deny"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+          showDialog(
+            context: context,
+            builder: (context) => alertBox,
+          );
+        }
+      }
+    } else {
+      var alertBox = AlertDialogBox(
+        title: "Gallery Permission",
+        content: "This app needs gallery access to fetch videos",
+        actions: <Widget>[
+          FlatButton(
+            child: Text("Settings"),
+            onPressed: () {
+              openAppSettings();
+            },
+          ),
+          FlatButton(
+            child: Text("Deny"),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      );
+      showDialog(context: context, builder: (context) => alertBox);
     }
   }
 
   handleTakePhoto() async {
-    // File file = await ImagePicker.pickImage(
-    //   source: ImageSource.camera,
-    //   maxHeight: 675,
-    //   maxWidth: 960,
-    // );
     var status = await Permission.camera.status;
-
-    if (status.isGranted || status.isUndetermined) {
+    if (status.isGranted || status.isLimited) {
       PickedFile pickedFile = await ImagePicker().getImage(
         source: ImageSource.camera,
-        // maxHeight: 675,
-        // maxWidth: 960,
       );
       if (pickedFile != null) {
-        File file = await _cropImage(pickedFile.path);
+        File file = File(pickedFile.path);
+        // File file = await _cropImage(pickedFile.path);
         if (file != null) {
           print("File size");
           print(file.lengthSync());
 
           if (file.lengthSync() > 5000000) {
-            //  if (file.lengthSync() > 5000000) {
-            file = await compressImage(file);
+            //file = await compressImage(file);
             print("New length =" + file.lengthSync().toString());
 
             print("not allowed");
@@ -131,7 +223,7 @@ class _WageState extends State<Wage> {
                       Navigator.pop(context);
                     },
                     child: Text('Back'),
-                  )
+                  ),
                 ],
               );
               showDialog(context: context, builder: (context) => alertBox);
@@ -145,9 +237,9 @@ class _WageState extends State<Wage> {
             orientation == "wage"
                 ? fileList.add(file)
                 : investmentfileList.add(file);
-            orientation == "wage"
-                ? list.add(img64)
-                : selectedImgList.add(img64);
+            // orientation == "wage"
+            //     ? list.add(img64)
+            //     : selectedImgList.add(img64);
           });
         }
       }
@@ -175,25 +267,26 @@ class _WageState extends State<Wage> {
     }
   }
 
-  Future<File> compressImage(File f) async {
-    final tempDir = await getTemporaryDirectory();
-    path = tempDir.path;
-    im.Image imageFile = im.decodeImage(f.readAsBytesSync());
-    String randomId = Uuid().v4();
-    imageCacheIds.add(randomId);
-    final compressedImageFile = File('$path/img_$randomId.jpg')
-      ..writeAsBytesSync(im.encodeJpg(imageFile,
-          quality: ((5000000 / f.lengthSync()) * 100).floor()));
+  //
+  // Future<File> compressImage(File f) async {
+  //   final tempDir = await getTemporaryDirectory();
+  //   path = tempDir.path;
+  //   im.Image imageFile = im.decodeImage(f.readAsBytesSync());
+  //   String randomId = Uuid().v4();
+  //   imageCacheIds.add(randomId);
+  //   final compressedImageFile = File('$path/img_$randomId.jpg')
+  //     ..writeAsBytesSync(im.encodeJpg(imageFile,
+  //         quality: ((5000000 / f.lengthSync()) * 100).floor()));
 
-    // print('$path/img_${Uuid().v4()}.jpg');
+  // print('$path/img_${Uuid().v4()}.jpg');
 
-    return compressedImageFile;
-  }
+  //   return compressedImageFile;
+  // }
 
   handleChooseFromGallery() async {
     var status = await Permission.storage.status;
 
-    if (status.isGranted || status.isUndetermined) {
+    if (status.isGranted || status.isLimited) {
       try {
         PickedFile pickedFile = await ImagePicker().getImage(
           source: ImageSource.gallery,
@@ -201,7 +294,8 @@ class _WageState extends State<Wage> {
           // maxWidth: 960,
         );
         if (pickedFile != null) {
-          File file = await _cropImage(pickedFile.path);
+          File file = File(pickedFile.path);
+          // File file = await _cropImage(pickedFile.path);
           //final File file = File(pickedFile.path);
           if (file != null) {
             print("File size");
@@ -209,7 +303,7 @@ class _WageState extends State<Wage> {
 
             if (file.lengthSync() > 5000000) {
               //  if (file.lengthSync() > 5000000) {
-              file = await compressImage(file);
+              // file = await compressImage(file);
               print("New length =" + file.lengthSync().toString());
 
               print("not allowed");
@@ -236,9 +330,9 @@ class _WageState extends State<Wage> {
               orientation == "wage"
                   ? fileList.add(file)
                   : investmentfileList.add(file);
-              orientation == "wage"
-                  ? list.add(img64)
-                  : selectedImgList.add(img64);
+              // orientation == "wage"
+              //     ? list.add(img64)
+              //     : selectedImgList.add(img64);
             });
           }
         }
@@ -337,7 +431,7 @@ class _WageState extends State<Wage> {
   }
 
   createPostInvestment(String storytext, String investmentAmount,
-      List<String> list, List<File> files) async {
+      List<File> files, List<File> filevideo) async {
     if (selectedList.isEmpty) {
       Fluttertoast.showToast(
           msg: "You must invest with a bond",
@@ -346,14 +440,6 @@ class _WageState extends State<Wage> {
           fontSize: 15);
       return;
     }
-    // if(storytext.isEmpty){
-    //   Fluttertoast.showToast(
-    //       msg: "please enter some text",
-    //       toastLength: Toast.LENGTH_SHORT,
-    //       gravity: ToastGravity.BOTTOM,
-    //       fontSize: 15);
-    //   return;
-    // }
 
     if (double.parse(investmentAmount) == 0) {
       Fluttertoast.showToast(
@@ -364,9 +450,9 @@ class _WageState extends State<Wage> {
       return;
     }
 
-    if (investmentstoryText == null ||
-        investmentfileList.isEmpty ||
-        (investmentstoryText.isEmpty)) {
+    if ((investmentstoryText == null || investmentstoryText.isEmpty) &&
+        (investmentfileList.isEmpty) &&
+        investmentfileListvideo.isEmpty) {
       Fluttertoast.showToast(
           msg: "Please upload text or photo",
           toastLength: Toast.LENGTH_SHORT,
@@ -384,7 +470,8 @@ class _WageState extends State<Wage> {
       // Get the current Firebase user
 
       int n = files.length;
-      var user = await authFirebase.currentUser();
+      int m = filevideo.length;
+      var user = authFirebase.currentUser;
       // Get the user token
       var token = await user.getIdToken();
 
@@ -408,7 +495,16 @@ class _WageState extends State<Wage> {
 
       var map = post.toJsonInvest();
       map["count_image"] = n;
-      map["count_video"] = 0;
+      map["count_video"] = m;
+
+      List<File> investfinal = new List();
+      for (int i = 0; i < investmentfileList.length; i++) {
+        investfinal.add(investmentfileList[i]);
+      }
+      for (int i = 0; i < investmentfileListvideo.length; i++) {
+        investfinal.add(investmentfileList[i]);
+      }
+
       // Awaiting for post Response
       var response = await postFunc(
         url: storyEndPoint + "createinvestment2",
@@ -445,12 +541,28 @@ class _WageState extends State<Wage> {
         request.files.add(
           http.MultipartFile(
             'file',
-            files[i].readAsBytes().asStream(),
-            files[i].lengthSync(),
-            filename: (files[i].path),
-            contentType: MediaType('image', 'jpeg'),
+            investfinal[i].readAsBytes().asStream(),
+            investfinal[i].lengthSync(),
+            filename: (investfinal[i].path),
+            // contentType: MediaType(
+            //   'image',
+            //   'jpeg',
+            // ),
           ),
         );
+        // request.files.add(
+        //   http.MultipartFile(
+        //     'file',
+        //     files[i].readAsBytes().asStream(),
+        //     files[i].lengthSync(),
+        //     filename: (files[i].path),
+        //     contentType: MediaType(
+        //       'video',
+        //       'mp3',
+        //     ),
+        //   ),
+        // );
+
         // request.fields
         request.fields.addAll({
           "key": y["key"],
@@ -486,7 +598,7 @@ class _WageState extends State<Wage> {
         setState(() {
           amount = 1000;
           investmentfileList.clear();
-          selectedImgList.clear();
+          investmentfileListvideo.clear();
           idSelectedList.clear();
           isloading = false;
           selectedList.clear();
@@ -528,6 +640,9 @@ class _WageState extends State<Wage> {
 
   @override
   void initState() {
+    // super.initState();
+    //
+
     super.initState();
     FirebaseAnalytics().setCurrentScreen(screenName: "post");
 
@@ -549,20 +664,34 @@ class _WageState extends State<Wage> {
 
   @override
   void dispose() {
+    // widget.videoPlayerController.dispose();
+    // _chewieController.dispose();
     super.dispose();
   }
 
-  createWagePost(String storyText, List<String> list, List<File> files) async {
-    var user = await authFirebase.currentUser();
+  createWagePost(
+      String storyText, List<File> files, List<File> filevideo) async {
+    var user = authFirebase.currentUser;
     var token = await user.getIdToken();
 
     var uid = curUser.id;
     // Creating Post
     Post post = Post(id: uid, storyText: storyText);
     var map = post.toJsonWage();
+
     int n = files.length;
+    int m = filevideo.length;
     map["count_image"] = n;
-    map["count_video"] = 0;
+    map["count_video"] = m;
+
+    List<File> investfinal = new List();
+    for (int i = 0; i < fileList.length; i++) {
+      investfinal.add(fileList[i]);
+    }
+    for (int i = 0; i < fileListVideo.length; i++) {
+      investfinal.add(fileListVideo[i]);
+    }
+
     // Awaiting for post Response
     var response = await postFunc(
         url: storyEndPoint + "createwage2",
@@ -1075,6 +1204,7 @@ class _WageState extends State<Wage> {
                     padding:
                         const EdgeInsets.only(left: 25.0, right: 25, top: 32),
                     child: Container(
+                      padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
                           color: colorGreyTint.withOpacity(0.03),
                           borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -1083,34 +1213,6 @@ class _WageState extends State<Wage> {
                         children: <Widget>[
                           Column(
                             children: <Widget>[
-                              // Row(
-                              //   children: <Widget>[
-                              //     IconButton(
-                              //       icon: Icon(Icons.format_bold),
-                              //       onPressed: () {
-                              //         setState(() {
-                              //           boldInput = !boldInput;
-                              //         });
-                              //       },
-                              //     ),
-                              //     IconButton(
-                              //       icon: Icon(Icons.format_italic),
-                              //       onPressed: () {
-                              //         setState(() {
-                              //           italics = !italics;
-                              //         });
-                              //       },
-                              //     ),
-                              //     IconButton(
-                              //       icon: Icon(Icons.format_underlined),
-                              //       onPressed: () {
-                              //         setState(() {
-                              //           boldInput = !boldInput;
-                              //         });
-                              //       },
-                              //     ),
-                              //   ],
-                              // ),
                               Padding(
                                 padding: const EdgeInsets.only(
                                     left: 24, top: 12, right: 24),
@@ -1144,53 +1246,117 @@ class _WageState extends State<Wage> {
                                       )),
                                 ),
                               ),
-                              Container(
-                                height:
-                                    investmentfileList.length != 0 ? 250 : 0,
-                                child: Swiper(
-                                    loop: false,
-                                    pagination: SwiperPagination(),
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: investmentfileList.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return Stack(
-                                        children: <Widget>[
-                                          Container(
-                                            decoration: BoxDecoration(
-                                                color: colorPrimaryBlue,
-                                                image: DecorationImage(
-                                                    image: FileImage(
-                                                        investmentfileList[
-                                                            index]),
-                                                    fit: BoxFit.fill)),
-                                            height: 250,
-                                          ),
-                                          Container(
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.only(
-                                                    bottomRight:
-                                                        Radius.circular(8)),
-                                                color: colorPrimaryBlue),
-                                            child: IconButton(
-                                              icon: Icon(
-                                                Icons.clear,
-                                                color: Colors.white,
-                                              ),
-                                              onPressed: () {
-                                                setState(() {
-                                                  investmentfileList
-                                                      .removeAt(index);
-                                                  selectedImgList
-                                                      .removeAt(index);
-                                                });
-                                              },
+                              if (investmentfileList.isNotEmpty)
+                                Container(
+                                    height: 400,
+                                    child: investmentfileList.length > 1
+                                        ? Swiper(
+                                            control: SwiperControl(
+                                              color: Colors.black,
+                                              disableColor: Colors.transparent,
                                             ),
+                                            loop: false,
+                                            pagination: SwiperPagination(
+                                              builder:
+                                                  DotSwiperPaginationBuilder(
+                                                      color: Colors.black,
+                                                      size: 10.0,
+                                                      activeSize: 10.0,
+                                                      space: 5.0),
+                                            ),
+                                            scrollDirection: Axis.horizontal,
+                                            itemCount:
+                                                investmentfileList.length,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              return Stack(
+                                                children: <Widget>[
+                                                  Container(
+                                                    decoration: BoxDecoration(
+                                                        color: colorGreyTint
+                                                            .withOpacity(0.03),
+                                                        image: DecorationImage(
+                                                            image: FileImage(
+                                                                investmentfileList[
+                                                                    index]),
+                                                            fit: BoxFit
+                                                                .contain)),
+                                                  ),
+                                                  Positioned(
+                                                    right: 10,
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius.only(
+                                                                bottomRight:
+                                                                    Radius
+                                                                        .circular(
+                                                                            8)),
+                                                      ),
+                                                      child: IconButton(
+                                                        icon: Icon(
+                                                          Icons.clear,
+                                                          color: Colors.black,
+                                                        ),
+                                                        onPressed: () {
+                                                          setState(() {
+                                                            investmentfileList
+                                                                .removeAt(
+                                                                    index);
+                                                            // selectedImgList
+                                                            //     .removeAt(index);
+                                                          });
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            },
                                           )
-                                        ],
-                                      );
-                                    }),
-                              )
+                                        : Stack(
+                                            children: <Widget>[
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                    color: colorGreyTint
+                                                        .withOpacity(0.03),
+                                                    image: DecorationImage(
+                                                        image: FileImage(
+                                                            investmentfileList[
+                                                                0]),
+                                                        fit: BoxFit.contain)),
+                                              ),
+                                              Positioned(
+                                                right: 10,
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.only(
+                                                            bottomRight:
+                                                                Radius.circular(
+                                                                    8)),
+                                                  ),
+                                                  child: IconButton(
+                                                    icon: Icon(
+                                                      Icons.clear,
+                                                      color: Colors.black,
+                                                    ),
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        investmentfileList
+                                                            .removeAt(0);
+                                                        // selectedImgList
+                                                        //     .removeAt(index);
+                                                      });
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )),
+                              if (investmentfileListvideo.isNotEmpty)
+                                video.VideoPlayer(investmentfileListvideo[0],
+                                    _videoPlayer, removeVideo),
                             ],
                           ),
                           Divider(
@@ -1207,10 +1373,19 @@ class _WageState extends State<Wage> {
                                 ),
                                 onPressed: () {
                                   if (investmentfileList != null &&
-                                      investmentfileList.length >= 5) {
+                                      investmentfileList.length > 15) {
                                     Fluttertoast.showToast(
                                         msg:
-                                            "You can upload maximum of 5 photos",
+                                            "You can upload a maximum of 15 photos",
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        fontSize: 15);
+                                    return;
+                                  }
+                                  if (investmentfileListvideo.isNotEmpty) {
+                                    Fluttertoast.showToast(
+                                        msg:
+                                            "You can upload either a video or some photos",
                                         toastLength: Toast.LENGTH_SHORT,
                                         gravity: ToastGravity.BOTTOM,
                                         fontSize: 15);
@@ -1227,10 +1402,19 @@ class _WageState extends State<Wage> {
                                 ),
                                 onPressed: () {
                                   if (investmentfileList != null &&
-                                      investmentfileList.length >= 5) {
+                                      investmentfileList.length > 15) {
                                     Fluttertoast.showToast(
                                         msg:
-                                            "You can upload maximum of 5 photos",
+                                            "You can upload a maximum of 15 photos",
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        fontSize: 15);
+                                    return;
+                                  }
+                                  if (investmentfileListvideo.isNotEmpty) {
+                                    Fluttertoast.showToast(
+                                        msg:
+                                            "You can upload either a video or some photos",
                                         toastLength: Toast.LENGTH_SHORT,
                                         gravity: ToastGravity.BOTTOM,
                                         fontSize: 15);
@@ -1240,44 +1424,84 @@ class _WageState extends State<Wage> {
                                   handleTakePhoto();
                                 },
                               ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.videocam,
+                                  color: colorGreyTint,
+                                  size: 23,
+                                ),
+                                onPressed: () {
+                                  if (investmentfileList.isNotEmpty) {
+                                    Fluttertoast.showToast(
+                                        msg:
+                                            "You can upload either a video or some photos",
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        fontSize: 15);
+                                    return;
+                                  }
+                                  if (investmentfileListvideo != null &&
+                                      investmentfileListvideo.length == 1) {
+                                    Fluttertoast.showToast(
+                                        msg:
+                                            "You have already selected a video",
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        fontSize: 15);
+                                    return;
+                                  }
+                                  handleVideo();
+                                },
+                              ),
                             ],
                           )
                         ],
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 60, bottom: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          "Earn: ",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: "Lato"),
-                        ),
-                        SvgPicture.asset(
-                          "images/yollar.svg",
-                          color: colorPrimaryBlue,
-                          height: 20,
-                        ),
-                        SizedBox(
-                          width: 1,
-                        ),
-                        Text(
-                          "${formatNumber(curUser == null ? savedUser.connectionCount : curUser.connectionCount)}",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: "Lato"),
-                        ),
-                      ],
+                  if ((curUser == null
+                          ? savedUser.connectionCount
+                          : curUser.connectionCount) !=
+                      0)
+                    Padding(
+                      padding: EdgeInsets.only(top: 60, bottom: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            "Earn: ",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: "Lato"),
+                          ),
+                          SvgPicture.asset(
+                            "images/yollar.svg",
+                            color: colorPrimaryBlue,
+                            height: 20,
+                          ),
+                          SizedBox(
+                            width: 1,
+                          ),
+                          Text(
+                            "${formatNumber(curUser == null ? savedUser.connectionCount : curUser.connectionCount)}",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: "Lato"),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  if ((curUser == null
+                          ? savedUser.connectionCount
+                          : curUser.connectionCount) ==
+                      0)
+                    SizedBox(
+                      height: 60,
+                    ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 30),
                     child: RoundedButton(
@@ -1293,8 +1517,9 @@ class _WageState extends State<Wage> {
                               fontSize: 15);
                           return;
                         }
+
                         await createPostInvestment(storytext, amount.toString(),
-                            selectedImgList, investmentfileList);
+                            investmentfileList, investmentfileListvideo);
                       },
                     ),
                   )
@@ -1373,46 +1598,102 @@ class _WageState extends State<Wage> {
                             )),
                       ),
                     ),
-                    Container(
-                      height: fileList.length != 0 ? 250 : 0,
-                      child: Swiper(
-                          loop: false,
-                          pagination: SwiperPagination(),
-                          scrollDirection: Axis.horizontal,
-                          itemCount: fileList.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Stack(
-                              children: <Widget>[
-                                Container(
-                                  decoration: BoxDecoration(
-                                      color: colorPrimaryBlue,
-                                      image: DecorationImage(
-                                          image: FileImage(fileList[index]),
-                                          fit: BoxFit.cover)),
-                                  height: 250,
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.only(
-                                          bottomRight: Radius.circular(8)),
-                                      color: colorPrimaryBlue),
-                                  child: IconButton(
-                                    icon: Icon(
-                                      Icons.clear,
-                                      color: Colors.white,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        fileList.removeAt(index);
-                                        list.removeAt(index);
-                                      });
-                                    },
+                    if (fileList.isNotEmpty)
+                      Container(
+                          height: 400,
+                          child: fileList.length > 1
+                              ? Swiper(
+                                  control: SwiperControl(
+                                    color: Colors.black,
+                                    disableColor: Colors.transparent,
                                   ),
+                                  loop: false,
+                                  pagination: SwiperPagination(
+                                    builder: DotSwiperPaginationBuilder(
+                                        color: Colors.black,
+                                        size: 10.0,
+                                        activeSize: 10.0,
+                                        space: 5.0),
+                                  ),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: fileList.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return Stack(
+                                      children: <Widget>[
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              color: colorGreyTint
+                                                  .withOpacity(0.03),
+                                              image: DecorationImage(
+                                                  image: FileImage(
+                                                      fileList[index]),
+                                                  fit: BoxFit.contain)),
+                                        ),
+                                        Positioned(
+                                          right: 10,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.only(
+                                                  bottomRight:
+                                                      Radius.circular(8)),
+                                            ),
+                                            child: IconButton(
+                                              icon: Icon(
+                                                Icons.clear,
+                                                color: Colors.black,
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  fileList.removeAt(index);
+                                                  // selectedImgList
+                                                  //     .removeAt(index);
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
                                 )
-                              ],
-                            );
-                          }),
-                    )
+                              : Stack(
+                                  children: <Widget>[
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color:
+                                              colorGreyTint.withOpacity(0.03),
+                                          image: DecorationImage(
+                                              image: FileImage(fileList[0]),
+                                              fit: BoxFit.contain)),
+                                    ),
+                                    Positioned(
+                                      right: 10,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(8)),
+                                        ),
+                                        child: IconButton(
+                                          icon: Icon(
+                                            Icons.clear,
+                                            color: Colors.black,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              fileList.removeAt(0);
+                                              // selectedImgList
+                                              //     .removeAt(index);
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )),
+                    if (fileListVideo.isNotEmpty)
+                      video.VideoPlayer(
+                          fileListVideo[0], _videoPlayer, removeVideo),
                   ],
                 ),
                 Divider(
@@ -1428,9 +1709,18 @@ class _WageState extends State<Wage> {
                         size: 23,
                       ),
                       onPressed: () {
-                        if (fileList != null && fileList.length >= 5) {
+                        if (fileList != null && fileList.length > 15) {
                           Fluttertoast.showToast(
-                              msg: "You can upload maximum of 5 photos",
+                              msg: "You can upload a maximum of 15 photos",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              fontSize: 15);
+                          return;
+                        }
+                        if (fileListVideo.isNotEmpty) {
+                          Fluttertoast.showToast(
+                              msg:
+                                  "You can upload either a video or some photos",
                               toastLength: Toast.LENGTH_SHORT,
                               gravity: ToastGravity.BOTTOM,
                               fontSize: 15);
@@ -1446,15 +1736,53 @@ class _WageState extends State<Wage> {
                         size: 23,
                       ),
                       onPressed: () {
-                        if (fileList != null && fileList.length >= 5) {
+                        if (fileList != null && fileList.length > 15) {
                           Fluttertoast.showToast(
-                              msg: "You can upload maximum of 5 photos",
+                              msg: "You can upload a maximum of 15 photos",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              fontSize: 15);
+                          return;
+                        }
+                        if (fileListVideo.isNotEmpty) {
+                          Fluttertoast.showToast(
+                              msg:
+                                  "You can upload either a video or some photos",
                               toastLength: Toast.LENGTH_SHORT,
                               gravity: ToastGravity.BOTTOM,
                               fontSize: 15);
                           return;
                         }
                         handleTakePhoto();
+                        // handleTakeVideo();
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.videocam,
+                        color: colorGreyTint,
+                        size: 23,
+                      ),
+                      onPressed: () {
+                        if (fileList.isNotEmpty) {
+                          Fluttertoast.showToast(
+                              msg:
+                                  "You can upload either a video or some photos",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              fontSize: 15);
+                          return;
+                        }
+                        if (fileListVideo != null &&
+                            fileListVideo.length == 1) {
+                          Fluttertoast.showToast(
+                              msg: "You have already selected a video",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              fontSize: 15);
+                          return;
+                        }
+                        handleVideo();
                       },
                     ),
                   ],
@@ -1463,45 +1791,56 @@ class _WageState extends State<Wage> {
             ),
           ),
         ),
-        Padding(
-          padding: EdgeInsets.only(top: 60, bottom: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                "Earn: ",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "Lato"),
-              ),
-              SvgPicture.asset(
-                "images/yollar.svg",
-                color: colorPrimaryBlue,
-                height: 20,
-              ),
-              SizedBox(
-                width: 1,
-              ),
-              Text(
-                "${formatNumber(curUser == null ? savedUser.connectionCount : curUser.connectionCount)}",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: "Lato"),
-              ),
-            ],
+        if ((curUser == null
+                ? savedUser.connectionCount
+                : curUser.connectionCount) !=
+            0)
+          Padding(
+            padding: EdgeInsets.only(top: 60, bottom: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  "Earn: ",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Lato"),
+                ),
+                SvgPicture.asset(
+                  "images/yollar.svg",
+                  color: colorPrimaryBlue,
+                  height: 20,
+                ),
+                SizedBox(
+                  width: 1,
+                ),
+                Text(
+                  "${formatNumber(curUser == null ? savedUser.connectionCount : curUser.connectionCount)}",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: "Lato"),
+                ),
+              ],
+            ),
           ),
-        ),
+        if ((curUser == null
+                ? savedUser.connectionCount
+                : curUser.connectionCount) ==
+            0)
+          SizedBox(
+            height: 60,
+          ),
         RoundedButton(
           color: colorPrimaryBlue,
           textColor: Colors.white,
           text: "Time to Brag",
           onPressed: () {
             storytext = textController.text;
-            createWagePost(storytext.trim(), list, fileList);
+            createWagePost(storytext.trim(), fileList, fileListVideo);
           },
         )
       ],
