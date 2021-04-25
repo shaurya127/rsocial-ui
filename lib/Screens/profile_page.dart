@@ -28,6 +28,7 @@ import 'package:rsocial2/Widgets/request_button.dart';
 import 'package:rsocial2/Widgets/selectButton.dart';
 import 'package:rsocial2/auth.dart';
 import 'package:rsocial2/contants/constants.dart';
+import 'package:rsocial2/controller.dart';
 import 'package:rsocial2/functions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -77,6 +78,7 @@ class _ProfileState extends State<Profile> {
   bool isPlatformPostFail = false;
   bool isPhotoEditedComplete = false;
   bool isLoadingPosts = false;
+  ReusableVideoListController reusableVideoListController;
   ScrollController _scrollController = ScrollController();
   final key = GlobalKey<AnimatedListState>();
   int page = 0;
@@ -136,7 +138,7 @@ class _ProfileState extends State<Profile> {
     var user = auth.FirebaseAuth.instance.currentUser;
     var token;
 
-    var id = curUser.id;
+    var id = curUser == null ? savedUser.id : curUser.id;
     final url = userEndPoint + "get";
 
     var response;
@@ -176,7 +178,8 @@ class _ProfileState extends State<Profile> {
       print(widget.user.bio);
       if (widget.user != null) getSocialStanding();
 
-      if (widget.user.id == curUser.id) await saveData();
+      if (widget.user.id == (curUser == null ? savedUser.id : curUser.id))
+        await saveData();
       setState(() {
         isLoadingUser = false;
       });
@@ -190,8 +193,8 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-
-    if (widget.user.id != curUser.id)
+    reusableVideoListController = ReusableVideoListController();
+    if (widget.user.id != (curUser == null ? savedUser.id : curUser.id))
       getUser();
     else {
       setState(() {
@@ -217,6 +220,12 @@ class _ProfileState extends State<Profile> {
         }
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    reusableVideoListController.dispose();
   }
 
   handleTakePhoto() async {
@@ -550,12 +559,16 @@ class _ProfileState extends State<Profile> {
       //print(posts.length);
       for (int i = 0; i < postsW.length; i++) {
         Post_Tile tile = Post_Tile(
-            onPressDelete: () => deletePost(i, "wage", postsW[i].id),
-            curUser: widget.currentUser,
-            userPost: postsW[i],
-            photoUrl: curUser.id == widget.user.id
-                ? curUser.photoUrl
-                : widget.user.photoUrl);
+          canBuild: () => true,
+          onPressDelete: () => deletePost(i, "wage", postsW[i].id),
+          curUser: widget.currentUser,
+          userPost: postsW[i],
+          photoUrl:
+              (curUser == null ? savedUser.id : curUser.id) == widget.user.id
+                  ? curUser.photoUrl
+                  : widget.user.photoUrl,
+          reusableVideoListController: reusableVideoListController,
+        );
         WageTiles.add(tile);
       }
       setState(() {
@@ -604,12 +617,15 @@ class _ProfileState extends State<Profile> {
         print("Invest reaction");
         print(postsI[i].reactedBy.length);
         InvestPostTile tile = InvestPostTile(
-            onPressDelete: () => deletePost(i, "invest", postsI[i].id),
-            curUser: widget.currentUser,
-            userPost: postsI[i],
-            photoUrl: curUser.id == widget.user.id
-                ? curUser.photoUrl
-                : widget.user.photoUrl);
+          onPressDelete: () => deletePost(i, "invest", postsI[i].id),
+          curUser: widget.currentUser,
+          userPost: postsI[i],
+          photoUrl:
+              (curUser == null ? savedUser.id : curUser.id) == widget.user.id
+                  ? curUser.photoUrl
+                  : widget.user.photoUrl,
+          reusableVideoListController: reusableVideoListController,
+        );
         InvestTiles.add(tile);
       }
       setState(() {
@@ -659,11 +675,14 @@ class _ProfileState extends State<Profile> {
                     return SizedBox();
                 } else {
                   return new Post_Tile(
-                      curUser: curUser,
-                      //onPressDelete: () => deletePost(index, ""),
-                      userPost: platformPost[index],
-                      photoUrl: "",
-                      reactionCallback: reactionCallback);
+                    curUser: curUser,
+                    canBuild: () => true,
+                    //onPressDelete: () => deletePost(index, ""),
+                    userPost: platformPost[index],
+                    photoUrl: "",
+                    reactionCallback: reactionCallback,
+                    reusableVideoListController: reusableVideoListController,
+                  );
                 }
               },
               controller: _scrollController,
@@ -772,7 +791,10 @@ class _ProfileState extends State<Profile> {
                 response = await http.put(
                   Uri.parse(url),
                   encoding: Encoding.getByName("utf-8"),
-                  body: jsonEncode({'id': curUser.id, 'bio': newBio}),
+                  body: jsonEncode({
+                    'id': (curUser == null ? savedUser.id : curUser.id),
+                    'bio': newBio
+                  }),
                   headers: {
                     "Authorization": "Bearer: $token",
                     "Content-Type": "application/json",
@@ -796,7 +818,7 @@ class _ProfileState extends State<Profile> {
                   Uri.parse(url),
                   encoding: Encoding.getByName("utf-8"),
                   body: jsonEncode({
-                    'id': curUser.id,
+                    'id': (curUser == null ? savedUser.id : curUser.id),
                     'profilepic': encodedFile,
                   }),
                   headers: {
@@ -829,7 +851,7 @@ class _ProfileState extends State<Profile> {
                   Uri.parse(url),
                   encoding: Encoding.getByName("utf-8"),
                   body: jsonEncode({
-                    'id': curUser.id,
+                    'id': (curUser == null ? savedUser.id : curUser.id),
                     'profilepic': encodedFile,
                     'bio': newBio
                   }),
@@ -938,7 +960,8 @@ class _ProfileState extends State<Profile> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      widget.user.id == curUser.id
+                      widget.user.id ==
+                              (curUser == null ? savedUser.id : curUser.id)
                           ? GestureDetector(
                               onTap: () {
                                 if (isEditable) {
@@ -1091,7 +1114,9 @@ class _ProfileState extends State<Profile> {
                   SizedBox(
                     height: 12,
                   ),
-                  widget.user.id == curUser.id && isEditable
+                  widget.user.id ==
+                              (curUser == null ? savedUser.id : curUser.id) &&
+                          isEditable
                       ? TextField(
                           onChanged: (value) {
                             newBio = value;
@@ -1114,7 +1139,8 @@ class _ProfileState extends State<Profile> {
                               border: InputBorder.none,
                               hintText: 'Enter your bio'),
                         )
-                      : widget.user.id == curUser.id
+                      : widget.user.id ==
+                              (curUser == null ? savedUser.id : curUser.id)
                           ? Text(
                               bioController.text,
                               style: TextStyle(
@@ -1185,7 +1211,9 @@ class _ProfileState extends State<Profile> {
         encodedFile = null;
         bioController.text = curUser.bio;
       });
-    } else if (widget.user.id == curUser.id && isPhotoEditedComplete) {
+    } else if (widget.user.id ==
+            (curUser == null ? savedUser.id : curUser.id) &&
+        isPhotoEditedComplete) {
       Navigator.pop(context, "hello world");
     } else {
       Navigator.pop(context, "hello world");
@@ -1207,7 +1235,8 @@ class _ProfileState extends State<Profile> {
         "Authorization": "Bearer $token",
         "Content-Type": "application/json",
       },
-      body: jsonEncode({"id": curUser.id, "StoryId": id}),
+      body: jsonEncode(
+          {"id": (curUser == null ? savedUser.id : curUser.id), "StoryId": id}),
     );
 
     print(response.statusCode);
@@ -1255,7 +1284,10 @@ class _ProfileState extends State<Profile> {
         child: Scaffold(
             // Here app bar to be updated
             appBar: customAppBar(
-                context, widget.user.id == curUser.id ? false : true),
+                context,
+                widget.user.id == (curUser == null ? savedUser.id : curUser.id)
+                    ? false
+                    : true),
             body: ModalProgressHUD(
               inAsyncCall: isLoading,
               child: NestedScrollView(

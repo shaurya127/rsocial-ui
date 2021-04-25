@@ -828,7 +828,14 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                       borderRadius: BorderRadius.circular(10),
                                       child: Swiper(
                                           loop: false,
-                                          pagination: SwiperPagination(),
+                                          pagination: SwiperPagination(
+                                            builder: DotSwiperPaginationBuilder(
+                                                color: Colors.grey,
+                                                activeColor: Colors.red,
+                                                size: 13.0,
+                                                activeSize: 15.0,
+                                                space: 5.0),
+                                          ),
                                           scrollDirection: Axis.horizontal,
                                           itemCount:
                                               widget.userPost.fileUpload.length,
@@ -850,7 +857,7 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                                           //         url, error) =>
                                                           //     Icon(Icons.error),
                                                         ),
-                                                        fit: BoxFit.contain)),
+                                                        fit: BoxFit.fill)),
                                                 height: 300,
                                               ),
                                             );

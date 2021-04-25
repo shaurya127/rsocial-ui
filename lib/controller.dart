@@ -1,5 +1,6 @@
 import 'package:better_player/better_player.dart';
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ReusableVideoListController {
@@ -11,6 +12,8 @@ class ReusableVideoListController {
       _betterPlayerControllerRegistry.add(
         BetterPlayerController(
           BetterPlayerConfiguration(
+            playerVisibilityChangedBehavior: (viewFration) {},
+            startAt: Duration.zero,
             handleLifecycle: false,
             autoDispose: false,
             autoPlay: true,

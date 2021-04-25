@@ -105,10 +105,10 @@ class _customAppBarState extends State<customAppBar> {
               decoration: BoxDecoration(
                   image: DecorationImage(
                       image: curUser != null
-                          ? (curUser.photoUrl != null
+                          ? (curUser.photoUrl != ""
                               ? NetworkImage(curUser.photoUrl)
                               : AssetImage("images/avatar.jpg"))
-                          : (savedUser.photoUrl != null
+                          : (savedUser.photoUrl != ""
                               ? NetworkImage(savedUser.photoUrl)
                               : AssetImage("images/avatar.jpg")),
                       fit: BoxFit.cover),

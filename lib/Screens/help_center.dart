@@ -27,7 +27,7 @@ class HelpCenter extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(15.0),
             child: TyperAnimatedTextKit(
-              isRepeatingAnimation: false,
+              // isRepeatingAnimation: false,
               text: [
                 'Hi, $fname! Welcome to Rsocial!',
                 'How can we help you?',
@@ -106,9 +106,10 @@ class HelpCenter extends StatelessWidget {
                             child: Container(
                               height: 80,
                               decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      image: AssetImage(
-                                          'images/online-video.png'))),
+                                image: DecorationImage(
+                                  image: AssetImage('images/online-video.png'),
+                                ),
+                              ),
                             ),
                           ),
                           SizedBox(

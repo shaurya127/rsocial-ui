@@ -57,7 +57,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
       child: Stack(
         children: <Widget>[
           Container(
-              height: 400,
+              height: 500,
               decoration: BoxDecoration(
                 color: colorGreyTint.withOpacity(0.03),
               ),

@@ -38,7 +38,8 @@ import '../model/reaction_model.dart';
 import '../read_more.dart';
 import '../model/user.dart';
 import 'package:http/http.dart' as http;
-
+import '../Widgets/video_player_landing.dart' as video;
+import '../controller.dart';
 //Map<String, Map<String, int>> m = new Map();
 
 class InvestPostTile extends StatefulWidget {
@@ -46,13 +47,16 @@ class InvestPostTile extends StatefulWidget {
   var photoUrl;
   User curUser;
   Function reactionCallback;
+  ReusableVideoListController reusableVideoListController;
   final VoidCallback onPressDelete;
-  InvestPostTile(
-      {@required this.curUser,
-      this.userPost,
-      this.photoUrl,
-      this.reactionCallback,
-      this.onPressDelete});
+  InvestPostTile({
+    @required this.curUser,
+    @required this.reusableVideoListController,
+    this.userPost,
+    this.photoUrl,
+    this.reactionCallback,
+    this.onPressDelete,
+  });
   @override
   _InvestPostTileState createState() => _InvestPostTileState();
 }
@@ -843,14 +847,21 @@ class _InvestPostTileState extends State<InvestPostTile>
                         : EdgeInsets.only(bottom: 15, top: 6),
                     child: Container(
                         height:
-                            widget.userPost.fileUpload.length != 0 ? 250 : 0,
+                            widget.userPost.fileUpload.length != 0 ? 350 : 0,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8)),
                         child: isLoading == false
                             ? (widget.userPost.fileUpload.length > 1
                                 ? Swiper(
                                     loop: false,
-                                    pagination: SwiperPagination(),
+                                    pagination: SwiperPagination(
+                                      builder: DotSwiperPaginationBuilder(
+                                          color: Colors.grey,
+                                          activeColor: Colors.red,
+                                          size: 13.0,
+                                          activeSize: 15.0,
+                                          space: 5.0),
+                                    ),
                                     scrollDirection: Axis.horizontal,
                                     itemCount:
                                         widget.userPost.fileUpload.length,
@@ -882,7 +893,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                                                           fileList[index],
                                                         ),
                                                         fit: BoxFit.cover)),
-                                                height: 250,
+                                                height: 300,
                                               ),
                                             ),
                                           ),
@@ -908,32 +919,45 @@ class _InvestPostTileState extends State<InvestPostTile>
                                         ],
                                       );
                                     })
-                                : InteractiveViewer(
-                                    transformationController:
-                                        transformationController,
-                                    onInteractionEnd: (details) {
-                                      setState(() {
-                                        transformationController
-                                            .toScene(Offset.zero);
-                                      });
-                                    },
-                                    //boundaryMargin: EdgeInsets.all(20.0),
-                                    minScale: 0.1,
-                                    maxScale: 2,
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            color: Colors.grey.withOpacity(0.2),
-                                            image: DecorationImage(
-                                                image: NetworkImage(
-                                                  fileList[0],
-                                                ),
-                                                fit: BoxFit.cover)),
-                                        height: 250,
-                                      ),
-                                    ),
-                                  ))
+                                : widget.userPost.fileUpload[0].endsWith(".mp4")
+                                    ? video.ReusableVideoListWidget(
+                                        videoListController:
+                                            widget.reusableVideoListController,
+                                        videoListData: video.VideoListData(
+                                          "TEST",
+                                          widget.userPost.fileUpload[0],
+                                        ),
+                                        //"https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4"),
+                                        canBuildVideo: () => true,
+                                      )
+                                    : InteractiveViewer(
+                                        transformationController:
+                                            transformationController,
+                                        onInteractionEnd: (details) {
+                                          setState(() {
+                                            transformationController
+                                                .toScene(Offset.zero);
+                                          });
+                                        },
+                                        //boundaryMargin: EdgeInsets.all(20.0),
+                                        minScale: 0.1,
+                                        maxScale: 2,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.grey
+                                                    .withOpacity(0.2),
+                                                image: DecorationImage(
+                                                    image: NetworkImage(
+                                                      fileList[0],
+                                                    ),
+                                                    fit: BoxFit.cover)),
+                                            height: 300,
+                                          ),
+                                        ),
+                                      ))
                             : Center(
                                 child: CircularProgressIndicator(),
                               )))

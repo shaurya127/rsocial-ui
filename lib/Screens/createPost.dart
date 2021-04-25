@@ -208,12 +208,12 @@ class _WageState extends State<Wage> {
           print("File size");
           print(file.lengthSync());
 
-          if (file.lengthSync() > 5000000) {
+          if (file.lengthSync() > 500000000) {
             //file = await compressImage(file);
             print("New length =" + file.lengthSync().toString());
 
             print("not allowed");
-            if (file.lengthSync() > 5000000) {
+            if (file.lengthSync() > 500000000) {
               var alertBox = AlertDialogBox(
                 title: 'Error',
                 content: 'Image is too large',
@@ -301,13 +301,13 @@ class _WageState extends State<Wage> {
             print("File size");
             print(file.lengthSync());
 
-            if (file.lengthSync() > 5000000) {
+            if (file.lengthSync() > 500000000) {
               //  if (file.lengthSync() > 5000000) {
               // file = await compressImage(file);
               print("New length =" + file.lengthSync().toString());
 
               print("not allowed");
-              if (file.lengthSync() > 5000000) {
+              if (file.lengthSync() > 500000000) {
                 var alertBox = AlertDialogBox(
                   title: 'Error',
                   content: 'Image is too large',
@@ -450,18 +450,16 @@ class _WageState extends State<Wage> {
       return;
     }
 
-    if ((investmentstoryText == null || investmentstoryText.isEmpty) &&
-        (investmentfileList.isEmpty) &&
-        investmentfileListvideo.isEmpty) {
+    if (investmentstoryText == null || investmentstoryText.isEmpty) {
       Fluttertoast.showToast(
-          msg: "Please upload text or photo",
+          msg: "Please enter some text",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           fontSize: 15);
       return;
     }
 
-    if (investmentstoryText != null && investmentfileList.isNotEmpty) {
+    if (investmentstoryText != null) {
       // Show Modal Progress hud
       setState(() {
         isloading = true;
@@ -471,7 +469,7 @@ class _WageState extends State<Wage> {
 
       int n = files.length;
       int m = filevideo.length;
-      var user = authFirebase.currentUser;
+      var user = await authFirebase.currentUser;
       // Get the user token
       var token = await user.getIdToken();
 
@@ -502,7 +500,7 @@ class _WageState extends State<Wage> {
         investfinal.add(investmentfileList[i]);
       }
       for (int i = 0; i < investmentfileListvideo.length; i++) {
-        investfinal.add(investmentfileList[i]);
+        investfinal.add(investmentfileListvideo[i]);
       }
 
       // Awaiting for post Response
@@ -599,6 +597,7 @@ class _WageState extends State<Wage> {
           amount = 1000;
           investmentfileList.clear();
           investmentfileListvideo.clear();
+          // selectedImgList.clear();
           idSelectedList.clear();
           isloading = false;
           selectedList.clear();
@@ -684,12 +683,12 @@ class _WageState extends State<Wage> {
     map["count_image"] = n;
     map["count_video"] = m;
 
-    List<File> investfinal = new List();
+    List<File> investfinalwage = new List();
     for (int i = 0; i < fileList.length; i++) {
-      investfinal.add(fileList[i]);
+      investfinalwage.add(fileList[i]);
     }
     for (int i = 0; i < fileListVideo.length; i++) {
-      investfinal.add(fileListVideo[i]);
+      investfinalwage.add(fileListVideo[i]);
     }
 
     // Awaiting for post Response
@@ -729,10 +728,10 @@ class _WageState extends State<Wage> {
       request.files.add(
         http.MultipartFile(
           'file',
-          files[i].readAsBytes().asStream(),
-          files[i].lengthSync(),
-          filename: (files[i].path),
-          contentType: MediaType('image', 'jpeg'),
+          investfinalwage[i].readAsBytes().asStream(),
+          investfinalwage[i].lengthSync(),
+          filename: (investfinalwage[i].path),
+          // contentType: MediaType('image', 'jpeg'),
         ),
       );
       // request.fields
@@ -785,6 +784,7 @@ class _WageState extends State<Wage> {
       textController.clear();
       setState(() {
         fileList.clear();
+        fileListVideo.clear();
         isloading = false;
       });
 
@@ -1259,7 +1259,8 @@ class _WageState extends State<Wage> {
                                             pagination: SwiperPagination(
                                               builder:
                                                   DotSwiperPaginationBuilder(
-                                                      color: Colors.black,
+                                                      color: Colors.grey,
+                                                      activeColor: Colors.red,
                                                       size: 10.0,
                                                       activeSize: 10.0,
                                                       space: 5.0),
@@ -1509,6 +1510,7 @@ class _WageState extends State<Wage> {
                       textColor: Colors.white,
                       text: "Start Earning",
                       onPressed: () async {
+                        print("click");
                         if (curUser.totalAvailableYollar < 1000) {
                           Fluttertoast.showToast(
                               msg: "Earn more than 1000 to invest",

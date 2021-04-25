@@ -65,10 +65,10 @@ class _ReusableVideoListWidgetState extends State<ReusableVideoListWidget> {
             cacheConfiguration: BetterPlayerCacheConfiguration(useCache: true),
           ),
         );
+        if (_aspectRatio < 0.7) {
+          _aspectRatio = 0.7;
+        }
         controller.setOverriddenAspectRatio(_aspectRatio);
-        controller.seekTo(Duration.zero);
-        //controller.play();
-
         if (!betterPlayerControllerStreamController.isClosed) {
           betterPlayerControllerStreamController.add(controller);
         }
@@ -86,7 +86,6 @@ class _ReusableVideoListWidgetState extends State<ReusableVideoListWidget> {
       controller.removeEventsListener(onPlayerEvent);
       widget.videoListController.freeBetterPlayerController(controller);
       controller.pause();
-      // controller.setupDataSource(null);
       controller = null;
       if (!betterPlayerControllerStreamController.isClosed) {
         betterPlayerControllerStreamController.add(null);
@@ -130,6 +129,7 @@ class _ReusableVideoListWidgetState extends State<ReusableVideoListWidget> {
           if (info.visibleFraction >= 0.9) {
             _setupController();
           } else {
+            if (controller != null) controller.pause();
             _freeController();
           }
         },

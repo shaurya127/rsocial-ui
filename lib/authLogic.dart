@@ -549,7 +549,6 @@ void logout(BuildContext context) async {
   User user = _authInstance.currentUser;
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.clear();
-
   if (user != null) {
     if (Platform.isIOS) {
       if (user.providerData[0].providerId == 'google.com') {
@@ -562,7 +561,7 @@ void logout(BuildContext context) async {
         }
       }
     } else {
-      if (user.providerData[1].providerId == 'google.com') {
+      if (user.providerData[0].providerId == 'google.com') {
         try {
           await googleSign.disconnect();
         } on PlatformException catch (e) {
