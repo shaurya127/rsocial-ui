@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
+import 'package:rsocial2/Screens/user_onboarding.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/contants/constants.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -184,19 +185,20 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   Widget build(BuildContext context) {
     var preferredWidget = AppBar(
-      backgroundColor: colorButton,
+      backgroundColor: Colors.black.withOpacity(0.8),
       iconTheme: IconThemeData(color: Colors.white),
     );
     return Scaffold(
+        backgroundColor: Colors.black.withOpacity(0.8),
         appBar: preferredWidget,
         bottomNavigationBar: Container(
-          color: colorButton,
+          color: Colors.black.withOpacity(0.8),
           height: 60,
         ),
         body: Center(
           child: CachedNetworkImage(
             fit: BoxFit.fill,
-            width: double.infinity,
+            //width: double.infinity,
             imageUrl: "https://relatotechnologies.com/bg.gif",
             placeholder: (ctx, _) => Center(child: CircularProgressIndicator()),
             errorWidget: (ctx, _, error) => Center(

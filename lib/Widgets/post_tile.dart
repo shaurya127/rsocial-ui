@@ -831,9 +831,9 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                           pagination: SwiperPagination(
                                             builder: DotSwiperPaginationBuilder(
                                                 color: Colors.grey,
-                                                activeColor: Colors.red,
-                                                size: 13.0,
-                                                activeSize: 15.0,
+                                                activeColor: Colors.blue,
+                                                size: 10.0,
+                                                activeSize: 12.0,
                                                 space: 5.0),
                                           ),
                                           scrollDirection: Axis.horizontal,
@@ -848,8 +848,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                               },
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                    color: Colors.grey
-                                                        .withOpacity(0.2),
                                                     image: DecorationImage(
                                                         image: NetworkImage(
                                                           fileList[index],
@@ -904,8 +902,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                                 BorderRadius.circular(10),
                                             child: Container(
                                               decoration: BoxDecoration(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.2),
                                                   image: DecorationImage(
                                                       image: NetworkImage(
                                                         fileList[0],

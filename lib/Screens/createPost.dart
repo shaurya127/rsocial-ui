@@ -11,8 +11,6 @@ import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Widgets/RoundedButton.dart';
 import 'package:rsocial2/Widgets/alert_box.dart';
 import 'package:rsocial2/Widgets/selectButton.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
-
 import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/contants/constants.dart';
 import 'package:rsocial2/functions.dart';
@@ -50,7 +48,7 @@ class _WageState extends State<Wage> {
   String storytext;
   bool underline = false;
   bool isSelected = false;
-  bool isPosting=false;
+  bool isPosting = false;
   File file;
   //List<String> list = [];
   List<File> fileList = [];
@@ -108,7 +106,7 @@ class _WageState extends State<Wage> {
         if (pickedFile != null) {
           File video = File(pickedFile.path);
           video = await video.rename("${video.path}.mp4");
-          if (video.lengthSync() > 5000000) {
+          if (video.lengthSync() > 500000000) {
             var alertBox = AlertDialogBox(
               title: 'Error',
               content: 'Video is too large',
@@ -455,10 +453,7 @@ class _WageState extends State<Wage> {
         isloading = true;
       });
 
-
       // Get the current Firebase user
-
-
 
       int n = files.length;
       int m = filevideo.length;
@@ -508,7 +503,7 @@ class _WageState extends State<Wage> {
       if (response == null) {
         setState(() {
           isloading = false;
-          isPosting=false;
+          isPosting = false;
         });
         Fluttertoast.showToast(
             msg: "Error occurred, please check Internet connection.",
@@ -573,7 +568,7 @@ class _WageState extends State<Wage> {
       if (response == null) {
         setState(() {
           isloading = false;
-          isPosting=false;
+          isPosting = false;
         });
         Fluttertoast.showToast(
             msg: "Error occurred, please check Internet connection.",
@@ -596,7 +591,6 @@ class _WageState extends State<Wage> {
           idSelectedList.clear();
           isloading = false;
           selectedList.clear();
-
         });
 
         // Remove all the cached images
@@ -666,19 +660,14 @@ class _WageState extends State<Wage> {
 
   createWagePost(
       String storyText, List<File> files, List<File> filevideo) async {
-
-
-
-
-    if (storyText == null && files.length==0 && filevideo.length==0) {
+    if (storyText == null && files.length == 0 && filevideo.length == 0) {
       Fluttertoast.showToast(
-          msg: "Please enter text or photo or video",
+          msg: "Please enter text or  a photo or a video",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           fontSize: 15);
       return;
     }
-    // if(storytext==null )
 
     // Show Modal Progress hud
     setState(() {
@@ -764,8 +753,6 @@ class _WageState extends State<Wage> {
 
       // print(x[i]);
     }
-
-
 
     // Response is null if some exception occurred while posting, for eg - Lost internet connection
     if (response == null) {

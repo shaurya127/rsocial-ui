@@ -48,13 +48,14 @@ class Post {
             : false;
 
     List<User> investedWith = [];
-    if (json['InvestedWith'].isNotEmpty) {
-      for (int i = 0; i < json['InvestedWith'].length; i++) {
-        User user = User.fromJson(json['InvestedWith'][i]);
-        investedWith.add(user);
+    if (json['InvestedWith'] != null) {
+      if (json['InvestedWith'].isNotEmpty) {
+        for (int i = 0; i < json['InvestedWith'].length; i++) {
+          User user = User.fromJson(json['InvestedWith'][i]);
+          investedWith.add(user);
+        }
       }
     }
-
     List<User> rxn = [];
     if (json["ReactedBy"] != null) if (json["ReactedBy"].isNotEmpty) {
       for (int i = 0; i < json["ReactedBy"].length; i++) {
