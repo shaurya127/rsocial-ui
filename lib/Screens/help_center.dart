@@ -1,16 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
-import 'package:rsocial2/Screens/user_onboarding.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/contants/constants.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import '../Widgets/error.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:rsocial2/Screens/profile_page.dart';
-import '../model/user.dart';
 
 class HelpCenter extends StatelessWidget {
   final String fname = curUser.fname;

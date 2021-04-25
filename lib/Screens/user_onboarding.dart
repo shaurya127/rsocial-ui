@@ -1,16 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/contants/constants.dart';
 import 'package:rsocial2/model/user.dart';
-import 'package:rsocial2/contants/constants.dart';
 import 'bottom_nav_bar.dart';
 
 class UserOnboarding extends StatefulWidget {
   User currentUser;
+  // int ind/ex;
   UserOnboarding(this.currentUser);
 
   @override
@@ -21,6 +21,7 @@ class _UserOnboardingState extends State<UserOnboarding> {
   static const String url =
       "https://rsoc-test-bucket.s3.ap-south-1.amazonaws.com/GIF/";
   int count = 0;
+  // List<CircleAvatar> dots=new List();
 
   final List imgList = [
     'https://rsoc-test-bucket.s3.ap-south-1.amazonaws.com/GIF/001.jpeg',
@@ -36,6 +37,8 @@ class _UserOnboardingState extends State<UserOnboarding> {
     'https://rsoc-test-bucket.s3.ap-south-1.amazonaws.com/GIF/011.jpeg',
     'https://rsoc-test-bucket.s3.ap-south-1.amazonaws.com/GIF/012.jpeg',
   ];
+
+  int index=0;
 
   @override
   Widget build(BuildContext context) {
@@ -53,12 +56,29 @@ class _UserOnboardingState extends State<UserOnboarding> {
       child: SafeArea(
         child: Scaffold(
           bottomNavigationBar: Container(
-            color: colorButton,
+            padding: EdgeInsets.only(left: 10),
+            alignment: Alignment.center,
+            color: Colors.black87.withOpacity(0.8),
             height: 60,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+                itemCount: 12,
+                itemBuilder: (context,i){
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                    radius: 7.0,
+                  backgroundColor: i==index?colorButton:Colors.white,
+                ),
+              );
+
+                // radius:
+            }),
+
           ),
           appBar: AppBar(
             elevation: 0.1,
-            backgroundColor: colorButton,
+            backgroundColor: Colors.black87.withOpacity(0.8),
             iconTheme: IconThemeData(color: Colors.white),
             actions: [
               FlatButton(
@@ -103,12 +123,22 @@ class _UserOnboardingState extends State<UserOnboarding> {
             loop: false,
             itemCount: 12,
             layout: SwiperLayout.DEFAULT,
-            pagination: SwiperPagination(
-                alignment: Alignment.bottomCenter,
-                builder: DotSwiperPaginationBuilder(
-                  color: Colors.black87,
-                  // activeColor: Colors.red,
-                )),
+            // index: index,
+            onIndexChanged: (int i){
+              setState(() {
+                print(index);
+                index=i;
+              });
+            },
+
+            // onIndexChanged:
+            // pagination: SwiperPagination(
+            //     alignment: Alignment.bottomCenter,
+            //     builder: DotSwiperPaginationBuilder(
+            //       color: Colors.grey[400],
+            //       size: 12,
+            //       activeColor: Colors.red,
+            //     )),
             controller: SwiperController(),
             containerHeight: 10,
           ),
