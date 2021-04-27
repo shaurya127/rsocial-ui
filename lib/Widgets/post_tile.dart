@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
@@ -804,10 +805,12 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                 ? Padding(
                     padding: widget.userPost.storyText == null
                         ? EdgeInsets.only(top: 0, bottom: 15)
-                        : EdgeInsets.only(bottom: 15, top: 6),
+                        : EdgeInsets.only(bottom: 15, top: 15),
                     child: Container(
-                        height:
-                            widget.userPost.fileUpload.length != 0 ? 300 : 0,
+                        constraints: BoxConstraints(
+                          maxHeight:
+                              widget.userPost.fileUpload.length != 0 ? 300 : 0,
+                        ),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8)),
                         child: isLoading == false
@@ -830,11 +833,12 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                           loop: false,
                                           pagination: SwiperPagination(
                                             builder: DotSwiperPaginationBuilder(
-                                                color: Colors.grey,
-                                                activeColor: Colors.blue,
-                                                size: 10.0,
-                                                activeSize: 12.0,
-                                                space: 5.0),
+                                              color: Colors.grey,
+                                              activeColor: colorButton,
+                                              size: 10.0,
+                                              activeSize: 12.0,
+                                              space: 5.0,
+                                            ),
                                           ),
                                           scrollDirection: Axis.horizontal,
                                           itemCount:
@@ -848,30 +852,29 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                               },
                                               child: Container(
                                                 decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                        image: NetworkImage(
-                                                          fileList[index],
-                                                          // errorWidget: (context,
-                                                          //         url, error) =>
-                                                          //     Icon(Icons.error),
-                                                        ),
-                                                        fit: BoxFit.fill)),
-                                                height: 300,
+                                                  color: Colors.white,
+
+                                                  // image: DecorationImage(
+                                                  //   image: NetworkImage(
+                                                  //     fileList[index],
+                                                  //   ),
+                                                  //   fit: BoxFit.contain,
+                                                  // ),
+                                                ),
+                                                child: CachedNetworkImage(
+                                                  imageUrl: fileList[index],
+                                                  fit: BoxFit.contain,
+                                                  width: double.infinity,
+                                                  placeholder: (ctx, _) => Center(
+                                                      child:
+                                                          CircularProgressIndicator()),
+                                                ),
                                               ),
                                             );
                                           }),
                                     ),
                                   )
                                 : widget.userPost.fileUpload[0].endsWith(".mp4")
-                                    // ? video.VideoListWidget(
-                                    //     videoListData: video.VideoListData(
-                                    //       "TEST",
-                                    //       "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
-                                    //     ),
-                                    //   )
-                                    // videoListController:
-                                    //     widget.reusableVideoListController,
-                                    // canBuildVideo: () => true)
                                     ? video.ReusableVideoListWidget(
                                         videoListController:
                                             widget.reusableVideoListController,
@@ -879,7 +882,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                           "TEST",
                                           widget.userPost.fileUpload[0],
                                         ),
-                                        //"https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4"),
                                         canBuildVideo: widget.canBuild,
                                       )
                                     : GestureDetector(
@@ -897,17 +899,22 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                           },
                                           minScale: 0.1,
                                           maxScale: 2,
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  image: DecorationImage(
-                                                      image: NetworkImage(
-                                                        fileList[0],
-                                                      ),
-                                                      fit: BoxFit.contain)),
-                                              height: 300,
+                                          child: Container(
+                                            child: CachedNetworkImage(
+                                              imageUrl: fileList[0],
+                                              fit: BoxFit.contain,
+                                              width: double.infinity,
+                                              placeholder: (ctx, _) => Center(
+                                                  child:
+                                                      CircularProgressIndicator()),
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              // image: DecorationImage(
+                                              //     image: NetworkImage(
+                                              //       fileList[0],
+                                              //     ),
+                                              //     fit: BoxFit.contain),
                                             ),
                                           ),
                                         )))
@@ -1312,44 +1319,54 @@ showDialogFunc(context, List<String> filelist, int index) {
         ),
         body: Column(
           children: [
-            // filelist.length > 1
-            //     ? Swiper(
-            //         itemCount: filelist.length,
-            //         pagination: SwiperPagination(),
-            //         scrollDirection: Axis.horizontal,
-            //         itemBuilder: (context, index) {
-            //         return  Expanded(
-            //             child: Container(
-            //               height: 100,
-            //               child: PhotoView(
-            //                 imageProvider: NetworkImage(
-            //                   filelist[index],
-            //                 ),
-            //                 minScale: PhotoViewComputedScale.contained * 0.9,
-            //                 enableRotation: true,
-            //                 backgroundDecoration:
-            //                 BoxDecoration(color: Colors.white),
-            //                 basePosition: Alignment.center,
-            //                 customSize: MediaQuery.of(context).size,
-            //               ),
-            //             ),
-            //           );
-            //         },
-            //       )
-            Expanded(
-              child: Container(
-                child: PhotoView(
-                  imageProvider: NetworkImage(
-                    filelist[index],
+            filelist.length > 1
+                ? Expanded(
+                    child: Swiper(
+                      loop: false,
+                      containerHeight: MediaQuery.of(context).size.height,
+                      itemCount: filelist.length,
+                      pagination: SwiperPagination(
+                        builder: DotSwiperPaginationBuilder(
+                            color: Colors.grey,
+                            activeColor: colorButton,
+                            size: 13.0,
+                            activeSize: 15.0,
+                            space: 5.0),
+                      ),
+                      // scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          height: 100,
+                          child: PhotoView(
+                            imageProvider: NetworkImage(
+                              filelist[index],
+                            ),
+                            minScale: PhotoViewComputedScale.contained * 0.9,
+                            enableRotation: true,
+                            backgroundDecoration:
+                                BoxDecoration(color: Colors.white),
+                            basePosition: Alignment.center,
+                            customSize: MediaQuery.of(context).size,
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                : Expanded(
+                    child: Container(
+                      child: PhotoView(
+                        imageProvider: NetworkImage(
+                          filelist[index],
+                        ),
+                        minScale: PhotoViewComputedScale.contained * 0.9,
+                        enableRotation: true,
+                        backgroundDecoration:
+                            BoxDecoration(color: Colors.white),
+                        basePosition: Alignment.center,
+                        customSize: MediaQuery.of(context).size,
+                      ),
+                    ),
                   ),
-                  minScale: PhotoViewComputedScale.contained * 0.9,
-                  enableRotation: true,
-                  backgroundDecoration: BoxDecoration(color: Colors.white),
-                  basePosition: Alignment.center,
-                  customSize: MediaQuery.of(context).size,
-                ),
-              ),
-            )
           ],
         ),
       );

@@ -182,6 +182,92 @@ class _WageState extends State<Wage> {
     }
   }
 
+  handleVideocamera() async {
+    var status = await Permission.camera.status;
+
+    if (status.isGranted || status.isLimited) {
+      try {
+        PickedFile pickedFile =
+            await ImagePicker().getVideo(source: ImageSource.camera);
+        if (pickedFile != null) {
+          File video = File(pickedFile.path);
+          video = await video.rename("${video.path}.mp4");
+          if (video.lengthSync() > 500000000) {
+            var alertBox = AlertDialogBox(
+              title: 'Error',
+              content: 'Video is too large',
+              actions: <Widget>[
+                FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Back'),
+                ),
+              ],
+            );
+            showDialog(context: context, builder: (context) => alertBox);
+            return;
+          }
+          _videoPlayer = VideoPlayerController.file(video);
+          await _videoPlayer.initialize();
+          setState(() {
+            orientation == "wage"
+                ? fileListVideo.add(video)
+                : investmentfileListvideo.add(video);
+          });
+        }
+      } on PlatformException catch (e) {
+        if (e.code == 'photo_access_denied') {
+          print(e);
+
+          var alertBox = AlertDialogBox(
+            title: "Camera Permission",
+            content: "This app needs camera access to capture videos",
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Settings"),
+                onPressed: () {
+                  Navigator.pop(context);
+                  openAppSettings();
+                },
+              ),
+              FlatButton(
+                child: Text("Deny"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+          showDialog(
+            context: context,
+            builder: (context) => alertBox,
+          );
+        }
+      }
+    } else {
+      var alertBox = AlertDialogBox(
+        title: "Camera Permission",
+        content: "This app needs camera access to capture videos",
+        actions: <Widget>[
+          FlatButton(
+            child: Text("Settings"),
+            onPressed: () {
+              openAppSettings();
+            },
+          ),
+          FlatButton(
+            child: Text("Deny"),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      );
+      showDialog(context: context, builder: (context) => alertBox);
+    }
+  }
+
   handleTakePhoto() async {
     var status = await Permission.camera.status;
     if (status.isGranted || status.isLimited) {
@@ -272,7 +358,6 @@ class _WageState extends State<Wage> {
 
   handleChooseFromGallery() async {
     var status = await Permission.storage.status;
-
     if (status.isGranted || status.isLimited) {
       try {
         PickedFile pickedFile = await ImagePicker().getImage(
@@ -287,10 +372,7 @@ class _WageState extends State<Wage> {
           if (file != null) {
             print("File size");
             print(file.lengthSync());
-
             if (file.lengthSync() > 500000000) {
-              //  if (file.lengthSync() > 5000000) {
-              // file = await compressImage(file);
               print("New length =" + file.lengthSync().toString());
 
               print("not allowed");
@@ -437,15 +519,16 @@ class _WageState extends State<Wage> {
       return;
     }
 
-    // if (investmentstoryText == null || investmentstoryText.isEmpty) {
-    //   // storytext="";
-    //   // Fluttertoast.showToast(
-    //   //     msg: "Please upload text or photo",
-    //   //     toastLength: Toast.LENGTH_SHORT,
-    //   //     gravity: ToastGravity.BOTTOM,
-    //   //     fontSize: 15);
-    //   // return;
-    // }
+    if ((investmentstoryText == null || investmentstoryText.isEmpty) &&
+        files.isEmpty &&
+        filevideo.isEmpty) {
+      Fluttertoast.showToast(
+          msg: "Please upload text, a photo or a video",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
+      return;
+    }
 
     if (investmentstoryText != null) {
       // Show Modal Progress hud
@@ -457,7 +540,7 @@ class _WageState extends State<Wage> {
 
       int n = files.length;
       int m = filevideo.length;
-      var user = await authFirebase.currentUser;
+      var user = authFirebase.currentUser;
       // Get the user token
       var token = await user.getIdToken();
 
@@ -660,14 +743,17 @@ class _WageState extends State<Wage> {
 
   createWagePost(
       String storyText, List<File> files, List<File> filevideo) async {
-    if (storyText == null && files.length == 0 && filevideo.length == 0) {
+    if ((storyText == null || storyText.isEmpty) &&
+        files.isEmpty &&
+        filevideo.isEmpty) {
       Fluttertoast.showToast(
-          msg: "Please enter text or  a photo or a video",
+          msg: "Please upload text, a photo or a video",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           fontSize: 15);
       return;
     }
+    // if(storytext==null )
 
     // Show Modal Progress hud
     setState(() {
@@ -1250,9 +1336,9 @@ class _WageState extends State<Wage> {
                                               builder:
                                                   DotSwiperPaginationBuilder(
                                                       color: Colors.grey,
-                                                      activeColor: Colors.red,
-                                                      size: 10.0,
-                                                      activeSize: 10.0,
+                                                      activeColor: colorButton,
+                                                      size: 13.0,
+                                                      activeSize: 15.0,
                                                       space: 5.0),
                                             ),
                                             scrollDirection: Axis.horizontal,
@@ -1444,6 +1530,35 @@ class _WageState extends State<Wage> {
                                   handleVideo();
                                 },
                               ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.camera_front,
+                                  color: colorGreyTint,
+                                  size: 23,
+                                ),
+                                onPressed: () {
+                                  if (investmentfileList.isNotEmpty) {
+                                    Fluttertoast.showToast(
+                                        msg:
+                                            "You can upload either a video or some photos",
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        fontSize: 15);
+                                    return;
+                                  }
+                                  if (investmentfileListvideo != null &&
+                                      investmentfileListvideo.length == 1) {
+                                    Fluttertoast.showToast(
+                                        msg:
+                                            "You have already selected a video",
+                                        toastLength: Toast.LENGTH_SHORT,
+                                        gravity: ToastGravity.BOTTOM,
+                                        fontSize: 15);
+                                    return;
+                                  }
+                                  handleVideocamera();
+                                },
+                              ),
                             ],
                           )
                         ],
@@ -1603,9 +1718,10 @@ class _WageState extends State<Wage> {
                                   loop: false,
                                   pagination: SwiperPagination(
                                     builder: DotSwiperPaginationBuilder(
-                                        color: Colors.black,
-                                        size: 10.0,
-                                        activeSize: 10.0,
+                                        color: Colors.grey,
+                                        activeColor: colorButton,
+                                        size: 13.0,
+                                        activeSize: 15.0,
                                         space: 5.0),
                                   ),
                                   scrollDirection: Axis.horizontal,
@@ -1776,6 +1892,34 @@ class _WageState extends State<Wage> {
                           return;
                         }
                         handleVideo();
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.camera_front,
+                        color: colorGreyTint,
+                        size: 23,
+                      ),
+                      onPressed: () {
+                        if (fileList.isNotEmpty) {
+                          Fluttertoast.showToast(
+                              msg:
+                                  "You can upload either a video or some photos",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              fontSize: 15);
+                          return;
+                        }
+                        if (fileListVideo != null &&
+                            fileListVideo.length == 1) {
+                          Fluttertoast.showToast(
+                              msg: "You have already selected a video",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              fontSize: 15);
+                          return;
+                        }
+                        handleVideocamera();
                       },
                     ),
                   ],

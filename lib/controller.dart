@@ -12,7 +12,6 @@ class ReusableVideoListController {
       _betterPlayerControllerRegistry.add(
         BetterPlayerController(
           BetterPlayerConfiguration(
-            playerVisibilityChangedBehavior: (viewFration) {},
             startAt: Duration.zero,
             handleLifecycle: false,
             autoDispose: false,
