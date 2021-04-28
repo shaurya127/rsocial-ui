@@ -4,6 +4,7 @@ import 'dart:io';
 
 // import 'package:audioplayers/audio_cache.dart';
 // import 'package:audioplayers/audioplayers.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/cupertino.dart';
@@ -846,79 +847,140 @@ class _InvestPostTileState extends State<InvestPostTile>
                         ? EdgeInsets.only(top: 0, bottom: 15)
                         : EdgeInsets.only(bottom: 15, top: 6),
                     child: Container(
-                        height:
-                            widget.userPost.fileUpload.length != 0 ? 350 : 0,
+                        constraints: BoxConstraints(
+                          maxHeight:
+                              widget.userPost.fileUpload.length != 0 ? 300 : 0,
+                        ),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8)),
                         child: isLoading == false
                             ? (widget.userPost.fileUpload.length > 1
-                                ? Swiper(
-                                    loop: false,
-                                    pagination: SwiperPagination(
-                                      builder: DotSwiperPaginationBuilder(
-                                          color: Colors.grey,
-                                          activeColor: Colors.red,
-                                          size: 13.0,
-                                          activeSize: 15.0,
-                                          space: 5.0),
-                                    ),
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount:
-                                        widget.userPost.fileUpload.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return Stack(
-                                        children: <Widget>[
-                                          InteractiveViewer(
-                                            transformationController:
-                                                transformationController,
-                                            onInteractionEnd: (details) {
-                                              setState(() {
-                                                transformationController
-                                                    .toScene(Offset.zero);
-                                              });
-                                            },
-                                            //boundaryMargin: EdgeInsets.all(20.0),
-                                            minScale: 0.1,
-                                            maxScale: 2,
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                    color: Colors.grey
-                                                        .withOpacity(0.2),
-                                                    image: DecorationImage(
-                                                        image: NetworkImage(
-                                                          fileList[index],
-                                                        ),
-                                                        fit: BoxFit.cover)),
-                                                height: 300,
-                                              ),
+                                ? InteractiveViewer(
+                                    transformationController:
+                                        transformationController,
+                                    onInteractionEnd: (details) {
+                                      setState(() {
+                                        transformationController
+                                            .toScene(Offset.zero);
+                                      });
+                                    },
+                                    //boundaryMargin: EdgeInsets.all(20.0),
+                                    minScale: 0.1,
+                                    maxScale: 2,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Swiper(
+                                          loop: false,
+                                          pagination: SwiperPagination(
+                                            builder: DotSwiperPaginationBuilder(
+                                              color: Colors.grey,
+                                              activeColor: colorButton,
+                                              size: 10.0,
+                                              activeSize: 12.0,
+                                              space: 5.0,
                                             ),
                                           ),
-                                          // Container(
-                                          //   decoration: BoxDecoration(
-                                          //       borderRadius: BorderRadius.only(
-                                          //           bottomRight:
-                                          //           Radius.circular(8)),
-                                          //       color: Colors.red
-                                          //           .withOpacity(0.2)),
-                                          //   child: IconButton(
-                                          //     icon: Icon(
-                                          //       Icons.clear,
-                                          //     ),
-                                          //     onPressed: () {
-                                          //       setState(() {
-                                          //         fileList.removeAt(index);
-                                          //         list.removeAt(index);
-                                          //       });
-                                          //     },
-                                          //   ),
-                                          // )
-                                        ],
-                                      );
-                                    })
+                                          scrollDirection: Axis.horizontal,
+                                          itemCount:
+                                              widget.userPost.fileUpload.length,
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                showDialogFunc(
+                                                    context, fileList, index);
+                                              },
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+
+                                                  // image: DecorationImage(
+                                                  //   image: NetworkImage(
+                                                  //     fileList[index],
+                                                  //   ),
+                                                  //   fit: BoxFit.contain,
+                                                  // ),
+                                                ),
+                                                child: CachedNetworkImage(
+                                                  imageUrl: fileList[index],
+                                                  fit: BoxFit.contain,
+                                                  width: double.infinity,
+                                                  placeholder: (ctx, _) => Center(
+                                                      child:
+                                                          CircularProgressIndicator()),
+                                                ),
+                                              ),
+                                            );
+                                          }),
+                                    ),
+                                  )
+                                // Swiper(
+                                //     loop: false,
+                                //     pagination: SwiperPagination(
+                                //       builder: DotSwiperPaginationBuilder(
+                                //           color: Colors.grey,
+                                //           activeColor: Colors.red,
+                                //           size: 13.0,
+                                //           activeSize: 15.0,
+                                //           space: 5.0),
+                                //     ),
+                                //     scrollDirection: Axis.horizontal,
+                                //     itemCount:
+                                //         widget.userPost.fileUpload.length,
+                                //     itemBuilder:
+                                //         (BuildContext context, int index) {
+                                //       return Stack(
+                                //         children: <Widget>[
+                                //           InteractiveViewer(
+                                //             transformationController:
+                                //                 transformationController,
+                                //             onInteractionEnd: (details) {
+                                //               setState(() {
+                                //                 transformationController
+                                //                     .toScene(Offset.zero);
+                                //               });
+                                //             },
+                                //             //boundaryMargin: EdgeInsets.all(20.0),
+                                //             minScale: 0.1,
+                                //             maxScale: 2,
+                                //             child: ClipRRect(
+                                //               borderRadius:
+                                //                   BorderRadius.circular(10),
+                                //               child: Container(
+                                //                 decoration: BoxDecoration(
+                                //                     color: Colors.grey
+                                //                         .withOpacity(0.2),
+                                //                     image: DecorationImage(
+                                //                         image: NetworkImage(
+                                //                           fileList[index],
+                                //                         ),
+                                //                         fit: BoxFit.cover)),
+                                //                 height: 300,
+                                //               ),
+                                //             ),
+                                //           ),
+                                // Container(
+                                //   decoration: BoxDecoration(
+                                //       borderRadius: BorderRadius.only(
+                                //           bottomRight:
+                                //           Radius.circular(8)),
+                                //       color: Colors.red
+                                //           .withOpacity(0.2)),
+                                //   child: IconButton(
+                                //     icon: Icon(
+                                //       Icons.clear,
+                                //     ),
+                                //     onPressed: () {
+                                //       setState(() {
+                                //         fileList.removeAt(index);
+                                //         list.removeAt(index);
+                                //       });
+                                //     },
+                                //   ),
+                                // )
+                                //     ],
+                                //   );
+                                // })
                                 : widget.userPost.fileUpload[0].endsWith(".mp4")
                                     ? video.ReusableVideoListWidget(
                                         videoListController:
@@ -930,34 +992,70 @@ class _InvestPostTileState extends State<InvestPostTile>
                                         //"https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4"),
                                         canBuildVideo: () => true,
                                       )
-                                    : InteractiveViewer(
-                                        transformationController:
-                                            transformationController,
-                                        onInteractionEnd: (details) {
-                                          setState(() {
-                                            transformationController
-                                                .toScene(Offset.zero);
-                                          });
+                                    : GestureDetector(
+                                        onTap: () {
+                                          showDialogFunc(context, fileList, 0);
                                         },
-                                        //boundaryMargin: EdgeInsets.all(20.0),
-                                        minScale: 0.1,
-                                        maxScale: 2,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
+                                        child: InteractiveViewer(
+                                          transformationController:
+                                              transformationController,
+                                          onInteractionEnd: (details) {
+                                            setState(() {
+                                              transformationController
+                                                  .toScene(Offset.zero);
+                                            });
+                                          },
+                                          minScale: 0.1,
+                                          maxScale: 2,
                                           child: Container(
+                                            child: CachedNetworkImage(
+                                              imageUrl: fileList[0],
+                                              fit: BoxFit.contain,
+                                              width: double.infinity,
+                                              placeholder: (ctx, _) => Center(
+                                                  child:
+                                                      CircularProgressIndicator()),
+                                            ),
                                             decoration: BoxDecoration(
-                                                color: Colors.grey
-                                                    .withOpacity(0.2),
-                                                image: DecorationImage(
-                                                    image: NetworkImage(
-                                                      fileList[0],
-                                                    ),
-                                                    fit: BoxFit.cover)),
-                                            height: 300,
+                                              color: Colors.white,
+                                              // image: DecorationImage(
+                                              //     image: NetworkImage(
+                                              //       fileList[0],
+                                              //     ),
+                                              //     fit: BoxFit.contain),
+                                            ),
                                           ),
                                         ),
                                       ))
+
+                            //  InteractiveViewer(
+                            //     transformationController:
+                            //         transformationController,
+                            //     onInteractionEnd: (details) {
+                            //       setState(() {
+                            //         transformationController
+                            //             .toScene(Offset.zero);
+                            //       });
+                            //     },
+                            //     //boundaryMargin: EdgeInsets.all(20.0),
+                            //     minScale: 0.1,
+                            //     maxScale: 2,
+                            //     child: ClipRRect(
+                            //       borderRadius:
+                            //           BorderRadius.circular(10),
+                            //       child: Container(
+                            //         decoration: BoxDecoration(
+                            //             color: Colors.grey
+                            //                 .withOpacity(0.2),
+                            //             image: DecorationImage(
+                            //                 image: NetworkImage(
+                            //                   fileList[0],
+                            //                 ),
+                            //                 fit: BoxFit.cover)),
+                            //         height: 300,
+                            //       ),
+                            //     ),
+                            //   ))
                             : Center(
                                 child: CircularProgressIndicator(),
                               )))

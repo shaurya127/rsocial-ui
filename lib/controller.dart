@@ -12,18 +12,20 @@ class ReusableVideoListController {
       _betterPlayerControllerRegistry.add(
         BetterPlayerController(
           BetterPlayerConfiguration(
+            fit: BoxFit.contain,
             startAt: Duration.zero,
             handleLifecycle: false,
             autoDispose: false,
             autoPlay: true,
-            deviceOrientationsAfterFullScreen: [
-              DeviceOrientation.portraitUp,
-              DeviceOrientation.portraitDown
-            ],
-            deviceOrientationsOnFullScreen: [
-              DeviceOrientation.portraitUp,
-              DeviceOrientation.portraitDown
-            ],
+            autoDetectFullscreenDeviceOrientation: true,
+            // deviceOrientationsAfterFullScreen: [
+            //   DeviceOrientation.portraitUp,
+            //   DeviceOrientation.portraitDown
+            // ],
+            // deviceOrientationsOnFullScreen: [
+            //   DeviceOrientation.portraitUp,
+            //   DeviceOrientation.portraitDown
+            // ],
             controlsConfiguration: BetterPlayerControlsConfiguration(
               enableSkips: false,
               enableFullscreen: false,
@@ -40,13 +42,17 @@ class ReusableVideoListController {
             !_usedBetterPlayerControllerRegistry.contains(controller));
     for (int i = 0; i < _usedBetterPlayerControllerRegistry.length; i++) {
       _usedBetterPlayerControllerRegistry[i].pause();
+      _usedBetterPlayerControllerRegistry[i].setVolume(0.0);
     }
     if (freeController != null) {
       _usedBetterPlayerControllerRegistry.add(freeController);
+      freeController.setVolume(1.0);
     }
     if (_usedBetterPlayerControllerRegistry.length == 3) {
       _usedBetterPlayerControllerRegistry[0].pause();
       _usedBetterPlayerControllerRegistry[1].pause();
+      _usedBetterPlayerControllerRegistry[0].setVolume(0.0);
+      _usedBetterPlayerControllerRegistry[1].setVolume(0.0);
       _usedBetterPlayerControllerRegistry.removeAt(0);
       _usedBetterPlayerControllerRegistry.removeAt(0);
     }
@@ -57,9 +63,9 @@ class ReusableVideoListController {
   void freeBetterPlayerController(
       BetterPlayerController betterPlayerController) {
     betterPlayerController.pause();
-
+    betterPlayerController.setVolume(0.0);
     _usedBetterPlayerControllerRegistry.remove(betterPlayerController);
-    print("Controllers in use : ${_usedBetterPlayerControllerRegistry.length}");
+    //print("Controllers in use : ${_usedBetterPlayerControllerRegistry.length}");
   }
 
   void dispose() {

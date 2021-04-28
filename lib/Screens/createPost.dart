@@ -97,9 +97,10 @@ class _WageState extends State<Wage> {
   }
 
   handleVideo() async {
+    var permission = Permission.camera;
     var status = await Permission.storage.status;
 
-    if (status.isGranted || status.isLimited) {
+    if (status.isGranted) {
       try {
         PickedFile pickedFile =
             await ImagePicker().getVideo(source: ImageSource.gallery);
@@ -159,7 +160,7 @@ class _WageState extends State<Wage> {
           );
         }
       }
-    } else {
+    } else if (status.isPermanentlyDenied) {
       var alertBox = AlertDialogBox(
         title: "Gallery Permission",
         content: "This app needs gallery access to fetch videos",
@@ -179,13 +180,16 @@ class _WageState extends State<Wage> {
         ],
       );
       showDialog(context: context, builder: (context) => alertBox);
+    } else {
+      await permission.request();
     }
   }
 
   handleVideocamera() async {
-    var status = await Permission.camera.status;
+    var permission = Permission.camera;
+    var status = await permission.status;
 
-    if (status.isGranted || status.isLimited) {
+    if (status.isGranted) {
       try {
         PickedFile pickedFile =
             await ImagePicker().getVideo(source: ImageSource.camera);
@@ -245,7 +249,7 @@ class _WageState extends State<Wage> {
           );
         }
       }
-    } else {
+    } else if (status.isPermanentlyDenied) {
       var alertBox = AlertDialogBox(
         title: "Camera Permission",
         content: "This app needs camera access to capture videos",
@@ -265,11 +269,14 @@ class _WageState extends State<Wage> {
         ],
       );
       showDialog(context: context, builder: (context) => alertBox);
+    } else {
+      await permission.request();
     }
   }
 
   handleTakePhoto() async {
-    var status = await Permission.camera.status;
+    var permission = Permission.camera;
+    var status = await permission.status;
     if (status.isGranted || status.isLimited) {
       PickedFile pickedFile = await ImagePicker().getImage(
         source: ImageSource.camera,
@@ -316,7 +323,7 @@ class _WageState extends State<Wage> {
           });
         }
       }
-    } else {
+    } else if (status.isPermanentlyDenied) {
       var alertBox = AlertDialogBox(
         title: "Camera Permission",
         content: "This app needs camera access to take photos",
@@ -337,6 +344,8 @@ class _WageState extends State<Wage> {
         ],
       );
       showDialog(context: context, builder: (context) => alertBox);
+    } else {
+      await permission.request();
     }
   }
 
@@ -357,7 +366,8 @@ class _WageState extends State<Wage> {
   // }
 
   handleChooseFromGallery() async {
-    var status = await Permission.storage.status;
+    var permission = Permission.storage;
+    var status = await permission.status;
     if (status.isGranted || status.isLimited) {
       try {
         PickedFile pickedFile = await ImagePicker().getImage(
@@ -431,7 +441,7 @@ class _WageState extends State<Wage> {
           showDialog(context: context, builder: (context) => alertBox);
         }
       }
-    } else {
+    } else if (status.isPermanentlyDenied) {
       var alertBox = AlertDialogBox(
         title: "Gallery Permission",
         content: "This app needs gallery access to take photos",
@@ -451,6 +461,8 @@ class _WageState extends State<Wage> {
         ],
       );
       showDialog(context: context, builder: (context) => alertBox);
+    } else {
+      await permission.request();
     }
     //  print(list);
   }

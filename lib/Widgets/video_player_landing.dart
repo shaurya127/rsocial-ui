@@ -51,11 +51,11 @@ class _ReusableVideoListWidgetState extends State<ReusableVideoListWidget> {
   }
 
   void _setupController() async {
-    var videoController =
-        VideoPlayerController.network(widget.videoListData.videoUrl);
-    await videoController.initialize();
-    _aspectRatio = videoController.value.aspectRatio;
-    videoController.dispose();
+    // var videoController =
+    //     VideoPlayerController.network(widget.videoListData.videoUrl);
+    // await videoController.initialize();
+    //_aspectRatio = videoController.value.aspectRatio;
+    //videoController.dispose();
     if (controller == null) {
       controller = widget.videoListController.getBetterPlayerController();
       if (controller != null) {
@@ -65,10 +65,10 @@ class _ReusableVideoListWidgetState extends State<ReusableVideoListWidget> {
             cacheConfiguration: BetterPlayerCacheConfiguration(useCache: true),
           ),
         );
-        if (_aspectRatio < 0.7) {
-          _aspectRatio = 0.7;
-        }
-        controller.setOverriddenAspectRatio(_aspectRatio);
+        // if (_aspectRatio < 0.7) {
+        //   _aspectRatio = 0.7;
+        // }
+        //controller.setOverriddenAspectRatio(_aspectRatio);
         if (!betterPlayerControllerStreamController.isClosed) {
           betterPlayerControllerStreamController.add(controller);
         }
@@ -110,51 +110,49 @@ class _ReusableVideoListWidgetState extends State<ReusableVideoListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: VisibilityDetector(
-        key: Key(hashCode.toString() + DateTime.now().toString()),
-        onVisibilityChanged: (info) {
-          if (!widget.canBuildVideo()) {
-            if (_timer != null) _timer.cancel();
-            _timer = null;
-            _timer = Timer(Duration(milliseconds: 500), () {
-              if (info.visibleFraction >= 0.9) {
-                _setupController();
-              } else {
-                _freeController();
-              }
-            });
-            return;
-          }
-          if (info.visibleFraction >= 0.9) {
-            _setupController();
-          } else {
-            if (controller != null) controller.pause();
-            _freeController();
-          }
-        },
-        child: StreamBuilder<BetterPlayerController>(
-          stream: betterPlayerControllerStreamController.stream,
-          builder: (context, snapshot) {
-            return AspectRatio(
-              aspectRatio: _aspectRatio,
-              child: controller != null
-                  ? BetterPlayer(
-                      controller: controller,
-                    )
-                  : Container(
-                      color: Colors.black,
-                      child: Center(
-                        child: Icon(
-                          Icons.play_arrow,
-                          color: Colors.white,
-                          size: 70,
-                        ),
+    return VisibilityDetector(
+      key: Key(hashCode.toString() + DateTime.now().toString()),
+      onVisibilityChanged: (info) {
+        if (!widget.canBuildVideo()) {
+          if (_timer != null) _timer.cancel();
+          _timer = null;
+          _timer = Timer(Duration(milliseconds: 500), () {
+            if (info.visibleFraction >= 0.9) {
+              _setupController();
+            } else {
+              _freeController();
+            }
+          });
+          return;
+        }
+        if (info.visibleFraction >= 0.9) {
+          _setupController();
+        } else {
+          if (controller != null) controller.pause();
+          _freeController();
+        }
+      },
+      child: StreamBuilder<BetterPlayerController>(
+        stream: betterPlayerControllerStreamController.stream,
+        builder: (context, snapshot) {
+          return AspectRatio(
+            aspectRatio: 16 / 9,
+            child: controller != null
+                ? BetterPlayer(
+                    controller: controller,
+                  )
+                : Container(
+                    color: Colors.black,
+                    child: Center(
+                      child: Icon(
+                        Icons.play_arrow,
+                        color: Colors.white,
+                        size: 70,
                       ),
                     ),
-            );
-          },
-        ),
+                  ),
+          );
+        },
       ),
     );
   }

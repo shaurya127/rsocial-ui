@@ -917,7 +917,8 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                               //     fit: BoxFit.contain),
                                             ),
                                           ),
-                                        )))
+                                        ),
+                                      ))
                             : Center(
                                 child: CircularProgressIndicator(),
                               )))
