@@ -43,14 +43,14 @@ const kFacebookButtonText = "Sign up with Facebook";
 const kGoogleButtonText = "Sign up with Google";
 const kRsocialButtonText = "Sign up with Rsocial";
 
-const kFacebookButtonTextSignIn = "Sign in with Facebook";
-const kGoogleButtonTextSignIn = "Sign in with Google";
+const kFacebookButtonTextSignIn = "Log in with Facebook";
+const kGoogleButtonTextSignIn = "Log in with Google";
 
 const kCreateAccountText =
     "Time to value relationships, Assess your social bonds.";
 const kCreateAccountButton = "Create Account";
 const kCreateAccountAlready = "Already have an account ? ";
-const kCreateAccountSignIn = "Sign In";
+const kCreateAccountSignIn = "Log In";
 
 const kInvestingWith = "Invested with";
 

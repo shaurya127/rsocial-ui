@@ -790,7 +790,8 @@ class _InvestPostTileState extends State<InvestPostTile>
                 ),
               ],
             ),
-            widget.userPost.storyText == null
+            widget.userPost.storyText == null ||
+                    widget.userPost.storyText.isEmpty
                 ? Container(
                     height: 0,
                   )
@@ -843,9 +844,10 @@ class _InvestPostTileState extends State<InvestPostTile>
                   ),
             widget.userPost.fileUpload.length != 0
                 ? Padding(
-                    padding: widget.userPost.storyText == null
+                    padding: widget.userPost.storyText == null ||
+                            widget.userPost.storyText.isEmpty
                         ? EdgeInsets.only(top: 0, bottom: 15)
-                        : EdgeInsets.only(bottom: 15, top: 6),
+                        : EdgeInsets.only(bottom: 15, top: 15),
                     child: Container(
                         constraints: BoxConstraints(
                           maxHeight:

@@ -14,7 +14,7 @@ class ReusableVideoListController {
           BetterPlayerConfiguration(
             fit: BoxFit.contain,
             startAt: Duration.zero,
-            handleLifecycle: false,
+            handleLifecycle: true,
             autoDispose: false,
             autoPlay: true,
             autoDetectFullscreenDeviceOrientation: true,

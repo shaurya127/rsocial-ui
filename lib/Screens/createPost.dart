@@ -1336,7 +1336,7 @@ class _WageState extends State<Wage> {
                               ),
                               if (investmentfileList.isNotEmpty)
                                 Container(
-                                    height: 400,
+                                    constraints: BoxConstraints(maxHeight: 300),
                                     child: investmentfileList.length > 1
                                         ? Swiper(
                                             control: SwiperControl(
@@ -1406,17 +1406,19 @@ class _WageState extends State<Wage> {
                                         : Stack(
                                             children: <Widget>[
                                               Container(
+                                                margin: EdgeInsets.only(
+                                                    top: 35, bottom: 10),
+                                                child: Image.file(
+                                                  investmentfileList[0],
+                                                  fit: BoxFit.contain,
+                                                ),
                                                 decoration: BoxDecoration(
-                                                    color: colorGreyTint
-                                                        .withOpacity(0.03),
-                                                    image: DecorationImage(
-                                                        image: FileImage(
-                                                            investmentfileList[
-                                                                0]),
-                                                        fit: BoxFit.contain)),
+                                                  color: colorGreyTint
+                                                      .withOpacity(0.03),
+                                                ),
                                               ),
                                               Positioned(
-                                                right: 10,
+                                                right: 5,
                                                 child: Container(
                                                   decoration: BoxDecoration(
                                                     borderRadius:
@@ -1720,7 +1722,7 @@ class _WageState extends State<Wage> {
                     ),
                     if (fileList.isNotEmpty)
                       Container(
-                          height: 400,
+                          constraints: BoxConstraints(maxHeight: 300),
                           child: fileList.length > 1
                               ? Swiper(
                                   control: SwiperControl(
@@ -1781,15 +1783,18 @@ class _WageState extends State<Wage> {
                               : Stack(
                                   children: <Widget>[
                                     Container(
+                                      margin:
+                                          EdgeInsets.only(top: 35, bottom: 10),
+                                      child: Image.file(
+                                        fileList[0],
+                                        fit: BoxFit.contain,
+                                      ),
                                       decoration: BoxDecoration(
-                                          color:
-                                              colorGreyTint.withOpacity(0.03),
-                                          image: DecorationImage(
-                                              image: FileImage(fileList[0]),
-                                              fit: BoxFit.contain)),
+                                        color: colorGreyTint.withOpacity(0.03),
+                                      ),
                                     ),
                                     Positioned(
-                                      right: 10,
+                                      right: 5,
                                       child: Container(
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.only(

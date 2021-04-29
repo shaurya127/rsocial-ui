@@ -24,9 +24,12 @@ class _VideoPlayerState extends State<VideoPlayer> {
   void initState() {
     super.initState();
     BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
-        BetterPlayerDataSourceType.file, widget.video.path);
+      BetterPlayerDataSourceType.file,
+      widget.video.path,
+    );
     _betterPlayerController = BetterPlayerController(
         BetterPlayerConfiguration(
+          fit: BoxFit.contain,
           deviceOrientationsAfterFullScreen: [
             DeviceOrientation.portraitUp,
             DeviceOrientation.portraitDown
@@ -39,6 +42,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
           aspectRatio: widget.videoPlayerController.value.aspectRatio,
           controlsConfiguration: BetterPlayerControlsConfiguration(
             enableSkips: false,
+            enableFullscreen: false,
           ),
         ),
         betterPlayerDataSource: betterPlayerDataSource);
@@ -57,28 +61,33 @@ class _VideoPlayerState extends State<VideoPlayer> {
       child: Stack(
         children: <Widget>[
           Container(
-              height: 500,
+              constraints: BoxConstraints(maxHeight: 300),
               decoration: BoxDecoration(
                 color: colorGreyTint.withOpacity(0.03),
               ),
               child: AspectRatio(
-                aspectRatio: widget.videoPlayerController.value.aspectRatio,
+                aspectRatio: 16 / 9,
                 child: BetterPlayer(
                   controller: _betterPlayerController,
                 ),
               )),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(bottomRight: Radius.circular(8)),
-            ),
-            child: IconButton(
-              icon: Icon(
-                Icons.clear,
-                color: Colors.black,
+          Positioned(
+            left: 10,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  bottomRight: Radius.circular(8),
+                ),
               ),
-              onPressed: () {
-                widget.removeVideo();
-              },
+              child: IconButton(
+                icon: Icon(
+                  Icons.clear,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  widget.removeVideo();
+                },
+              ),
             ),
           ),
         ],
