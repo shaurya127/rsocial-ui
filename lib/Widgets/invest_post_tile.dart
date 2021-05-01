@@ -896,12 +896,6 @@ class _InvestPostTileState extends State<InvestPostTile>
                                                 decoration: BoxDecoration(
                                                   color: Colors.white,
 
-                                                  // image: DecorationImage(
-                                                  //   image: NetworkImage(
-                                                  //     fileList[index],
-                                                  //   ),
-                                                  //   fit: BoxFit.contain,
-                                                  // ),
                                                 ),
                                                 child: CachedNetworkImage(
                                                   imageUrl: fileList[index],
@@ -1010,9 +1004,10 @@ class _InvestPostTileState extends State<InvestPostTile>
                                           minScale: 0.1,
                                           maxScale: 2,
                                           child: Container(
+
                                             child: CachedNetworkImage(
                                               imageUrl: fileList[0],
-                                              fit: BoxFit.contain,
+                                              fit: BoxFit.fitWidth,
                                               width: double.infinity,
                                               placeholder: (ctx, _) => Center(
                                                   child:
