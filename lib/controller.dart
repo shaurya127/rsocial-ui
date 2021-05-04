@@ -2,16 +2,29 @@ import 'package:better_player/better_player.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:rsocial2/Screens/bottom_nav_bar.dart';
+import 'package:rsocial2/contants/constants.dart';
 
 class ReusableVideoListController {
   final List<BetterPlayerController> _betterPlayerControllerRegistry = [];
   final List<BetterPlayerController> _usedBetterPlayerControllerRegistry = [];
-
   ReusableVideoListController() {
     for (int index = 0; index < 3; index++) {
       _betterPlayerControllerRegistry.add(
         BetterPlayerController(
           BetterPlayerConfiguration(
+            // eventListener: (event) {
+            //   if (internalCall) {
+            //     return "HEy";
+            //   }
+            //   if (event.betterPlayerEventType ==
+            //       BetterPlayerEventType.setVolume) {
+            //     muted = !muted;
+
+            //     print("Globally Muted");
+            //     return "Done";
+            //   }
+            // },
             fit: BoxFit.contain,
             startAt: Duration.zero,
             handleLifecycle: true,
@@ -27,8 +40,12 @@ class ReusableVideoListController {
             //   DeviceOrientation.portraitDown
             // ],
             controlsConfiguration: BetterPlayerControlsConfiguration(
+              loadingColor: colorButton,
+              backgroundColor: Colors.white,
+              enableOverflowMenu: false,
               enableSkips: false,
               enableFullscreen: false,
+              showControls: true,
             ),
           ),
         ),
@@ -42,10 +59,12 @@ class ReusableVideoListController {
             !_usedBetterPlayerControllerRegistry.contains(controller));
     for (int i = 0; i < _usedBetterPlayerControllerRegistry.length; i++) {
       _usedBetterPlayerControllerRegistry[i].pause();
+
       _usedBetterPlayerControllerRegistry[i].setVolume(0.0);
     }
     if (freeController != null) {
       _usedBetterPlayerControllerRegistry.add(freeController);
+
       freeController.setVolume(1.0);
     }
     if (_usedBetterPlayerControllerRegistry.length == 3) {
@@ -56,15 +75,14 @@ class ReusableVideoListController {
       _usedBetterPlayerControllerRegistry.removeAt(0);
       _usedBetterPlayerControllerRegistry.removeAt(0);
     }
-
     return freeController;
   }
 
   void freeBetterPlayerController(
-      BetterPlayerController betterPlayerController) {
+      BetterPlayerController betterPlayerController) async {
     betterPlayerController.pause();
-    betterPlayerController.setVolume(0.0);
     _usedBetterPlayerControllerRegistry.remove(betterPlayerController);
+
     //print("Controllers in use : ${_usedBetterPlayerControllerRegistry.length}");
   }
 

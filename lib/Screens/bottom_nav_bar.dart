@@ -59,6 +59,7 @@ userModel.User savedUser;
 PackageInfo packageInfo;
 List postsGlobal = [];
 bool storiesStillLeft;
+bool muted = false;
 
 //SharedPreferences prefs;
 

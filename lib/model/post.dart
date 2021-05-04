@@ -155,7 +155,11 @@ class Post {
         //     : [],
       };
   static String getTimeSinceNotification(Duration duration) {
-    if (duration.inDays == 1) {
+    if (duration.inDays > 62) {
+      return "${(duration.inDays ~/ 31)} months ago";
+    } else if (duration.inDays >= 31) {
+      return "A month ago";
+    } else if (duration.inDays == 1) {
       return "A day ago";
     } else if (duration.inDays > 1) {
       return "${duration.inDays} days ago";

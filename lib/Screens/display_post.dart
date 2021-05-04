@@ -63,6 +63,11 @@ class _DisplayPostState extends State<DisplayPost> {
         else
           post = Post.fromJsonW(responseMessage);
         if (post != null) {
+          int index =
+              postsGlobal.indexWhere((element) => element.id == widget.postId);
+          if (index != -1) {
+            postsGlobal[index] = post;
+          }
           //print(post.investedWithUser);
           reusableVideoListController = ReusableVideoListController();
           post_tile = Post_Tile(

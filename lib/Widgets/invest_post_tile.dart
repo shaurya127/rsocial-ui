@@ -849,10 +849,12 @@ class _InvestPostTileState extends State<InvestPostTile>
                         ? EdgeInsets.only(top: 0, bottom: 15)
                         : EdgeInsets.only(bottom: 15, top: 15),
                     child: Container(
-                        constraints: BoxConstraints(
-                          maxHeight:
-                              widget.userPost.fileUpload.length != 0 ? 300 : 0,
-                        ),
+                        // constraints: BoxConstraints(
+                        //   maxHeight:
+                        //       widget.userPost.fileUpload.length != 0 ? 350 : 0,
+                        // ),
+                        height: ((MediaQuery.of(context).size.width - 10) *
+                            (3 / 4)),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8)),
                         child: isLoading == false
@@ -870,7 +872,7 @@ class _InvestPostTileState extends State<InvestPostTile>
                                     minScale: 0.1,
                                     maxScale: 2,
                                     child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(30),
                                       child: Swiper(
                                           loop: false,
                                           pagination: SwiperPagination(
@@ -892,91 +894,27 @@ class _InvestPostTileState extends State<InvestPostTile>
                                                 showDialogFunc(
                                                     context, fileList, index);
                                               },
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-
-                                                ),
-                                                child: CachedNetworkImage(
-                                                  imageUrl: fileList[index],
-                                                  fit: BoxFit.contain,
-                                                  width: double.infinity,
-                                                  placeholder: (ctx, _) => Center(
-                                                      child:
-                                                          CircularProgressIndicator()),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(30),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                  ),
+                                                  child: CachedNetworkImage(
+                                                    imageUrl: fileList[index],
+                                                    fit: BoxFit.fitWidth,
+                                                    width: double.infinity,
+                                                    placeholder: (ctx, _) => Center(
+                                                        child:
+                                                            CircularProgressIndicator()),
+                                                  ),
                                                 ),
                                               ),
                                             );
                                           }),
                                     ),
                                   )
-                                // Swiper(
-                                //     loop: false,
-                                //     pagination: SwiperPagination(
-                                //       builder: DotSwiperPaginationBuilder(
-                                //           color: Colors.grey,
-                                //           activeColor: Colors.red,
-                                //           size: 13.0,
-                                //           activeSize: 15.0,
-                                //           space: 5.0),
-                                //     ),
-                                //     scrollDirection: Axis.horizontal,
-                                //     itemCount:
-                                //         widget.userPost.fileUpload.length,
-                                //     itemBuilder:
-                                //         (BuildContext context, int index) {
-                                //       return Stack(
-                                //         children: <Widget>[
-                                //           InteractiveViewer(
-                                //             transformationController:
-                                //                 transformationController,
-                                //             onInteractionEnd: (details) {
-                                //               setState(() {
-                                //                 transformationController
-                                //                     .toScene(Offset.zero);
-                                //               });
-                                //             },
-                                //             //boundaryMargin: EdgeInsets.all(20.0),
-                                //             minScale: 0.1,
-                                //             maxScale: 2,
-                                //             child: ClipRRect(
-                                //               borderRadius:
-                                //                   BorderRadius.circular(10),
-                                //               child: Container(
-                                //                 decoration: BoxDecoration(
-                                //                     color: Colors.grey
-                                //                         .withOpacity(0.2),
-                                //                     image: DecorationImage(
-                                //                         image: NetworkImage(
-                                //                           fileList[index],
-                                //                         ),
-                                //                         fit: BoxFit.cover)),
-                                //                 height: 300,
-                                //               ),
-                                //             ),
-                                //           ),
-                                // Container(
-                                //   decoration: BoxDecoration(
-                                //       borderRadius: BorderRadius.only(
-                                //           bottomRight:
-                                //           Radius.circular(8)),
-                                //       color: Colors.red
-                                //           .withOpacity(0.2)),
-                                //   child: IconButton(
-                                //     icon: Icon(
-                                //       Icons.clear,
-                                //     ),
-                                //     onPressed: () {
-                                //       setState(() {
-                                //         fileList.removeAt(index);
-                                //         list.removeAt(index);
-                                //       });
-                                //     },
-                                //   ),
-                                // )
-                                //     ],
-                                //   );
-                                // })
                                 : widget.userPost.fileUpload[0].endsWith(".mp4")
                                     ? video.ReusableVideoListWidget(
                                         videoListController:
@@ -1003,56 +941,25 @@ class _InvestPostTileState extends State<InvestPostTile>
                                           },
                                           minScale: 0.1,
                                           maxScale: 2,
-                                          child: Container(
-
-                                            child: CachedNetworkImage(
-                                              imageUrl: fileList[0],
-                                              fit: BoxFit.fitWidth,
-                                              width: double.infinity,
-                                              placeholder: (ctx, _) => Center(
-                                                  child:
-                                                      CircularProgressIndicator()),
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              // image: DecorationImage(
-                                              //     image: NetworkImage(
-                                              //       fileList[0],
-                                              //     ),
-                                              //     fit: BoxFit.contain),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                            child: Container(
+                                              child: CachedNetworkImage(
+                                                imageUrl: fileList[0],
+                                                fit: BoxFit.fitWidth,
+                                                width: double.infinity,
+                                                placeholder: (ctx, _) => Center(
+                                                    child:
+                                                        CircularProgressIndicator()),
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ))
-
-                            //  InteractiveViewer(
-                            //     transformationController:
-                            //         transformationController,
-                            //     onInteractionEnd: (details) {
-                            //       setState(() {
-                            //         transformationController
-                            //             .toScene(Offset.zero);
-                            //       });
-                            //     },
-                            //     //boundaryMargin: EdgeInsets.all(20.0),
-                            //     minScale: 0.1,
-                            //     maxScale: 2,
-                            //     child: ClipRRect(
-                            //       borderRadius:
-                            //           BorderRadius.circular(10),
-                            //       child: Container(
-                            //         decoration: BoxDecoration(
-                            //             color: Colors.grey
-                            //                 .withOpacity(0.2),
-                            //             image: DecorationImage(
-                            //                 image: NetworkImage(
-                            //                   fileList[0],
-                            //                 ),
-                            //                 fit: BoxFit.cover)),
-                            //         height: 300,
-                            //       ),
-                            //     ),
-                            //   ))
                             : Center(
                                 child: CircularProgressIndicator(),
                               )))

@@ -809,15 +809,24 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                         ? EdgeInsets.only(top: 0, bottom: 15)
                         : EdgeInsets.only(bottom: 15, top: 15),
                     child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      margin: EdgeInsets.all(5),
-                        constraints: BoxConstraints(
-                          maxHeight:
-                              widget.userPost.fileUpload.length != 0 ? 300 : 0,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-
+                        margin: EdgeInsets.all(5),
+                        height: widget.userPost.fileUpload.length != 0
+                            ? widget.userPost.fileUpload[0].endsWith(".mp4")
+                                ? 250
+                                : ((MediaQuery.of(context).size.width - 10) *
+                                    (3 / 4))
+                            : 0,
+                        // constraints: BoxConstraints(
+                        //   maxHeight: widget.userPost.fileUpload.length != 0
+                        //       ? widget.userPost.fileUpload[0].endsWith(".mp4")
+                        //           ? 250
+                        //           : ((MediaQuery.of(context).size.width - 10) *
+                        //               (3 / 4))
+                        //       : 0,
+                        // ),
                         child: isLoading == false
                             ? (widget.userPost.fileUpload.length > 1
                                 ? InteractiveViewer(
@@ -846,28 +855,23 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                         scrollDirection: Axis.horizontal,
                                         itemCount:
                                             widget.userPost.fileUpload.length,
-                                        itemBuilder: (BuildContext context,
-                                            int index) {
-                                          return GestureDetector(
-                                            onTap: () {
-                                              showDialogFunc(
-                                                  context, fileList, index);
-                                            },
-                                            child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(12),
-                                              child: Container(
-                                                child: CachedNetworkImage(
-                                                  imageUrl: fileList[index],
-                                                  fit: BoxFit.fitWidth,
-                                                  width: double.infinity,
-                                                  placeholder: (ctx, _) => Center(
-                                                      child:
-                                                      CircularProgressIndicator()),
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  color: Colors.white,
-                                                ),
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                showDialogFunc(
+                                                    context, fileList, index);
+                                              },
+                                              child: CachedNetworkImage(
+                                                imageUrl: fileList[index],
+                                                fit: BoxFit.fitWidth,
+                                                width: double.infinity,
+                                                placeholder: (ctx, _) => Center(
+                                                    child:
+                                                        CircularProgressIndicator()),
                                               ),
                                             ),
                                           );
@@ -898,23 +902,26 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                           },
                                           minScale: 0.1,
                                           maxScale: 2,
-                                              child: ClipRRect(
-                                                borderRadius: BorderRadius.circular(12),
-                                                child: Container(
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(30),
                                             child: CachedNetworkImage(
-                                                imageUrl: fileList[0],
-                                                fit: BoxFit.fitWidth,
-                                                width: double.infinity,
-                                                placeholder: (ctx, _) => Center(
-                                                    child:
-                                                        CircularProgressIndicator()),
+                                              imageUrl: fileList[0],
+                                              fit: BoxFit.fitWidth,
+                                              width: double.infinity,
+                                              placeholder: (ctx, _) => Center(
+                                                  child:
+                                                      CircularProgressIndicator()),
                                             ),
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10),
-                                                color: Colors.white,
-                                            ),
+                                            // child: CachedNetworkImage(
+                                            //   imageUrl: fileList[0],
+                                            //   fit: BoxFit.fitWidth,
+                                            //   width: double.infinity,
+                                            //   placeholder: (ctx, _) => Center(
+                                            //       child:
+                                            //           CircularProgressIndicator()),
+                                            // ),
                                           ),
-                                              ),
                                         ),
                                       ))
                             : Center(

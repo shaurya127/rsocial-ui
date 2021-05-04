@@ -65,10 +65,7 @@ class _ReusableVideoListWidgetState extends State<ReusableVideoListWidget> {
             cacheConfiguration: BetterPlayerCacheConfiguration(useCache: true),
           ),
         );
-        // if (_aspectRatio < 0.7) {
-        //   _aspectRatio = 0.7;
-        // }
-        //controller.setOverriddenAspectRatio(_aspectRatio);
+
         if (!betterPlayerControllerStreamController.isClosed) {
           betterPlayerControllerStreamController.add(controller);
         }
@@ -135,23 +132,26 @@ class _ReusableVideoListWidgetState extends State<ReusableVideoListWidget> {
       child: StreamBuilder<BetterPlayerController>(
         stream: betterPlayerControllerStreamController.stream,
         builder: (context, snapshot) {
-          return AspectRatio(
-            aspectRatio: 16 / 9,
-            child: controller != null
-                ? BetterPlayer(
+          return controller != null
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: BetterPlayer(
                     controller: controller,
-                  )
-                : Container(
+                  ),
+                )
+              : Container(
+                  decoration: BoxDecoration(
                     color: Colors.black,
-                    child: Center(
-                      child: Icon(
-                        Icons.play_arrow,
-                        color: Colors.white,
-                        size: 70,
-                      ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.play_arrow,
+                      color: Colors.white,
+                      size: 70,
                     ),
                   ),
-          );
+                );
         },
       ),
     );

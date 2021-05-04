@@ -61,15 +61,12 @@ class _VideoPlayerState extends State<VideoPlayer> {
       child: Stack(
         children: <Widget>[
           Container(
-              constraints: BoxConstraints(maxHeight: 300),
+              constraints: BoxConstraints(maxHeight: 250),
               decoration: BoxDecoration(
                 color: colorGreyTint.withOpacity(0.03),
               ),
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: BetterPlayer(
-                  controller: _betterPlayerController,
-                ),
+              child: BetterPlayer(
+                controller: _betterPlayerController,
               )),
           Positioned(
             left: 10,

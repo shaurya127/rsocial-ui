@@ -685,7 +685,7 @@ class _ProfileState extends State<Profile> {
                   );
                 }
               },
-              controller: _scrollController,
+              // controller: _scrollController,
             ),
           ),
         ],
@@ -971,21 +971,24 @@ class _ProfileState extends State<Profile> {
                               child: CircleAvatar(
                                   radius: 50,
                                   backgroundImage: !isEditable
-                                      ? curUser.photoUrl != ''
+                                      ? curUser.photoUrl != '' &&
+                                              curUser.photoUrl != null
                                           ? NetworkImage(curUser.photoUrl)
                                           : AssetImage('images/avatar.jpg')
                                       : file != null
                                           ? FileImage(
                                               file,
                                             )
-                                          : curUser.photoUrl != ''
+                                          : curUser.photoUrl != '' &&
+                                                  curUser.photoUrl != null
                                               ? NetworkImage(curUser.photoUrl)
                                               : AssetImage(
                                                   'images/avatar.jpg')),
                             )
                           : CircleAvatar(
                               radius: 50,
-                              backgroundImage: widget.user.photoUrl == ''
+                              backgroundImage: widget.user.photoUrl == '' ||
+                                      widget.user.photoUrl == null
                                   ? AssetImage('images/avatar.jpg')
                                   : NetworkImage(widget.user.photoUrl)),
                       widget.currentUser.id == widget.user.id

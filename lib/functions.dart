@@ -1,5 +1,8 @@
 String formatNumber(int a) {
   String res = a.toString();
+  if (a == null) {
+    return res;
+  }
 
   if (a < 10000) return res;
 

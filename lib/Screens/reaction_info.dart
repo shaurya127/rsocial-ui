@@ -86,7 +86,7 @@ class _Reaction_InfoState extends State<Reaction_Info>
       var body = jsonPostReaction['body'];
       var body1 = jsonDecode(body);
       //print("body is $body");
-      // print(body1);
+      print(body1);
       var msg = body1['message'];
       var lovedResponse = msg['loved'];
       var likedResponse = msg['liked'];
@@ -102,26 +102,41 @@ class _Reaction_InfoState extends State<Reaction_Info>
       if (lovedResponse != null) {
         for (int i = 0; i < lovedResponse.length; i++) {
           User user = User.fromJson(lovedResponse[i]);
+          user.reactionType = 'loved';
           loved.add(user);
         }
       }
       if (likedResponse != null) {
         for (int i = 0; i < likedResponse.length; i++) {
           User user = User.fromJson(likedResponse[i]);
+          user.reactionType = 'liked';
           liked.add(user);
         }
       }
       if (whateverResponse != null) {
         for (int i = 0; i < whateverResponse.length; i++) {
           User user = User.fromJson(whateverResponse[i]);
+          user.reactionType = 'whatever';
           whatever.add(user);
         }
       }
       if (hatedResponse != null) {
         for (int i = 0; i < hatedResponse.length; i++) {
           User user = User.fromJson(hatedResponse[i]);
+          user.reactionType = 'hated';
           hated.add(user);
         }
+      }
+      if (postsGlobal.firstWhere((element) => element.id == widget.postId) !=
+          -1) {
+        postsGlobal
+            .firstWhere((element) => element.id == widget.postId)
+            .reactedBy = [
+          ...loved,
+          ...liked,
+          ...whatever,
+          ...hated,
+        ];
       }
       buildReactionTile();
       setState(() {
@@ -225,118 +240,124 @@ class _Reaction_InfoState extends State<Reaction_Info>
           ),
         ),
         iconTheme: IconThemeData(color: Colors.white),
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(50),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              color: Colors.white,
-              width: MediaQuery.of(context).size.width,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 16, left: 16),
-                child: TabBar(
-                    controller: _tabController,
-                    indicator: UnderlineTabIndicator(
-                        borderSide: BorderSide(
-                          width: 4,
-                          color: colorPrimaryBlue,
-                        ),
-                        insets: EdgeInsets.only(
-                          right: 20,
-                        )),
-                    isScrollable: true,
-                    labelPadding: EdgeInsets.only(bottom: 8),
-                    tabs: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 20),
-                        child: Row(
-                          children: <Widget>[
-                            SvgPicture.asset(
-                              "images/thumb_blue.svg",
-                              height: 23,
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              widget.counter['loved'].toString(),
-                              style: TextStyle(
-                                fontFamily: "Lato",
-                                fontSize: 15,
+        bottom: isGettingReaction
+            ? null
+            : PreferredSize(
+                preferredSize: Size.fromHeight(50),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    color: Colors.white,
+                    width: MediaQuery.of(context).size.width,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 16, left: 16),
+                      child: TabBar(
+                          controller: _tabController,
+                          indicator: UnderlineTabIndicator(
+                              borderSide: BorderSide(
+                                width: 4,
                                 color: colorPrimaryBlue,
                               ),
+                              insets: EdgeInsets.only(
+                                right: 20,
+                              )),
+                          isScrollable: true,
+                          labelPadding: EdgeInsets.only(bottom: 8),
+                          tabs: [
+                            Padding(
+                              padding: const EdgeInsets.only(right: 20),
+                              child: Row(
+                                children: <Widget>[
+                                  SvgPicture.asset(
+                                    "images/thumb_blue.svg",
+                                    height: 23,
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    // widget.counter['loved'].toString(),
+                                    love.length.toString(),
+                                    style: TextStyle(
+                                      fontFamily: "Lato",
+                                      fontSize: 15,
+                                      color: colorPrimaryBlue,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ],
-                        ),
-                      ),
-                      //SizedBox(width: 10,),
-                      Row(
-                        children: <Widget>[
-                          SvgPicture.asset(
-                            "images/rsocial_thumbUp_blue.svg",
-                            height: 23,
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            widget.counter['liked'].toString(),
-                            style: TextStyle(
-                              fontFamily: "Lato",
-                              fontSize: 15,
-                              color: colorPrimaryBlue,
+                            //SizedBox(width: 10,),
+                            Row(
+                              children: <Widget>[
+                                SvgPicture.asset(
+                                  "images/rsocial_thumbUp_blue.svg",
+                                  height: 23,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  //widget.counter['liked'].toString(),
+                                  likes.length.toString(),
+                                  style: TextStyle(
+                                    fontFamily: "Lato",
+                                    fontSize: 15,
+                                    color: colorPrimaryBlue,
+                                  ),
+                                ),
+                                SizedBox(width: 20),
+                              ],
                             ),
-                          ),
-                          SizedBox(width: 20),
-                        ],
-                      ),
 
-                      Row(
-                        children: <Widget>[
-                          SvgPicture.asset(
-                            "images/rsocial_thumbDown_blue.svg",
-                            height: 23,
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            widget.counter['whatever'].toString(),
-                            style: TextStyle(
-                              fontFamily: "Lato",
-                              fontSize: 15,
-                              color: colorPrimaryBlue,
+                            Row(
+                              children: <Widget>[
+                                SvgPicture.asset(
+                                  "images/rsocial_thumbDown_blue.svg",
+                                  height: 23,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  // widget.counter['whatever'].toString(),
+                                  whatevers.length.toString(),
+                                  style: TextStyle(
+                                    fontFamily: "Lato",
+                                    fontSize: 15,
+                                    color: colorPrimaryBlue,
+                                  ),
+                                ),
+                                SizedBox(width: 20),
+                              ],
                             ),
-                          ),
-                          SizedBox(width: 20),
-                        ],
-                      ),
 
-                      Row(
-                        children: <Widget>[
-                          SvgPicture.asset(
-                            "images/rsocial_punch_blue.svg",
-                            height: 23,
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            widget.counter['hated'].toString(),
-                            style: TextStyle(
-                              fontFamily: "Lato",
-                              fontSize: 15,
-                              color: colorPrimaryBlue,
+                            Row(
+                              children: <Widget>[
+                                SvgPicture.asset(
+                                  "images/rsocial_punch_blue.svg",
+                                  height: 23,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  //widget.counter['hated'].toString(),
+                                  hates.length.toString(),
+                                  style: TextStyle(
+                                    fontFamily: "Lato",
+                                    fontSize: 15,
+                                    color: colorPrimaryBlue,
+                                  ),
+                                ),
+                                SizedBox(width: 20),
+                              ],
                             ),
-                          ),
-                          SizedBox(width: 20),
-                        ],
-                      ),
-                    ]),
+                          ]),
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-        ),
       ),
       body: isGettingReaction
           ? Center(
