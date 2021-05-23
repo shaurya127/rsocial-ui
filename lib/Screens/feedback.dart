@@ -26,7 +26,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   get authFirebase => FirebaseAuth.instance;
 
   sendFeedback(String feedback) async {
-    var user = await authFirebase.currentUser();
+    var user = await authFirebase.currentUser;
     var token = await user.getIdToken();
     var id = curUser.id;
 

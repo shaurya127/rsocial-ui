@@ -16,8 +16,10 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:provider/provider.dart';
 import 'package:rsocial2/Screens/display_post.dart';
 import 'package:rsocial2/Screens/landing_page.dart';
+import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/contants/config.dart';
 import 'package:rsocial2/deep_links.dart';
 import 'package:rsocial2/functions.dart';
@@ -29,6 +31,8 @@ import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/Screens/reaction_info.dart';
 import 'package:rsocial2/Screens/search_page.dart';
 import 'package:rsocial2/Widgets/request_tile.dart';
+import 'package:rsocial2/main.dart';
+import 'package:rsocial2/providers/data.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:rsocial2/contants/constants.dart';
@@ -86,41 +90,41 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   List<Request_Tile> likes = [];
   List<Request_Tile> whatevers = [];
   List<User> investedWithUser = [];
-  String rxn = "noreact";
-  Map<String, int> counter = {
-    'loved': 0,
-    'liked': 0,
-    'whatever': 0,
-    'hated': 0,
-    'noreact': 0
-  };
-  bool isDisabled = false;
-  AnimationController hatedController;
-  AnimationController lovedController;
-  AnimationController likedController;
-  AnimationController whateverController;
-  Animation hatedAnimation;
-  Animation lovedAnimation;
-  Animation likedAnimation;
-  Animation whateverAnimation;
+  // String rxn = "noreact";
+  // Map<String, int> counter = {
+  //   'loved': 0,
+  //   'liked': 0,
+  //   'whatever': 0,
+  //   'hated': 0,
+  //   'noreact': 0
+  // };
+  // bool isDisabled = false;
+  // AnimationController hatedController;
+  // AnimationController lovedController;
+  // AnimationController likedController;
+  // AnimationController whateverController;
+  // Animation hatedAnimation;
+  // Animation lovedAnimation;
+  // Animation likedAnimation;
+  // Animation whateverAnimation;
   // AudioPlayer audioPlayer;
   // AudioCache audioCache;
   int reactionSizeIncrease = 3;
   bool _isCreatingLink = false;
   bool isDeleting = false;
 
-  getReactions() {
-    counter = {'loved': 0, 'liked': 0, 'whatever': 0, 'hated': 0, 'noreact': 0};
-    for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
-      User user = widget.userPost.reactedBy[i];
-      String rt = user.reactionType;
-      counter[rt]++;
+  // getReactions() {
+  //   counter = {'loved': 0, 'liked': 0, 'whatever': 0, 'hated': 0, 'noreact': 0};
+  //   for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
+  //     User user = widget.userPost.reactedBy[i];
+  //     String rt = user.reactionType;
+  //     counter[rt]++;
 
-      if (user.id == (curUser != null ? curUser.id : savedUser.id)) {
-        this.rxn = user.reactionType;
-      }
-    }
-  }
+  //     if (user.id == (curUser != null ? curUser.id : savedUser.id)) {
+  //       this.rxn = user.reactionType;
+  //     }
+  //   }
+  // }
 
   convertStringToFile() async {
     for (int i = 0; i < widget.userPost.fileUpload.length; i++) {
@@ -142,32 +146,32 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     super.initState();
     // audioPlayer = new AudioPlayer();
     // audioCache = new AudioCache(fixedPlayer: audioPlayer);
-    lovedController =
-        AnimationController(duration: Duration(milliseconds: 400), vsync: this);
-    lovedAnimation = CurvedAnimation(
-        parent: lovedController,
-        curve: Curves.easeIn,
-        reverseCurve: Curves.easeIn);
-    likedController =
-        AnimationController(duration: Duration(milliseconds: 400), vsync: this);
-    likedAnimation = CurvedAnimation(
-        parent: likedController,
-        curve: Curves.easeIn,
-        reverseCurve: Curves.easeIn);
-    whateverController =
-        AnimationController(duration: Duration(milliseconds: 400), vsync: this);
-    whateverAnimation = CurvedAnimation(
-        parent: whateverController,
-        curve: Curves.easeIn,
-        reverseCurve: Curves.easeIn);
-    hatedController =
-        AnimationController(duration: Duration(milliseconds: 400), vsync: this);
-    hatedAnimation = CurvedAnimation(
-        parent: hatedController,
-        curve: Curves.easeIn,
-        reverseCurve: Curves.easeIn);
+    // lovedController =
+    //     AnimationController(duration: Duration(milliseconds: 400), vsync: this);
+    // lovedAnimation = CurvedAnimation(
+    //     parent: lovedController,
+    //     curve: Curves.easeIn,
+    //     reverseCurve: Curves.easeIn);
+    // likedController =
+    //     AnimationController(duration: Duration(milliseconds: 400), vsync: this);
+    // likedAnimation = CurvedAnimation(
+    //     parent: likedController,
+    //     curve: Curves.easeIn,
+    //     reverseCurve: Curves.easeIn);
+    // whateverController =
+    //     AnimationController(duration: Duration(milliseconds: 400), vsync: this);
+    // whateverAnimation = CurvedAnimation(
+    //     parent: whateverController,
+    //     curve: Curves.easeIn,
+    //     reverseCurve: Curves.easeIn);
+    // hatedController =
+    //     AnimationController(duration: Duration(milliseconds: 400), vsync: this);
+    // hatedAnimation = CurvedAnimation(
+    //     parent: hatedController,
+    //     curve: Curves.easeIn,
+    //     reverseCurve: Curves.easeIn);
 
-    getReactions();
+    //getReactions();
     convertStringToFile();
     getInvestedWithUser();
   }
@@ -197,172 +201,172 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     setState(() {});
   }
 
-  @override
-  void dispose() {
-    lovedController.dispose();
-    likedController.dispose();
-    whateverController.dispose();
-    hatedController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   lovedController.dispose();
+  //   likedController.dispose();
+  //   whateverController.dispose();
+  //   hatedController.dispose();
+  //   super.dispose();
+  // }
 
-  react(String reactn) async {
-    setState(() {
-      isDisabled = true;
-      // audioCache.play("click.mp3");
-      String prvrxn = rxn;
-      rxn = reactn;
-      counter[prvrxn]--;
-      counter[rxn]++;
-      //print(widget.userPost.profit);
-      m[widget.userPost.id] = {reactn: counter[reactn]};
-      //print("updating mp");
-      mp[widget.userPost.id] = counter;
-      prft[widget.userPost.id] = widget.userPost.profit;
-    });
-    var user, token;
-    try {
-      user = auth.FirebaseAuth.instance.currentUser;
-      token = await user.getIdToken();
-    } catch (e) {
-      setState(() {
-        isDisabled = false;
-      });
-      return;
-    }
-    Reaction reaction = Reaction(
-        id: (curUser != null
-            ? (curUser != null ? curUser.id : savedUser.id)
-            : savedUser.id),
-        storyId: widget.userPost.id,
-        reactionType: reactn);
+  // react(String reactn) async {
+  //   setState(() {
+  //     isDisabled = true;
+  //     // audioCache.play("click.mp3");
+  //     String prvrxn = rxn;
+  //     rxn = reactn;
+  //     counter[prvrxn]--;
+  //     counter[rxn]++;
+  //     //print(widget.userPost.profit);
+  //     m[widget.userPost.id] = {reactn: counter[reactn]};
+  //     //print("updating mp");
+  //     mp[widget.userPost.id] = counter;
+  //     prft[widget.userPost.id] = widget.userPost.profit;
+  //   });
+  //   var user, token;
+  //   try {
+  //     user = auth.FirebaseAuth.instance.currentUser;
+  //     token = await user.getIdToken();
+  //   } catch (e) {
+  //     setState(() {
+  //       isDisabled = false;
+  //     });
+  //     return;
+  //   }
+  //   Reaction reaction = Reaction(
+  //       id: (curUser != null
+  //           ? (curUser != null ? curUser.id : savedUser.id)
+  //           : savedUser.id),
+  //       storyId: widget.userPost.id,
+  //       reactionType: reactn);
 
-    print(reaction.id);
-    print(reaction.reactionType);
-    print(reaction.storyId);
-    print(reactn);
+  //   print(reaction.id);
+  //   print(reaction.reactionType);
+  //   print(reaction.storyId);
+  //   print(reactn);
 
-    //print(jsonEncode(reaction.toJson()));
-    //print(token);
-    var response = await putFunc(
-        url: storyEndPoint + 'react',
-        token: token,
-        body: jsonEncode(reaction.toJson()));
+  //   //print(jsonEncode(reaction.toJson()));
+  //   //print(token);
+  //   var response = await putFunc(
+  //       url: storyEndPoint + 'react',
+  //       token: token,
+  //       body: jsonEncode(reaction.toJson()));
 
-    if (response == null) {
-      setState(() {
-        isDisabled = false;
-      });
-      return;
-    }
+  //   if (response == null) {
+  //     setState(() {
+  //       isDisabled = false;
+  //     });
+  //     return;
+  //   }
 
-    print("This is the story reaction");
-    print(response.statusCode);
+  //   print("This is the story reaction");
+  //   print(response.statusCode);
 
-    if (response.statusCode == 200) {
-      var responseMessage;
-      try {
-        responseMessage =
-            jsonDecode((jsonDecode(response.body))['body'])['message'];
+  //   if (response.statusCode == 200) {
+  //     var responseMessage;
+  //     try {
+  //       responseMessage =
+  //           jsonDecode((jsonDecode(response.body))['body'])['message'];
 
-        setState(() {
-          prft[widget.userPost.id] = responseMessage["PresentValue"].toString();
-        });
-      } catch (e) {
-        setState(() {
-          isDisabled = false;
-        });
-        return;
-      }
-      getReactions();
+  //       setState(() {
+  //         prft[widget.userPost.id] = responseMessage["PresentValue"].toString();
+  //       });
+  //     } catch (e) {
+  //       setState(() {
+  //         isDisabled = false;
+  //       });
+  //       return;
+  //     }
+  //     getReactions();
 
-      if (widget.reactionCallback != null) widget.reactionCallback();
-      setState(() {});
-    }
-    //print("hello hello");
-    setState(() {
-      isDisabled = false;
-    });
-  }
+  //     if (widget.reactionCallback != null) widget.reactionCallback();
+  //     setState(() {});
+  //   }
+  //   //print("hello hello");
+  //   setState(() {
+  //     isDisabled = false;
+  //   });
+  // }
 
-  reaction(String reaction) {
-    if (widget.userPost.user.id !=
-        (curUser != null ? curUser.id : savedUser.id)) {
-      if (reaction == 'loved') {
-        lovedController.forward();
-        lovedController.addListener(() {
-          setState(() {});
-        });
-        lovedAnimation.addStatusListener((status) {
-          if (status == AnimationStatus.completed) {
-            lovedController.reverse();
-            lovedController.addListener(() {
-              setState(() {});
-            });
-          }
-        });
-      } else if (reaction == 'liked') {
-        likedController.forward();
-        likedController.addListener(() {
-          setState(() {});
-        });
-        likedAnimation.addStatusListener((status) {
-          if (status == AnimationStatus.completed) {
-            likedController.reverse();
-            likedController.addListener(() {
-              setState(() {});
-            });
-          }
-        });
-      } else if (reaction == 'whatever') {
-        whateverController.forward();
-        whateverController.addListener(() {
-          setState(() {});
-        });
-        whateverAnimation.addStatusListener((status) {
-          if (status == AnimationStatus.completed) {
-            whateverController.reverse();
-            whateverController.addListener(() {
-              setState(() {});
-            });
-          }
-        });
-      } else {
-        hatedController.forward();
-        hatedController.addListener(() {
-          setState(() {});
-        });
-        hatedAnimation.addStatusListener((status) {
-          if (status == AnimationStatus.completed) {
-            hatedController.reverse();
-            hatedController.addListener(() {
-              setState(() {});
-            });
-          }
-        });
-      }
+  // reaction(String reaction) {
+  //   if (widget.userPost.user.id !=
+  //       (curUser != null ? curUser.id : savedUser.id)) {
+  //     if (reaction == 'loved') {
+  //       lovedController.forward();
+  //       lovedController.addListener(() {
+  //         setState(() {});
+  //       });
+  //       lovedAnimation.addStatusListener((status) {
+  //         if (status == AnimationStatus.completed) {
+  //           lovedController.reverse();
+  //           lovedController.addListener(() {
+  //             setState(() {});
+  //           });
+  //         }
+  //       });
+  //     } else if (reaction == 'liked') {
+  //       likedController.forward();
+  //       likedController.addListener(() {
+  //         setState(() {});
+  //       });
+  //       likedAnimation.addStatusListener((status) {
+  //         if (status == AnimationStatus.completed) {
+  //           likedController.reverse();
+  //           likedController.addListener(() {
+  //             setState(() {});
+  //           });
+  //         }
+  //       });
+  //     } else if (reaction == 'whatever') {
+  //       whateverController.forward();
+  //       whateverController.addListener(() {
+  //         setState(() {});
+  //       });
+  //       whateverAnimation.addStatusListener((status) {
+  //         if (status == AnimationStatus.completed) {
+  //           whateverController.reverse();
+  //           whateverController.addListener(() {
+  //             setState(() {});
+  //           });
+  //         }
+  //       });
+  //     } else {
+  //       hatedController.forward();
+  //       hatedController.addListener(() {
+  //         setState(() {});
+  //       });
+  //       hatedAnimation.addStatusListener((status) {
+  //         if (status == AnimationStatus.completed) {
+  //           hatedController.reverse();
+  //           hatedController.addListener(() {
+  //             setState(() {});
+  //           });
+  //         }
+  //       });
+  //     }
 
-      if (rxn == reaction) {
-        react('noreact');
+  //     if (rxn == reaction) {
+  //       react('noreact');
 
-        // counter[reaction]--;
-        //  m[widget.userPost.user.id] = {reaction: --counter[reaction]};
-      } else {
-        //counter[reaction]++;
-        react(reaction);
-      }
-    } else
-      Fluttertoast.showToast(
-          msg: "You cannot react on your own post",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          fontSize: 15);
+  //       // counter[reaction]--;
+  //       //  m[widget.userPost.user.id] = {reaction: --counter[reaction]};
+  //     } else {
+  //       //counter[reaction]++;
+  //       react(reaction);
+  //     }
+  //   } else
+  //     Fluttertoast.showToast(
+  //         msg: "You cannot react on your own post",
+  //         toastLength: Toast.LENGTH_SHORT,
+  //         gravity: ToastGravity.BOTTOM,
+  //         fontSize: 15);
 
-    // print("state is set");
-    // print(counter[reaction]);
-    // setState(() {});
-    return;
-  }
+  //   // print("state is set");
+  //   // print(counter[reaction]);
+  //   // setState(() {});
+  //   return;
+  // }
 
   Future<Uri> makeLink(String type, Post post) async {
     Uri uri;
@@ -396,17 +400,17 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final transformationController = TransformationController();
-    if (m.containsKey(widget.userPost.id)) {
-      Map<String, int> map = m[widget.userPost.id];
-      Map<String, int> map2 = mp[widget.userPost.id];
-      for (var key in map.keys) rxn = key;
-      // print("my reaction is now $rxn ${counter[rxn]}");
-      setState(() {
-        counter = map2;
-        counter[rxn] = map[rxn];
-        widget.userPost.profit = prft[widget.userPost.id];
-      });
-    }
+    // if (m.containsKey(widget.userPost.id)) {
+    //   Map<String, int> map = m[widget.userPost.id];
+    //   Map<String, int> map2 = mp[widget.userPost.id];
+    //   for (var key in map.keys) rxn = key;
+    //   // print("my reaction is now $rxn ${counter[rxn]}");
+    //   setState(() {
+    //     counter = map2;
+    //     counter[rxn] = map[rxn];
+    //     widget.userPost.profit = prft[widget.userPost.id];
+    //   });
+    // }
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 1),
@@ -653,7 +657,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   //     name: "Login_Page"),
                                   type: PageTransitionType.fade,
                                   child: Reaction_Info(
-                                    counter: counter,
                                     postId: widget.userPost.id,
                                   )));
                         },
@@ -744,7 +747,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                             //     name: "Login_Page"),
                                             type: PageTransitionType.fade,
                                             child: Reaction_Info(
-                                              counter: counter,
                                               postId: widget.userPost.id,
                                             )));
                                   },
@@ -937,320 +939,324 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                 children: <Widget>[
                   Container(
                       child: widget.userPost.canReact
-                          ? Row(
-                              children: <Widget>[
-                                isDisabled
-                                    ? Column(
-                                        children: <Widget>[
-                                          Container(
-                                            height: 23 +
-                                                reactionSizeIncrease *
-                                                    lovedAnimation.value,
-                                            width: 23 +
-                                                reactionSizeIncrease *
-                                                    lovedAnimation.value,
-                                            // child: Icon(
-                                            //   MyFlutterApp.rsocial_logo_thumb_upside,
-                                            //   color: rxn == "loved"
-                                            //       ? colorPrimaryBlue
-                                            //       : postIcons,
-                                            //   size: 30,
-                                            // ),
-                                            child: rxn == "loved"
-                                                ? SvgPicture.asset(
-                                                    "images/thumb_blue.svg",
-                                                    // color: rxn == "loved"
-                                                    //     ? colorPrimaryBlue
-                                                    //     : postIcons,
-                                                    height: 40,
-                                                  )
-                                                : SvgPicture.asset(
-                                                    "images/rsocial_thumb_outline.svg",
-                                                    height: 40,
-                                                  ),
-                                          ),
-                                          SizedBox(
-                                            height: 4 -
-                                                reactionSizeIncrease *
-                                                    lovedAnimation.value,
-                                          ),
-                                          Text(
-                                            counter['loved'].toString(),
-                                            style: TextStyle(
-                                              fontFamily: "Lato",
-                                              fontSize: 10,
-                                              color: colorUnselectedBottomNav,
-                                            ),
-                                          )
-                                        ],
-                                      )
-                                    : GestureDetector(
-                                        onTap: () => {reaction('loved')},
-                                        child: Column(
-                                          children: <Widget>[
-                                            Container(
-                                              height: 23 +
-                                                  reactionSizeIncrease *
-                                                      lovedAnimation.value,
-                                              width: 23 +
-                                                  reactionSizeIncrease *
-                                                      lovedAnimation.value,
-                                              child: rxn == "loved"
-                                                  ? SvgPicture.asset(
-                                                      "images/thumb_blue.svg",
-                                                      // color: rxn == "loved"
-                                                      //     ? colorPrimaryBlue
-                                                      //     : postIcons,
-                                                      height: 40,
-                                                    )
-                                                  : SvgPicture.asset(
-                                                      "images/rsocial_thumb_outline.svg",
-                                                    ),
-                                            ),
-                                            SizedBox(
-                                              height:
-                                                  4 - 3 * lovedAnimation.value,
-                                            ),
-                                            Text(
-                                              counter['loved'].toString(),
-                                              style: TextStyle(
-                                                fontFamily: "Lato",
-                                                fontSize: 10,
-                                                color: colorUnselectedBottomNav,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                SizedBox(
-                                  width: 20 -
-                                      lovedAnimation.value *
-                                          reactionSizeIncrease -
-                                      likedAnimation.value *
-                                          reactionSizeIncrease /
-                                          2,
-                                ),
-                                isDisabled
-                                    ? Column(
-                                        children: <Widget>[
-                                          Container(
-                                            height: 23 +
-                                                reactionSizeIncrease *
-                                                    likedAnimation.value,
-                                            width: 23 +
-                                                reactionSizeIncrease *
-                                                    likedAnimation.value,
-                                            child: rxn == "liked"
-                                                ? SvgPicture.asset(
-                                                    "images/rsocial_thumbUp_blue.svg",
-                                                  )
-                                                : SvgPicture.asset(
-                                                    "images/rsocial_thumbUp_outline.svg"),
-                                          ),
-                                          //Icon(Icons.thumb_up,size: 30,color:postIcons),
-                                          SizedBox(
-                                            height: 4 -
-                                                reactionSizeIncrease *
-                                                    likedAnimation.value,
-                                          ),
-                                          Text(
-                                            counter['liked'].toString(),
-                                            style: TextStyle(
-                                              fontFamily: "Lato",
-                                              fontSize: 10,
-                                              color: colorUnselectedBottomNav,
-                                            ),
-                                          )
-                                        ],
-                                      )
-                                    : GestureDetector(
-                                        onTap: () => {reaction('liked')},
-                                        child: Column(
-                                          children: <Widget>[
-                                            Container(
-                                              height: 23 +
-                                                  reactionSizeIncrease *
-                                                      likedAnimation.value,
-                                              width: 23 +
-                                                  reactionSizeIncrease *
-                                                      likedAnimation.value,
-                                              child: rxn == "liked"
-                                                  ? SvgPicture.asset(
-                                                      "images/rsocial_thumbUp_blue.svg",
-                                                    )
-                                                  : SvgPicture.asset(
-                                                      "images/rsocial_thumbUp_outline.svg"),
-                                            ),
-                                            //Icon(Icons.thumb_up,size: 30,color:postIcons),
-                                            SizedBox(
-                                              height: 4 -
-                                                  reactionSizeIncrease *
-                                                      likedAnimation.value,
-                                            ),
-                                            Text(
-                                              counter['liked'].toString(),
-                                              style: TextStyle(
-                                                fontFamily: "Lato",
-                                                fontSize: 10,
-                                                color: colorUnselectedBottomNav,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                SizedBox(
-                                  width: 20 -
-                                      likedAnimation.value *
-                                          reactionSizeIncrease /
-                                          2 -
-                                      whateverAnimation.value *
-                                          reactionSizeIncrease /
-                                          2,
-                                ),
-                                isDisabled
-                                    ? Column(
-                                        children: <Widget>[
-                                          Container(
-                                              height: 23 +
-                                                  reactionSizeIncrease *
-                                                      whateverAnimation.value,
-                                              width: 23 +
-                                                  reactionSizeIncrease *
-                                                      whateverAnimation.value,
-                                              child: rxn == "whatever"
-                                                  ? SvgPicture.asset(
-                                                      "images/rsocial_thumbDown_blue.svg")
-                                                  : SvgPicture.asset(
-                                                      "images/rsocial_thumbDown_outline.svg")),
-                                          SizedBox(
-                                            height: 4 -
-                                                reactionSizeIncrease *
-                                                    whateverAnimation.value,
-                                          ),
-                                          Text(
-                                            counter['whatever'].toString(),
-                                            style: TextStyle(
-                                              fontFamily: "Lato",
-                                              fontSize: 10,
-                                              color: colorUnselectedBottomNav,
-                                            ),
-                                          )
-                                        ],
-                                      )
-                                    : GestureDetector(
-                                        onTap: () => {reaction('whatever')},
-                                        child: Column(
-                                          children: <Widget>[
-                                            Container(
-                                                height: 23 +
-                                                    reactionSizeIncrease *
-                                                        whateverAnimation.value,
-                                                width: 23 +
-                                                    reactionSizeIncrease *
-                                                        whateverAnimation.value,
-                                                child: rxn == "whatever"
-                                                    ? SvgPicture.asset(
-                                                        "images/rsocial_thumbDown_blue.svg")
-                                                    : SvgPicture.asset(
-                                                        "images/rsocial_thumbDown_outline.svg")),
-                                            SizedBox(
-                                              height: 4 -
-                                                  reactionSizeIncrease *
-                                                      whateverAnimation.value,
-                                            ),
-                                            Text(
-                                              counter['whatever'].toString(),
-                                              style: TextStyle(
-                                                fontFamily: "Lato",
-                                                fontSize: 10,
-                                                color: colorUnselectedBottomNav,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                SizedBox(
-                                  width: 20 -
-                                      hatedAnimation.value *
-                                          reactionSizeIncrease -
-                                      whateverAnimation.value *
-                                          reactionSizeIncrease /
-                                          2,
-                                ),
-                                isDisabled
-                                    ? Column(
-                                        children: <Widget>[
-                                          Container(
-                                            height: 23 +
-                                                reactionSizeIncrease *
-                                                    hatedAnimation.value,
-                                            width: 23 +
-                                                reactionSizeIncrease *
-                                                    hatedAnimation.value,
-                                            child: rxn == "hated"
-                                                ? SvgPicture.asset(
-                                                    "images/rsocial_punch_blue.svg",
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : SvgPicture.asset(
-                                                    "images/rsocial_punch_outline.svg",
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                          ),
-                                          SizedBox(
-                                            height: 4 -
-                                                reactionSizeIncrease *
-                                                    hatedAnimation.value,
-                                          ),
-                                          Text(
-                                            counter['hated'].toString(),
-                                            style: TextStyle(
-                                              fontFamily: "Lato",
-                                              fontSize: 10,
-                                              color: colorUnselectedBottomNav,
-                                            ),
-                                          )
-                                        ],
-                                      )
-                                    : GestureDetector(
-                                        onTap: () => {reaction('hated')},
-                                        child: Column(
-                                          children: <Widget>[
-                                            Container(
-                                              height: 23 +
-                                                  reactionSizeIncrease *
-                                                      hatedAnimation.value,
-                                              width: 23 +
-                                                  reactionSizeIncrease *
-                                                      hatedAnimation.value,
-                                              child: rxn == "hated"
-                                                  ? SvgPicture.asset(
-                                                      "images/rsocial_punch_blue.svg",
-                                                      fit: BoxFit.cover,
-                                                    )
-                                                  : SvgPicture.asset(
-                                                      "images/rsocial_punch_outline.svg",
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                            ),
-                                            SizedBox(
-                                              height: 4 -
-                                                  reactionSizeIncrease *
-                                                      hatedAnimation.value,
-                                            ),
-                                            Text(
-                                              counter['hated'].toString(),
-                                              style: TextStyle(
-                                                fontFamily: "Lato",
-                                                fontSize: 10,
-                                                color: colorUnselectedBottomNav,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                              ],
+                          ? ReactionTile(
+                              widget.userPost,
+                              widget.reactionCallback,
                             )
+                          // ? Row(
+                          //     children: <Widget>[
+                          //       isDisabled
+                          //           ? Column(
+                          //               children: <Widget>[
+                          //                 Container(
+                          //                   height: 23 +
+                          //                       reactionSizeIncrease *
+                          //                           lovedAnimation.value,
+                          //                   width: 23 +
+                          //                       reactionSizeIncrease *
+                          //                           lovedAnimation.value,
+                          //                   // child: Icon(
+                          //                   //   MyFlutterApp.rsocial_logo_thumb_upside,
+                          //                   //   color: rxn == "loved"
+                          //                   //       ? colorPrimaryBlue
+                          //                   //       : postIcons,
+                          //                   //   size: 30,
+                          //                   // ),
+                          //                   child: rxn == "loved"
+                          //                       ? SvgPicture.asset(
+                          //                           "images/thumb_blue.svg",
+                          //                           // color: rxn == "loved"
+                          //                           //     ? colorPrimaryBlue
+                          //                           //     : postIcons,
+                          //                           height: 40,
+                          //                         )
+                          //                       : SvgPicture.asset(
+                          //                           "images/rsocial_thumb_outline.svg",
+                          //                           height: 40,
+                          //                         ),
+                          //                 ),
+                          //                 SizedBox(
+                          //                   height: 4 -
+                          //                       reactionSizeIncrease *
+                          //                           lovedAnimation.value,
+                          //                 ),
+                          //                 Text(
+                          //                   counter['loved'].toString(),
+                          //                   style: TextStyle(
+                          //                     fontFamily: "Lato",
+                          //                     fontSize: 10,
+                          //                     color: colorUnselectedBottomNav,
+                          //                   ),
+                          //                 )
+                          //               ],
+                          //             )
+                          //           : GestureDetector(
+                          //               onTap: () => {reaction('loved')},
+                          //               child: Column(
+                          //                 children: <Widget>[
+                          //                   Container(
+                          //                     height: 23 +
+                          //                         reactionSizeIncrease *
+                          //                             lovedAnimation.value,
+                          //                     width: 23 +
+                          //                         reactionSizeIncrease *
+                          //                             lovedAnimation.value,
+                          //                     child: rxn == "loved"
+                          //                         ? SvgPicture.asset(
+                          //                             "images/thumb_blue.svg",
+                          //                             // color: rxn == "loved"
+                          //                             //     ? colorPrimaryBlue
+                          //                             //     : postIcons,
+                          //                             height: 40,
+                          //                           )
+                          //                         : SvgPicture.asset(
+                          //                             "images/rsocial_thumb_outline.svg",
+                          //                           ),
+                          //                   ),
+                          //                   SizedBox(
+                          //                     height:
+                          //                         4 - 3 * lovedAnimation.value,
+                          //                   ),
+                          //                   Text(
+                          //                     counter['loved'].toString(),
+                          //                     style: TextStyle(
+                          //                       fontFamily: "Lato",
+                          //                       fontSize: 10,
+                          //                       color: colorUnselectedBottomNav,
+                          //                     ),
+                          //                   )
+                          //                 ],
+                          //               ),
+                          //             ),
+                          //       SizedBox(
+                          //         width: 20 -
+                          //             lovedAnimation.value *
+                          //                 reactionSizeIncrease -
+                          //             likedAnimation.value *
+                          //                 reactionSizeIncrease /
+                          //                 2,
+                          //       ),
+                          //       isDisabled
+                          //           ? Column(
+                          //               children: <Widget>[
+                          //                 Container(
+                          //                   height: 23 +
+                          //                       reactionSizeIncrease *
+                          //                           likedAnimation.value,
+                          //                   width: 23 +
+                          //                       reactionSizeIncrease *
+                          //                           likedAnimation.value,
+                          //                   child: rxn == "liked"
+                          //                       ? SvgPicture.asset(
+                          //                           "images/rsocial_thumbUp_blue.svg",
+                          //                         )
+                          //                       : SvgPicture.asset(
+                          //                           "images/rsocial_thumbUp_outline.svg"),
+                          //                 ),
+                          //                 //Icon(Icons.thumb_up,size: 30,color:postIcons),
+                          //                 SizedBox(
+                          //                   height: 4 -
+                          //                       reactionSizeIncrease *
+                          //                           likedAnimation.value,
+                          //                 ),
+                          //                 Text(
+                          //                   counter['liked'].toString(),
+                          //                   style: TextStyle(
+                          //                     fontFamily: "Lato",
+                          //                     fontSize: 10,
+                          //                     color: colorUnselectedBottomNav,
+                          //                   ),
+                          //                 )
+                          //               ],
+                          //             )
+                          //           : GestureDetector(
+                          //               onTap: () => {reaction('liked')},
+                          //               child: Column(
+                          //                 children: <Widget>[
+                          //                   Container(
+                          //                     height: 23 +
+                          //                         reactionSizeIncrease *
+                          //                             likedAnimation.value,
+                          //                     width: 23 +
+                          //                         reactionSizeIncrease *
+                          //                             likedAnimation.value,
+                          //                     child: rxn == "liked"
+                          //                         ? SvgPicture.asset(
+                          //                             "images/rsocial_thumbUp_blue.svg",
+                          //                           )
+                          //                         : SvgPicture.asset(
+                          //                             "images/rsocial_thumbUp_outline.svg"),
+                          //                   ),
+                          //                   //Icon(Icons.thumb_up,size: 30,color:postIcons),
+                          //                   SizedBox(
+                          //                     height: 4 -
+                          //                         reactionSizeIncrease *
+                          //                             likedAnimation.value,
+                          //                   ),
+                          //                   Text(
+                          //                     counter['liked'].toString(),
+                          //                     style: TextStyle(
+                          //                       fontFamily: "Lato",
+                          //                       fontSize: 10,
+                          //                       color: colorUnselectedBottomNav,
+                          //                     ),
+                          //                   )
+                          //                 ],
+                          //               ),
+                          //             ),
+                          //       SizedBox(
+                          //         width: 20 -
+                          //             likedAnimation.value *
+                          //                 reactionSizeIncrease /
+                          //                 2 -
+                          //             whateverAnimation.value *
+                          //                 reactionSizeIncrease /
+                          //                 2,
+                          //       ),
+                          //       isDisabled
+                          //           ? Column(
+                          //               children: <Widget>[
+                          //                 Container(
+                          //                     height: 23 +
+                          //                         reactionSizeIncrease *
+                          //                             whateverAnimation.value,
+                          //                     width: 23 +
+                          //                         reactionSizeIncrease *
+                          //                             whateverAnimation.value,
+                          //                     child: rxn == "whatever"
+                          //                         ? SvgPicture.asset(
+                          //                             "images/rsocial_thumbDown_blue.svg")
+                          //                         : SvgPicture.asset(
+                          //                             "images/rsocial_thumbDown_outline.svg")),
+                          //                 SizedBox(
+                          //                   height: 4 -
+                          //                       reactionSizeIncrease *
+                          //                           whateverAnimation.value,
+                          //                 ),
+                          //                 Text(
+                          //                   counter['whatever'].toString(),
+                          //                   style: TextStyle(
+                          //                     fontFamily: "Lato",
+                          //                     fontSize: 10,
+                          //                     color: colorUnselectedBottomNav,
+                          //                   ),
+                          //                 )
+                          //               ],
+                          //             )
+                          //           : GestureDetector(
+                          //               onTap: () => {reaction('whatever')},
+                          //               child: Column(
+                          //                 children: <Widget>[
+                          //                   Container(
+                          //                       height: 23 +
+                          //                           reactionSizeIncrease *
+                          //                               whateverAnimation.value,
+                          //                       width: 23 +
+                          //                           reactionSizeIncrease *
+                          //                               whateverAnimation.value,
+                          //                       child: rxn == "whatever"
+                          //                           ? SvgPicture.asset(
+                          //                               "images/rsocial_thumbDown_blue.svg")
+                          //                           : SvgPicture.asset(
+                          //                               "images/rsocial_thumbDown_outline.svg")),
+                          //                   SizedBox(
+                          //                     height: 4 -
+                          //                         reactionSizeIncrease *
+                          //                             whateverAnimation.value,
+                          //                   ),
+                          //                   Text(
+                          //                     counter['whatever'].toString(),
+                          //                     style: TextStyle(
+                          //                       fontFamily: "Lato",
+                          //                       fontSize: 10,
+                          //                       color: colorUnselectedBottomNav,
+                          //                     ),
+                          //                   )
+                          //                 ],
+                          //               ),
+                          //             ),
+                          //       SizedBox(
+                          //         width: 20 -
+                          //             hatedAnimation.value *
+                          //                 reactionSizeIncrease -
+                          //             whateverAnimation.value *
+                          //                 reactionSizeIncrease /
+                          //                 2,
+                          //       ),
+                          //       isDisabled
+                          //           ? Column(
+                          //               children: <Widget>[
+                          //                 Container(
+                          //                   height: 23 +
+                          //                       reactionSizeIncrease *
+                          //                           hatedAnimation.value,
+                          //                   width: 23 +
+                          //                       reactionSizeIncrease *
+                          //                           hatedAnimation.value,
+                          //                   child: rxn == "hated"
+                          //                       ? SvgPicture.asset(
+                          //                           "images/rsocial_punch_blue.svg",
+                          //                           fit: BoxFit.cover,
+                          //                         )
+                          //                       : SvgPicture.asset(
+                          //                           "images/rsocial_punch_outline.svg",
+                          //                           fit: BoxFit.cover,
+                          //                         ),
+                          //                 ),
+                          //                 SizedBox(
+                          //                   height: 4 -
+                          //                       reactionSizeIncrease *
+                          //                           hatedAnimation.value,
+                          //                 ),
+                          //                 Text(
+                          //                   counter['hated'].toString(),
+                          //                   style: TextStyle(
+                          //                     fontFamily: "Lato",
+                          //                     fontSize: 10,
+                          //                     color: colorUnselectedBottomNav,
+                          //                   ),
+                          //                 )
+                          //               ],
+                          //             )
+                          //           : GestureDetector(
+                          //               onTap: () => {reaction('hated')},
+                          //               child: Column(
+                          //                 children: <Widget>[
+                          //                   Container(
+                          //                     height: 23 +
+                          //                         reactionSizeIncrease *
+                          //                             hatedAnimation.value,
+                          //                     width: 23 +
+                          //                         reactionSizeIncrease *
+                          //                             hatedAnimation.value,
+                          //                     child: rxn == "hated"
+                          //                         ? SvgPicture.asset(
+                          //                             "images/rsocial_punch_blue.svg",
+                          //                             fit: BoxFit.cover,
+                          //                           )
+                          //                         : SvgPicture.asset(
+                          //                             "images/rsocial_punch_outline.svg",
+                          //                             fit: BoxFit.cover,
+                          //                           ),
+                          //                   ),
+                          //                   SizedBox(
+                          //                     height: 4 -
+                          //                         reactionSizeIncrease *
+                          //                             hatedAnimation.value,
+                          //                   ),
+                          //                   Text(
+                          //                     counter['hated'].toString(),
+                          //                     style: TextStyle(
+                          //                       fontFamily: "Lato",
+                          //                       fontSize: 10,
+                          //                       color: colorUnselectedBottomNav,
+                          //                     ),
+                          //                   )
+                          //                 ],
+                          //               ),
+                          //             ),
+                          //     ],
+                          //   )
                           : Container(
                               child: Text(
                                 "Investment Matured",
@@ -1263,9 +1269,9 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                 ),
                               ),
                             )),
-                  SizedBox(
-                    width: 20 - hatedController.value * reactionSizeIncrease,
-                  ),
+                  // SizedBox(
+                  //   width: 20 - hatedController.value * reactionSizeIncrease,
+                  // ),
                   //Container(),
 
                   GestureDetector(
@@ -1378,4 +1384,526 @@ showDialogFunc(context, List<String> filelist, int index) {
       );
     },
   );
+}
+
+class ReactionTile extends StatefulWidget {
+  Post userPost;
+  Function reactionCallback;
+  ReactionTile(this.userPost, this.reactionCallback);
+  @override
+  _ReactionTileState createState() => _ReactionTileState();
+}
+
+class _ReactionTileState extends State<ReactionTile>
+    with TickerProviderStateMixin {
+  bool isDisabled = false;
+  int reactionSizeIncrease = 3;
+  AnimationController hatedController;
+  AnimationController lovedController;
+  AnimationController likedController;
+  AnimationController whateverController;
+  Animation hatedAnimation;
+  Animation lovedAnimation;
+  Animation likedAnimation;
+  Animation whateverAnimation;
+  String rxn = "noreact";
+  Map<String, int> counter = {
+    'loved': 0,
+    'liked': 0,
+    'whatever': 0,
+    'hated': 0,
+    'noreact': 0
+  };
+  @override
+  void initState() {
+    super.initState();
+    // audioPlayer = new AudioPlayer();
+    // audioCache = new AudioCache(fixedPlayer: audioPlayer);
+    lovedController =
+        AnimationController(duration: Duration(milliseconds: 400), vsync: this);
+    lovedAnimation = CurvedAnimation(
+        parent: lovedController,
+        curve: Curves.easeIn,
+        reverseCurve: Curves.easeIn);
+    likedController =
+        AnimationController(duration: Duration(milliseconds: 400), vsync: this);
+    likedAnimation = CurvedAnimation(
+        parent: likedController,
+        curve: Curves.easeIn,
+        reverseCurve: Curves.easeIn);
+    whateverController =
+        AnimationController(duration: Duration(milliseconds: 400), vsync: this);
+    whateverAnimation = CurvedAnimation(
+        parent: whateverController,
+        curve: Curves.easeIn,
+        reverseCurve: Curves.easeIn);
+    hatedController =
+        AnimationController(duration: Duration(milliseconds: 400), vsync: this);
+    hatedAnimation = CurvedAnimation(
+        parent: hatedController,
+        curve: Curves.easeIn,
+        reverseCurve: Curves.easeIn);
+
+    getReactions();
+  }
+
+  @override
+  void dispose() {
+    lovedController.dispose();
+    likedController.dispose();
+    whateverController.dispose();
+    hatedController.dispose();
+    super.dispose();
+  }
+
+  getReactions() {
+    counter = {'loved': 0, 'liked': 0, 'whatever': 0, 'hated': 0, 'noreact': 0};
+    for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
+      User user = widget.userPost.reactedBy[i];
+      String rt = user.reactionType;
+      counter[rt]++;
+
+      if (user.id == (curUser != null ? curUser.id : savedUser.id)) {
+        this.rxn = user.reactionType;
+      }
+    }
+  }
+
+  react(String reactn) async {
+    setState(() {
+      isDisabled = true;
+      // audioCache.play("click.mp3");
+      String prvrxn = rxn;
+      rxn = reactn;
+      counter[prvrxn]--;
+      counter[rxn]++;
+      //print(widget.userPost.profit);
+      m[widget.userPost.id] = {reactn: counter[reactn]};
+      //print("updating mp");
+      mp[widget.userPost.id] = counter;
+      prft[widget.userPost.id] = widget.userPost.profit;
+    });
+    var user, token;
+    try {
+      user = auth.FirebaseAuth.instance.currentUser;
+      token = await user.getIdToken();
+    } catch (e) {
+      setState(() {
+        isDisabled = false;
+      });
+      return;
+    }
+    Reaction reaction = Reaction(
+        id: (curUser != null
+            ? (curUser != null ? curUser.id : savedUser.id)
+            : savedUser.id),
+        storyId: widget.userPost.id,
+        reactionType: reactn);
+
+    print(reaction.id);
+    print(reaction.reactionType);
+    print(reaction.storyId);
+    print(reactn);
+
+    //print(jsonEncode(reaction.toJson()));
+    //print(token);
+    var response = await putFunc(
+        url: storyEndPoint + 'react',
+        token: token,
+        body: jsonEncode(reaction.toJson()));
+
+    if (response == null) {
+      setState(() {
+        isDisabled = false;
+      });
+      return;
+    }
+
+    print("This is the story reaction");
+    print(response.statusCode);
+
+    if (response.statusCode == 200) {
+      var responseMessage;
+      try {
+        responseMessage =
+            jsonDecode((jsonDecode(response.body))['body'])['message'];
+
+        setState(() {
+          prft[widget.userPost.id] = responseMessage["PresentValue"].toString();
+        });
+      } catch (e) {
+        setState(() {
+          isDisabled = false;
+        });
+        return;
+      }
+      getReactions();
+
+      //if (widget.reactionCallback != null) widget.reactionCallback();
+      //appBarKey.currentState.getRCashDetails();
+      Provider.of<Data>(context, listen: false).triggerAppBarRebuild();
+      setState(() {});
+    }
+    //print("hello hello");
+    setState(() {
+      isDisabled = false;
+    });
+  }
+
+  reaction(String reaction) {
+    if (widget.userPost.user.id !=
+        (curUser != null ? curUser.id : savedUser.id)) {
+      if (reaction == 'loved') {
+        lovedController.forward();
+        lovedController.addListener(() {
+          setState(() {});
+        });
+        lovedAnimation.addStatusListener((status) {
+          if (status == AnimationStatus.completed) {
+            lovedController.reverse();
+            lovedController.addListener(() {
+              setState(() {});
+            });
+          }
+        });
+      } else if (reaction == 'liked') {
+        likedController.forward();
+        likedController.addListener(() {
+          setState(() {});
+        });
+        likedAnimation.addStatusListener((status) {
+          if (status == AnimationStatus.completed) {
+            likedController.reverse();
+            likedController.addListener(() {
+              setState(() {});
+            });
+          }
+        });
+      } else if (reaction == 'whatever') {
+        whateverController.forward();
+        whateverController.addListener(() {
+          setState(() {});
+        });
+        whateverAnimation.addStatusListener((status) {
+          if (status == AnimationStatus.completed) {
+            whateverController.reverse();
+            whateverController.addListener(() {
+              setState(() {});
+            });
+          }
+        });
+      } else {
+        hatedController.forward();
+        hatedController.addListener(() {
+          setState(() {});
+        });
+        hatedAnimation.addStatusListener((status) {
+          if (status == AnimationStatus.completed) {
+            hatedController.reverse();
+            hatedController.addListener(() {
+              setState(() {});
+            });
+          }
+        });
+      }
+
+      if (rxn == reaction) {
+        react('noreact');
+
+        // counter[reaction]--;
+        //  m[widget.userPost.user.id] = {reaction: --counter[reaction]};
+      } else {
+        //counter[reaction]++;
+        react(reaction);
+      }
+    } else
+      Fluttertoast.showToast(
+          msg: "You cannot react on your own post",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          fontSize: 15);
+
+    // print("state is set");
+    // print(counter[reaction]);
+    // setState(() {});
+    return;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final transformationController = TransformationController();
+    if (m.containsKey(widget.userPost.id)) {
+      Map<String, int> map = m[widget.userPost.id];
+      Map<String, int> map2 = mp[widget.userPost.id];
+      for (var key in map.keys) rxn = key;
+      // print("my reaction is now $rxn ${counter[rxn]}");
+      setState(() {
+        counter = map2;
+        counter[rxn] = map[rxn];
+        widget.userPost.profit = prft[widget.userPost.id];
+      });
+    }
+    return Row(
+      children: <Widget>[
+        isDisabled
+            ? Column(
+                children: <Widget>[
+                  Container(
+                    height: 23 + reactionSizeIncrease * lovedAnimation.value,
+                    width: 23 + reactionSizeIncrease * lovedAnimation.value,
+                    // child: Icon(
+                    //   MyFlutterApp.rsocial_logo_thumb_upside,
+                    //   color: rxn == "loved"
+                    //       ? colorPrimaryBlue
+                    //       : postIcons,
+                    //   size: 30,
+                    // ),
+                    child: rxn == "loved"
+                        ? SvgPicture.asset(
+                            "images/thumb_blue.svg",
+                            // color: rxn == "loved"
+                            //     ? colorPrimaryBlue
+                            //     : postIcons,
+                            height: 40,
+                          )
+                        : SvgPicture.asset(
+                            "images/rsocial_thumb_outline.svg",
+                            height: 40,
+                          ),
+                  ),
+                  SizedBox(
+                    height: 4 - reactionSizeIncrease * lovedAnimation.value,
+                  ),
+                  Text(
+                    counter['loved'].toString(),
+                    style: TextStyle(
+                      fontFamily: "Lato",
+                      fontSize: 10,
+                      color: colorUnselectedBottomNav,
+                    ),
+                  )
+                ],
+              )
+            : GestureDetector(
+                onTap: () => {reaction('loved')},
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      height: 23 + reactionSizeIncrease * lovedAnimation.value,
+                      width: 23 + reactionSizeIncrease * lovedAnimation.value,
+                      child: rxn == "loved"
+                          ? SvgPicture.asset(
+                              "images/thumb_blue.svg",
+                              // color: rxn == "loved"
+                              //     ? colorPrimaryBlue
+                              //     : postIcons,
+                              height: 40,
+                            )
+                          : SvgPicture.asset(
+                              "images/rsocial_thumb_outline.svg",
+                            ),
+                    ),
+                    SizedBox(
+                      height: 4 - 3 * lovedAnimation.value,
+                    ),
+                    Text(
+                      counter['loved'].toString(),
+                      style: TextStyle(
+                        fontFamily: "Lato",
+                        fontSize: 10,
+                        color: colorUnselectedBottomNav,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+        SizedBox(
+          width: 20 -
+              lovedAnimation.value * reactionSizeIncrease -
+              likedAnimation.value * reactionSizeIncrease / 2,
+        ),
+        isDisabled
+            ? Column(
+                children: <Widget>[
+                  Container(
+                    height: 23 + reactionSizeIncrease * likedAnimation.value,
+                    width: 23 + reactionSizeIncrease * likedAnimation.value,
+                    child: rxn == "liked"
+                        ? SvgPicture.asset(
+                            "images/rsocial_thumbUp_blue.svg",
+                          )
+                        : SvgPicture.asset(
+                            "images/rsocial_thumbUp_outline.svg"),
+                  ),
+                  //Icon(Icons.thumb_up,size: 30,color:postIcons),
+                  SizedBox(
+                    height: 4 - reactionSizeIncrease * likedAnimation.value,
+                  ),
+                  Text(
+                    counter['liked'].toString(),
+                    style: TextStyle(
+                      fontFamily: "Lato",
+                      fontSize: 10,
+                      color: colorUnselectedBottomNav,
+                    ),
+                  )
+                ],
+              )
+            : GestureDetector(
+                onTap: () => {reaction('liked')},
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      height: 23 + reactionSizeIncrease * likedAnimation.value,
+                      width: 23 + reactionSizeIncrease * likedAnimation.value,
+                      child: rxn == "liked"
+                          ? SvgPicture.asset(
+                              "images/rsocial_thumbUp_blue.svg",
+                            )
+                          : SvgPicture.asset(
+                              "images/rsocial_thumbUp_outline.svg"),
+                    ),
+                    //Icon(Icons.thumb_up,size: 30,color:postIcons),
+                    SizedBox(
+                      height: 4 - reactionSizeIncrease * likedAnimation.value,
+                    ),
+                    Text(
+                      counter['liked'].toString(),
+                      style: TextStyle(
+                        fontFamily: "Lato",
+                        fontSize: 10,
+                        color: colorUnselectedBottomNav,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+        SizedBox(
+          width: 20 -
+              likedAnimation.value * reactionSizeIncrease / 2 -
+              whateverAnimation.value * reactionSizeIncrease / 2,
+        ),
+        isDisabled
+            ? Column(
+                children: <Widget>[
+                  Container(
+                      height:
+                          23 + reactionSizeIncrease * whateverAnimation.value,
+                      width:
+                          23 + reactionSizeIncrease * whateverAnimation.value,
+                      child: rxn == "whatever"
+                          ? SvgPicture.asset(
+                              "images/rsocial_thumbDown_blue.svg")
+                          : SvgPicture.asset(
+                              "images/rsocial_thumbDown_outline.svg")),
+                  SizedBox(
+                    height: 4 - reactionSizeIncrease * whateverAnimation.value,
+                  ),
+                  Text(
+                    counter['whatever'].toString(),
+                    style: TextStyle(
+                      fontFamily: "Lato",
+                      fontSize: 10,
+                      color: colorUnselectedBottomNav,
+                    ),
+                  )
+                ],
+              )
+            : GestureDetector(
+                onTap: () => {reaction('whatever')},
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                        height:
+                            23 + reactionSizeIncrease * whateverAnimation.value,
+                        width:
+                            23 + reactionSizeIncrease * whateverAnimation.value,
+                        child: rxn == "whatever"
+                            ? SvgPicture.asset(
+                                "images/rsocial_thumbDown_blue.svg")
+                            : SvgPicture.asset(
+                                "images/rsocial_thumbDown_outline.svg")),
+                    SizedBox(
+                      height:
+                          4 - reactionSizeIncrease * whateverAnimation.value,
+                    ),
+                    Text(
+                      counter['whatever'].toString(),
+                      style: TextStyle(
+                        fontFamily: "Lato",
+                        fontSize: 10,
+                        color: colorUnselectedBottomNav,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+        SizedBox(
+          width: 20 -
+              hatedAnimation.value * reactionSizeIncrease -
+              whateverAnimation.value * reactionSizeIncrease / 2,
+        ),
+        isDisabled
+            ? Column(
+                children: <Widget>[
+                  Container(
+                    height: 23 + reactionSizeIncrease * hatedAnimation.value,
+                    width: 23 + reactionSizeIncrease * hatedAnimation.value,
+                    child: rxn == "hated"
+                        ? SvgPicture.asset(
+                            "images/rsocial_punch_blue.svg",
+                            fit: BoxFit.cover,
+                          )
+                        : SvgPicture.asset(
+                            "images/rsocial_punch_outline.svg",
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+                  SizedBox(
+                    height: 4 - reactionSizeIncrease * hatedAnimation.value,
+                  ),
+                  Text(
+                    counter['hated'].toString(),
+                    style: TextStyle(
+                      fontFamily: "Lato",
+                      fontSize: 10,
+                      color: colorUnselectedBottomNav,
+                    ),
+                  )
+                ],
+              )
+            : GestureDetector(
+                onTap: () => {reaction('hated')},
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      height: 23 + reactionSizeIncrease * hatedAnimation.value,
+                      width: 23 + reactionSizeIncrease * hatedAnimation.value,
+                      child: rxn == "hated"
+                          ? SvgPicture.asset(
+                              "images/rsocial_punch_blue.svg",
+                              fit: BoxFit.cover,
+                            )
+                          : SvgPicture.asset(
+                              "images/rsocial_punch_outline.svg",
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                    SizedBox(
+                      height: 4 - reactionSizeIncrease * hatedAnimation.value,
+                    ),
+                    Text(
+                      counter['hated'].toString(),
+                      style: TextStyle(
+                        fontFamily: "Lato",
+                        fontSize: 10,
+                        color: colorUnselectedBottomNav,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+      ],
+    );
+  }
 }

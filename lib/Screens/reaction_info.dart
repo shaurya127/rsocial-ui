@@ -17,9 +17,8 @@ import 'bottom_nav_bar.dart';
 
 class Reaction_Info extends StatefulWidget {
   String postId;
-  Map<String, int> counter;
 
-  Reaction_Info({this.postId, this.counter});
+  Reaction_Info({this.postId});
   @override
   _Reaction_InfoState createState() => _Reaction_InfoState();
 }
@@ -127,7 +126,10 @@ class _Reaction_InfoState extends State<Reaction_Info>
           hated.add(user);
         }
       }
-      if (postsGlobal.firstWhere((element) => element.id == widget.postId) !=
+      if (postsGlobal.firstWhere((element) => element.id == widget.postId,
+              orElse: () {
+            return -1;
+          }) !=
           -1) {
         postsGlobal
             .firstWhere((element) => element.id == widget.postId)

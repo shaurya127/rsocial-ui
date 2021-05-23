@@ -414,6 +414,8 @@ class _ProfileState extends State<Profile> {
     //print(token);
     var response;
     try {
+      print("URL:$url");
+      print("TOKEN:$token");
       response = await http.get(
         Uri.parse(url),
         headers: {
@@ -439,7 +441,7 @@ class _ProfileState extends State<Profile> {
       //print(msg.length);
       //print("msg id ${msg}");
       for (int i = 0; i < msg.length; i++) {
-        //print("msg $i is ${msg[i]}");
+        print("msg $i is ${msg[i]}");
         Post post;
         if (msg[i]['StoryType'] == "Investment")
           post = Post.fromJsonI(msg[i]);

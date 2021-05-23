@@ -13,39 +13,18 @@ class ReusableVideoListController {
       _betterPlayerControllerRegistry.add(
         BetterPlayerController(
           BetterPlayerConfiguration(
-            // eventListener: (event) {
-            //   if (internalCall) {
-            //     return "HEy";
-            //   }
-            //   if (event.betterPlayerEventType ==
-            //       BetterPlayerEventType.setVolume) {
-            //     muted = !muted;
-
-            //     print("Globally Muted");
-            //     return "Done";
-            //   }
-            // },
             fit: BoxFit.contain,
             startAt: Duration.zero,
             handleLifecycle: true,
             autoDispose: false,
             autoPlay: true,
             autoDetectFullscreenDeviceOrientation: true,
-            // deviceOrientationsAfterFullScreen: [
-            //   DeviceOrientation.portraitUp,
-            //   DeviceOrientation.portraitDown
-            // ],
-            // deviceOrientationsOnFullScreen: [
-            //   DeviceOrientation.portraitUp,
-            //   DeviceOrientation.portraitDown
-            // ],
             controlsConfiguration: BetterPlayerControlsConfiguration(
               loadingColor: colorButton,
               backgroundColor: Colors.white,
               enableOverflowMenu: false,
               enableSkips: false,
               enableFullscreen: false,
-              showControls: true,
             ),
           ),
         ),
@@ -59,13 +38,11 @@ class ReusableVideoListController {
             !_usedBetterPlayerControllerRegistry.contains(controller));
     for (int i = 0; i < _usedBetterPlayerControllerRegistry.length; i++) {
       _usedBetterPlayerControllerRegistry[i].pause();
-
       _usedBetterPlayerControllerRegistry[i].setVolume(0.0);
     }
     if (freeController != null) {
       _usedBetterPlayerControllerRegistry.add(freeController);
-
-      freeController.setVolume(1.0);
+      freeController.setVolume(0.0);
     }
     if (_usedBetterPlayerControllerRegistry.length == 3) {
       _usedBetterPlayerControllerRegistry[0].pause();

@@ -81,7 +81,7 @@ class _NotificationPageState extends State<NotificationPage>
               .add(NotificationModel.fromJson(responseMessage['False'][i]));
         }
       }
-      print(readNotification.length);
+      //print(readNotification.length);
 
       setState(() {
         isLoading = false;
@@ -186,7 +186,7 @@ class _NotificationPageState extends State<NotificationPage>
       return noti2.dateTime.compareTo(noti1.dateTime);
     });
     for (int i = 0; i < allNotification.length; i++) {
-      print(allNotification[i].dateTime.toLocal());
+      //print(allNotification[i].dateTime.toLocal());
       tiles.add(NotificationTile(
         read: allNotification[i].readFlag,
         name: allNotification[i].text,

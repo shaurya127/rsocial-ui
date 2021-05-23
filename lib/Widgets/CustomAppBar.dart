@@ -1,17 +1,23 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/auth.dart';
+import 'package:rsocial2/contants/config.dart';
+import 'package:rsocial2/providers/data.dart';
 import '../contants/constants.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rsocial2/functions.dart';
-import '../model/user.dart';
+import '../helper.dart';
+import '../model/user.dart' as userModel;
 
 class customAppBar extends StatefulWidget implements PreferredSizeWidget {
   BuildContext context;
   bool canShowProfile;
-
+  // appBarKey = GlobalKey<_customAppBarState>();
   customAppBar(this.context, [this.canShowProfile = true]);
 
   @override
@@ -22,7 +28,8 @@ class customAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _customAppBarState extends State<customAppBar> {
-  showProfile(BuildContext context, User user, String photourl) async {
+  showProfile(
+      BuildContext context, userModel.User user, String photourl) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -40,6 +47,7 @@ class _customAppBarState extends State<customAppBar> {
 
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<Data>(context);
     return AppBar(
       backgroundColor: colorButton,
       iconTheme: IconThemeData(color: Colors.white),

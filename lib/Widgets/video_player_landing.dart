@@ -38,7 +38,6 @@ class _ReusableVideoListWidgetState extends State<ReusableVideoListWidget> {
       betterPlayerControllerStreamController = StreamController.broadcast();
   bool _initialized = false;
   Timer _timer;
-  double _aspectRatio = 16 / 9;
   @override
   void initState() {
     super.initState();
@@ -65,7 +64,7 @@ class _ReusableVideoListWidgetState extends State<ReusableVideoListWidget> {
             cacheConfiguration: BetterPlayerCacheConfiguration(useCache: true),
           ),
         );
-
+        controller.setVolume(0.0);
         if (!betterPlayerControllerStreamController.isClosed) {
           betterPlayerControllerStreamController.add(controller);
         }
