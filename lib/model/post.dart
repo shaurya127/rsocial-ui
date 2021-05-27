@@ -16,11 +16,12 @@ class Post {
       this.investedWith,
       this.investedAmount,
       this.fileUpload,
-      this.reactedBy,
       this.duration,
       this.profit,
       this.createdOn,
-      this.canReact});
+      this.canReact,
+      this.reactions,
+      this.userReaction});
 
   String id;
   User user;
@@ -30,18 +31,17 @@ class Post {
   List<User> investedWithUser;
   String investedAmount;
   List<String> fileUpload;
-  List<User> reactedBy;
+  List<int> reactions = [0, 0, 0, 0];
   int duration;
   String profit;
   String createdOn;
   bool canReact;
-
+  String userReaction;
   factory Post.fromJsonI(final json) {
     var uid = json["UserId"];
     var frnd = json['InvestedWith'];
     final diff = DateTime.now().difference(DateTime.parse(json['PostedOn']));
-    //final txt = timeago.format(DateTime.now().subtract(diff), locale: locale);
-    final txt = getTimeSinceNotification(diff);
+    final time = getTimeSinceNotification(diff);
     var expiringOnDiff =
         DateTime.now().difference(DateTime.parse(json['ExpiringOn'])).isNegative
             ? true
@@ -54,16 +54,24 @@ class Post {
         investedWith.add(user);
       }
     }
-
-    List<User> rxn = [];
-    if (json["ReactedBy"] != null) if (json["ReactedBy"].isNotEmpty) {
-      for (int i = 0; i < json["ReactedBy"].length; i++) {
-        User user = User.fromJson(json["ReactedBy"][i]);
-        rxn.add(user);
-      }
+    List<int> reactions = [0, 0, 0, 0];
+    reactions[0] = json["loved"] ?? 0;
+    reactions[1] = json["liked"] ?? 0;
+    reactions[2] = json["whatever"] ?? 0;
+    reactions[3] = json["hated"] ?? 0;
+    // List<User> rxn = [];
+    // if (json["ReactedBy"] != null) if (json["ReactedBy"].isNotEmpty) {
+    //   for (int i = 0; i < json["ReactedBy"].length; i++) {
+    //     User user = User.fromJson(json["ReactedBy"][i]);
+    //     rxn.add(user);
+    //   }
+    // }
+    String reaction = json["requester_reaction"] ?? "noreact";
+    if (reaction == "NotReacted") {
+      reaction = "noreact";
     }
-
     return Post(
+        userReaction: reaction,
         storyType: json["StoryType"],
         id: json["id"],
         canReact: expiringOnDiff,
@@ -72,35 +80,44 @@ class Post {
         investedWithUser: investedWith,
         investedAmount: json["InvestedAmount"],
         profit: json["PresentValue"].toString(),
-        reactedBy: rxn,
-        createdOn: txt,
+        reactions: reactions,
+        createdOn: time,
         fileUpload: json["FileUpload"] == null
             ? []
             : List<String>.from(json["FileUpload"].map((x) => x)));
   }
 
   factory Post.fromJsonW(final json) {
+    print("POST " + json.toString());
     final diff = DateTime.now().difference(DateTime.parse(json['PostedOn']));
-    final txt = getTimeSinceNotification(diff);
-    print(txt);
+    final time = getTimeSinceNotification(diff);
     var uid = json["UserId"];
-    List<User> rxn = [];
-    if (json["ReactedBy"].isNotEmpty) {
-      for (int i = 0; i < json["ReactedBy"].length; i++) {
-        //print("reacted by $i is ${json["ReactedBy"][i]}");
-        User user = User.fromJson(json["ReactedBy"][i]);
-        rxn.add(user);
-      }
+    List<int> reactions = [0, 0, 0, 0];
+    reactions[0] = json["loved"] ?? 0;
+    reactions[1] = json["liked"] ?? 0;
+    reactions[2] = json["whatever"] ?? 0;
+    reactions[3] = json["hated"] ?? 0;
+    //List<User> rxn = [];
+    // if (json["ReactedBy"].isNotEmpty) {
+    //   for (int i = 0; i < json["ReactedBy"].length; i++) {
+    //     //print("reacted by $i is ${json["ReactedBy"][i]}");
+    //     User user = User.fromJson(json["ReactedBy"][i]);
+    //     rxn.add(user);
+    //   }
+    // }
+    String reaction = json["requester_reaction"] ?? "noreact";
+    if (reaction == "NotReacted") {
+      reaction = "noreact";
     }
-
     return Post(
+        userReaction: reaction,
         storyType: json["StoryType"],
         id: json["id"],
         user: User.fromJson(uid),
         storyText: json["StoryText"],
         profit: json["PresentValue"].toString(),
-        reactedBy: rxn,
-        createdOn: txt,
+        reactions: reactions,
+        createdOn: time,
         canReact: true,
         fileUpload: json["FileUpload"] == null
             ? []
@@ -117,35 +134,34 @@ class Post {
         //     ? List<String>.from(fileUpload.map((x) => x))
         //     : [],
       };
+  // Map<String, dynamic> toJsonInvestDao() => {
+  //       "id": id,
+  //       "StoryText": storyText,
+  //       "InvestedWith": investedWith == null ? [] : this.investedWith,
+  //       "InvestedAmount": investedAmount,
+  //       "Duration": duration.toString(),
+  //       "FileUpload": fileUpload != null
+  //           ? List<String>.from(fileUpload.map((x) => x))
+  //           : [],
+  //       "PresentValue": profit,
+  //       "ReactedBy": reactedBy,
+  //       "createdOn": createdOn,
+  //       "StoryType": storyType,
+  //       "Owner": user,
+  //     };
 
-  Map<String, dynamic> toJsonInvestDao() => {
-        "id": id,
-        "StoryText": storyText,
-        "InvestedWith": investedWith == null ? [] : this.investedWith,
-        "InvestedAmount": investedAmount,
-        "Duration": duration.toString(),
-        "FileUpload": fileUpload != null
-            ? List<String>.from(fileUpload.map((x) => x))
-            : [],
-        "PresentValue": profit,
-        "ReactedBy": reactedBy,
-        "createdOn": createdOn,
-        "StoryType": storyType,
-        "Owner": user,
-      };
-
-  Map<String, dynamic> toJsonWageDao() => {
-        "id": id,
-        "StoryText": storyText,
-        "FileUpload": fileUpload != null
-            ? List<String>.from(fileUpload.map((x) => x))
-            : [],
-        "PresentValue": profit,
-        "ReactedBy": reactedBy,
-        "createdOn": createdOn,
-        "StoryType": storyType,
-        "Owner": user,
-      };
+  // Map<String, dynamic> toJsonWageDao() => {
+  //       "id": id,
+  //       "StoryText": storyText,
+  //       "FileUpload": fileUpload != null
+  //           ? List<String>.from(fileUpload.map((x) => x))
+  //           : [],
+  //       "PresentValue": profit,
+  //       "ReactedBy": reactedBy,
+  //       "createdOn": createdOn,
+  //       "StoryType": storyType,
+  //       "Owner": user,
+  //     };
 
   Map<String, dynamic> toJsonWage() => {
         "id": id,
@@ -167,10 +183,6 @@ class Post {
       return "An hour ago";
     } else if (duration.inHours > 1) {
       return "${duration.inHours} hours ago";
-      // } else if (duration.inMinutes > 1) {
-      //   return "${duration.inMinutes} minutes ago";
-      // } else if (duration.inMinutes == 1) {
-      //   return "A minute ago";
     } else {
       return "Now";
     }

@@ -136,7 +136,8 @@ class _Landing_PageState extends State<Landing_Page> {
     }
 
     var response = await postFunc(
-        url: storyEndPoint + "all",
+        url:
+            "https://t43kpz2m5d.execute-api.ap-south-1.amazonaws.com/story/home",
         token: token,
         body: jsonEncode({"id": id, "start_token": page}));
     //print(response.body);

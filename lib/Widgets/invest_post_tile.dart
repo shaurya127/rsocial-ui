@@ -101,16 +101,22 @@ class _InvestPostTileState extends State<InvestPostTile>
   int reactionSizeIncrease = 3;
 
   getReactions() {
-    counter = {'loved': 0, 'liked': 0, 'whatever': 0, 'hated': 0, 'noreact': 0};
-    for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
-      User user = widget.userPost.reactedBy[i];
-      String rt = user.reactionType;
-      counter[rt]++;
-
-      if (user.id == (curUser != null ? curUser.id : savedUser.id)) {
-        this.rxn = user.reactionType;
-      }
-    }
+    counter = {
+      'loved': widget.userPost.reactions[0],
+      'liked': widget.userPost.reactions[1],
+      'whatever': widget.userPost.reactions[2],
+      'hated': widget.userPost.reactions[3],
+      'noreact': 0,
+    };
+    // for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
+    //   User user = widget.userPost.reactedBy[i];
+    //   String rt = user.reactionType;
+    //   counter[rt]++;
+    this.rxn = widget.userPost.userReaction;
+    //   if (user.id == (curUser != null ? curUser.id : savedUser.id)) {
+    //     this.rxn = user.reactionType;
+    //   }
+    // }
   }
 
   convertStringToFile() {
@@ -1526,16 +1532,23 @@ class _ReactionTileState extends State<ReactionTile>
   }
 
   getReactions() {
-    counter = {'loved': 0, 'liked': 0, 'whatever': 0, 'hated': 0, 'noreact': 0};
-    for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
-      User user = widget.userPost.reactedBy[i];
-      String rt = user.reactionType;
-      counter[rt]++;
+    counter = {
+      'loved': widget.userPost.reactions[0],
+      'liked': widget.userPost.reactions[1],
+      'whatever': widget.userPost.reactions[2],
+      'hated': widget.userPost.reactions[3],
+      'noreact': 0,
+    };
+    // for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
+    //   User user = widget.userPost.reactedBy[i];
+    //   String rt = user.reactionType;
+    //   counter[rt]++;
 
-      if (user.id == (curUser != null ? curUser.id : savedUser.id)) {
-        this.rxn = user.reactionType;
-      }
-    }
+    //   if (user.id == (curUser != null ? curUser.id : savedUser.id)) {
+    //     this.rxn = user.reactionType;
+    //   }
+    // }
+    this.rxn = widget.userPost.userReaction;
   }
 
   react(String reactn) async {

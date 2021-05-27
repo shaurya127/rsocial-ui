@@ -78,12 +78,22 @@ class _ProfileState extends State<Profile> {
   bool isPlatformPostFail = false;
   bool isPhotoEditedComplete = false;
   bool isLoadingPosts = false;
+  bool isWageloading = true;
+  bool isInvestLoading = true;
+  bool isWagepostFail = false;
+  bool isInvestPostFail = false;
   ReusableVideoListController reusableVideoListController;
   ScrollController _scrollController = ScrollController();
+  ScrollController _scrollControllerWage = ScrollController();
+  ScrollController _scrollControllerInvest = ScrollController();
   final key = GlobalKey<AnimatedListState>();
   int page = 0;
+  int pagewage = 0;
+  int pageinvest = 0;
   bool platformStoriesStillLeft = true;
-
+  bool WagePostStillLeft = true;
+  bool InvestPoststillLeft = true;
+  bool UserPostStillLeft = true;
   saveData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     print("get user finished");
@@ -202,7 +212,10 @@ class _ProfileState extends State<Profile> {
         widget.user = curUser;
       });
     }
-    getUserPosts();
+    // getUserPosts();
+    // getPlatformPostsInitial();
+    getWagePostInitial();
+    getInvestPostInitial();
     getPlatformPostsInitial();
     isEditable = false;
     //isLoading = false;
@@ -217,6 +230,30 @@ class _ProfileState extends State<Profile> {
           });
           print("i was called with $page and $platformStoriesStillLeft");
           getPlatformPosts();
+        }
+      }
+    });
+    _scrollControllerWage.addListener(() {
+      if (_scrollControllerWage.position.pixels ==
+          _scrollControllerWage.position.maxScrollExtent) {
+        if (WagePostStillLeft) {
+          setState(() {
+            pagewage = pagewage + 5;
+          });
+          print("i was called with $pagewage and $WagePostStillLeft");
+          getWagePosts();
+        }
+      }
+    });
+    _scrollControllerInvest.addListener(() {
+      if (_scrollControllerInvest.position.pixels ==
+          _scrollControllerInvest.position.maxScrollExtent) {
+        if (InvestPoststillLeft) {
+          setState(() {
+            pageinvest = pageinvest + 5;
+          });
+          print("i was called with $pageinvest and $InvestPoststillLeft");
+          getInvestPosts();
         }
       }
     });
@@ -527,6 +564,174 @@ class _ProfileState extends State<Profile> {
     });
   }
 
+  Future<void> getWagePosts() async {
+    postsW = [];
+    auth.User user;
+    user = authFirebase.currentUser;
+    var token = await user.getIdToken();
+
+    try {
+      user = authFirebase.currentUser;
+      DocumentSnapshot doc = await users.doc(user.uid).get();
+      if (doc == null) print("error from get user post");
+    } catch (e) {
+      setState(() {
+        widget.isLoading = false;
+        isWagepostFail = true;
+      });
+    }
+
+    var response = await postFunc(
+        url:
+            "https://t43kpz2m5d.execute-api.ap-south-1.amazonaws.com/story/getuserwassup",
+        token: token,
+        body: jsonEncode({"id": widget.user.id, "start_token": 0}));
+    if (response == null) {
+      setState(() {
+        isWageloading = false;
+        isWagepostFail = true;
+      });
+      return true;
+    }
+
+    if (response.statusCode == 200) {
+      var responseMessage =
+          jsonDecode((jsonDecode(response.body))['body'])['message'];
+
+      var responseStories = responseMessage['stories'];
+      var storiesLeft = responseMessage['still_left'];
+
+      List<Post> wageposts = [];
+      if (responseMessage != []) {
+        for (int i = 0; i < responseStories.length; i++) {
+          Post post;
+          if (responseStories[i]['StoryType'] == "Wage")
+            post = Post.fromJsonW(responseStories[i]);
+          // else
+          //   post = Post.fromJsonW(responseStories[i]);
+          if (post != null) {
+            //print(post.investedWithUser);
+            wageposts.add(post);
+          }
+        }
+      }
+      setState(() {
+        // widget.isLoading = false;
+        // startLoadingTile = false;
+        isWagepostFail = false;
+        postsW.addAll(wageposts);
+        storiesStillLeft = storiesLeft;
+        //print("now setting stories left to $storiesLeft and $storiesStillLeft");
+      });
+    } else {
+      //print(response.statusCode);
+      throw Exception();
+    }
+  }
+
+  Future<void> getInvestPosts() async {
+    postsI = [];
+    auth.User user;
+    user = authFirebase.currentUser;
+    var token = await user.getIdToken();
+
+    try {
+      user = authFirebase.currentUser;
+      // DocumentSnapshot doc = await users.doc(user.uid).get();
+      // if (doc == null) print("error from get user post");
+    } catch (e) {
+      setState(() {
+        // widget.isLoading = false;
+        isWagepostFail = true;
+      });
+    }
+
+    var response = await postFunc(
+        url:
+            "https://t43kpz2m5d.execute-api.ap-south-1.amazonaws.com/story/getuserinvest",
+        token: token,
+        body: jsonEncode({"id": widget.user.id, "start_token": 0}));
+    //print(response.body);
+    print("getUserPostFired");
+    if (response == null) {
+      print("nell");
+      setState(() {
+        isInvestLoading = false;
+        isInvestPostFail = true;
+        // widget.isLoading = false;
+      });
+      return true;
+    }
+
+    if (response.statusCode == 200) {
+      final jsonUser = jsonDecode(response.body);
+      var body = jsonUser['body'];
+      var body1 = jsonDecode(body);
+      //print("body is $body");
+      //print(body1);
+      var msg = body1['message'];
+      //print(msg.length);
+      //print("msg id ${msg}");
+
+      print("res 200 we get");
+      var responseMessage =
+          jsonDecode((jsonDecode(response.body))['body'])['message'];
+      print(responseMessage);
+
+      var responseStories = responseMessage['stories'];
+      print(responseStories);
+      var storiesLeftinvest = responseMessage['still_left'];
+
+      List<Post> Investposts = [];
+      if (responseMessage != []) {
+        for (int i = 0; i < responseStories.length; i++) {
+          Post post;
+          if (responseStories[i]['StoryType'] == "Investment")
+            post = Post.fromJsonI(responseStories[i]);
+          // else
+          //   post = Post.fromJsonW(responseStories[i]);
+          if (post != null) {
+            //print(post.investedWithUser);
+            Investposts.add(post);
+          } else {
+            print("post null hia");
+          }
+        }
+      }
+      setState(() {
+        // widget.isLoading = false;
+        // startLoadingTile = false;
+        isWagepostFail = false;
+        postsI.addAll(Investposts);
+        InvestPoststillLeft = storiesLeftinvest;
+        //print("now setting stories left to $storiesLeft and $storiesStillLeft");
+      });
+    } else {
+      //print(response.statusCode);
+      throw Exception();
+    }
+  }
+
+  getWagePostInitial() async {
+    setState(() {
+      isWageloading = true;
+    });
+    getWagePosts();
+    setState(() {
+      isWageloading = false;
+    });
+  }
+
+  getInvestPostInitial() async {
+    setState(() {
+      isInvestLoading = true;
+    });
+    getInvestPosts();
+    setState(() {
+      isInvestLoading = false;
+    });
+  }
+
   buildWagePosts() {
     print("build wage post started");
     WageTiles = [];
@@ -616,8 +821,6 @@ class _ProfileState extends State<Profile> {
       });
       //print(posts.length);
       for (int i = 0; i < postsI.length; i++) {
-        print("Invest reaction");
-        print(postsI[i].reactedBy.length);
         InvestPostTile tile = InvestPostTile(
           onPressDelete: () => deletePost(i, "invest", postsI[i].id),
           curUser: widget.currentUser,

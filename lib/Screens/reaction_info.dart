@@ -133,11 +133,11 @@ class _Reaction_InfoState extends State<Reaction_Info>
           -1) {
         postsGlobal
             .firstWhere((element) => element.id == widget.postId)
-            .reactedBy = [
-          ...loved,
-          ...liked,
-          ...whatever,
-          ...hated,
+            .reactions = [
+          loved.length,
+          liked.length,
+          whatever.length,
+          hated.length,
         ];
       }
       buildReactionTile();

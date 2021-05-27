@@ -1457,16 +1457,21 @@ class _ReactionTileState extends State<ReactionTile>
   }
 
   getReactions() {
-    counter = {'loved': 0, 'liked': 0, 'whatever': 0, 'hated': 0, 'noreact': 0};
-    for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
-      User user = widget.userPost.reactedBy[i];
-      String rt = user.reactionType;
-      counter[rt]++;
+    counter = {
+      'loved': widget.userPost.reactions[0],
+      'liked': widget.userPost.reactions[1],
+      'whatever': widget.userPost.reactions[2],
+      'hated': widget.userPost.reactions[3],
+      'noreact': 0,
+    };
+    // for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
+    //   User user = widget.userPost.reactedBy[i];
+    //   String rt = user.reactionType;
+    //   counter[rt]++;
 
-      if (user.id == (curUser != null ? curUser.id : savedUser.id)) {
-        this.rxn = user.reactionType;
-      }
-    }
+    this.rxn = widget.userPost.userReaction;
+
+    // }
   }
 
   react(String reactn) async {
@@ -1631,7 +1636,6 @@ class _ReactionTileState extends State<ReactionTile>
 
   @override
   Widget build(BuildContext context) {
-    final transformationController = TransformationController();
     if (m.containsKey(widget.userPost.id)) {
       Map<String, int> map = m[widget.userPost.id];
       Map<String, int> map2 = mp[widget.userPost.id];
