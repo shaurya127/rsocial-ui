@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:rsocial2/Widgets/post_tile.dart';
 import 'package:rsocial2/controller.dart';
 import 'package:rsocial2/helper.dart';
@@ -11,7 +10,6 @@ import 'package:rsocial2/helper.dart';
 import '../contants/config.dart';
 import '../model/post.dart';
 import 'bottom_nav_bar.dart';
-import 'package:http/http.dart' as http;
 
 class DisplayPost extends StatefulWidget {
   String postId;
@@ -50,13 +48,19 @@ class _DisplayPostState extends State<DisplayPost> {
       } else {
         id = curUser.id;
       }
-      final response = await getFunc(
-          url: storyEndPoint + "$id/${widget.postId}", token: token);
-
+      final response = await postFunc(
+        url: storyEndPoint + "getstory",
+        token: token,
+        body: jsonEncode(
+          {
+            "id": id,
+            "storyId": widget.postId,
+          },
+        ),
+      );
       if (response.statusCode == 200) {
         var responseMessage =
             jsonDecode((jsonDecode(response.body))['body'])['message'];
-
         Post post;
         if (responseMessage['StoryType'] == "Investment")
           post = Post.fromJsonI(responseMessage);
@@ -68,7 +72,6 @@ class _DisplayPostState extends State<DisplayPost> {
           if (index != -1) {
             postsGlobal[index] = post;
           }
-          //print(post.investedWithUser);
           reusableVideoListController = ReusableVideoListController();
           post_tile = Post_Tile(
             showPopup: false,
@@ -82,13 +85,12 @@ class _DisplayPostState extends State<DisplayPost> {
         setState(() {
           isLoading = false;
         });
-        //print(posts.length);
       } else {
-        print(response.statusCode);
-        throw Exception(["Invalid response"]);
+        print(response.body.toString());
+        throw Exception(["Some error has occured. Please try again later."]);
       }
     } catch (error) {
-      // Fluttertoast.showToast(msg: error.toString());
+      Fluttertoast.showToast(msg: error.toString());
     }
   }
 

@@ -344,6 +344,8 @@ class _Search_PageState extends State<Search_Page>
           );
           friendResults.add(tile);
         }
+        friendResults.sort(
+            (tile1, tile2) => tile1.user.fname.compareTo(tile2.user.fname));
         return ListView(
           children: friendResults,
         );

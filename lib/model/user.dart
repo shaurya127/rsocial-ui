@@ -64,7 +64,6 @@ class User {
   //List<String> list= new List();
 
   factory User.fromJson(final json) {
-    //print(json["SentPendingConnection"]);
     Map<String, String> map = new Map();
     List<User> outgoing = [];
     if (json["SentPendingConnection"] != null) {

@@ -65,14 +65,11 @@ class _ProfileState extends State<Profile> {
   bool isLoadingUser = true;
   List<Post> postsW = [];
   List<Post> postsI = [];
-  List<InvestPostTile> InvestTiles = [];
-  List<Post_Tile> WageTiles = [];
   List<Post> platformPost = [];
-  //List<PlatformPostTile> platformTiles = [];
   TextEditingController bioController = TextEditingController();
   bool isEditable = false;
   File file;
-  String encodedFile = null;
+  String encodedFile;
   bool isPlatformLoading = true;
   bool isUserPostFail = false;
   bool isPlatformPostFail = false;
@@ -84,16 +81,20 @@ class _ProfileState extends State<Profile> {
   bool isInvestPostFail = false;
   ReusableVideoListController reusableVideoListController;
   ScrollController _scrollController = ScrollController();
-  ScrollController _scrollControllerWage = ScrollController();
-  ScrollController _scrollControllerInvest = ScrollController();
+  ScrollController _scrollControllerWage =
+      ScrollController(keepScrollOffset: false);
+  ScrollController _scrollControllerInvest =
+      ScrollController(keepScrollOffset: false);
+  ScrollController _scrollControllerMain =
+      ScrollController(keepScrollOffset: false);
   final key = GlobalKey<AnimatedListState>();
   int page = 0;
   int pagewage = 0;
   int pageinvest = 0;
   bool platformStoriesStillLeft = true;
-  bool WagePostStillLeft = true;
-  bool InvestPoststillLeft = true;
-  bool UserPostStillLeft = true;
+  bool wagePostsLeft = true;
+  bool investPostsLeft = true;
+
   saveData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     print("get user finished");
@@ -149,7 +150,7 @@ class _ProfileState extends State<Profile> {
     var token;
 
     var id = curUser == null ? savedUser.id : curUser.id;
-    final url = userEndPoint + "get";
+    final url = userEndPoint + "userprofile";
 
     var response;
     try {
@@ -212,8 +213,18 @@ class _ProfileState extends State<Profile> {
         widget.user = curUser;
       });
     }
-    // getUserPosts();
-    // getPlatformPostsInitial();
+    _scrollControllerWage.addListener(() {
+      _scrollControllerMain.animateTo(_scrollControllerWage.offset,
+          duration: Duration(milliseconds: 10), curve: Curves.ease);
+    });
+    _scrollControllerInvest.addListener(() {
+      _scrollControllerMain.animateTo(_scrollControllerInvest.offset,
+          duration: Duration(milliseconds: 10), curve: Curves.ease);
+    });
+    _scrollController.addListener(() {
+      _scrollControllerMain.animateTo(_scrollController.offset,
+          duration: Duration(milliseconds: 10), curve: Curves.ease);
+    });
     getWagePostInitial();
     getInvestPostInitial();
     getPlatformPostsInitial();
@@ -236,11 +247,11 @@ class _ProfileState extends State<Profile> {
     _scrollControllerWage.addListener(() {
       if (_scrollControllerWage.position.pixels ==
           _scrollControllerWage.position.maxScrollExtent) {
-        if (WagePostStillLeft) {
+        if (wagePostsLeft) {
           setState(() {
-            pagewage = pagewage + 5;
+            pagewage = pagewage + 10;
           });
-          print("i was called with $pagewage and $WagePostStillLeft");
+          print("i was called with $pagewage and $wagePostsLeft");
           getWagePosts();
         }
       }
@@ -248,11 +259,11 @@ class _ProfileState extends State<Profile> {
     _scrollControllerInvest.addListener(() {
       if (_scrollControllerInvest.position.pixels ==
           _scrollControllerInvest.position.maxScrollExtent) {
-        if (InvestPoststillLeft) {
+        if (investPostsLeft) {
           setState(() {
-            pageinvest = pageinvest + 5;
+            pageinvest = pageinvest + 10;
           });
-          print("i was called with $pageinvest and $InvestPoststillLeft");
+          print("i was called with $pageinvest and $investPostsLeft");
           getInvestPosts();
         }
       }
@@ -263,14 +274,13 @@ class _ProfileState extends State<Profile> {
   void dispose() {
     super.dispose();
     reusableVideoListController.dispose();
+    _scrollController.dispose();
+    _scrollControllerInvest.dispose();
+    _scrollControllerMain.dispose();
+    _scrollControllerWage.dispose();
   }
 
   handleTakePhoto() async {
-    // File file = await ImagePicker.pickImage(
-    //   source: ImageSource.camera,
-    //   maxHeight: 675,
-    //   maxWidth: 960,
-    // );
     Navigator.pop(context);
     var status = await Permission.camera.status;
 
@@ -438,100 +448,113 @@ class _ProfileState extends State<Profile> {
     //  print(list);
   }
 
-  getUserPosts() async {
-    postsI = [];
-    postsW = [];
-    setState(() {
-      isLoadingPosts = true;
-    });
-    print("get user post fired");
+  // getUserPosts() async {
+  //   postsI = [];
+  //   postsW = [];
+  //   setState(() {
+  //     isLoadingPosts = true;
+  //   });
+  //   print("get user post fired");
+  //   var user = auth.FirebaseAuth.instance.currentUser;
+  //   final url = storyEndPoint + "${widget.user.id}";
+  //   var token = await user.getIdToken();
+  //   //print(token);
+  //   var response;
+  //   try {
+  //     print("URL:$url");
+  //     print("TOKEN:$token");
+  //     response = await http.get(
+  //       Uri.parse(url),
+  //       headers: {
+  //         "Authorization": "Bearer $token",
+  //         "Content-Type": "application/json",
+  //       },
+  //     );
+  //   } catch (e) {
+  //     setState(() {
+  //       widget.isLoading = false;
+  //       isUserPostFail = true;
+  //     });
+  //     return;
+  //   }
+
+  //   if (response.statusCode == 200) {
+  //     final jsonUser = jsonDecode(response.body);
+  //     var body = jsonUser['body'];
+  //     var body1 = jsonDecode(body);
+  //     //print("body is $body");
+  //     //print(body1);
+  //     var msg = body1['message'];
+  //     //print(msg.length);
+  //     //print("msg id ${msg}");
+  //     for (int i = 0; i < msg.length; i++) {
+  //       print("msg $i is ${msg[i]}");
+  //       Post post;
+  //       if (msg[i]['StoryType'] == "Investment")
+  //         post = Post.fromJsonI(msg[i]);
+  //       else
+  //         post = Post.fromJsonW(msg[i]);
+  //       if (post != null) {
+  //         if (msg[i]['StoryType'] == "Investment")
+  //           postsI.add(post);
+  //         else
+  //           postsW.add(post);
+  //       }
+  //     }
+  //     print("get user post finished");
+  //     // print(postsW.length);
+  //     // print(postsI.length);
+  //     // buildInvestPosts();
+  //     // buildWagePosts();
+  //     setState(() {
+  //       isLoadingPosts = false;
+  //     });
+  //     setState(() {});
+  //   } else {
+  //     print(response.statusCode);
+  //     throw Exception();
+  //   }
+  // }
+
+  getPlatformPosts() async {
     var user = auth.FirebaseAuth.instance.currentUser;
-    final url = storyEndPoint + "${widget.user.id}";
+    final url = storyEndPoint + 'userplatformactivity';
     var token = await user.getIdToken();
     //print(token);
     var response;
     try {
-      print("URL:$url");
-      print("TOKEN:$token");
-      response = await http.get(
+      response = await http.post(
         Uri.parse(url),
         headers: {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json",
         },
-      );
-    } catch (e) {
-      setState(() {
-        widget.isLoading = false;
-        isUserPostFail = true;
-      });
-      return;
-    }
-
-    if (response.statusCode == 200) {
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      //print("body is $body");
-      //print(body1);
-      var msg = body1['message'];
-      //print(msg.length);
-      //print("msg id ${msg}");
-      for (int i = 0; i < msg.length; i++) {
-        print("msg $i is ${msg[i]}");
-        Post post;
-        if (msg[i]['StoryType'] == "Investment")
-          post = Post.fromJsonI(msg[i]);
-        else
-          post = Post.fromJsonW(msg[i]);
-        if (post != null) {
-          if (msg[i]['StoryType'] == "Investment")
-            postsI.add(post);
-          else
-            postsW.add(post);
-        }
-      }
-      print("get user post finished");
-      // print(postsW.length);
-      // print(postsI.length);
-      // buildInvestPosts();
-      // buildWagePosts();
-      setState(() {
-        isLoadingPosts = false;
-      });
-      setState(() {});
-    } else {
-      print(response.statusCode);
-      throw Exception();
-    }
-  }
-
-  getPlatformPosts() async {
-    var user = auth.FirebaseAuth.instance.currentUser;
-    final url = storyEndPoint + 'platformactivity';
-    var token = await user.getIdToken();
-    //print(token);
-    var response;
-    try {
-      response = await http.post(Uri.parse(url),
-          headers: {
-            "Authorization": "Bearer $token",
-            "Content-Type": "application/json",
+        body: jsonEncode(
+          {
+            "requester_id": curUser.id,
+            "id": widget.user.id,
+            "start_token": page,
           },
-          body: jsonEncode({"id": widget.user.id, "start_token": page}));
+        ),
+      );
     } catch (e) {
       setState(() {
         isPlatformLoading = false;
         isPlatformPostFail = true;
       });
     }
+
+    if (response == null) {
+      setState(() {
+        isPlatformLoading = false;
+        isPlatformPostFail = true;
+      });
+      return;
+    }
     final jsonResponse = jsonDecode(response.body);
     if (jsonResponse['statusCode'] == 200) {
       var body = jsonResponse['body'];
       var body1 = jsonDecode(body);
-
-      //print("body is $body");
-      //print(body1);
       List<Post> list = [];
       var msg = body1['message']['stories'];
       var platformStoriesLeft = body1['message']['still_left'];
@@ -554,44 +577,69 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  getInvestPostInitial() async {
+    setState(() {
+      isInvestLoading = true;
+    });
+    await getInvestPosts();
+    setState(() {
+      isInvestLoading = false;
+    });
+  }
+
   getPlatformPostsInitial() async {
     setState(() {
       isPlatformLoading = true;
     });
-    getPlatformPosts();
+    await getPlatformPosts();
     setState(() {
       isPlatformLoading = false;
     });
   }
 
-  Future<void> getWagePosts() async {
-    postsW = [];
-    auth.User user;
-    user = authFirebase.currentUser;
-    var token = await user.getIdToken();
+  getWagePostInitial() async {
+    setState(() {
+      isWageloading = true;
+    });
+    await getWagePosts();
+    setState(() {
+      isWageloading = false;
+    });
+  }
 
+  Future<void> getWagePosts() async {
+    var user = auth.FirebaseAuth.instance.currentUser;
+    final url = storyEndPoint + "getuserwassup";
+    var token = await user.getIdToken();
+    var response;
     try {
-      user = authFirebase.currentUser;
-      DocumentSnapshot doc = await users.doc(user.uid).get();
-      if (doc == null) print("error from get user post");
+      response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(
+          {
+            "requester_id": curUser.id,
+            "id": widget.user.id,
+            "start_token": pagewage,
+          },
+        ),
+      );
     } catch (e) {
       setState(() {
-        widget.isLoading = false;
+        isWageloading = false;
         isWagepostFail = true;
       });
     }
 
-    var response = await postFunc(
-        url:
-            "https://t43kpz2m5d.execute-api.ap-south-1.amazonaws.com/story/getuserwassup",
-        token: token,
-        body: jsonEncode({"id": widget.user.id, "start_token": 0}));
     if (response == null) {
       setState(() {
         isWageloading = false;
         isWagepostFail = true;
       });
-      return true;
+      return;
     }
 
     if (response.statusCode == 200) {
@@ -605,137 +653,97 @@ class _ProfileState extends State<Profile> {
       if (responseMessage != []) {
         for (int i = 0; i < responseStories.length; i++) {
           Post post;
-          if (responseStories[i]['StoryType'] == "Wage")
-            post = Post.fromJsonW(responseStories[i]);
-          // else
-          //   post = Post.fromJsonW(responseStories[i]);
+          responseStories[i]["UserId"] = {
+            "id": widget.user.id,
+            "FName": widget.user.fname,
+            "LName": widget.user.lname,
+            "ProfilePic": widget.user.photoUrl,
+          };
+          post = Post.fromJsonW(responseStories[i]);
           if (post != null) {
-            //print(post.investedWithUser);
             wageposts.add(post);
           }
         }
       }
       setState(() {
-        // widget.isLoading = false;
-        // startLoadingTile = false;
         isWagepostFail = false;
         postsW.addAll(wageposts);
-        storiesStillLeft = storiesLeft;
-        //print("now setting stories left to $storiesLeft and $storiesStillLeft");
+        wagePostsLeft = storiesLeft;
       });
     } else {
-      //print(response.statusCode);
       throw Exception();
     }
   }
 
   Future<void> getInvestPosts() async {
-    postsI = [];
-    auth.User user;
-    user = authFirebase.currentUser;
+    var user = auth.FirebaseAuth.instance.currentUser;
+    final url = storyEndPoint + "getuserinvest";
     var token = await user.getIdToken();
-
+    var response;
     try {
-      user = authFirebase.currentUser;
-      // DocumentSnapshot doc = await users.doc(user.uid).get();
-      // if (doc == null) print("error from get user post");
+      response = await http.post(
+        Uri.parse(url),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+        },
+        body: jsonEncode(
+          {
+            "requester_id": curUser.id,
+            "id": widget.user.id,
+            "start_token": pageinvest,
+          },
+        ),
+      );
     } catch (e) {
-      setState(() {
-        // widget.isLoading = false;
-        isWagepostFail = true;
-      });
-    }
-
-    var response = await postFunc(
-        url:
-            "https://t43kpz2m5d.execute-api.ap-south-1.amazonaws.com/story/getuserinvest",
-        token: token,
-        body: jsonEncode({"id": widget.user.id, "start_token": 0}));
-    //print(response.body);
-    print("getUserPostFired");
-    if (response == null) {
-      print("nell");
       setState(() {
         isInvestLoading = false;
         isInvestPostFail = true;
-        // widget.isLoading = false;
       });
-      return true;
+    }
+
+    if (response == null) {
+      setState(() {
+        isInvestLoading = false;
+        isInvestPostFail = true;
+      });
+      return;
     }
 
     if (response.statusCode == 200) {
-      final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      //print("body is $body");
-      //print(body1);
-      var msg = body1['message'];
-      //print(msg.length);
-      //print("msg id ${msg}");
-
-      print("res 200 we get");
       var responseMessage =
           jsonDecode((jsonDecode(response.body))['body'])['message'];
-      print(responseMessage);
 
       var responseStories = responseMessage['stories'];
-      print(responseStories);
-      var storiesLeftinvest = responseMessage['still_left'];
+      var storiesLeft = responseMessage['still_left'];
 
-      List<Post> Investposts = [];
+      List<Post> investposts = [];
       if (responseMessage != []) {
         for (int i = 0; i < responseStories.length; i++) {
           Post post;
-          if (responseStories[i]['StoryType'] == "Investment")
-            post = Post.fromJsonI(responseStories[i]);
-          // else
-          //   post = Post.fromJsonW(responseStories[i]);
+          responseStories[i]["UserId"] = {
+            "id": widget.user.id,
+            "FName": widget.user.fname,
+            "LName": widget.user.lname,
+            "ProfilePic": widget.user.photoUrl,
+          };
+          post = Post.fromJsonI(responseStories[i]);
           if (post != null) {
-            //print(post.investedWithUser);
-            Investposts.add(post);
-          } else {
-            print("post null hia");
+            investposts.add(post);
           }
         }
       }
       setState(() {
-        // widget.isLoading = false;
-        // startLoadingTile = false;
-        isWagepostFail = false;
-        postsI.addAll(Investposts);
-        InvestPoststillLeft = storiesLeftinvest;
-        //print("now setting stories left to $storiesLeft and $storiesStillLeft");
+        isInvestPostFail = false;
+        postsI.addAll(investposts);
+        investPostsLeft = storiesLeft;
       });
     } else {
-      //print(response.statusCode);
       throw Exception();
     }
   }
 
-  getWagePostInitial() async {
-    setState(() {
-      isWageloading = true;
-    });
-    getWagePosts();
-    setState(() {
-      isWageloading = false;
-    });
-  }
-
-  getInvestPostInitial() async {
-    setState(() {
-      isInvestLoading = true;
-    });
-    getInvestPosts();
-    setState(() {
-      isInvestLoading = false;
-    });
-  }
-
   buildWagePosts() {
-    print("build wage post started");
-    WageTiles = [];
-
     if (postsW.isEmpty) {
       return Center(
         child: Column(
@@ -760,38 +768,47 @@ class _ProfileState extends State<Profile> {
         ),
       );
     } else {
-      setState(() {
-        isLoadingPosts = true;
-      });
-      //print(posts.length);
-      for (int i = 0; i < postsW.length; i++) {
-        Post_Tile tile = Post_Tile(
-          canBuild: () => true,
-          onPressDelete: () => deletePost(i, "wage", postsW[i].id),
-          curUser: widget.currentUser,
-          userPost: postsW[i],
-          photoUrl:
-              (curUser == null ? savedUser.id : curUser.id) == widget.user.id
-                  ? curUser.photoUrl
-                  : widget.user.photoUrl,
-          reusableVideoListController: reusableVideoListController,
-        );
-        WageTiles.add(tile);
-      }
-      setState(() {
-        isLoadingPosts = false;
-      });
-      print("build wage post ended");
-      return ListView(
-        children: WageTiles,
+      return Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollControllerWage,
+              itemCount:
+                  postsW.length + 1, // Add one more item for progress indicator
+              itemBuilder: (BuildContext context, int index) {
+                if (index == postsW.length) {
+                  if (wagePostsLeft == true && postsW.length != 0)
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  else
+                    return SizedBox();
+                } else {
+                  Post_Tile tile = Post_Tile(
+                    key: ValueKey(postsW[index].id),
+                    canBuild: () => true,
+                    onPressDelete: () =>
+                        deletePost(index, "wage", postsW[index].id),
+                    curUser: widget.currentUser,
+                    userPost: postsW[index],
+                    photoUrl: (curUser == null ? savedUser.id : curUser.id) ==
+                            widget.user.id
+                        ? curUser.photoUrl
+                        : widget.user.photoUrl,
+                    reusableVideoListController: reusableVideoListController,
+                  );
+                  return tile;
+                }
+              },
+            ),
+          ),
+        ],
       );
     }
   }
 
   buildInvestPosts() {
-    print("build invest post started");
-    InvestTiles = [];
-
     if (postsI.isEmpty) {
       return Center(
         child: Column(
@@ -816,35 +833,47 @@ class _ProfileState extends State<Profile> {
         ),
       );
     } else {
-      setState(() {
-        isLoadingPosts = true;
-      });
-      //print(posts.length);
-      for (int i = 0; i < postsI.length; i++) {
-        InvestPostTile tile = InvestPostTile(
-          onPressDelete: () => deletePost(i, "invest", postsI[i].id),
-          curUser: widget.currentUser,
-          userPost: postsI[i],
-          photoUrl:
-              (curUser == null ? savedUser.id : curUser.id) == widget.user.id
-                  ? curUser.photoUrl
-                  : widget.user.photoUrl,
-          reusableVideoListController: reusableVideoListController,
-        );
-        InvestTiles.add(tile);
-      }
-      setState(() {
-        isLoadingPosts = false;
-      });
-      print("build invest post ended");
-      return ListView(
-        children: InvestTiles,
+      return Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollControllerInvest,
+              itemCount:
+                  postsI.length + 1, // Add one more item for progress indicator
+              itemBuilder: (BuildContext context, int index) {
+                if (index == postsI.length) {
+                  if (investPostsLeft == true && postsI.length != 0)
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  else
+                    return SizedBox();
+                } else {
+                  Post_Tile tile = Post_Tile(
+                    key: ValueKey(postsI[index].id),
+                    canBuild: () => true,
+                    onPressDelete: () =>
+                        deletePost(index, "invest", postsI[index].id),
+                    curUser: widget.currentUser,
+                    userPost: postsI[index],
+                    photoUrl: (curUser == null ? savedUser.id : curUser.id) ==
+                            widget.user.id
+                        ? curUser.photoUrl
+                        : widget.user.photoUrl,
+                    reusableVideoListController: reusableVideoListController,
+                  );
+                  return tile;
+                }
+              },
+            ),
+          ),
+        ],
       );
     }
   }
 
   buildPlatformInteraction() {
-    //platformTiles = [];
     if (platformPost.isEmpty) {
       return Center(
         child: Column(
@@ -880,6 +909,7 @@ class _ProfileState extends State<Profile> {
                     return SizedBox();
                 } else {
                   return new Post_Tile(
+                    key: ValueKey(platformPost[index].id),
                     curUser: curUser,
                     canBuild: () => true,
                     //onPressDelete: () => deletePost(index, ""),
@@ -890,7 +920,7 @@ class _ProfileState extends State<Profile> {
                   );
                 }
               },
-              // controller: _scrollController,
+              controller: _scrollController,
             ),
           ),
         ],
@@ -918,24 +948,6 @@ class _ProfileState extends State<Profile> {
           ],
         );
       },
-    );
-  }
-
-  buildPlatformPosts() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            "No $postOrientation story yet!",
-            style: TextStyle(
-                fontFamily: "Lato",
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: colorHintText),
-          ),
-        ],
-      ),
     );
   }
 
@@ -1409,6 +1421,7 @@ class _ProfileState extends State<Profile> {
       //setState(() {});
       return croppedImage;
     }
+    return null;
   }
 
   Future<bool> back() async {
@@ -1453,12 +1466,13 @@ class _ProfileState extends State<Profile> {
         setState(() {
           postsI.removeAt(index);
         });
+        getInvestPosts();
       } else if (type == 'wage') {
         setState(() {
           postsW.removeAt(index);
         });
+        getWagePosts();
       }
-      getUserPosts();
     } else
       Fluttertoast.showToast(
           msg: "Error deleting post please try again later",
@@ -1486,7 +1500,6 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    print(isEditable);
     return WillPopScope(
         onWillPop: back,
         child: Scaffold(
@@ -1499,6 +1512,7 @@ class _ProfileState extends State<Profile> {
             body: ModalProgressHUD(
               inAsyncCall: isLoading,
               child: NestedScrollView(
+                controller: _scrollControllerMain,
                 headerSliverBuilder: (context, _) {
                   return [
                     SliverList(
@@ -1547,147 +1561,56 @@ class _ProfileState extends State<Profile> {
                                     text: "Interaction",
                                     orientation: 'platform',
                                     curOrientation: postOrientation),
-                                // Container(
-                                //   child: GestureDetector(
-                                //     onTap: () {
-                                //       setPostOrientation("wage");
-                                //     },
-                                //     child: Column(
-                                //       mainAxisAlignment:
-                                //           MainAxisAlignment.spaceBetween,
-                                //       children: <Widget>[
-                                //         Text(
-                                //           kProfilePageWageTab,
-                                //           style: TextStyle(
-                                //             fontFamily: "Lato",
-                                //             fontSize: 15,
-                                //             color: postOrientation == 'wage'
-                                //                 ? Theme.of(context).primaryColor
-                                //                 : Colors.grey,
-                                //           ),
-                                //         ),
-                                //         SizedBox(
-                                //           height: 5,
-                                //         ),
-                                //         Container(
-                                //           width: 50,
-                                //           height: 2,
-                                //           color: postOrientation == 'wage'
-                                //               ? Theme.of(context).primaryColor
-                                //               : Colors.white,
-                                //         )
-                                //       ],
-                                //     ),
-                                //   ),
-                                // ),
-                                // Container(
-                                //   child: GestureDetector(
-                                //     onTap: () {
-                                //       setPostOrientation("invest");
-                                //     },
-                                //     child: Column(
-                                //       mainAxisAlignment:
-                                //           MainAxisAlignment.spaceBetween,
-                                //       children: <Widget>[
-                                //         Text(
-                                //           kProfilePageInvestmentTab,
-                                //           style: TextStyle(
-                                //             fontFamily: "Lato",
-                                //             fontSize: 15,
-                                //             color: postOrientation == 'invest'
-                                //                 ? Theme.of(context).primaryColor
-                                //                 : Colors.grey,
-                                //           ),
-                                //         ),
-                                //         SizedBox(
-                                //           height: 5,
-                                //         ),
-                                //         Container(
-                                //           width: 50,
-                                //           height: 2,
-                                //           color: postOrientation == 'invest'
-                                //               ? Theme.of(context).primaryColor
-                                //               : Colors.white,
-                                //         )
-                                //       ],
-                                //     ),
-                                //   ),
-                                // ),
-                                // Container(
-                                //   child: GestureDetector(
-                                //     onTap: () {
-                                //       setPostOrientation("platform");
-                                //     },
-                                //     child: Column(
-                                //       mainAxisAlignment:
-                                //           MainAxisAlignment.spaceBetween,
-                                //       children: <Widget>[
-                                //         Text(
-                                //           kProfilePagePlatformTab,
-                                //           style: TextStyle(
-                                //             fontFamily: "Lato",
-                                //             fontSize: 15,
-                                //             color: postOrientation == 'platform'
-                                //                 ? Theme.of(context).primaryColor
-                                //                 : Colors.grey,
-                                //           ),
-                                //         ),
-                                //         SizedBox(
-                                //           height: 5,
-                                //         ),
-                                //         Container(
-                                //           width: 50,
-                                //           height: 2,
-                                //           color: postOrientation == 'platform'
-                                //               ? Theme.of(context).primaryColor
-                                //               : Colors.white,
-                                //         )
-                                //       ],
-                                //     ),
-                                //   ),
-                                // ),
                               ],
                             ),
                           ),
                           Expanded(
-                              child: isLoadingPosts
-                                  ? Center(
-                                      child: CircularProgressIndicator(),
-                                    )
-                                  : isUserPostFail
-                                      ? ErrWidget(
-                                          tryAgainOnPressed: () {
-                                            setState(() {
-                                              isUserPostFail = false;
-                                              widget.isLoading = true;
-                                            });
-                                            getUserPosts();
-                                          },
-                                          showLogout: false,
-                                        )
-                                      : (postOrientation == 'wage'
-                                          ? buildWagePosts()
-                                          : (postOrientation == 'invest'
-                                              ? buildInvestPosts()
-                                              : (isPlatformLoading
-                                                  ? Center(
-                                                      child:
-                                                          CircularProgressIndicator())
-                                                  : isPlatformPostFail
-                                                      ? ErrWidget(
-                                                          tryAgainOnPressed:
-                                                              () {
-                                                            setState(() {
-                                                              isPlatformPostFail =
-                                                                  false;
-                                                              isPlatformLoading =
-                                                                  true;
-                                                            });
-                                                            getPlatformPosts();
-                                                          },
-                                                          showLogout: false,
-                                                        )
-                                                      : buildPlatformInteraction())))),
+                              child: postOrientation == 'wage'
+                                  ? isWageloading
+                                      ? Center(
+                                          child: CircularProgressIndicator())
+                                      : isWagepostFail
+                                          ? ErrWidget(
+                                              tryAgainOnPressed: () {
+                                                setState(() {
+                                                  isWagepostFail = false;
+                                                  isWageloading = true;
+                                                });
+                                                getWagePosts();
+                                              },
+                                              showLogout: false,
+                                            )
+                                          : buildWagePosts()
+                                  : postOrientation == 'invest'
+                                      ? isInvestPostFail
+                                          ? ErrWidget(
+                                              tryAgainOnPressed: () {
+                                                setState(() {
+                                                  isInvestLoading = true;
+                                                  isInvestPostFail = false;
+                                                });
+                                                getInvestPosts();
+                                              },
+                                              showLogout: false,
+                                            )
+                                          : buildInvestPosts()
+                                      : isPlatformLoading
+                                          ? Center(
+                                              child:
+                                                  CircularProgressIndicator())
+                                          : isPlatformPostFail
+                                              ? ErrWidget(
+                                                  tryAgainOnPressed: () {
+                                                    setState(() {
+                                                      isPlatformPostFail =
+                                                          false;
+                                                      isPlatformLoading = true;
+                                                    });
+                                                    getPlatformPosts();
+                                                  },
+                                                  showLogout: false,
+                                                )
+                                              : buildPlatformInteraction()),
                         ],
                       ),
               ),

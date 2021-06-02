@@ -39,7 +39,6 @@ class Post {
   String userReaction;
   factory Post.fromJsonI(final json) {
     var uid = json["UserId"];
-    var frnd = json['InvestedWith'];
     final diff = DateTime.now().difference(DateTime.parse(json['PostedOn']));
     final time = getTimeSinceNotification(diff);
     var expiringOnDiff =
@@ -59,17 +58,11 @@ class Post {
     reactions[1] = json["liked"] ?? 0;
     reactions[2] = json["whatever"] ?? 0;
     reactions[3] = json["hated"] ?? 0;
-    // List<User> rxn = [];
-    // if (json["ReactedBy"] != null) if (json["ReactedBy"].isNotEmpty) {
-    //   for (int i = 0; i < json["ReactedBy"].length; i++) {
-    //     User user = User.fromJson(json["ReactedBy"][i]);
-    //     rxn.add(user);
-    //   }
-    // }
     String reaction = json["requester_reaction"] ?? "noreact";
     if (reaction == "NotReacted") {
       reaction = "noreact";
     }
+
     return Post(
         userReaction: reaction,
         storyType: json["StoryType"],
@@ -88,7 +81,6 @@ class Post {
   }
 
   factory Post.fromJsonW(final json) {
-    print("POST " + json.toString());
     final diff = DateTime.now().difference(DateTime.parse(json['PostedOn']));
     final time = getTimeSinceNotification(diff);
     var uid = json["UserId"];
@@ -97,14 +89,6 @@ class Post {
     reactions[1] = json["liked"] ?? 0;
     reactions[2] = json["whatever"] ?? 0;
     reactions[3] = json["hated"] ?? 0;
-    //List<User> rxn = [];
-    // if (json["ReactedBy"].isNotEmpty) {
-    //   for (int i = 0; i < json["ReactedBy"].length; i++) {
-    //     //print("reacted by $i is ${json["ReactedBy"][i]}");
-    //     User user = User.fromJson(json["ReactedBy"][i]);
-    //     rxn.add(user);
-    //   }
-    // }
     String reaction = json["requester_reaction"] ?? "noreact";
     if (reaction == "NotReacted") {
       reaction = "noreact";

@@ -62,6 +62,7 @@ class Post_Tile extends StatefulWidget {
   final VoidCallback onPressDelete;
   ReusableVideoListController reusableVideoListController;
   Function canBuild;
+  Key key;
   Post_Tile({
     @required this.curUser,
     this.userPost,
@@ -69,9 +70,10 @@ class Post_Tile extends StatefulWidget {
     this.onPressDelete,
     this.reactionCallback,
     this.showPopup = true,
+    this.key,
     @required this.canBuild,
     @required this.reusableVideoListController,
-  });
+  }) : super(key: key);
   @override
   _Post_TileState createState() => _Post_TileState();
 }
@@ -90,49 +92,15 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   List<Request_Tile> likes = [];
   List<Request_Tile> whatevers = [];
   List<User> investedWithUser = [];
-  // String rxn = "noreact";
-  // Map<String, int> counter = {
-  //   'loved': 0,
-  //   'liked': 0,
-  //   'whatever': 0,
-  //   'hated': 0,
-  //   'noreact': 0
-  // };
-  // bool isDisabled = false;
-  // AnimationController hatedController;
-  // AnimationController lovedController;
-  // AnimationController likedController;
-  // AnimationController whateverController;
-  // Animation hatedAnimation;
-  // Animation lovedAnimation;
-  // Animation likedAnimation;
-  // Animation whateverAnimation;
-  // AudioPlayer audioPlayer;
-  // AudioCache audioCache;
   int reactionSizeIncrease = 3;
   bool _isCreatingLink = false;
   bool isDeleting = false;
-
-  // getReactions() {
-  //   counter = {'loved': 0, 'liked': 0, 'whatever': 0, 'hated': 0, 'noreact': 0};
-  //   for (int i = 0; i < widget.userPost.reactedBy.length; i++) {
-  //     User user = widget.userPost.reactedBy[i];
-  //     String rt = user.reactionType;
-  //     counter[rt]++;
-
-  //     if (user.id == (curUser != null ? curUser.id : savedUser.id)) {
-  //       this.rxn = user.reactionType;
-  //     }
-  //   }
-  // }
 
   convertStringToFile() async {
     for (int i = 0; i < widget.userPost.fileUpload.length; i++) {
       fileList.add(widget.userPost.fileUpload[i]);
 
       print(fileList[i]);
-      // downloadedFileList
-      //     .add(await file("${widget.userPost.id}_" + i.toString() + ".jpg"));
     }
     print("download list: " + downloadedFileList.length.toString());
     //print(fileList.length);
@@ -144,34 +112,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    // audioPlayer = new AudioPlayer();
-    // audioCache = new AudioCache(fixedPlayer: audioPlayer);
-    // lovedController =
-    //     AnimationController(duration: Duration(milliseconds: 400), vsync: this);
-    // lovedAnimation = CurvedAnimation(
-    //     parent: lovedController,
-    //     curve: Curves.easeIn,
-    //     reverseCurve: Curves.easeIn);
-    // likedController =
-    //     AnimationController(duration: Duration(milliseconds: 400), vsync: this);
-    // likedAnimation = CurvedAnimation(
-    //     parent: likedController,
-    //     curve: Curves.easeIn,
-    //     reverseCurve: Curves.easeIn);
-    // whateverController =
-    //     AnimationController(duration: Duration(milliseconds: 400), vsync: this);
-    // whateverAnimation = CurvedAnimation(
-    //     parent: whateverController,
-    //     curve: Curves.easeIn,
-    //     reverseCurve: Curves.easeIn);
-    // hatedController =
-    //     AnimationController(duration: Duration(milliseconds: 400), vsync: this);
-    // hatedAnimation = CurvedAnimation(
-    //     parent: hatedController,
-    //     curve: Curves.easeIn,
-    //     reverseCurve: Curves.easeIn);
-
-    //getReactions();
     convertStringToFile();
     getInvestedWithUser();
   }
@@ -201,173 +141,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
     setState(() {});
   }
 
-  // @override
-  // void dispose() {
-  //   lovedController.dispose();
-  //   likedController.dispose();
-  //   whateverController.dispose();
-  //   hatedController.dispose();
-  //   super.dispose();
-  // }
-
-  // react(String reactn) async {
-  //   setState(() {
-  //     isDisabled = true;
-  //     // audioCache.play("click.mp3");
-  //     String prvrxn = rxn;
-  //     rxn = reactn;
-  //     counter[prvrxn]--;
-  //     counter[rxn]++;
-  //     //print(widget.userPost.profit);
-  //     m[widget.userPost.id] = {reactn: counter[reactn]};
-  //     //print("updating mp");
-  //     mp[widget.userPost.id] = counter;
-  //     prft[widget.userPost.id] = widget.userPost.profit;
-  //   });
-  //   var user, token;
-  //   try {
-  //     user = auth.FirebaseAuth.instance.currentUser;
-  //     token = await user.getIdToken();
-  //   } catch (e) {
-  //     setState(() {
-  //       isDisabled = false;
-  //     });
-  //     return;
-  //   }
-  //   Reaction reaction = Reaction(
-  //       id: (curUser != null
-  //           ? (curUser != null ? curUser.id : savedUser.id)
-  //           : savedUser.id),
-  //       storyId: widget.userPost.id,
-  //       reactionType: reactn);
-
-  //   print(reaction.id);
-  //   print(reaction.reactionType);
-  //   print(reaction.storyId);
-  //   print(reactn);
-
-  //   //print(jsonEncode(reaction.toJson()));
-  //   //print(token);
-  //   var response = await putFunc(
-  //       url: storyEndPoint + 'react',
-  //       token: token,
-  //       body: jsonEncode(reaction.toJson()));
-
-  //   if (response == null) {
-  //     setState(() {
-  //       isDisabled = false;
-  //     });
-  //     return;
-  //   }
-
-  //   print("This is the story reaction");
-  //   print(response.statusCode);
-
-  //   if (response.statusCode == 200) {
-  //     var responseMessage;
-  //     try {
-  //       responseMessage =
-  //           jsonDecode((jsonDecode(response.body))['body'])['message'];
-
-  //       setState(() {
-  //         prft[widget.userPost.id] = responseMessage["PresentValue"].toString();
-  //       });
-  //     } catch (e) {
-  //       setState(() {
-  //         isDisabled = false;
-  //       });
-  //       return;
-  //     }
-  //     getReactions();
-
-  //     if (widget.reactionCallback != null) widget.reactionCallback();
-  //     setState(() {});
-  //   }
-  //   //print("hello hello");
-  //   setState(() {
-  //     isDisabled = false;
-  //   });
-  // }
-
-  // reaction(String reaction) {
-  //   if (widget.userPost.user.id !=
-  //       (curUser != null ? curUser.id : savedUser.id)) {
-  //     if (reaction == 'loved') {
-  //       lovedController.forward();
-  //       lovedController.addListener(() {
-  //         setState(() {});
-  //       });
-  //       lovedAnimation.addStatusListener((status) {
-  //         if (status == AnimationStatus.completed) {
-  //           lovedController.reverse();
-  //           lovedController.addListener(() {
-  //             setState(() {});
-  //           });
-  //         }
-  //       });
-  //     } else if (reaction == 'liked') {
-  //       likedController.forward();
-  //       likedController.addListener(() {
-  //         setState(() {});
-  //       });
-  //       likedAnimation.addStatusListener((status) {
-  //         if (status == AnimationStatus.completed) {
-  //           likedController.reverse();
-  //           likedController.addListener(() {
-  //             setState(() {});
-  //           });
-  //         }
-  //       });
-  //     } else if (reaction == 'whatever') {
-  //       whateverController.forward();
-  //       whateverController.addListener(() {
-  //         setState(() {});
-  //       });
-  //       whateverAnimation.addStatusListener((status) {
-  //         if (status == AnimationStatus.completed) {
-  //           whateverController.reverse();
-  //           whateverController.addListener(() {
-  //             setState(() {});
-  //           });
-  //         }
-  //       });
-  //     } else {
-  //       hatedController.forward();
-  //       hatedController.addListener(() {
-  //         setState(() {});
-  //       });
-  //       hatedAnimation.addStatusListener((status) {
-  //         if (status == AnimationStatus.completed) {
-  //           hatedController.reverse();
-  //           hatedController.addListener(() {
-  //             setState(() {});
-  //           });
-  //         }
-  //       });
-  //     }
-
-  //     if (rxn == reaction) {
-  //       react('noreact');
-
-  //       // counter[reaction]--;
-  //       //  m[widget.userPost.user.id] = {reaction: --counter[reaction]};
-  //     } else {
-  //       //counter[reaction]++;
-  //       react(reaction);
-  //     }
-  //   } else
-  //     Fluttertoast.showToast(
-  //         msg: "You cannot react on your own post",
-  //         toastLength: Toast.LENGTH_SHORT,
-  //         gravity: ToastGravity.BOTTOM,
-  //         fontSize: 15);
-
-  //   // print("state is set");
-  //   // print(counter[reaction]);
-  //   // setState(() {});
-  //   return;
-  // }
-
   Future<Uri> makeLink(String type, Post post) async {
     Uri uri;
     setState(() {
@@ -381,11 +154,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   }
 
   Future<void> share(Uri uri) async {
-    // await FlutterShare.share(
-    //     title: 'Hey! checkout this post',
-    //     //text: '${widget.userPost.user.fname} on RSocial',
-    //     linkUrl: uri.toString(),
-    //     chooserTitle: 'Share this post with');
     final RenderBox box = context.findRenderObject();
     Share.share(
       "Hey! Checkout this post ${uri.toString()}",
@@ -400,18 +168,6 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final transformationController = TransformationController();
-    // if (m.containsKey(widget.userPost.id)) {
-    //   Map<String, int> map = m[widget.userPost.id];
-    //   Map<String, int> map2 = mp[widget.userPost.id];
-    //   for (var key in map.keys) rxn = key;
-    //   // print("my reaction is now $rxn ${counter[rxn]}");
-    //   setState(() {
-    //     counter = map2;
-    //     counter[rxn] = map[rxn];
-    //     widget.userPost.profit = prft[widget.userPost.id];
-    //   });
-    // }
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 1),
       child: Container(

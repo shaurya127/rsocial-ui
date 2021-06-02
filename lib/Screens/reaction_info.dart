@@ -60,7 +60,6 @@ class _Reaction_InfoState extends State<Reaction_Info>
     var response;
     try {
       token = await user.getIdToken();
-      print(token);
       response = await http.post(Uri.parse(url),
           encoding: Encoding.getByName("utf-8"),
           headers: {
@@ -77,7 +76,7 @@ class _Reaction_InfoState extends State<Reaction_Info>
       });
       return null;
     }
-    print("Get Reaction response");
+    // print("Get Reaction response");
     //print(response.body);
     //print(response.statusCode);
     if (response.statusCode == 200) {
@@ -85,7 +84,7 @@ class _Reaction_InfoState extends State<Reaction_Info>
       var body = jsonPostReaction['body'];
       var body1 = jsonDecode(body);
       //print("body is $body");
-      print(body1);
+      // print(body1);
       var msg = body1['message'];
       var lovedResponse = msg['loved'];
       var likedResponse = msg['liked'];
