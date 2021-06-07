@@ -37,7 +37,7 @@ class _Search_PageState extends State<Search_Page>
   List<String> idConnections = [];
   List<User> allUsers = [];
   List<User> requestList = [];
-  List<User> suggestionList = [];
+  Set<User> suggestionList ={};
   bool isLoading = false;
   String searchQuery = "";
   String photourl = "";
@@ -209,7 +209,7 @@ class _Search_PageState extends State<Search_Page>
     // show when someone searches for something
     setState(() {
       if (page == 0) {
-        suggestionList = [];
+        suggestionList = {};
         // isLoadingSearch = true;
       }
     });
@@ -363,10 +363,10 @@ class _Search_PageState extends State<Search_Page>
     Request_Tile tile;
     for (int i = 0; i < suggestionList.length; i++) {
       tile = Request_Tile(
-        user: suggestionList[i],
+        user: suggestionList.elementAt(i),
         accepted: true,
-        text: curUser.userMap.containsKey(suggestionList[i].id)
-            ? curUser.userMap[suggestionList[i].id]
+        text: curUser.userMap.containsKey(suggestionList.elementAt(i).id)
+            ? curUser.userMap[suggestionList.elementAt(i).id]
             : "add",
       );
       searchResults.add(tile);
