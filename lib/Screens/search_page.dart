@@ -210,7 +210,7 @@ class _Search_PageState extends State<Search_Page>
     setState(() {
       if (page == 0) {
         suggestionList = [];
-        isLoadingSearch = true;
+        // isLoadingSearch = true;
       }
     });
 
@@ -393,6 +393,7 @@ class _Search_PageState extends State<Search_Page>
                       child: TextFormField(
                         onChanged: (value) {
                           searchQuery = value;
+                          buildSuggestions();
                         },
                         decoration: InputDecoration(
                           focusedBorder: UnderlineInputBorder(
