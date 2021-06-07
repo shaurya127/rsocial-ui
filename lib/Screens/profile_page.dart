@@ -140,7 +140,7 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  getUser() async {
+  Future<void> getUser() async {
     print(widget.user.id);
     print("get user started");
     setState(() {
@@ -205,31 +205,36 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
     reusableVideoListController = ReusableVideoListController();
-    if (widget.user.id != (curUser == null ? savedUser.id : curUser.id))
-      getUser();
-    else {
+    if (widget.user.id != (curUser == null ? savedUser.id : curUser.id)) {
+      getUser().then((_) {
+        getWagePostInitial();
+        getInvestPostInitial();
+        getPlatformPostsInitial();
+        isEditable = false;
+      });
+    } else {
       setState(() {
         isLoadingUser = false;
         widget.user = curUser;
       });
+      getWagePostInitial();
+      getInvestPostInitial();
+      getPlatformPostsInitial();
+      isEditable = false;
     }
     _scrollControllerWage.addListener(() {
       _scrollControllerMain.animateTo(_scrollControllerWage.offset,
-          duration: Duration(milliseconds: 10), curve: Curves.ease);
+          duration: Duration(milliseconds: 500), curve: Curves.ease);
     });
     _scrollControllerInvest.addListener(() {
       _scrollControllerMain.animateTo(_scrollControllerInvest.offset,
-          duration: Duration(milliseconds: 10), curve: Curves.ease);
+          duration: Duration(milliseconds: 500), curve: Curves.ease);
     });
     _scrollController.addListener(() {
       _scrollControllerMain.animateTo(_scrollController.offset,
-          duration: Duration(milliseconds: 10), curve: Curves.ease);
+          duration: Duration(milliseconds: 500), curve: Curves.ease);
     });
-    getWagePostInitial();
-    getInvestPostInitial();
-    getPlatformPostsInitial();
-    isEditable = false;
-    //isLoading = false;
+
     bioController.text =
         widget.user.bio != null ? widget.user.bio.trim() : "here comes the bio";
     _scrollController.addListener(() {
@@ -1565,52 +1570,56 @@ class _ProfileState extends State<Profile> {
                             ),
                           ),
                           Expanded(
-                              child: postOrientation == 'wage'
-                                  ? isWageloading
-                                      ? Center(
-                                          child: CircularProgressIndicator())
-                                      : isWagepostFail
-                                          ? ErrWidget(
-                                              tryAgainOnPressed: () {
-                                                setState(() {
-                                                  isWagepostFail = false;
-                                                  isWageloading = true;
-                                                });
-                                                getWagePosts();
-                                              },
-                                              showLogout: false,
-                                            )
-                                          : buildWagePosts()
-                                  : postOrientation == 'invest'
-                                      ? isInvestPostFail
-                                          ? ErrWidget(
-                                              tryAgainOnPressed: () {
-                                                setState(() {
-                                                  isInvestLoading = true;
-                                                  isInvestPostFail = false;
-                                                });
-                                                getInvestPosts();
-                                              },
-                                              showLogout: false,
-                                            )
-                                          : buildInvestPosts()
-                                      : isPlatformLoading
+                              child: isLoadingUser
+                                  ? Container()
+                                  : postOrientation == 'wage'
+                                      ? isWageloading
                                           ? Center(
                                               child:
                                                   CircularProgressIndicator())
-                                          : isPlatformPostFail
+                                          : isWagepostFail
                                               ? ErrWidget(
                                                   tryAgainOnPressed: () {
                                                     setState(() {
-                                                      isPlatformPostFail =
-                                                          false;
-                                                      isPlatformLoading = true;
+                                                      isWagepostFail = false;
+                                                      isWageloading = true;
                                                     });
-                                                    getPlatformPosts();
+                                                    getWagePosts();
                                                   },
                                                   showLogout: false,
                                                 )
-                                              : buildPlatformInteraction()),
+                                              : buildWagePosts()
+                                      : postOrientation == 'invest'
+                                          ? isInvestPostFail
+                                              ? ErrWidget(
+                                                  tryAgainOnPressed: () {
+                                                    setState(() {
+                                                      isInvestLoading = true;
+                                                      isInvestPostFail = false;
+                                                    });
+                                                    getInvestPosts();
+                                                  },
+                                                  showLogout: false,
+                                                )
+                                              : buildInvestPosts()
+                                          : isPlatformLoading
+                                              ? Center(
+                                                  child:
+                                                      CircularProgressIndicator())
+                                              : isPlatformPostFail
+                                                  ? ErrWidget(
+                                                      tryAgainOnPressed: () {
+                                                        setState(() {
+                                                          isPlatformPostFail =
+                                                              false;
+                                                          isPlatformLoading =
+                                                              true;
+                                                        });
+                                                        getPlatformPosts();
+                                                      },
+                                                      showLogout: false,
+                                                    )
+                                                  : buildPlatformInteraction()),
                         ],
                       ),
               ),

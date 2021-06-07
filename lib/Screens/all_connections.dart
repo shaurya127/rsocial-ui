@@ -35,6 +35,9 @@ class _AllConnectionsState extends State<AllConnections> {
         );
         friendResults.add(tile);
       }
+      friendResults.sort((tile1, tile2) {
+        return tile1.user.fname.compareTo(tile2.user.fname);
+      });
       return ListView(
         children: friendResults,
       );

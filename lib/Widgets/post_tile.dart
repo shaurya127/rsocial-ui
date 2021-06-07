@@ -233,7 +233,9 @@ class _Post_TileState extends State<Post_Tile> with TickerProviderStateMixin {
                                   widget.userPost.user.photoUrl),
                               child: CircleAvatar(
                                 backgroundImage:
-                                    widget.userPost.user.photoUrl != ""
+                                    widget.userPost.user.photoUrl != "" &&
+                                            widget.userPost.user.photoUrl !=
+                                                null
                                         ? NetworkImage(
                                             widget.userPost.user.photoUrl)
                                         : AssetImage("images/avatar.jpg"),

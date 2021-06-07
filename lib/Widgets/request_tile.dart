@@ -42,13 +42,12 @@ class _Request_TileState extends State<Request_Tile> {
 
   //User curUser;
   removeConnection(String friendId) async {
-    print("Hello");
     setState(() {
       isDisabled = true;
     });
 
     try {
-      var url = userEndPoint + "removeconnection";
+      var url = userEndPoint + "removebond";
       var user = auth.FirebaseAuth.instance.currentUser;
       DocumentSnapshot doc = await users.doc(user.uid).get();
       var uid = doc['id'];
@@ -78,16 +77,17 @@ class _Request_TileState extends State<Request_Tile> {
         //print("body is $body");
         // print(body1);
         var msg = body1['message'];
+        curUser.userMap.remove(friendId);
         setState(() {
-          curUser = User.fromJson(msg);
-          widget.text = "";
+          widget.text = "add";
+          isDisabled = false;
           //widget.accepted = false;
         });
       }
-      setState(() {
-        isDisabled = false;
-      });
     } catch (e) {
+      Fluttertoast.showToast(
+          msg: "Some error occured. Please try again later",
+          gravity: ToastGravity.BOTTOM);
       setState(() {
         isDisabled = false;
       });
@@ -99,7 +99,7 @@ class _Request_TileState extends State<Request_Tile> {
       isDisabled = true;
     });
     try {
-      var url = userEndPoint + "addconnection";
+      var url = userEndPoint + "addbond";
       var user = auth.FirebaseAuth.instance.currentUser;
       DocumentSnapshot doc = await users.doc(user.uid).get();
       var uid = doc['id'];
@@ -129,8 +129,8 @@ class _Request_TileState extends State<Request_Tile> {
         //print("body is $body");
         // print(body1);
         var msg = body1['message'];
+        curUser.userMap[friendId] = "pending";
         setState(() {
-          curUser = User.fromJson(msg);
           widget.text = "pending";
         });
       }
@@ -138,6 +138,9 @@ class _Request_TileState extends State<Request_Tile> {
         isDisabled = false;
       });
     } catch (e) {
+      Fluttertoast.showToast(
+          msg: "Some error occured. Please try again later",
+          gravity: ToastGravity.BOTTOM);
       setState(() {
         isDisabled = false;
       });
@@ -150,7 +153,7 @@ class _Request_TileState extends State<Request_Tile> {
     });
 
     try {
-      var url = userEndPoint + "acceptconnection";
+      var url = userEndPoint + "acceptbond";
 
       var user = auth.FirebaseAuth.instance.currentUser;
       DocumentSnapshot doc = await users.doc(user.uid).get();
@@ -182,15 +185,17 @@ class _Request_TileState extends State<Request_Tile> {
         var msg = body1['message'];
         //print("id is: ${msg['id']}");
         //print(msg);
+        curUser.userMap[friendId] = "remove";
         setState(() {
-          curUser = User.fromJson(msg);
-          widget.text = "";
+          widget.text = "remove";
+          isDisabled = false;
           //widget.accepted = true;
         });
       }
-
-      isDisabled = false;
     } catch (e) {
+      Fluttertoast.showToast(
+          msg: "Some error occured. Please try again later",
+          gravity: ToastGravity.BOTTOM);
       setState(() {
         isDisabled = false;
       });

@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rsocial2/Screens/profile_page.dart';
 import 'package:rsocial2/Widgets/error.dart';
@@ -43,17 +44,30 @@ class _Search_PageState extends State<Search_Page>
   bool isGetUserFail = false;
   bool isFailedGetAllUser = false;
   bool isLoadingSearch = false;
-
+  bool searchResultsLeft = false;
+  int page = 0;
+  ScrollController controller = ScrollController();
   //User curUser;
   @override
   void initState() {
     super.initState();
     FirebaseAnalytics().setCurrentScreen(screenName: "Search_page");
+    controller.addListener(() {
+      if (controller.position.pixels == controller.position.maxScrollExtent) {
+        if (searchResultsLeft) {
+          setState(() {
+            page = page + 10;
+          });
+          //print("i was called with $page and $platformStoriesStillLeft");
+          buildSuggestions();
+        }
+      }
+    });
   }
 
-  setOrientation(String Orientation) {
+  setOrientation(String orientation) {
     setState(() {
-      this.Orientation = Orientation;
+      this.Orientation = orientation;
     });
   }
 
@@ -128,14 +142,88 @@ class _Search_PageState extends State<Search_Page>
     }
   }
 
-  Future<void> getAllUsers() async {
+  // Future<void> getAllUsers() async {
+  //   setState(() {
+  //     suggestionList = [];
+  //     allUsers = [];
+  //     isLoadingSearch = true;
+  //   });
+  //   print("Inside get all users");
+  //   var user;
+  //   var id;
+  //   var response;
+  //   try {
+  //     user = auth.FirebaseAuth.instance.currentUser;
+
+  //     DocumentSnapshot doc = await users.doc(user.uid).get();
+  //     id = doc['id'];
+
+  //     final url = Uri.parse(userEndPoint + "all");
+
+  //     var token = await user.getIdToken();
+  //     //print(token);
+
+  //     response = await http.post(url,
+  //         headers: {
+  //           "Authorization": "Bearer $token",
+  //           "Content-Type": "application/json"
+  //         },
+  //         body: jsonEncode({"id": id, "email": user.email}));
+  //   } catch (e) {
+  //     setState(() {
+  //       isFailedGetAllUser = true;
+  //       isLoadingSearch = false;
+  //     });
+  //   }
+  //   if (response.statusCode == 200) {
+  //     final jsonUser = jsonDecode(response.body);
+  //     var body = jsonUser['body'];
+  //     var body1 = jsonDecode(body);
+  //     var msg = body1['message'];
+  //     //print(msg);
+  //     //print("length is ${msg.length}")
+  //     for (int i = 0; i < msg.length; i++) {
+  //       // print(msg[i]['PendingConnection']);
+
+  //       if (msg[i]['id'] == id) {
+  //         continue;
+  //       }
+
+  //       User user = User.fromJson(msg[i]);
+
+  //       allUsers.add(user);
+  //     }
+  //     setState(() {
+  //       isLoadingSearch = false;
+  //     });
+  //     // print("all the users");
+  //     // print(allUsers.length);
+  //     return allUsers;
+  //   } else {
+  //     // print(response.statusCode);
+  //     throw Exception();
+  //   }
+  // }
+
+  Future<void> buildSuggestions() async {
+    // show when someone searches for something
     setState(() {
-      suggestionList = [];
-      allUsers = [];
-      isLoadingSearch = true;
+      if (page == 0) {
+        suggestionList = [];
+        isLoadingSearch = true;
+      }
     });
-    print("Inside get all users");
-    //print("==========Inside get all users ===================");
+
+    if (searchQuery == null || searchQuery.isEmpty) {
+      setState(() {
+        isLoadingSearch = false;
+      });
+      Fluttertoast.showToast(
+        msg: "Please enter a non-empty search query",
+        gravity: ToastGravity.BOTTOM,
+      );
+      return;
+    }
     var user;
     var id;
     var response;
@@ -145,64 +233,66 @@ class _Search_PageState extends State<Search_Page>
       DocumentSnapshot doc = await users.doc(user.uid).get();
       id = doc['id'];
 
-      final url = Uri.parse(userEndPoint + "all");
+      final url = Uri.parse(userEndPoint + "paginatedfilterall");
 
       var token = await user.getIdToken();
-      //print(token);
-
-      response = await http.post(url,
-          headers: {
-            "Authorization": "Bearer $token",
-            "Content-Type": "application/json"
+      print(
+        {
+          "id": id,
+          "namefilter": searchQuery,
+          "start_token": 0,
+        },
+      );
+      response = await http.post(
+        url,
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        },
+        body: jsonEncode(
+          {
+            "id": id,
+            "namefilter": searchQuery,
+            "start_token": page,
           },
-          body: jsonEncode({"id": id, "email": user.email}));
+        ),
+      );
     } catch (e) {
       setState(() {
         isFailedGetAllUser = true;
         isLoadingSearch = false;
       });
     }
-    // print("[[[[[[[[[[[[[[[[[[[[[[[[[[[[");
-    // print(response.body);
     if (response.statusCode == 200) {
       final jsonUser = jsonDecode(response.body);
-      var body = jsonUser['body'];
-      var body1 = jsonDecode(body);
-      var msg = body1['message'];
-      //print(msg);
-      //print("length is ${msg.length}")
-      for (int i = 0; i < msg.length; i++) {
-        // print(msg[i]['PendingConnection']);
 
-        if (msg[i]['id'] == id) {
-          continue;
+      print(jsonUser);
+      if (jsonUser["statusCode"] == 200) {
+        var body = jsonUser['body'];
+        var body1 = jsonDecode(body);
+        searchResultsLeft = body1["message"]["user_left"];
+        var msg = body1['message']['users'];
+        for (int i = 0; i < msg.length; i++) {
+          if (msg[i]['id'] == id) {
+            continue;
+          }
+          User user = User.fromJson(msg[i]);
+          suggestionList.add(user);
         }
-
-        User user = User.fromJson(msg[i]);
-
-        allUsers.add(user);
+        if (suggestionList.isEmpty) {
+          Fluttertoast.showToast(
+            msg: "Sorry, no results found!",
+            gravity: ToastGravity.CENTER,
+            fontSize: 18,
+          );
+        }
       }
       setState(() {
         isLoadingSearch = false;
       });
-      // print("all the users");
-      // print(allUsers.length);
-      return allUsers;
     } else {
-      // print(response.statusCode);
       throw Exception();
     }
-  }
-
-  Widget buildSuggestions(BuildContext context, String query) {
-    // show when someone searches for something
-    suggestionList = [];
-    suggestionList = query == null || query.isEmpty || allUsers.isEmpty
-        ? []
-        : allUsers
-            .where((p) => (p.fname + " " + p.lname)
-                .contains(RegExp(query, caseSensitive: false)))
-            .toList();
   }
 
   Widget buildMsg() {
@@ -269,8 +359,6 @@ class _Search_PageState extends State<Search_Page>
   // }
 
   buildSearchTab() {
-    // print("This is the length of suggestion list");
-    // print(suggestionList.length);
     List<Request_Tile> searchResults = [];
     Request_Tile tile;
     for (int i = 0; i < suggestionList.length; i++) {
@@ -280,48 +368,66 @@ class _Search_PageState extends State<Search_Page>
         text: curUser.userMap.containsKey(suggestionList[i].id)
             ? curUser.userMap[suggestionList[i].id]
             : "add",
-        //request: false,
-        //photourl: photourl,
       );
       searchResults.add(tile);
     }
     return ListView.builder(
-        itemCount: 1 + searchResults.length,
+        controller: controller,
+        itemCount: (searchResultsLeft)
+            ? 2 + searchResults.length
+            : 1 + searchResults.length,
         itemBuilder: (BuildContext context, int index) {
+          if (index == searchResults.length + 1) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
           if (index == 0) {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: Container(
-                child: TextFormField(
-                  onChanged: (value) {
-                    searchQuery = value;
-                    buildSuggestions(context, searchQuery);
-                    // isSelected = true;
-                    setState(() {});
-                  },
-                  // onTap: () {
-                  //   setState(() {
-                  //     isSelected = true;
-                  //   });
-                  // },
-                  decoration: InputDecoration(
-                      focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: colorPrimaryBlue)),
-                      enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: colorGreyTint.withOpacity(0.3))),
-                      hintStyle: TextStyle(
-                          color: colorGreyTint.withOpacity(0.6),
-                          fontFamily: "Lato",
-                          fontSize: 12,
-                          letterSpacing: 0.75,
-                          fontWeight: FontWeight.w300),
-                      hintText: "Search Users"),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        onChanged: (value) {
+                          searchQuery = value;
+                        },
+                        decoration: InputDecoration(
+                          focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: colorPrimaryBlue)),
+                          enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: colorGreyTint.withOpacity(0.3))),
+                          hintStyle: TextStyle(
+                              color: colorGreyTint.withOpacity(0.6),
+                              fontFamily: "Lato",
+                              fontSize: 12,
+                              letterSpacing: 0.75,
+                              fontWeight: FontWeight.w300),
+                          hintText: "Search Users",
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.search,
+                        color: colorButton,
+                      ),
+                      onPressed: () {
+                        page = 0;
+                        buildSuggestions();
+                      },
+                    )
+                  ],
                 ),
               ),
             );
           } else
-            return searchResults[index - 1];
+            return searchResults.isEmpty
+                ? buildMsg()
+                : searchResults[index - 1];
         });
   }
 
@@ -432,21 +538,17 @@ class _Search_PageState extends State<Search_Page>
               ? ErrWidget(
                   tryAgainOnPressed: () {
                     setState(() {
-                      isFailedGetAllUser = false;
+                      isGetUserFail = false;
                       isLoadingSearch = true;
                     });
-                    getAllUsers();
+                    buildSuggestions();
                   },
                 )
-              : RefreshIndicator(
-                  onRefresh: getAllUsers,
-                  child: buildSearchTab(),
-                );
+              : buildSearchTab();
   }
 
   @override
   Widget build(BuildContext context) {
-    // buildSuggestions(context, searchQuery);
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(65),
@@ -480,8 +582,6 @@ class _Search_PageState extends State<Search_Page>
                       onTap: () {
                         setState(() {
                           this.Orientation = "search";
-                          getAllUsers();
-                          isLoadingSearch = true;
                         });
                       },
                       text: "Search",
