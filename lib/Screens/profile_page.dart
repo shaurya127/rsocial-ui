@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'package:rsocial2/Screens/bondpage.dart';
 import 'package:image/image.dart' as im;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
@@ -18,6 +19,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:rsocial2/Screens/all_connections.dart';
 import 'package:rsocial2/Screens/bottom_nav_bar.dart';
 import 'package:rsocial2/Screens/login_page.dart';
+import 'package:rsocial2/Screens/search_page.dart';
 import 'package:rsocial2/Widgets/CustomAppBar.dart';
 import 'package:http/http.dart' as http;
 import 'package:rsocial2/Widgets/alert_box.dart';
@@ -1172,7 +1174,7 @@ class _ProfileState extends State<Profile> {
               child: SizedBox(),
             )
           ]
-        : [
+        :; [
             Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -1316,12 +1318,18 @@ class _ProfileState extends State<Profile> {
                           color: Colors.grey,
                         ),
                       ),
-                      Container(
-                        height: 15,
-                        width: 15,
-                        padding: EdgeInsets.only(right: 2),
-                        child: SvgPicture.asset("images/high-five.svg",
-                            color: colorGreyTint),
+                      GestureDetector(
+                        onTap: (){
+                          print("helo");
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>bondpage(id: widget.currentUser.id,)));
+                        },
+                        child: Container(
+                          height: 25,
+                          width: 25,
+                          padding: EdgeInsets.only(right: 2),
+                          child: SvgPicture.asset("images/high-five.svg",
+                              color: colorGreyTint),
+                        ),
                       ),
                       Text(
                         widget.user.connection.length !=
